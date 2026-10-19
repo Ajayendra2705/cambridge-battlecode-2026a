@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -257,20 +258,27 @@ bool in_danger(vec2 t) {
         if (static_cast<int>(t.chebyshev_distance(src)) <= radius) return true;
     return false;
 }
-float cached_dps = 0;
+float cached_dps = 0, cached_spell_dps = 0;
 int cached_dps_round = -100;
 
 float my_dps() {
     if (S.round - cached_dps_round < 10) return cached_dps;
     auto& me = cambc::self();
-    float d = S.str;
+    float d = S.str, spell = 0;
     for (const auto& ab : me.abilities()) {
-        if (ab.is_damage() || ab.is_aoe_damage()) d += ab.damage_amount() / 8.0f;
+        if (ab.is_damage() || ab.is_aoe_damage()) spell += ab.damage_amount() / 8.0f;
         if (ab.is_attack_reset()) d += S.str / 8.0f;
     }
-    cached_dps = d;
+    cached_dps = d + spell;
+    cached_spell_dps = spell;
     cached_dps_round = S.round;
-    return d;
+    return cached_dps;
+}
+
+// Damage per round from spells alone: they reach 4 tiles, one beyond any camp's attack range.
+float my_spell_dps() {
+    my_dps();
+    return cached_spell_dps;
 }
 
 // Known units, built once: camps by spawn tile (camps never move) and every champion's handle.
@@ -839,6 +847,10 @@ double clear_time(const ClearStats& g, int n, float dps, float hp, int home_dist
     return t_fight + trips * (6.0 + home_dist) / n;
 }
 
+// Groups too strong to stand next to (monoliths): only casters work on them, from spell range, where the camps
+// cannot hit back. Camps never regenerate, so the damage keeps.
+bool standoff(const Group& g) { return g.hardest() >= 150.0f; }
+
 // Gold buys stats early; late it only matters as a tiebreak.
 double gold_weight(int round) { return round < 1400 ? 0.1 : 0.03; }
 
@@ -917,6 +929,20 @@ int bank_best = UNREACH, bank_stall = 0, bank_blocked_until = 0;
 int planned_team = 1;
 int alive_cache = 1, alive_round = -10;
 
+// What this champion last saw, printed if it dies before its next turn: when it acted, its health and
+// activity, then visible enemies (type, distance, health) and the strength of awake camps in reach.
+char death_ctx[200] = "";
+
+void record_death_ctx() {
+    int n = std::snprintf(death_ctx, sizeof death_ctx, "r%d hp=%.0f %s camp=%.0f en:", S.round, S.hp, last_activity,
+                          camp_incoming(S.me));
+    for (const auto& e : S.enemies) {
+        if (n >= static_cast<int>(sizeof death_ctx) - 24) break;
+        n += std::snprintf(death_ctx + n, sizeof death_ctx - n, " %s@%d/%.0f", cambc::to_string(e.ch.champion_name()).c_str(),
+                           dist(S.me, e.pos), e.hp);
+    }
+}
+
 int alive_allies() {
     if (alive_round == S.round) return alive_cache;
     int n = 0;
@@ -978,6 +1004,14 @@ int pick_group(int current) {
                 if (lower >= 2) continue;
             }
             score = value / (travel + 5.0 + g.bank_cost);
+        } else if (standoff(g)) {
+            const float spell = my_spell_dps();
+            if (spell <= 0) continue;
+            const int n = others + 1;
+            double time = travel + g.hp_left() / (spell * n);
+            if (g.state == 2) time += 2.0 * std::max(0, g.respawn_round - round - travel);
+            score = value / (time * n + 5 + g.bank_cost * 0.5);
+            score_n = n;
         } else {
             const int home = W.spawn_field.get(g.spawns[0]);
             const ClearStats cs = clear_stats(g);
@@ -1082,7 +1116,33 @@ void fight_or_approach(int gi) {
     }
 
 
-    // Big groups (many elks, monoliths) shred champions who arrive one by one: wait for most of the team.
+    if (standoff(g)) {
+        // Stand exactly at spell range of the target and outside every dangerous camp's reach; cast only.
+        const CampSnap* target = choose_camp(live);
+        bitboard goals, near;
+        goals.clear();
+        near.clear();
+        goals.draw_chebyshev(target->pos, 4.0f);
+        for (const auto* c : live)
+            if (c->str > 0) near.draw_chebyshev(c->pos, static_cast<float>(CAMP_RANGE));
+        goals = goals & ~near;
+        ACT("standoff");
+        if (goals.is_set(S.me)) {
+            use_camp_abilities(live, *target, false);
+            return;
+        }
+        if (near.is_set(S.me)) {
+            std::vector<vec2> threats;
+            for (const auto* c : live) if (c->str > 0) threats.push_back(c->pos);
+            step_away(threats);
+        } else {
+            step_to_tiles(goals);
+        }
+        if (goals.is_set(S.me)) use_camp_abilities(live, *target, false);
+        return;
+    }
+
+    // Big groups (many elks) shred champions who arrive one by one: wait for most of the team.
     if (!g.damaged() && g.strength_left() >= 200) {
         int present = 1;
         for (const auto& a : S.allies)
@@ -1154,7 +1214,10 @@ void Bot::play_turn() {
         for (size_t i = 0; i < act_names.size() && act_names[i]; ++i) std::cout << " " << act_names[i] << "=" << act_counts[i];
         std::cout << '\n';
     }
-    if (!me.is_alive() && was_alive && round > 1) death_rounds.push_back(round);
+    if (!me.is_alive() && was_alive && round > 1) {
+        death_rounds.push_back(round);
+        std::cout << "D" << round << " s" << W.slot << " " << death_ctx << '\n';
+    }
     was_alive = me.is_alive();
     if (!was_alive) {
         ACT("dead");
@@ -1175,6 +1238,7 @@ void Bot::play_turn() {
     update_knowledge();
     read_broadcast();
     record_sightings();
+    record_death_ctx();
     STAGE("enemies");
     const vec2 p = S.me;
     const bool at_spawn = W.ally_spawn.is_set(p);
