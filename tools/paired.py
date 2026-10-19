@@ -1,7 +1,7 @@
 """Paired A/B verdict between two gate runs: python -I tools/paired.py OLD NEW
 
 OLD and NEW are bot names logged in tools/gate.log by tools/gate.sh (latest run of each is used).
-Games are paired by (opponent, map). The engine is deterministic, so a game only changes if a bot changed;
+Games are paired by (panel opponent slot, map). The engine is deterministic, so a game only changes if a bot changed;
 the per-game gem margin (ours - theirs) is compared with a two-sided sign test.
 Verdict ACCEPT needs: total margin gain > 0, sign-test p < 0.1, and NEW deaths <= 1.05 * OLD deaths.
 """
@@ -23,8 +23,16 @@ def games(bot):
                          capture_output=True, text=True, encoding='utf-8').stdout
     if re.search(r'queued|running', out):
         sys.exit(f'{bot}: run not finished')
-    return {(m[7].strip(), m[0]): dict(win=m[1] == 'WIN ', margin=int(m[2]) - int(m[3]), deaths=int(m[5]))
-            for m in LINE.findall(out)}
+    # Key by panel slot (group order) and map: opponents rename teams, so names do not pair reliably.
+    res, slot = {}, 0
+    for line in out.splitlines():
+        if line.startswith('group '):
+            slot += 1
+            continue
+        m = LINE.match(line)
+        if m:
+            res[(f'{slot // 2}:{m[8].strip()}', m[1])] = dict(win=m[2] == 'WIN ', margin=int(m[3]) - int(m[4]), deaths=int(m[6]))
+    return res
 
 
 def wilson(w, n, z=1.96):

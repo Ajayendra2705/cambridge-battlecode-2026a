@@ -2,7 +2,7 @@
 
 Downloads each finished match's summary JSON into ladder_replays/ and prints gems, rounds, kills and deaths.
 """
-import json, os, re, subprocess, sys
+import json, os, re, subprocess, sys, time
 
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
@@ -17,7 +17,12 @@ def run(*args):
 
 
 for gid in sys.argv[1:]:
-    text = run('match-groups', 'show', gid)
+    # The API sometimes answers empty (rate limit): retry before giving up on the group.
+    for attempt in range(6):
+        text = run('match-groups', 'show', gid)
+        if re.search(r'^\S{36}\s', text, re.M):
+            break
+        time.sleep(10)
     matches = re.findall(r'^(\S{36})\s+(\S+)\s+(\S+)\s*\n\s+(\S{36})\s+(.*?)\s+(\[.*?\])\s*\n\s+(\S{36})\s+(.*?)\s+(\[.*?\])', text, re.M)
     total = [0, 0]
     for mid, status, mapname, ta, na, da, tb, nb, db in matches:
