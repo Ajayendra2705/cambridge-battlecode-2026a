@@ -1,0 +1,9 @@
+k_heal95#if (at_spawn && S.hp < S.max_hp * 0.9f) {#if (at_spawn && S.hp < S.max_hp * 0.97f) {
+k_heal80#if (at_spawn && S.hp < S.max_hp * 0.9f) {#if (at_spawn && S.hp < S.max_hp * 0.8f) {
+k_win12#ally_power >= enemy_power * (fragile ? 1.5f : 1.0f)#ally_power >= enemy_power * (fragile ? 1.5f : 1.2f)
+k_win08#ally_power >= enemy_power * (fragile ? 1.5f : 1.0f)#ally_power >= enemy_power * (fragile ? 1.5f : 0.8f)
+k_caut3#if (recent >= 2) continue;#if (recent >= 3) continue;
+k_gather3#present < std::min(4, alive_allies())#present < std::min(3, alive_allies())
+k_gather5#present < std::min(4, alive_allies())#present < std::min(5, alive_allies())
+k_home25#S.hp < S.max_hp * 0.35f && incoming == 0#S.hp < S.max_hp * 0.25f && incoming == 0
+k_stall12#++bank_stall > 6#++bank_stall > 12
