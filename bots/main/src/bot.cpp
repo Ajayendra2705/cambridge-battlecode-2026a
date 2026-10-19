@@ -266,7 +266,13 @@ float my_dps() {
     auto& me = cambc::self();
     float d = S.str, spell = 0;
     for (const auto& ab : me.abilities()) {
-        if (ab.is_damage() || ab.is_aoe_damage()) spell += ab.damage_amount() / 8.0f;
+        // Stuns that also deal damage (Tavi, Ren) report as crowd control, not damage.
+        if (ab.is_damage() || ab.is_aoe_damage() || ab.is_cc()) {
+            try {
+                spell += ab.damage_amount() / 8.0f;
+            } catch (const cambc::error&) {
+            }
+        }
         if (ab.is_attack_reset()) d += S.str / 8.0f;
     }
     cached_dps = d + spell;
@@ -724,6 +730,21 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
     return false;
 }
 
+// From spell range: the best area hit, else any damaging spell (stuns included) on the focus target.
+bool cast_from_range(const std::vector<const CampSnap*>& live, const CampSnap& focus) {
+    auto& me = cambc::self();
+    if (!me.can_cast()) return false;
+    if (use_camp_abilities(live, focus, false)) return true;
+    for (const auto& ab : me.abilities()) {
+        if (!ab.is_ready() || !ab.is_cc() || ab.can_target_ground()) continue;
+        try {
+            if (ab.damage_amount() > 0 && ab.valid_tiles().is_set(focus.pos) && ab.use(focus.camp)) { ++n_dmg; return true; }
+        } catch (const cambc::error&) {
+        }
+    }
+    return false;
+}
+
 // Stun the most dangerous enemy in reach first, then burst the focus target.
 bool use_champion_abilities(const ChampSnap& target) {
     auto& me = cambc::self();
@@ -1128,7 +1149,7 @@ void fight_or_approach(int gi) {
         goals = goals & ~near;
         ACT("standoff");
         if (goals.is_set(S.me)) {
-            use_camp_abilities(live, *target, false);
+            cast_from_range(live, *target);
             return;
         }
         if (near.is_set(S.me)) {
@@ -1138,7 +1159,7 @@ void fight_or_approach(int gi) {
         } else {
             step_to_tiles(goals);
         }
-        if (goals.is_set(S.me)) use_camp_abilities(live, *target, false);
+        if (goals.is_set(S.me)) cast_from_range(live, *target);
         return;
     }
 
