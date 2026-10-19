@@ -1,0 +1,7 @@
+s_lethal7#lethal >= S.hp * 0.9f#lethal >= S.hp * 0.7f
+s_lethal11#lethal >= S.hp * 0.9f#lethal >= S.hp * 1.1f
+s_finish2#prey->hp <= ally_dps * 1.5f#prey->hp <= ally_dps * 2.5f
+s_ally7#dist(p, a.pos) <= 5) ally_hp#dist(p, a.pos) <= 7) ally_hp
+s_count0#ally_count >= enemy_count + (fragile ? 1 : 0)#ally_count + 1 >= enemy_count + (fragile ? 1 : 0)
+s_nodash#if (here >= 4 && me.can_cast()) {#if (here >= 4 && me.can_cast() && !S.avoid_danger) {
+s_preyhp#e.dps / e.hp > prey->dps / prey->hp#e.hp < prey->hp

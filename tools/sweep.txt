@@ -1,0 +1,12 @@
+s_win250#round - r < 400#round - r < 250
+s_gather3#present < std::min(4, alive_allies())#present < std::min(3, alive_allies())
+s_kite6#S.hp >= S.max_hp * 0.5f && !hit_by_enemy#S.hp >= S.max_hp * 0.6f && !hit_by_enemy
+s_heal45#S.hp < S.max_hp * 0.35f && incoming == 0#S.hp < S.max_hp * 0.45f && incoming == 0
+s_shop200#gold >= 300 ||#gold >= 200 ||
+s_lethal7#lethal >= S.hp * 0.9f#lethal >= S.hp * 0.7f
+s_lethal11#lethal >= S.hp * 0.9f#lethal >= S.hp * 1.1f
+s_finish2#prey->hp <= ally_dps * 1.5f#prey->hp <= ally_dps * 2.5f
+s_ally7#dist(p, a.pos) <= 5) ally_hp#dist(p, a.pos) <= 7) ally_hp
+s_count0#ally_count >= enemy_count + (fragile ? 1 : 0)#ally_count + 1 >= enemy_count + (fragile ? 1 : 0)
+s_nodash#if (here >= 4 && me.can_cast()) {#if (here >= 4 && me.can_cast() && !S.avoid_danger) {
+s_preyhp#e.dps / e.hp > prey->dps / prey->hp#e.hp < prey->hp
