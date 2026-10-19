@@ -11,7 +11,6 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
-#include <cstdio>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -64,6 +63,8 @@ struct Group {
     int state = 0;                // 0 alive, 1 reward available, 2 respawning.
     int respawn_round = 0;
     double bank_cost = 0;         // Rounds to walk the reward to the nearest altar and tribute it.
+    int home = 0;                 // Walking distance from our spawn to its first camp.
+    std::vector<int> spawn_index; // spawns as indices into a width-major linear buffer.
     std::unique_ptr<distance_field> field;
 
     // Health and strength still to beat; a group that is not up will come back at full health.
@@ -98,6 +99,7 @@ struct World {
     distance_field altar_field, spawn_field;
     std::vector<int> group_side;  // Per group: own-spawn distance minus enemy-spawn distance (positive = their half).
     int slot = 0, team_count = 1;
+    int width = 0;
     std::vector<std::int16_t> camp_owner;  // Group index per tile, -1 elsewhere.
     std::vector<cambc::champion_type> slot_types;
 };
@@ -154,6 +156,11 @@ void init_world() {
         for (auto s : W.groups[i].spawns) W.camp_owner[s.y * cm::width() + s.x] = static_cast<std::int16_t>(i);
     compute_field(W.altar_field, cm::altars());
     compute_field(W.spawn_field, W.ally_spawn);
+    W.width = cm::width();
+    for (auto& g : W.groups) {
+        g.home = W.spawn_field.get(g.spawns[0]);
+        for (auto s : g.spawns) g.spawn_index.push_back(s.y * W.width + s.x);
+    }
     for (auto& g : W.groups) {
         int d = UNREACH;
         for (auto sp : g.spawns) d = std::min<int>(d, W.altar_field.get(sp));
@@ -203,6 +210,7 @@ struct ChampSnap {
     float dps = 0;
     float burst = 0;   // Damage it can deal in one round with every spell ready.
     int reach = 1;     // Distance from which that burst lands after one step.
+    cambc::champion_type type{};
 };
 
 // One-round damage with all spells ready, and the spell range that delivers it.
@@ -266,6 +274,7 @@ float my_dps() {
     auto& me = cambc::self();
     float d = S.str, spell = 0;
     for (const auto& ab : me.abilities()) {
+        if (ab.is_damage() || ab.is_aoe_damage()) d += ab.damage_amount() / 8.0f;
         // Stuns that also deal damage (Tavi, Ren) report as crowd control, not damage.
         if (ab.is_damage() || ab.is_aoe_damage() || ab.is_cc()) {
             try {
@@ -275,7 +284,7 @@ float my_dps() {
         }
         if (ab.is_attack_reset()) d += S.str / 8.0f;
     }
-    cached_dps = d + spell;
+    cached_dps = d;
     cached_spell_dps = spell;
     cached_dps_round = S.round;
     return cached_dps;
@@ -346,6 +355,7 @@ void take_snapshot() {
         const vec2 pos{info.x, info.y};
         S.occ.set(pos);
         ChampSnap snap{k.ch, pos, info.health, info.max_health, info.strength, info.attack_range, 0};
+        snap.type = k.type;
         snap.dps = champion_dps(k.type, info.strength, info.focus);
         int spell_range = 0;
         snap.burst = champion_burst(k.type, info.strength, info.focus, spell_range);
@@ -870,7 +880,11 @@ double clear_time(const ClearStats& g, int n, float dps, float hp, int home_dist
 
 // Groups too strong to stand next to (monoliths): only casters work on them, from spell range, where the camps
 // cannot hit back. Camps never regenerate, so the damage keeps.
-bool standoff(const Group& g) { return g.hardest() >= 150.0f; }
+bool standoff(const Group& g) {
+    float full = 0;
+    for (float s : g.strength) full += s;
+    return g.hardest() >= 150.0f || full >= 300.0f;
+}
 
 // Gold buys stats early; late it only matters as a tiebreak.
 double gold_weight(int round) { return round < 1400 ? 0.1 : 0.03; }
@@ -952,16 +966,36 @@ int alive_cache = 1, alive_round = -10;
 
 // What this champion last saw, printed if it dies before its next turn: when it acted, its health and
 // activity, then visible enemies (type, distance, health) and the strength of awake camps in reach.
-char death_ctx[200] = "";
+// Only raw values are stored each turn; formatting costs fuel and happens on death.
+struct DeathCtx {
+    int round = 0, n = 0;
+    float hp = 0;
+    const char* act = "";
+    std::array<cambc::champion_type, 4> type{};
+    std::array<int, 4> d{};
+    std::array<float, 4> ehp{};
+} death_ctx;
 
 void record_death_ctx() {
-    int n = std::snprintf(death_ctx, sizeof death_ctx, "r%d hp=%.0f %s camp=%.0f en:", S.round, S.hp, last_activity,
-                          camp_incoming(S.me));
+    death_ctx.round = S.round;
+    death_ctx.hp = S.hp;
+    death_ctx.act = last_activity;
+    death_ctx.n = 0;
     for (const auto& e : S.enemies) {
-        if (n >= static_cast<int>(sizeof death_ctx) - 24) break;
-        n += std::snprintf(death_ctx + n, sizeof death_ctx - n, " %s@%d/%.0f", cambc::to_string(e.ch.champion_name()).c_str(),
-                           dist(S.me, e.pos), e.hp);
+        if (death_ctx.n == 4) break;
+        const int i = death_ctx.n++;
+        death_ctx.type[i] = e.type;
+        death_ctx.d[i] = dist(S.me, e.pos);
+        death_ctx.ehp[i] = e.hp;
     }
+}
+
+void print_death(int round) {
+    std::cout << "D" << round << " s" << W.slot << " r" << death_ctx.round << " hp=" << death_ctx.hp << " " << death_ctx.act
+              << " en:";
+    for (int i = 0; i < death_ctx.n; ++i)
+        std::cout << " " << cambc::to_string(death_ctx.type[i]) << "@" << death_ctx.d[i] << "/" << death_ctx.ehp[i];
+    std::cout << '\n';
 }
 
 int alive_allies() {
@@ -984,10 +1018,26 @@ distance_field from_me_field() {
     return f;
 }
 
-int travel_to(const distance_field& f, const Group& g) {
-    int t = UNREACH;
-    for (auto s : g.spawns) t = std::min<int>(t, f.get(s));
-    return t;
+// Walking distance from here to a group. Each group's field costs a full search, so at most one is built per
+// turn; until then the straight-line distance stands in, stretched for detours.
+int travel_to(const Group& g) {
+    if (g.field) return g.field->get(S.me);
+    int d = 1 << 20;
+    for (auto s : g.spawns) d = std::min(d, dist(S.me, s));
+    return d * 5 / 4;
+}
+
+// Build the missing field of the nearest group, if this turn has fuel to spare.
+void build_one_field() {
+    if (cambc::fuel_remaining() < 60000) return;
+    Group* best = nullptr;
+    int best_d = 1 << 20;
+    for (auto& g : W.groups) {
+        if (g.field) continue;
+        const int d = travel_to(g);
+        if (d < best_d) best_d = d, best = &g;
+    }
+    if (best) group_field(*best);
 }
 
 // Per-champion choice: rate of value per champion-round, assuming teammates already heading to a group help
@@ -996,15 +1046,14 @@ int pick_group(int current) {
     const int round = S.round;
     std::uint64_t gd_fuel = 0;
     const auto pf0 = cambc::fuel_remaining();
-    const auto f = from_me_field();
-    const auto pf1 = cambc::fuel_remaining();
+    const auto pf1 = pf0;
     const float dps = my_dps();
     const int team_alive = alive_allies();
     double best = 0, current_score = 0;
     int best_i = -1, best_n = 1, current_n = 1;
     for (int i = 0; i < static_cast<int>(W.groups.size()); ++i) {
         const auto& g = W.groups[i];
-        const int travel = travel_to(f, g);
+        const int travel = travel_to(g);
         if (travel == UNREACH) continue;
         const double value = g.gems + g.gold * gold_weight(round);
         if (value <= 0) continue;
@@ -1034,7 +1083,7 @@ int pick_group(int current) {
             score = value / (time * n + 5 + g.bank_cost * 0.5);
             score_n = n;
         } else {
-            const int home = W.spawn_field.get(g.spawns[0]);
+            const int home = g.home;
             const ClearStats cs = clear_stats(g);
             const std::array<int, 3> sizes{others + 1, std::min(std::max(others + 1, team_alive), others + 2),
                                            std::max(others + 1, team_alive)};
@@ -1237,7 +1286,7 @@ void Bot::play_turn() {
     }
     if (!me.is_alive() && was_alive && round > 1) {
         death_rounds.push_back(round);
-        std::cout << "D" << round << " s" << W.slot << " " << death_ctx << '\n';
+        print_death(round);
     }
     was_alive = me.is_alive();
     if (!was_alive) {
@@ -1484,6 +1533,7 @@ void Bot::play_turn() {
         fight_or_approach(current_target);
     }
     STAGE("end");
+    build_one_field();
     if (tracing) {
         std::cout << "P s" << W.slot;
         for (int i = 1; i < prof_n; ++i) std::cout << " " << prof_names[i - 1] << "=" << (prof_fuel[i - 1] - prof_fuel[i]);
