@@ -1,7 +1,0 @@
-﻿bash.exe : Submitted bot version 367. View submissions at https://2026a.battlecode.co.uk/game/submissions
-At line:1 char:406
-+ ... $b in 'fl3l','lc1l','hb4l') { & $gb tools/gate8s.sh $b *>> $o }; powe ...
-+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (Submitted bot v...ame/submissions:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 

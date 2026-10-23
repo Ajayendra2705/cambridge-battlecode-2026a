@@ -1,2 +1,0 @@
-k_danger10#score /= 1.0 + danger * 0.5;#score /= 1.0 + danger * 0.1;
-k_danger0#if (danger > 0) score /= 1.0 + danger * 0.5;#(void)danger;

@@ -1,5 +1,0 @@
-s_jfirst#it::monster_shard_of_focus, it::durability_shard_of_health, it::jungle_shard_of_health,#it::monster_shard_of_focus, it::jungle_shard_of_health, it::durability_shard_of_health,
-s_fjungle#it::monster_shard_of_focus, it::durability_shard_of_health, it::jungle_shard_of_health,#it::monster_shard_of_focus, it::durability_shard_of_health, it::jungle_shard_of_focus,
-s_fpower#it::monster_shard_of_focus, it::durability_shard_of_health, it::jungle_shard_of_health,#it::monster_shard_of_focus, it::jungle_shard_of_health, it::power_shard_of_focus,
-s_spower#it::monster_shard_of_strength, it::durability_shard_of_health, it::jungle_shard_of_health,#it::monster_shard_of_strength, it::jungle_shard_of_health, it::power_shard_of_strength,
-s_sjfirst#it::monster_shard_of_strength, it::durability_shard_of_health, it::jungle_shard_of_health,#it::monster_shard_of_strength, it::jungle_shard_of_health, it::durability_shard_of_health,

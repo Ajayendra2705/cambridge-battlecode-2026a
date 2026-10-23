@@ -1,13 +1,15 @@
+# Build output (cambc build writes .cambc/ inside each bot)
 .cambc/
-bots/*/.cambc/
-matches/
-replays/
-bots/*/build/
-bots/*/target/
-ladder_replays/
-probe_out/
+build/
+target/
+compile_commands.json
 __pycache__/
+
+# Bulky or regenerable data: replays, summaries, local run output (see data/README.md)
+data/*
+!data/README.md
 *.repl26a
-rk_replays/
-top_replays/
-us_replays/
+
+# Temporary experiment bots (verdict goes to docs/experiments.md, then delete)
+bots/exp/
+.claude/
