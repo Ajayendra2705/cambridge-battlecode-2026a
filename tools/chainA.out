@@ -1,0 +1,64 @@
+ea3 ef1ff0ae-9922-4295-b6d3-d4b02367292d c91e2d21-a5db-4f9e-b2fa-2c7d49a17f71 aa870e15-2956-42f6-955a-cb1e5e51ec29 b80dcf45-c933-4dfb-bc6c-fbe83357fd71 748118ed-7d65-4155-8ede-0b8625e7437f 1f9ffb65-66f0-4425-aa02-390e113eeee6 6bde3361-8ccf-494b-b062-bad3a2bbd7af 6e0c4366-122c-4878-9b57-ccad7e2e632f 918d4d29-345b-488c-bf3c-de4310eaf794
+
+wins 8 of 45 our gems 26160 their gems 43290
+deaths us 491 them 174
+Submitted bot version 250. View submissions at https://2026a.battlecode.co.uk/game/submissions
+ea3log 5341a86b-a666-4dbb-97a2-d6eb41391fae 49dec888-4516-479a-8ad2-0b903b5bd536 377b3826-9cb7-495f-9621-91495f9e2be2 6e2e53a1-8028-4bc1-a58f-9f77904e95be 8f821eac-c3f1-43e2-ac6e-384a53010c0c 91901947-700b-4c68-8659-0434690c9513 b1c7f962-7495-4ffb-ad84-b20779f9e553 e32d8068-c27d-4c11-b4df-215b71c811fb 6623cd8e-7c2e-423d-b136-f2e36eef1a19
+
+wins 6 of 45 our gems 20519 their gems 43829
+deaths us 556 them 207
+Submitted bot version 251. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: ea3log exposed for 327 s
+Submitted bot version 252. View submissions at https://2026a.battlecode.co.uk/game/submissions
+tf3 9c2b129b-53c9-4bbd-97fc-71441a2c1203 beff10a8-aa62-4052-944e-82021147b437 26261e27-95e3-4163-bc63-a69ef1313cd6 33ce8aa3-4c32-48e3-99d4-5252a06dabbf bd3c4a5c-8f9b-46d4-bc27-10f1141a54fd 246d6224-8b6e-4203-bf74-adf33839d1d7 d2d90046-390d-400b-bb44-5a027021ad29 a35289be-1e9a-4024-b36e-1df12be1eff1 24ae87a5-2047-448b-b606-46fd1d822654
+
+wins 9 of 45 our gems 26128 their gems 43986
+deaths us 562 them 188
+Submitted bot version 253. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: tf3 exposed for 381 s
+01islands    loss -> loss  margin  -732 ->  -228  deaths 13 ->  3  vs 0:ひななー
+01boss_battle loss -> loss  margin -1123 -> -1936  deaths  7 -> 12  vs 1:E=mc^2+AI^3
+01broken_curve WIN  -> loss  margin  +485 ->   -89  deaths  4 ->  3  vs 1:E=mc^2+AI^3
+00eight      loss -> loss  margin  -829 ->  -349  deaths 18 -> 12  vs 1:conqueror_of_openai
+01boss_battle loss -> loss  margin -1503 -> -1199  deaths  5 ->  7  vs 1:conqueror_of_openai
+01islands    WIN  -> loss  margin   +88 ->  -234  deaths  4 ->  4  vs 1:conqueror_of_openai
+01concentrated_wealth loss -> WIN   margin  -247 ->  +792  deaths 13 ->  3  vs 2:print dont int
+01big_world  loss -> WIN   margin  -205 ->  +162  deaths  4 ->  1  vs 2:subscribe to caterpillow
+01broken_curve loss -> WIN   margin  -251 ->   +14  deaths  2 ->  0  vs 2:subscribe to caterpillow
+00monolith   WIN  -> loss  margin  +200 ->  -569  deaths 22 -> 17  vs 3:PENTAKILL
+01corridors  WIN  -> WIN   margin   +72 ->  +438  deaths  5 ->  7  vs 3:PENTAKILL
+01elk_arena  loss -> WIN   margin  -936 ->  +720  deaths 39 -> 12  vs 3:PENTAKILL
+00interlock  WIN  -> loss  margin  +413 ->  -733  deaths 10 -> 25  vs 3:dromedaries
+01corridors  WIN  -> loss  margin  +164 ->  -158  deaths  0 ->  0  vs 3:dromedaries
+00collision  loss -> WIN   margin   -71 ->  +393  deaths  8 ->  5  vs 4:Sneaky Bush Campers
+00monolith   WIN  -> loss  margin   +10 ->  -155  deaths  5 ->  6  vs 4:Sneaky Bush Campers
+01fracture   loss -> loss  margin  -816 ->  -468  deaths  7 ->  4  vs 4:Sneaky Bush Campers
+tf3@p4       wins  9/45 (95% CI 11%-34%)  margin -17858  deaths 562
+ea3@p4       wins  8/45 (95% CI 9%-31%)  margin -17130  deaths 491
+paired: margin gain +728, better 21 worse 20 same 4, sign-test p=1.000
+VERDICT INCONCLUSIVE
+00ambush     WIN  -> loss  margin  +120 ->  -392  deaths  1 ->  1  vs 0:Intercontinental Fish
+00pilgrimage WIN  -> loss  margin   +66 ->  -950  deaths 14 -> 15  vs 0:Intercontinental Fish
+00pilgrimage loss -> loss  margin  -668 ->  -988  deaths 15 -> 19  vs 0:procless
+00quadrants  loss -> loss  margin   -85 ->  -387  deaths  5 ->  1  vs 0:procless
+00quadrants  loss -> loss  margin  -229 ->  -618  deaths  2 ->  3  vs 1:EMPEROR Tung
+01the_farm   loss -> loss  margin  -958 ->  -510  deaths  5 ->  5  vs 1:EMPEROR Tung
+00reverse_spiral WIN  -> WIN   margin  +444 ->  +136  deaths  8 -> 12  vs 1:Sponge(Albert and Bob)
+01the_farm   loss -> loss  margin  -639 ->  -105  deaths  5 ->  4  vs 1:Sponge(Albert and Bob)
+00rushbait_v2 WIN  -> loss  margin  +124 ->   -30  deaths  2 ->  2  vs 2:Pantheon
+01yellow_brick_road loss -> WIN   margin   -99 ->  +211  deaths  7 ->  2  vs 2:Pantheon
+00split      loss -> loss  margin  -311 ->  -656  deaths  7 ->  6  vs 2:policy wonk
+00stampede   loss -> loss  margin   -80 -> -1040  deaths 22 -> 33  vs 2:policy wonk
+00swirl      loss -> loss  margin  -240 ->  -913  deaths 24 -> 28  vs 2:policy wonk
+00gemfight   WIN  -> loss  margin  +759 ->  -520  deaths  4 ->  5  vs 3:Nanyang Technological University
+00swirl      loss -> WIN   margin  -947 ->  +947  deaths 21 ->  5  vs 3:Nanyang Technological University
+00gem_fields loss -> loss  margin   -78 ->  -645  deaths  1 -> 12  vs 3:Trzy Kwaterki
+00gemfight   WIN  -> loss  margin  +706 -> -1013  deaths  2 -> 19  vs 3:Trzy Kwaterki
+00split      WIN  -> loss  margin   +87 ->  -322  deaths  2 ->  4  vs 3:Trzy Kwaterki
+00great_wall loss -> loss  margin   -52 ->  -354  deaths  6 ->  7  vs 4:NEETCoders
+00lost_world loss -> WIN   margin  -868 ->  +273  deaths 17 ->  5  vs 4:NEETCoders
+tf3@p3@20    wins  9/45 (95% CI 11%-34%)  margin -18045  deaths 552
+ea3log@p3@20 wins  6/45 (95% CI 6%-26%)  margin -23310  deaths 556
+paired: margin gain -5265, better 17 worse 27 same 1, sign-test p=0.174
+VERDICT INCONCLUSIVE
+ea3log@p3@20 45 6 45

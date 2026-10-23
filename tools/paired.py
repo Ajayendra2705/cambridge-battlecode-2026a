@@ -71,6 +71,14 @@ for name, g in ((old_bot, a), (new_bot, b)):
     lo, hi = wilson(w, len(keys))
     print(f'{name:12} wins {w:2}/{len(keys)} (95% CI {lo:.0%}-{hi:.0%})  margin {sum(g[k]["margin"] for k in keys):+6}'
           f'  deaths {sum(g[k]["deaths"] for k in keys)}')
+if '--maps' in sys.argv:
+    per = {}
+    for k in keys:
+        s = per.setdefault(k[1], [0, 0, 0, 0])
+        d = b[k]['margin'] - a[k]['margin']
+        s[0] += d; s[1] += d > 0; s[2] += d < 0; s[3] += b[k]['win'] - a[k]['win']
+    for mp, s in sorted(per.items(), key=lambda x: x[1][0]):
+        print(f'  {mp:22} gain {s[0]:+6}  better {s[1]} worse {s[2]}  win change {s[3]:+d}')
 p = sign_p(pos, neg)
 da, db = sum(a[k]['deaths'] for k in keys), sum(b[k]['deaths'] for k in keys)
 print(f'paired: margin gain {gain:+d}, better {pos} worse {neg} same {len(keys) - pos - neg}, sign-test p={p:.3f}')

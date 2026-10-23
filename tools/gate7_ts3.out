@@ -1,0 +1,45 @@
+Submitted bot version 307. View submissions at https://2026a.battlecode.co.uk/game/submissions
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+ts3 247b9489-a997-4434-8a42-afefce445372 a71dfa24-732f-4d28-9db4-e1b15408e544 cf68a652-2e01-49a9-9fdc-c7f571507b10 65c69124-36a6-425b-a778-384dd975b6f0 9642d40e-e16e-463b-af08-476836043352 e2c5abe5-6157-401c-b2c8-b71f269e4b9f 826fcad8-9f60-4505-a6e9-cfa377d610c4 4c2acf27-f658-4423-b8b9-f1a0a5669a79 281da39d-1511-4d51-9d1d-038ce17d1795
+
+wins 20 of 45 our gems 32060 their gems 33979
+deaths us 382 them 409
+Submitted bot version 308. View submissions at https://2026a.battlecode.co.uk/game/submissions
+00contest    loss -> loss  margin -1000 ->  -400  deaths 41 -> 36  vs 0:dromedaries
+01islands    loss -> loss  margin  -232 ->  -553  deaths  2 ->  2  vs 1:smurphy
+00interlock  loss -> WIN   margin  -472 ->  +474  deaths 21 -> 10  vs 2:PENTAKILL
+01corridors  loss -> loss  margin  -746 ->  -302  deaths 11 -> 12  vs 3:Bamboo Teahouse
+00interlock  loss -> loss  margin  -379 ->  -973  deaths 19 -> 27  vs 3:Jupiter
+00monolith   WIN  -> loss  margin  +241 ->  -485  deaths  7 -> 14  vs 3:Jupiter
+01concentrated_wealth loss -> WIN   margin  -680 ->  +350  deaths 10 -> 11  vs 3:Jupiter
+01corridors  WIN  -> WIN   margin  +810 ->  +422  deaths  7 ->  9  vs 3:Jupiter
+00collision  loss -> WIN   margin  -153 ->  +473  deaths  7 ->  1  vs 4:SkuBap
+00packs      WIN  -> loss  margin  +614 ->  -448  deaths  3 -> 12  vs 4:SkuBap
+01shortcut   WIN  -> loss  margin  +292 ->  -101  deaths  7 ->  9  vs 4:SkuBap
+ts1@p7       wins 20/45 (95% CI 31%-59%)  margin  -2167  deaths 353
+ts3@p7       wins 20/45 (95% CI 31%-59%)  margin  -1919  deaths 382
+paired: margin gain +248, better 15 worse 17 same 13, sign-test p=0.860
+VERDICT INCONCLUSIVE
+00contest    loss -> loss  margin -1000 ->  -400  deaths 30 -> 36  vs 0:dromedaries
+01gold_rush  loss -> WIN   margin  -882 ->  +910  deaths 35 ->  2  vs 0:dromedaries
+00contest    WIN  -> loss  margin +1000 ->  -600  deaths  7 -> 29  vs 0:the uncancelables
+00lanes      loss -> WIN   margin   -38 ->  +119  deaths  2 ->  2  vs 0:the uncancelables
+00eight      loss -> WIN   margin  -299 ->  +906  deaths  9 ->  7  vs 1:Agentic Loop Builders
+00fragment   WIN  -> WIN   margin  +320 ->  +853  deaths  3 ->  2  vs 1:Agentic Loop Builders
+00fragment   loss -> WIN   margin -1010 ->  +812  deaths 23 ->  4  vs 2:PENTAKILL
+00interlock  loss -> WIN   margin  -288 ->  +474  deaths 22 -> 10  vs 2:PENTAKILL
+00fragment   loss -> WIN   margin  -922 ->  +776  deaths 15 ->  3  vs 2:ha²t
+01broken_curve loss -> loss  margin  -366 ->  -687  deaths  2 ->  2  vs 2:ha²t
+00interlock  loss -> loss  margin  -439 ->  -930  deaths  6 -> 19  vs 3:Bamboo Teahouse
+00monolith   loss -> WIN   margin  -369 ->  +190  deaths  8 ->  8  vs 3:Bamboo Teahouse
+01elk_arena  WIN  -> loss  margin  +864 ->  -840  deaths  7 -> 36  vs 3:Bamboo Teahouse
+00interlock  loss -> loss  margin  -501 ->  -973  deaths 15 -> 27  vs 3:Jupiter
+01concentrated_wealth loss -> WIN   margin  -686 ->  +350  deaths 21 -> 11  vs 3:Jupiter
+01corridors  WIN  -> WIN   margin   +25 ->  +422  deaths  7 ->  9  vs 3:Jupiter
+00ambush     loss -> WIN   margin  -265 ->  +278  deaths  4 ->  1  vs 4:SkuBap
+01fracture   WIN  -> loss  margin  +224 ->  -204  deaths  0 ->  2  vs 4:SkuBap
+01shortcut   WIN  -> loss  margin  +111 ->  -101  deaths  8 ->  9  vs 4:SkuBap
+k5@p7        wins 15/45 (95% CI 21%-48%)  margin  -8726  deaths 365
+ts3@p7       wins 20/45 (95% CI 31%-59%)  margin  -1919  deaths 382
+paired: margin gain +6807, better 27 worse 15 same 3, sign-test p=0.088
+VERDICT ACCEPT

@@ -1,0 +1,26 @@
+00:15 3/9
+00:17 9/9
+Submitted bot version 310. View submissions at https://2026a.battlecode.co.uk/game/submissions
+opponent               map                    ts1@p7           k5@p7            ge2@L7           wx6@L7          
+Agentic Loop Builders  00eight                W 1085-179       L 711-1010       L 860-1007       W 1080-275      
+Agentic Loop Builders  00expanse              L 725-1041       L 677-1041       L 706-1011       L 747-1004      
+Agentic Loop Builders  00fragment             W 1025-172       W 771-451        W 1005-188       W 980-211       
+Agentic Loop Builders  01boss_battle          W 0-0            W 0-0            W 0-0            W 0-0           
+Agentic Loop Builders  01broken_curve         W 1009-919       W 1051-736       W 1050-765       W 1009-919      
+dromedaries            00contest              L 0-1000         L 0-1000         L 400-1000       L 0-1000        
+dromedaries            00corners              L 778-1056       L 837-1006       L 940-1002       L 650-1002      
+dromedaries            00lanes                L 534-1006       L 351-1006       L 543-1000       L 917-1014      
+dromedaries            01gold_rush            W 1009-121       L 121-1003       L 60-1086        W 1009-121      
+dromedaries            01hooks                L 88-1012        L 0-1012         L 0-1012         L 0-1012        
+ha²t                   00expanse              L 744-1038       L 537-1016       L 772-1038       L 715-1019      
+smurphy                00eight                W 1001-97        W 1003-124       L 887-1003       W 1014-68       
+smurphy                00expanse              L 749-1029       L 486-1006       L 889-1030       L 649-1026      
+smurphy                00lanes                L 811-1015       L 987-1017       L 772-1002       L 518-1005      
+smurphy                01boss_battle          W 0-0            W 0-0            W 0-0            W 0-0           
+smurphy                01islands              L 783-1015       L 725-1057       L 919-1001       W 1002-972      
+the uncancelables      00contest              L 200-1000       W 1000-0         W 1000-0         L 400-1000      
+the uncancelables      00eight                W 1001-369       W 1074-428       W 1049-852       W 1001-666      
+the uncancelables      00lanes                W 1015-757       L 969-1007       W 1003-727       W 1025-752      
+the uncancelables      01gold_rush            W 1053-143       W 1070-132       W 1130-121       W 1047-110      
+the uncancelables      01islands              L 605-1002       L 800-1028       W 1012-592       L 965-1002      
+wins on these games: {'ts1@p7': 10, 'wx6@L7': 11, 'k5@p7': 8, 'ge2@L7': 9}

@@ -1,0 +1,25 @@
+Submitted bot version 278. View submissions at https://2026a.battlecode.co.uk/game/submissions
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+vb1 35775650-3f75-4bfb-beac-db979bf13278 cb9dd23a-ec17-40cc-9662-67ca79414a4a ee05b28b-5c52-4a0a-acdf-0878a9d350ab a805292a-62ad-4235-8477-8b999531649a 703ca131-f91d-4191-8942-9d1f321531f0 db9bbd2e-7725-4c0a-a780-933571a34fae a08f6805-02a3-4bc4-b93e-22a1483b4f77 2633e72f-0f22-43b9-ace6-64e7713ea67a
+
+wins 17 of 40 our gems 27195 their gems 34921
+deaths us 365 them 227
+Submitted bot version 279. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: vb1 exposed for 421 s
+00eight      loss -> WIN   margin  -532 ->  +561  deaths 17 ->  7  vs 0:geese geese go
+00lanes      WIN  -> loss  margin   +56 ->  -176  deaths  2 ->  6  vs 0:geese geese go
+00lanes      loss -> WIN   margin   -30 ->   +80  deaths  0 ->  0  vs 1:Quant Merch Traders
+01boss_battle loss -> loss  margin -1179 ->  -806  deaths  9 ->  4  vs 1:Quant Merch Traders
+01islands    WIN  -> WIN   margin  +657 ->  +280  deaths  1 ->  2  vs 1:Quant Merch Traders
+01boss_battle loss -> loss  margin -1651 -> -1291  deaths  8 ->  6  vs 1:ha²t
+01concentrated_wealth WIN  -> loss  margin  +462 ->  -473  deaths  6 -> 14  vs 2:Bamboo Teahouse
+00collision  loss -> loss  margin  -673 ->  -126  deaths  4 ->  3  vs 3:smurphy
+00monolith   WIN  -> loss  margin  +150 ->  -394  deaths  5 ->  4  vs 3:smurphy
+01elk_arena  loss -> WIN   margin  -864 ->  +936  deaths  7 -> 16  vs 3:smurphy
+00collision  loss -> WIN   margin  -181 ->  +677  deaths 10 ->  4  vs 3:剑桥夜爬者
+00monolith   loss -> loss  margin  -318 ->  -744  deaths  8 -> 15  vs 3:剑桥夜爬者
+01fracture   loss -> loss  margin  -460 ->  -107  deaths  7 ->  7  vs 3:剑桥夜爬者
+ea3@p5       wins 16/40 (95% CI 26%-55%)  margin -11208  deaths 378
+vb1@p5       wins 17/40 (95% CI 29%-58%)  margin  -7726  deaths 365
+paired: margin gain +3482, better 20 worse 16 same 4, sign-test p=0.618
+VERDICT INCONCLUSIVE

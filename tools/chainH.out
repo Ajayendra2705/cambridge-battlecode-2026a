@@ -1,0 +1,26 @@
+00corners    loss -> loss  margin  -601 ->  -285  deaths  8 ->  7  vs 0:HouseOfCoders
+00eight      loss -> WIN   margin  -532 ->  +564  deaths 17 -> 16  vs 0:geese geese go
+00lanes      WIN  -> loss  margin   +56 ->   -45  deaths  2 ->  4  vs 0:geese geese go
+01islands    WIN  -> loss  margin  +337 ->  -116  deaths  3 ->  7  vs 0:geese geese go
+00expanse    loss -> WIN   margin   -82 ->  +162  deaths  0 ->  0  vs 1:Quant Merch Traders
+00lanes      loss -> WIN   margin   -30 ->  +141  deaths  0 ->  1  vs 1:Quant Merch Traders
+01boss_battle loss -> WIN   margin -1179 ->  +136  deaths  9 ->  6  vs 1:Quant Merch Traders
+01islands    WIN  -> loss  margin  +657 ->  -230  deaths  1 ->  2  vs 1:Quant Merch Traders
+01concentrated_wealth WIN  -> loss  margin  +462 ->  -590  deaths  6 -> 14  vs 2:Bamboo Teahouse
+00collision  loss -> loss  margin  -673 ->   -71  deaths  4 ->  4  vs 3:smurphy
+00monolith   WIN  -> loss  margin  +150 ->  -273  deaths  5 ->  4  vs 3:smurphy
+01corridors  WIN  -> loss  margin  +138 ->   -90  deaths  0 ->  1  vs 3:smurphy
+01elk_arena  loss -> WIN   margin  -864 -> +1032  deaths  7 ->  5  vs 3:smurphy
+00monolith   loss -> loss  margin  -318 ->  -626  deaths  8 -> 12  vs 3:剑桥夜爬者
+ea3@p5       wins 16/40 (95% CI 26%-55%)  margin -11208  deaths 378
+mb1@p5       wins 15/40 (95% CI 24%-53%)  margin  -8430  deaths 388
+paired: margin gain +2778, better 15 worse 11 same 14, sign-test p=0.557
+VERDICT INCONCLUSIVE
+Submitted bot version 275. View submissions at https://2026a.battlecode.co.uk/game/submissions
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+ea3log 29e69f98-4fe0-4dae-a546-298f220bd0cf aec828cc-f2f2-4893-894e-d3627d2d252e 977f7762-0efa-41d1-b044-e5c9b48e4e87 7ffb4b18-3d47-46f0-8ce9-a94cc5464fc2 162a1506-8eb4-442d-9024-a501e5f03df8 59aa9ad7-c243-4e5f-ae9c-444559a1d53a 1b9c5e4d-e765-4522-9f71-40af53e7b562 0c15a481-4432-4a2a-8ab0-bc641cd7f729
+
+wins 13 of 40 our gems 24764 their gems 36094
+deaths us 480 them 260
+Submitted bot version 276. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: ea3log exposed for 222 s

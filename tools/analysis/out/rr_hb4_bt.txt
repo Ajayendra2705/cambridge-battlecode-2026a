@@ -1,0 +1,10 @@
+﻿240 games in C:\Users\ajiit\Desktop\Future\Projects\Cambridge Battlecode\replays\rr-141802
+      hb4   bt1   bt8   total
+hb4   -   40/80 40/80   80/160 (50%)
+bt1 40/80   -   41/80   81/160 (51%)
+bt8 40/80 39/80   -     79/160 (49%)
+
+consecutive (new vs previous):
+  bt1 vs hb4: 40/80 wins, gem margin -68/game
+  bt8 vs bt1: 39/80 wins, gem margin +1/game
+dir C:\Users\ajiit\Desktop\Future\Projects\Cambridge Battlecode\replays\rr-141802

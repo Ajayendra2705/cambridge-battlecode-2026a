@@ -1,0 +1,55 @@
+﻿
+== cgold
+games 100
+Heart of Ruin gold us  1720 them  1819 | gold@r500 us   472 them   531 | spent us  1636 them  1732 | gems us  189 them  213 | deaths 2.3/2.0
+Vendetta      gold us  1576 them  2487 | gold@r500 us   450 them   706 | spent us  1495 them  2239 | gems us  212 them  335 | deaths 2.3/1.0
+Vesper Vale   gold us  2018 them  2627 | gold@r500 us   581 them   678 | spent us  1952 them  2423 | gems us  214 them  261 | deaths 1.8/1.4
+Ryth          gold us  1384 them  1540 | gold@r500 us   364 them   479 | spent us  1318 them  1465 | gems us  183 them  207 | deaths 2.9/1.5
+Marcella      gold us  1612 them  2098 | gold@r500 us   444 them   613 | spent us  1506 them  1937 | gems us  167 them  218 | deaths 2.4/1.5
+== cdmg
+hb4l_p8 100 Heart 7661(1.9/2.3) vs 10262 | Marce 7400(1.2/2.4) vs 7234 | Ryth 3416(0.6/2.9) vs 6224 | Vende 3569(0.8/2.3) vs 7814 | Vespe 6103(1.2/1.8) vs 9984
+== fight
+games 100
+kills                us        5 them        9
+deaths               us       10 them        8
+assists              us        9 them       18
+championDamageDone   us    25139 them    36920
+championDamageTaken  us    36920 them    25139
+healingDone          us        0 them     2976
+shieldingDone        us    29243 them    15226
+monsterDamageDone    us   129274 them   137273
+earnedGold           us     7520 them     8316
+spentGold            us     7164 them     7777
+collectedGems        us      875 them      999
+submittedGems        us      644 them      850
+fights/game 11.2 outcomes {'loss': 645, 'win': 451, 'even': 29} first to die in fight {'U': 648, 'T': 477}
+by game result {('loss', 'loss'): 550, ('loss', 'win'): 186, ('win', 'loss'): 95, ('win', 'win'): 265, ('loss', 'even'): 18, ('win', 'even'): 11}
+their picks [('Vesper Vale', 76), ('Ryth', 61), ('Heart of Ruin', 58), ('Marcella', 57), ('Vendetta', 48), ('Tavi', 32), ('Stellar', 25), ('Varg', 24)]
+U K/D by champ {'Heart of Ruin': '1.9/2.3', 'Vendetta': '0.8/2.3', 'Vesper Vale': '1.2/1.8', 'Ryth': '0.6/2.9', 'Marcella': '1.2/2.4'}
+T K/D by champ {'Vesper Vale': '2.3/1.4', 'Ryth': '1.4/1.5', 'Heart of Ruin': '2.3/2.0', 'Marcella': '1.6/1.5', 'Vendetta': '2.2/1.0', 'Tavi': '2.7/1.8', 'Stellar': '1.9/2.1'}
+== tline2
+blowout  n 36 | to r600: collected us 208 them 427 | clears 18.7/33.2 | gemLoss events 7.6/2.9 amount 42/12 | submissions 2.4/9.9
+win      n 41 | to r600: collected us 341 them 279 | clears 24.6/21.9 | gemLoss events 2.2/3.9 amount 20/25 | submissions 5.6/8.3
+close    n 23 | to r600: collected us 292 them 363 | clears 24.4/32.5 | gemLoss events 3.0/2.0 amount 38/4 | submissions 5.4/14.1
+blowout maps [('01elk_arena', 5), ('01boss_battle', 4), ('00eight', 3), ('00fragment', 3), ('00contest', 2), ('00lanes', 2), ('00elkring', 2), ('01concentrated_wealth', 2), ('00collision', 2), ('00quadrants', 2), ('00cor
+== early2
+win games 41 early deaths/game 1.27 acts [('flee', 23), ('retreat', 19), ('pvp', 6), ('home_heal', 1), ('shop_trip', 1)] enemies<=5 mean 1.12
+   distance from our spawn (x5 tiles) [(0, 9), (1, 3), (2, 9), (3, 3), (6, 1)]
+loss games 56 early deaths/game 2.84 acts [('flee', 102), ('pvp', 20), ('retreat', 19), ('to_capture', 6), ('home_heal', 5)] enemies<=5 mean 1.99
+   distance from our spawn (x5 tiles) [(0, 26), (1, 52), (2, 20), (3, 10), (4, 4), (5, 3), (8, 3), (9, 2)]
+== dpre2
+Ryth end enemies5 2.3 end allies5 1.9 max enemies5 2.6 last-seen hp 0.1 end act [('flee', 159), ('pvp', 21), ('to_capture', 3)]
+   first flee at line # [(1, 28), (-1, 21), (3, 18), (7, 16), (5, 15), (4, 12)]
+   sample ['approach pvp pvp pvp pvp pvp pvp resp_wait', 'help pvp pvp pvp pvp pvp pvp pvp', 'bank bank bank kite bank bank bank to_capture']
+Vesper end enemies5 2.0 end allies5 1.9 max enemies5 2.4 last-seen hp 0.18 end act [('flee', 99), ('pvp', 17), ('to_capture', 15)]
+   first flee at line # [(-1, 37), (1, 14), (2, 12), (9, 11), (3, 10), (6, 8)]
+   sample ['to_capture to_capture pvp pvp pvp pvp pvp pvp', 'to_capture to_capture to_capture', 'to_capture flee']
+Vendetta end enemies5 2.0 end allies5 2.1 max enemies5 2.4 last-seen hp 0.12 end act [('flee', 117), ('pvp', 27), ('to_capture', 8)]
+   first flee at line # [(-1, 37), (5, 18), (0, 16), (1, 15), (6, 13), (4, 12)]
+   sample ['help to_capture approach to_capture to_capture to_capture to_capture to_capture', 'bank bank bank bank pvp kite flee flee', 'resp_wait resp_wait pvp pvp pvp pvp pvp pvp']
+Marcella end enemies5 2.2 end allies5 2.0 max enemies5 2.6 last-seen hp 0.1 end act [('flee', 124), ('pvp', 14), ('kite', 4)]
+   first flee at line # [(-1, 17), (0, 14), (5, 12), (7, 12), (1, 11), (11, 11)]
+   sample ['bank bank bank resp_wait resp_wait resp_wait flee flee', 'bank flee bank bank pvp to_capture flee pvp', 'recall flee']
+HoR end enemies5 2.1 end allies5 1.8 max enemies5 2.5 last-seen hp 0.13 end act [('flee', 153), ('pvp', 18), ('to_capture', 7)]
+   first flee at line # [(-1, 29), (1, 21), (3, 17), (4, 15), (9, 13), (0, 13)]
+   sample ['fight kite to_capture to_capture to_capture to_capture kite to_capture', 'to_capture flee flee flee flee flee', 'fight retreat kite retreat flee flee flee flee']

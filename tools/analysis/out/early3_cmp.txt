@@ -1,0 +1,15 @@
+== hb4l_p8_20
+win games 29 early deaths/game 1.93 acts [('flee', 28), ('retreat', 18), ('pvp', 6), ('approach', 2), ('kite', 1)] enemies<=5 mean 1.11
+   distance from our spawn (x5 tiles) [(0, 2), (1, 5), (2, 6), (3, 7), (4, 6), (5, 3)]
+loss games 50 early deaths/game 3.36 acts [('flee', 115), ('retreat', 20), ('pvp', 10), ('approach', 6), ('to_capture', 6)] enemies<=5 mean 1.83
+   distance from our spawn (x5 tiles) [(0, 15), (1, 22), (2, 20), (3, 27), (4, 21), (5, 4), (7, 1), (8, 14)]
+== fp1l_p8_20
+win games 33 early deaths/game 2.12 acts [('flee', 30), ('retreat', 24), ('approach', 6), ('pvp', 5), ('fight', 4)] enemies<=5 mean 0.9
+   distance from our spawn (x5 tiles) [(0, 2), (1, 4), (2, 3), (3, 6), (4, 7), (5, 4), (8, 2), (9, 1)]
+loss games 60 early deaths/game 3.15 acts [('flee', 125), ('retreat', 25), ('pvp', 15), ('to_capture', 9), ('approach', 4)] enemies<=5 mean 1.94
+   distance from our spawn (x5 tiles) [(0, 10), (1, 32), (2, 34), (3, 37), (4, 23), (5, 3), (6, 1), (7, 3), (8, 9)]
+== th2l_p8_20
+win games 31 early deaths/game 1.9 acts [('flee', 28), ('retreat', 18), ('pvp', 9), ('approach', 2), ('kite', 1)] enemies<=5 mean 1.1
+   distance from our spawn (x5 tiles) [(0, 2), (1, 8), (2, 5), (3, 6), (4, 6), (5, 1), (8, 1), (9, 1)]
+loss games 60 early deaths/game 3.48 acts [('flee', 136), ('retreat', 28), ('pvp', 21), ('to_capture', 6), ('home_heal', 5)] enemies<=5 mean 1.9
+   distance from our spawn (x5 tiles) [(0, 12), (1, 41), (2, 28), (3, 33), (4, 31), (5, 5), (6, 1), (7, 3), (8, 11), (9, 5)]

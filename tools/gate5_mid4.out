@@ -1,0 +1,33 @@
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+mid4 3b40556a-4b5c-4575-89fd-7a26dfb55468 7bc7a2cd-ddb5-4ce1-b7b3-857120953994 2339d227-54ea-4189-8ac6-e5ce55406295 62aa84c5-55e3-4240-825f-5c6b6e61b952 257f8316-9940-48a9-b16d-e2b00b795a54 f14626f5-83f9-456b-8749-b4c2382f6e97 16ace12f-2572-4ad3-abb1-08d6c6561d4a 3654d6d2-02b2-4ab5-8c48-367938d87902
+
+wins 13 of 40 our gems 25043 their gems 35254
+deaths us 445 them 256
+00lanes      WIN  -> loss  margin   +77 ->  -415  deaths  6 -> 14  vs 0:HouseOfCoders
+01gold_rush  loss -> WIN   margin  -980 ->  +844  deaths 18 ->  4  vs 0:HouseOfCoders
+00eight      loss -> loss  margin  -532 ->  -925  deaths 17 -> 31  vs 0:geese geese go
+00lanes      WIN  -> loss  margin   +56 ->  -324  deaths  2 ->  4  vs 0:geese geese go
+01gold_rush  loss -> WIN   margin  -633 ->  +679  deaths 24 ->  1  vs 0:geese geese go
+00eight      loss -> WIN   margin  -434 ->  +873  deaths 10 ->  1  vs 1:Quant Merch Traders
+00expanse    loss -> WIN   margin   -82 ->   +97  deaths  0 ->  0  vs 1:Quant Merch Traders
+00lanes      loss -> WIN   margin   -30 ->   +96  deaths  0 ->  2  vs 1:Quant Merch Traders
+01islands    WIN  -> WIN   margin  +657 ->  +253  deaths  1 ->  4  vs 1:Quant Merch Traders
+00eight      loss -> WIN   margin  -708 ->  +710  deaths  9 ->  5  vs 1:ha²t
+00fragment   WIN  -> loss  margin  +817 ->  -922  deaths  1 -> 15  vs 1:ha²t
+01boss_battle loss -> loss  margin -1651 -> -1292  deaths  8 ->  4  vs 1:ha²t
+01broken_curve WIN  -> loss  margin   +65 ->  -366  deaths  4 ->  2  vs 1:ha²t
+00interlock  WIN  -> loss  margin   +55 ->  -423  deaths 12 -> 11  vs 2:Bamboo Teahouse
+01big_world  WIN  -> loss  margin  +217 ->   -59  deaths  0 ->  0  vs 2:Bamboo Teahouse
+00elkring    loss -> loss  margin  -847 ->  -462  deaths 20 -> 15  vs 2:Valenki
+00fragment   loss -> WIN   margin  -908 ->  +890  deaths 20 ->  1  vs 2:Valenki
+01broken_curve WIN  -> loss  margin  +181 ->   -95  deaths  2 ->  1  vs 2:Valenki
+00interlock  WIN  -> loss  margin  +331 ->  -102  deaths  8 -> 15  vs 3:smurphy
+00monolith   WIN  -> loss  margin  +150 ->  -267  deaths  5 ->  6  vs 3:smurphy
+01corridors  WIN  -> loss  margin  +138 ->  -358  deaths  0 ->  5  vs 3:smurphy
+00ambush     loss -> WIN   margin  -326 ->   +97  deaths  8 ->  7  vs 3:剑桥夜爬者
+00collision  loss -> loss  margin  -181 ->  -611  deaths 10 -> 19  vs 3:剑桥夜爬者
+01elk_arena  WIN  -> loss  margin  +840 ->  -468  deaths 21 -> 52  vs 3:剑桥夜爬者
+ea3@p5       wins 16/40 (95% CI 26%-55%)  margin -11208  deaths 378
+mid4@p5      wins 13/40 (95% CI 20%-48%)  margin -10211  deaths 445
+paired: margin gain +997, better 16 worse 21 same 3, sign-test p=0.511
+VERDICT INCONCLUSIVE

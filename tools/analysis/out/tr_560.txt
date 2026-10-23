@@ -1,0 +1,6 @@
+﻿candidate      games wins  kills deaths  flee  margin   gold/g caps/g coll/g lost/g carry/g
+tr1              560  400   5593   3074  1968 +117623    8696  53.5   1079     57    171
+tr2              560  409   5547   3041  1911 +119680    8721  53.4   1083     58    173
+  tr1: rnd 1510 Heart of Ruin=20114 Marcella=30038 Ryth=30182 Vendetta=33259 Vesper Vale=41258
+  tr2: rnd 1502 Heart of Ruin=20046 Marcella=29937 Ryth=30494 Vendetta=33107 Vesper Vale=41299
+dir C:\Users\ajiit\Desktop\Future\Projects\Cambridge Battlecode\replays\multi-080624

@@ -1,0 +1,157 @@
+/loop
+Cambridge Battlecode 2026a. Overnight autonomous bot-improvement loop.
+
+CONTEXT
+- Read memory first: MEMORY.md and cambc-status.md (the "CURRENT HANDOFF" section and the newest
+  timestamped lines). Then read docs/MECHANICS.md (exact engine rules, tables, map table
+  docs/probe/map_table.md, verified experiments). docs/GameRules.md has outdated numbers.
+- Best / ladder bot: bots/hb4 (lineage ... ts1 -> gb2 -> hb4). Its logging copy is bots/hb4l.
+- Platform baseline: hb4l@p8@20 won 38/100 on the current panel (hb4l@p8 at offset 0 is a
+  second one). It may be lucky: th2 33, fp1 33, bt8l 34 and ga1 26 all scored below it.
+- Tools:
+  - tools/multi.py: local batches. Use --jobs 6 (more gets jobs killed for low memory).
+  - tools/gate8.sh: the current 10-team panel (ladder ranks 60-69). GATE_OFFSET=20 gives the same
+    games as the baseline. It submits the bot; resubmit hb4 afterwards.
+  - tools/rcmp.py: robust game-by-game platform compare with retries:
+    python -I tools/rcmp.py hb4l@p8@20 NEWl@p8@20
+  - tools/mkvar.py: clone a variant with exact-once substitutions:
+    python -I tools/mkvar.py BASE NAME bot.cpp "OLD" "NEW"
+  - tools/mklog.py: add the combat-log V lines. Copy the bot first, then run:
+    python -I tools/mklog.py bots/X/src/bot.cpp
+  - tools/allmaps.txt: all 40 maps, for multi.py --maps.
+  - powershell -File tools/bc.ps1 build NAME: compile check.
+  - tools/panel_result.py, tools/group.py: results per group.
+  - tools/analysis/: read its README; run from the project root. gdl.py downloads a run.
+    cgold, cdmg, fight, tline2, early2, dact, ehp compare us vs them. vana and dpre2 read the
+    V lines.
+- Platform gate chain. Run it from PowerShell in the background with the sandbox disabled:
+  $env:GATE_OFFSET='20'; & "C:\Program Files\Git\bin\bash.exe" tools/gate8.sh NEWl *> tools/gate_NEW.out;
+  powershell -File tools/bc.ps1 submit hb4 *>> tools/gate_NEW.out; Remove-Item Env:GATE_OFFSET;
+  python -I tools/rcmp.py "hb4l@p8@20" "NEWl@p8@20" *>> tools/gate_NEW.out
+  PowerShell's plain `bash` is WSL, which has no Python. Always use the full Git Bash path.
+
+FIRST STEPS
+1. Check that the ladder bot is hb4 (submissions list or tools/gate.log tail). If it is not,
+   resubmit hb4.
+2. (Done: gx1 379, gx2 385, gx3 380, fp1 384 vs hb4 384 locally = noise.)
+3. Rerun hb4l at GATE_OFFSET=20 as a fresh baseline, logged as "hb4l2@p8@20" (copy bots/hb4l to
+   bots/hb4l2). Compare it with rcmp.py against hb4l@p8@20 to measure the real noise. Use the
+   fresher baseline (or both) for every later comparison.
+
+The user is asleep:
+- Do NOT stop to ask questions or wait for approval.
+- Do NOT send progress messages.
+- Just work, and record every result, decision and lesson in cambc-status.md.
+
+DEADLINE
+Sprint 2 locks Sat 24 Oct 23:59 BST (Sun 25 Oct 04:29 IST). The ladder bot at that moment is the
+tournament bot.
+- Never leave a test bot on the ladder.
+- After every platform test, resubmit the best proven bot.
+- From Sat 24 Oct 20:00 BST (Sun 00:30 IST), submit nothing except the best proven bot.
+
+GOAL
+Beat the 10 teams above us. Each tick, advance the loop by one step, and keep the CPU cores and the
+platform quota busy.
+
+THE LOOP
+1. PLAY
+   - Refresh the ladder (cambc ladder --json --limit 100) and look at the 10 teams ranked directly
+     above us.
+   - Keep panel 8 (gate8.sh) so results stay comparable. Make gate9.sh only if the panel is clearly
+     stale, and then rerun the baseline on it.
+   - Play the best bot's logging copy (logging must be the only difference) and download every
+     replay (gdl.py).
+2. ANALYSE EVERY GAME, wins and losses:
+   - Gems collected and tributed, clears, gold and deaths, all by round.
+   - Every death: position, activity, health, allies vs enemies, killer.
+   - What opponents do better.
+   - Rank the mistakes by how many games and gems they cost.
+3. FIX ONE MISTAKE AT A TIME, biggest first:
+   - Find the exact cause. If a rule is unclear, probe it (as bots/mt1 and bots/mt2 do) and add
+     the result to MECHANICS.md.
+   - Build the fix on top of the best bot. Diff it against the base, debug-print to prove the new
+     logic fires, then remove the debug. Build-check it.
+   - Local check: the 560-game run (pool above, all maps, --jobs 6). Include the base, or compare
+     with hb4 at 384/560. It must not be worse. Differences under about 10 wins are noise.
+   - Platform check: the full panel at GATE_OFFSET=20, compared game by game with rcmp.py.
+     - Noise is about ±5 wins per 100 games.
+     - Lost-games-only replays give false positives (selection bias).
+     - A fix needs a clear gain, ideally confirmed by a second panel at another offset.
+   - Keep a fix only if it clearly helps on the platform. Otherwise log why and try the next idea.
+4. REPEAT
+
+HOW TO JUDGE A FIX (opponents update their bots, so win counts drift over time)
+- Analysis comes first. The goal is to find and remove our mistakes, not to chase win counts.
+- Before building a fix, name its target metric: the exact number the mistake shows up in.
+  Examples:
+  - elk_arena: deaths before round 300; deaths within 10 tiles of our spawn.
+  - Flee fix: deaths while fleeing; damage taken per flee round.
+  - Banking: gems lost per death; tributes by round 600.
+- Measure that metric in both the base and the variant replays (logging copies, V/D/A lines,
+  analysis scripts) and write both numbers to cambc-status.md.
+- Read the result like this:
+  - The metric did not move: the fix failed, whatever the wins say. Find out why from the replays.
+  - The metric moved, but wins are flat: the fix works and another mistake is now the bottleneck.
+    Keep it as a stacking candidate if it is not worse.
+  - The metric moved and wins are up: keep it.
+- Same-time comparison: run base and variant back to back as base -> variant -> base on the same
+  games (same GATE_OFFSET).
+  - If the two base runs disagree by much more than the noise, the opponents changed mid-test.
+    Discard that comparison and redo it.
+  - Never compare a variant with a baseline played many hours earlier.
+- Old results to recheck with this method: th2, fp1 and bt8l were judged only by win counts
+  against an old baseline. Their logged replays (rk_replays/) can still be checked against their
+  target metrics.
+
+ALREADY TRIED (do not retry without a new angle)
+- Banking family bt1/bt8 (hazard x3, bank near the altar): best locally (405-410), but on the
+  platform pooled 74 vs 79 against hb4.
+- Tribute hunting: tr1/tr2 equal locally; th2 lost 33 vs 38 on the platform.
+- Altar locks lk1/lk2: worse locally (carry limit 1).
+- Fight entry and chasing: looser entry pa1, tighter entry bpt*, chase limit pc1 (equal on the
+  platform).
+- Draft swaps for Ryth (Willow, Tavi, Varg): all worse.
+- Thresholds: shop and heal trips (sh*, hh*), respawn-wait penalty (bw*).
+- boss_battle guard assault ag1/ag2: the monoliths kill us.
+- More gathering before big camps, ga1: local 314 vs 384, platform 26 vs 38. Pending: gx1 / gx2 /
+  gx3 wait less (gather threshold 300 / wait cap 10 / needs 3 allies).
+- Flee path fp1 (walk home via the least-exposed tile): platform 33 vs 38.
+
+KEY FINDINGS
+- Losses are mostly PvP: about 1190 vs 780 deaths per 100 games, mostly while fleeing.
+- Our champion damage is about 1/3 of theirs at equal gold.
+- elk_arena (0/5):
+  - All 72 map gems are in the centre group.
+  - The enemy 5-stack arrives around rounds 17-30, and we lose 2-3 champions by round 33.
+  - Most deaths happen within 10 tiles of our own spawn while fleeing.
+- boss_battle (0/4): an altar guard blocks tributes.
+- Time split: to_capture 25%, fight 18%, dead 10%, resp_wait 10%.
+
+OPEN ITEMS
+- Bad maps: the_farm, starvation, road_of_riches, lost_world, gemfight, starfish, hooks,
+  elk_arena, boss_battle.
+- Early deaths on our own half.
+- Fight output (damage per gold).
+- Camp denial: standing on an enemy group's spawn tile blocks its respawn.
+- MECHANICS section 18: how damage reductions stack, set_priority, turn interleaving.
+
+RULES
+- Think deeply, generate many ideas, verify every step, make no mistakes.
+- Never trust local results alone for fight/PvP changes.
+- Never run two platform gates at once (both submit bots). The quota is 50 match groups per hour,
+  and a gate uses 20.
+- Delete replays/multi-* after local runs.
+- Use PowerShell for long background chains.
+- cambc.exe needs the sandbox disabled.
+- cp -r of a bot copies its .cambc build cache, which breaks the build: delete it (mkvar.py is
+  fine).
+- If a background job is killed: resubmit hb4 at once if a gate was running, log it, and restart
+  the job with fewer jobs (the user allows restarts).
+
+CONTEXT HYGIENE
+- Before each wake-up, update cambc-status.md: the best bot, what is running (task ids, output
+  files), the current hypothesis and the next step. After a compaction, read it again.
+- Keep tool outputs short (head/tail/grep).
+- Write analysis to tools/analysis/out/.
+- Keep only the conclusion of each decided fix.

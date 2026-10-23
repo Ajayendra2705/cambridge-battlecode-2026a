@@ -1,0 +1,8 @@
+b593565f-9ebc-49e2-807b-e29d72fbd365:00corners,01hooks,00contest,01gold_rush,00lanes:a,a,a,a,a
+6bbc4925-89d1-4523-beac-b651d41bf945:00contest,01gold_rush,00lanes,00eight,01islands:a,a,a,a,a
+962f04b9-033a-42f9-bc38-0505066c19ef:00lanes,01islands,01boss_battle,00eight,00expanse:a,a,a,a,a
+f300f36c-116a-4c9f-9d5d-4a13fe2e5332:01boss_battle,01broken_curve,00eight,00expanse,00fragment:a,a,a,a,a
+62270180-b974-4f66-9bca-3ff6a25940c3:00fragment,00expanse,01broken_curve,01big_world,00elkring:a,a,a,a,a
+1e25877b-9ea9-4821-bd54-236e44c5e650:00elkring,00fragment,01big_world,01concentrated_wealth,00interlock:a,a,a,a,a
+b8ae1b5a-3c43-4ddf-bb0a-382f6a644e84:01corridors,00elkring,01concentrated_wealth,00interlock,00monolith:a,a,a,a,a
+3ad833e0-635d-4164-9f86-26d82c5f18b0:00monolith,01elk_arena,00collision,01fracture,00ambush:a,a,a,a,a

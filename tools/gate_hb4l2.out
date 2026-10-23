@@ -1,0 +1,17 @@
+﻿bash.exe : Submitted bot version 347. View submissions at https://2026a.battlecode.co.uk/game/submissions
+At line:1 char:325
++ ... FFSET='20'; & "C:\Program Files\Git\bin\bash.exe" tools/gate8.sh hb4l ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Submitted bot v...ame/submissions:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+hb4l2 c14d53cb-a0a0-4f6d-a4a9-27cfa763ed05 ad8c7911-1768-4dbf-a563-bfd2b700c3b8 32ca732d-3ad6-4d82-a1aa-691d96558a3f 2109e605-421c-4ee1-99cb-0ef73c641fd4 46585cf2-cab4-46ae-8617-95be2ebfc4ee b264eea5-f2f6-4a16-bce6-6a40f0006f47 4cb94868-4602-4c24-8702-8eece38a0960 9ac4f094-1ff6-49ee-84ea-dec3d13802b5 1eabad5f-9a08-4824-b343-912cb8d98cb1 a88d2fae-06a0-4545-aa52-dc5d76a7e6ed 227fbf5d-a883-47af-9a4f-0e1ac249aae7 a880cb07-906b-4d4e-8f11-86707c17e729 1b30191d-aabc-4c0c-bc7e-6e09bb51d3ff a4c60214-40a7-4221-b4fa-7116a984b009 35b6c1e2-2697-4282-9305-d3492cb202b2 b3afcddc-d2cc-40e9-ad66-1cf80566743e 70f319c5-dd43-4754-8789-4ce5441da340 0615fe40-89ce-42f2-8858-bdd802a5b62b 51acdcc1-74e3-4d73-8ddf-79a129d18f16 480c916e-ca0d-468e-b60e-469420477681
+
+wins 36 of 100 our gems 59924 their gems 87547
+deaths us 1160 them 792
+Uploading C:\Users\ajiit\Desktop\Future\Projects\Cambridge Battlecode\bots\hb4 (30392 bytes)...
+Submitted bot version 348. View submissions at https://2026a.battlecode.co.uk/game/submissions
+hb4l@p8@20 100 games 38 wins
+hb4l2@p8@20: 100 shared games | wins 36 vs base 38 | L->W 4 W->L 6 | margin diff -4864 (-49/game) | better 17 worse 27 p=0.132
+  up: bentheboss/reverse_sp SkibidiSlo/starvation SkibidiSlo/reverse_sp Patient Bu/gem_fields
+  down: PENTAKILL/rows PENTAKILL/rushbait_v Patient Bu/gemfight Patient Bu/lost_world Gem Simons/gold_rush Gem Simons/lanes

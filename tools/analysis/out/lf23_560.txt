@@ -1,0 +1,8 @@
+﻿candidate      games wins  kills deaths  flee  margin   gold/g caps/g coll/g lost/g carry/g
+lf2              560  402   5349   3141  1963 +105546    8799  54.4   1090     72    176
+lf3              560  405   5505   3193  1983  +99743    8787  54.2   1078     69    173
+bk3              560  376   5546   3011  1866  +98274    8665  53.4   1059     60    172
+  lf2: rnd 1524 Heart of Ruin=21770 Marcella=28574 Ryth=30822 Vendetta=33827 Vesper Vale=41745
+  lf3: rnd 1518 Heart of Ruin=21490 Marcella=28195 Ryth=30738 Vendetta=33476 Vesper Vale=41931
+  bk3: rnd 1567 Heart of Ruin=20766 Marcella=28949 Ryth=29204 Vendetta=32413 Vesper Vale=41225
+dir C:\Users\ajiit\Desktop\Future\Projects\Cambridge Battlecode\replays\multi-153950

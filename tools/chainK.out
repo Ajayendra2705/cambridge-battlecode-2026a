@@ -1,0 +1,26 @@
+Submitted bot version 282. View submissions at https://2026a.battlecode.co.uk/game/submissions
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+Submitted bot version 283. View submissions at https://2026a.battlecode.co.uk/game/submissions
+guard resubmitted ea3
+ev1 36da6617-55c1-4e4c-a456-88aa6438b2cc 09d7e723-ba7c-48e3-8c98-2ca171dd12c0 d6695cc0-0f8d-4254-95f1-06fc63c8b5db e789bc37-236e-4dea-824d-2cd479941f16 329a5b8b-b623-41ab-8daf-b3781a7e44d3 aad062a0-d592-4f22-9f42-f1f1248c0fe3 4f1d9043-f45d-4ca9-b8fd-9c3c905af1ae 599d2012-033e-4bf6-9839-22eff6c1ff41
+
+wins 15 of 40 our gems 25592 their gems 35649
+deaths us 369 them 208
+Submitted bot version 284. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: ev1 exposed for 795 s
+00lanes      WIN  -> loss  margin   +56 ->  -345  deaths  2 ->  7  vs 0:geese geese go
+00lanes      loss -> WIN   margin   -30 ->  +130  deaths  0 ->  0  vs 1:Quant Merch Traders
+01islands    WIN  -> WIN   margin  +657 ->  +204  deaths  1 ->  3  vs 1:Quant Merch Traders
+00eight      loss -> WIN   margin  -708 ->  +636  deaths  9 ->  9  vs 1:ha²t
+01boss_battle loss -> loss  margin -1651 -> -1291  deaths  8 ->  6  vs 1:ha²t
+01broken_curve WIN  -> loss  margin   +65 ->  -146  deaths  4 ->  3  vs 1:ha²t
+00elkring    loss -> loss  margin  -847 ->  -341  deaths 20 -> 10  vs 2:Valenki
+00interlock  WIN  -> loss  margin  +331 ->  -620  deaths  8 -> 16  vs 3:smurphy
+00monolith   WIN  -> loss  margin  +150 ->  -329  deaths  5 ->  4  vs 3:smurphy
+01corridors  WIN  -> loss  margin  +138 ->  -371  deaths  0 ->  3  vs 3:smurphy
+00collision  loss -> WIN   margin  -181 ->  +687  deaths 10 ->  1  vs 3:剑桥夜爬者
+01fracture   loss -> WIN   margin  -460 ->  +241  deaths  7 ->  5  vs 3:剑桥夜爬者
+ea3@p5       wins 16/40 (95% CI 26%-55%)  margin -11208  deaths 378
+ev1@p5       wins 15/40 (95% CI 24%-53%)  margin -10057  deaths 369
+paired: margin gain +1151, better 21 worse 16 same 3, sign-test p=0.511
+VERDICT INCONCLUSIVE

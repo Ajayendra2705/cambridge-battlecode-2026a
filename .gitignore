@@ -8,3 +8,6 @@ ladder_replays/
 probe_out/
 __pycache__/
 *.repl26a
+rk_replays/
+top_replays/
+us_replays/

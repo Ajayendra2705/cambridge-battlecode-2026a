@@ -1,0 +1,57 @@
+Submitted bot version 255. View submissions at https://2026a.battlecode.co.uk/game/submissions
+vk2 36a2af60-bcc2-47e5-ad87-dccb0db95c11 6535d0bd-f0f3-4cfa-b0cc-b0d8eb6651f5 27e18696-4552-4a49-87fc-7d33a17b2558 bed7cc75-37b9-4821-b2ed-d00894a0ed6f 4cc667db-6dd9-411b-b7d7-48acd46af7a4 0f1b1409-e7af-42c0-8419-70ba70bbc120 92855be4-eb5d-4f96-a423-4f94a8bb56ed c2d017f2-edb8-4a8f-ade0-ddc40168cc70 68d20c78-ec66-454a-86a7-64f7ee6e429c
+
+wins 10 of 45 our gems 26894 their gems 43033
+deaths us 490 them 178
+Submitted bot version 257. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: vk2 exposed for 417 s
+01islands    loss -> WIN   margin  -228 ->   +79  deaths  3 ->  2  vs 0:ひななー
+00expanse    loss -> loss  margin  -383 ->   -82  deaths  2 ->  2  vs 1:E=mc^2+AI^3
+00fragment   WIN  -> loss  margin  +660 ->  -936  deaths  3 -> 33  vs 1:E=mc^2+AI^3
+01boss_battle loss -> loss  margin -1936 -> -1116  deaths 12 ->  8  vs 1:E=mc^2+AI^3
+01broken_curve loss -> WIN   margin   -89 ->  +450  deaths  3 ->  1  vs 1:E=mc^2+AI^3
+00eight      loss -> loss  margin  -349 ->  -757  deaths 12 -> 12  vs 1:conqueror_of_openai
+01boss_battle loss -> loss  margin -1199 -> -1510  deaths  7 ->  7  vs 1:conqueror_of_openai
+00interlock  loss -> WIN   margin  -707 ->   +94  deaths 17 -> 16  vs 2:print dont int
+01concentrated_wealth WIN  -> WIN   margin  +792 ->  +403  deaths  3 ->  7  vs 2:print dont int
+01broken_curve WIN  -> loss  margin   +14 ->  -191  deaths  0 ->  2  vs 2:subscribe to caterpillow
+00monolith   loss -> loss  margin  -569 ->  -174  deaths 17 -> 14  vs 3:PENTAKILL
+01corridors  WIN  -> loss  margin  +438 ->  -216  deaths  7 -> 13  vs 3:PENTAKILL
+00monolith   loss -> WIN   margin  -191 ->  +109  deaths  6 -> 16  vs 3:dromedaries
+01concentrated_wealth loss -> WIN   margin  -684 ->  +555  deaths 23 ->  4  vs 3:dromedaries
+00collision  WIN  -> loss  margin  +393 ->  -511  deaths  5 ->  7  vs 4:Sneaky Bush Campers
+00monolith   loss -> WIN   margin  -155 ->  +241  deaths  6 ->  3  vs 4:Sneaky Bush Campers
+ea3@p4       wins  8/45 (95% CI 9%-31%)  margin -17130  deaths 491
+vk2@p4       wins 10/45 (95% CI 13%-36%)  margin -16139  deaths 490
+paired: margin gain +991, better 23 worse 21 same 1, sign-test p=0.880
+VERDICT INCONCLUSIVE
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+ea3 b579337e-66b9-4e99-aec3-df798879c24f 050e1004-8d72-4bcf-8804-653956b50ff1 f2b3bd69-8a45-4af0-afed-04a9108dbc0c 0d30d50a-6451-4b7c-9db3-5a0ba16bc9a5 30997c64-739c-4010-9102-bf6d2bae887a bc23d24d-4b05-4a29-a38c-6fd087232ed3 4b6e523d-a3fb-4613-ab23-545f9b9dd2e3 4f52cf22-2dfd-4000-8210-f5518786e231
+
+wins 16 of 40 our gems 25765 their gems 36973
+deaths us 378 them 204
+Submitted bot version 258. View submissions at https://2026a.battlecode.co.uk/game/submissions
+skip f5d4d2c9-efe4-415b-b08a-99cff7ab0c78: error: Stubborn Gold Clusters doesn’t have an eligible bot yet (HTTP 409)
+vk2 d9f38c0e-3f65-4074-be11-a7006c840d82 cb75e89a-9be1-49ab-9cd5-2c387b7b3de0 27b08b1b-192a-4494-9c29-05a94b826acc f9fa8b43-f31e-47ca-9ef2-9264ed9048b4 be1fa849-67a7-4828-9a6e-21b5e62c31a0 3cd5c8f3-ec8c-400c-b988-23bc6f496718 80c9a5ff-109d-402d-be45-e58ce6b2be92 81817eb1-dd8d-4968-95a5-e8acade173b0
+
+wins 13 of 40 our gems 26749 their gems 36395
+deaths us 346 them 194
+Submitted bot version 259. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: vk2 exposed for 376 s
+00lanes      WIN  -> loss  margin   +77 ->   -40  deaths  6 ->  6  vs 0:HouseOfCoders
+00eight      loss -> loss  margin  -532 ->  -163  deaths 17 -> 15  vs 0:geese geese go
+00eight      loss -> WIN   margin  -434 ->  +534  deaths 10 ->  6  vs 1:Quant Merch Traders
+01islands    WIN  -> WIN   margin  +657 ->  +236  deaths  1 ->  4  vs 1:Quant Merch Traders
+00fragment   WIN  -> loss  margin  +817 ->  -712  deaths  1 -> 11  vs 1:ha²t
+01boss_battle loss -> loss  margin -1651 -> -1093  deaths  8 ->  9  vs 1:ha²t
+01broken_curve WIN  -> loss  margin   +65 ->  -328  deaths  4 ->  5  vs 1:ha²t
+00interlock  WIN  -> loss  margin   +55 ->  -444  deaths 12 -> 11  vs 2:Bamboo Teahouse
+01concentrated_wealth WIN  -> WIN   margin  +462 ->  +808  deaths  6 ->  0  vs 2:Bamboo Teahouse
+00elkring    loss -> loss  margin  -847 ->  -528  deaths 20 -> 16  vs 2:Valenki
+00collision  loss -> loss  margin  -673 ->   -89  deaths  4 ->  4  vs 3:smurphy
+01corridors  WIN  -> loss  margin  +138 ->  -404  deaths  0 ->  3  vs 3:smurphy
+00collision  loss -> WIN   margin  -181 ->  +860  deaths 10 ->  1  vs 3:剑桥夜爬者
+ea3@p5       wins 16/40 (95% CI 26%-55%)  margin -11208  deaths 378
+vk2@p5       wins 13/40 (95% CI 20%-48%)  margin  -9646  deaths 346
+paired: margin gain +1562, better 20 worse 17 same 3, sign-test p=0.743
+VERDICT INCONCLUSIVE

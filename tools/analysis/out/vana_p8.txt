@@ -1,0 +1,94 @@
+﻿games 97
+Ryth
+  r0: str us 50 them 50 hp us 1200 them 1500
+  r500: str us 80 them 101 hp us 2200 them 2500
+  r1000: str us 132 them 150 hp us 2400 them 3200
+  r1500: str us 168 them 303 hp us 2500 them 4300
+  their dmg/turn 1v1 adjacent 92 (n 874)
+  our dmg/turn 103 (n 815)
+  lines 12212 outnumbered share 9%
+  acts [('pvp', 3331), ('flee', 2392), ('to_capture', 2174), ('approach', 929), ('resp_wait', 753), ('fight', 554)]
+Vesper
+  r0: str us 80 them 80 hp us 1000 them 1000
+  r500: str us 105 them 175 hp us 2100 them 2200
+  r1000: str us 180 them 350 hp us 2400 them 3200
+  r1500: str us 290 them 515 hp us 2800 them 4900
+  their dmg/turn 1v1 adjacent 55 (n 646)
+  our dmg/turn 96 (n 981)
+  lines 21874 outnumbered share 8%
+  acts [('pvp', 6798), ('to_capture', 3672), ('flee', 3102), ('fight', 2758), ('resp_wait', 1305), ('approach', 1066)]
+Vendetta
+  r0: str us 94 them 76 hp us 1000 them 1400
+  r500: str us 112 them 190 hp us 2100 them 2700
+  r1000: str us 160 them 310 hp us 2600 them 3100
+  r1500: str us 166 them 388 hp us 2700 them 3800
+  their dmg/turn 1v1 adjacent 128 (n 910)
+  our dmg/turn 129 (n 1489)
+  lines 20815 outnumbered share 8%
+  acts [('pvp', 6113), ('flee', 3324), ('to_capture', 3253), ('approach', 1837), ('fight', 1610), ('resp_wait', 1192)]
+Cassi
+  r0: str us 0 them 30 hp us 0 them 600
+  r500: str us 0 them 39 hp us 0 them 1770
+  r1000: str us 0 them 51 hp us 0 them 2940
+  r1500: str us 0 them 63 hp us 0 them 4175
+  their dmg/turn 1v1 adjacent 34 (n 49)
+Issac
+  r0: str us 0 them 52 hp us 0 them 900
+  r500: str us 0 them 82 hp us 0 them 1300
+  r1000: str us 0 them 106 hp us 0 them 3460
+  r1500: str us 0 them 115 hp us 0 them 4660
+  their dmg/turn 1v1 adjacent 74 (n 165)
+Stellar
+  r0: str us 0 them 30 hp us 0 them 650
+  r500: str us 0 them 30 hp us 0 them 975
+  r1000: str us 0 them 44 hp us 0 them 2145
+  r1500: str us 0 them 58 hp us 0 them 3705
+  their dmg/turn 1v1 adjacent 56 (n 128)
+Prism
+  r0: str us 0 them 35 hp us 0 them 700
+  r500: str us 0 them 35 hp us 0 them 1300
+  r1000: str us 0 them 57 hp us 0 them 4300
+  r1500: str us 0 them 70 hp us 0 them 5980
+  their dmg/turn 1v1 adjacent 93 (n 57)
+Marcella
+  r0: str us 45 them 45 hp us 1200 them 1200
+  r500: str us 45 them 90 hp us 2200 them 2600
+  r1000: str us 55 them 185 hp us 2400 them 3100
+  r1500: str us 65 them 240 hp us 2600 them 3400
+  their dmg/turn 1v1 adjacent 97 (n 770)
+  our dmg/turn 100 (n 830)
+  lines 10838 outnumbered share 9%
+  acts [('pvp', 3474), ('flee', 1869), ('to_capture', 1598), ('approach', 872), ('fight', 673), ('resp_wait', 564)]
+Willow
+  r0: str us 0 them 55 hp us 0 them 700
+  r500: str us 0 them 55 hp us 0 them 950
+  r1000: str us 0 them 55 hp us 0 them 950
+  r1500: str us 0 them 136 hp us 0 them 1850
+  their dmg/turn 1v1 adjacent 48 (n 44)
+Ren
+  r0: str us 0 them 35 hp us 0 them 1100
+  r500: str us 0 them 40 hp us 0 them 1900
+  r1000: str us 0 them 60 hp us 0 them 1900
+  r1500: str us 0 them 40 hp us 0 them 1900
+  their dmg/turn 1v1 adjacent 50 (n 389)
+Varg
+  r0: str us 0 them 70 hp us 0 them 1000
+  r500: str us 0 them 130 hp us 0 them 2000
+  r1000: str us 0 them 150 hp us 0 them 3400
+  r1500: str us 0 them 165 hp us 0 them 4600
+  their dmg/turn 1v1 adjacent 102 (n 684)
+Tavi
+  r0: str us 0 them 55 hp us 0 them 900
+  r500: str us 0 them 125 hp us 0 them 1800
+  r1000: str us 0 them 245 hp us 0 them 2175
+  r1500: str us 0 them 425 hp us 0 them 3150
+  their dmg/turn 1v1 adjacent 57 (n 213)
+HoR
+  r0: str us 30 them 30 hp us 1000 them 1400
+  r500: str us 33 them 33 hp us 2100 them 2500
+  r1000: str us 40 them 37 hp us 2300 them 3200
+  r1500: str us 51 them 54 hp us 2600 them 3700
+  their dmg/turn 1v1 adjacent 98 (n 1903)
+  our dmg/turn 134 (n 2324)
+  lines 22390 outnumbered share 11%
+  acts [('pvp', 5944), ('flee', 4493), ('to_capture', 3567), ('fight', 2151), ('approach', 1627), ('resp_wait', 1121)]

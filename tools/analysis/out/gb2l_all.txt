@@ -1,0 +1,80 @@
+== cgold
+games 90
+Heart of Ruin gold us  1194 them  1407 | gold@r500 us   403 them   440 | spent us  1145 them  1335 | gems us  158 them  223 | deaths 2.6/1.6
+Vendetta      gold us  1284 them  1432 | gold@r500 us   408 them   511 | spent us  1209 them  1350 | gems us  182 them  202 | deaths 2.2/1.8
+Vesper Vale   gold us  1495 them  1773 | gold@r500 us   495 them   548 | spent us  1437 them  1687 | gems us  172 them  182 | deaths 1.7/1.4
+Ryth          gold us  1110 them  1410 | gold@r500 us   357 them   408 | spent us  1055 them  1317 | gems us  161 them  210 | deaths 2.5/1.4
+Marcella      gold us  1247 them  2149 | gold@r500 us   356 them   676 | spent us  1176 them  1976 | gems us  127 them  250 | deaths 2.3/0.9
+== cdmg
+gb2l_p7_20 90 Heart 5707(1.2/2.6) vs 5867 | Marce 6473(1.9/2.3) vs 7805 | Ryth 3954(0.9/2.5) vs 4551 | Vende 2915(0.9/2.2) vs 6391 | Vespe 4746(0.9/1.7) vs 8299
+== fight
+games 90
+kills                us        5 them        8
+deaths               us       10 them        7
+assists              us       10 them       16
+championDamageDone   us    20855 them    28619
+championDamageTaken  us    28619 them    20855
+healingDone          us        0 them     1328
+shieldingDone        us    20724 them    19644
+monsterDamageDone    us    97867 them   111186
+earnedGold           us     5732 them     7155
+spentGold            us     5458 them     6681
+collectedGems        us      735 them      937
+submittedGems        us      587 them      850
+fights/game 10.5 outcomes {'win': 365, 'loss': 546, 'even': 33} first to die in fight {'T': 384, 'U': 560}
+by game result {('win', 'win'): 212, ('loss', 'loss'): 470, ('loss', 'win'): 153, ('win', 'loss'): 76, ('loss', 'even'): 23, ('win', 'even'): 10}
+their picks [('Marcella', 85), ('Heart of Ruin', 80), ('Vesper Vale', 70), ('Vendetta', 64), ('Ryth', 53), ('Varg', 21), ('Willow', 12), ('Tavi', 11)]
+U K/D by champ {'Heart of Ruin': '1.2/2.6', 'Vendetta': '0.9/2.2', 'Vesper Vale': '0.9/1.7', 'Ryth': '0.9/2.5', 'Marcella': '1.9/2.3'}
+T K/D by champ {'Marcella': '2.1/0.9', 'Heart of Ruin': '1.7/1.6', 'Vesper Vale': '2.6/1.4', 'Vendetta': '2.2/1.8', 'Ryth': '1.2/1.4', 'Varg': '1.0/2.1', 'Willow': '0.6/1.2'}
+== tline2
+win      n 29 | to r600: collected us 371 them 286 | clears 25.8/27.3 | gemLoss events 2.8/4.3 amount 18/18 | submissions 6.2/8.4
+close    n 22 | to r600: collected us 361 them 444 | clears 19.7/26.5 | gemLoss events 3.0/1.8 amount 29/11 | submissions 5.7/15.6
+blowout  n 39 | to r600: collected us 188 them 483 | clears 19.6/35.1 | gemLoss events 8.2/3.4 amount 35/17 | submissions 2.5/15.0
+blowout maps [('01starvation', 4), ('00lost_world', 4), ('00road_of_riches', 4), ('01starfish', 3), ('00swirl', 3), ('00gemfight', 3), ('01hooks', 3), ('00rows', 2), ('01yellow_brick_road', 2), ('00co
+== early2
+win games 27 early deaths/game 1.19 acts [('flee', 17), ('retreat', 7), ('approach', 3), ('pvp', 3), ('fight', 2)] enemies<=5 mean 1.03
+   distance from our spawn (x5 tiles) [(0, 8), (1, 3), (2, 1), (3, 1)]
+loss games 59 early deaths/game 3.17 acts [('flee', 120), ('retreat', 26), ('pvp', 19), ('approach', 8), ('fight', 4)] enemies<=5 mean 1.74
+   distance from our spawn (x5 tiles) [(0, 33), (1, 48), (2, 28), (3, 9), (4, 3), (5, 1), (6, 2), (7, 2), (8, 7)]
+== vana
+  r0: str us 0 them 55 hp us 0 them 700
+  r500: str us 0 them 55 hp us 0 them 700
+  r1000: str us 0 them 55 hp us 0 them 900
+  their dmg/turn 1v1 adjacent 5 (n 14)
+Varg
+  r0: str us 0 them 40 hp us 0 them 1000
+  r500: str us 0 them 90 hp us 0 them 1600
+  r1000: str us 0 them 130 hp us 0 them 2400
+  r1500: str us 0 them 120 hp us 0 them 1800
+  their dmg/turn 1v1 adjacent 75 (n 386)
+Tavi
+  r0: str us 0 them 45 hp us 0 them 900
+  r500: str us 0 them 55 hp us 0 them 900
+  r1000: str us 0 them 55 hp us 0 them 2850
+  r1500: str us 0 them 45 hp us 0 them 3600
+  their dmg/turn 1v1 adjacent 40 (n 93)
+HoR
+  r0: str us 30 them 30 hp us 1000 them 1000
+  r500: str us 30 them 30 hp us 2000 them 1600
+  r1000: str us 37 them 51 hp us 2200 them 2400
+  r1500: str us 40 them 44 hp us 2300 them 4400
+  their dmg/turn 1v1 adjacent 94 (n 2070)
+  our dmg/turn 101 (n 2091)
+  lines 18586 outnumbered share 9%
+  acts [('pvp', 4642), ('flee', 3543), ('to_capture', 3316), ('fight', 1965), ('approach', 1267), ('resp_wait', 814)]
+== dpre2
+HoR end enemies5 1.9 end allies5 1.7 max enemies5 2.3 last-seen hp 0.12 end act [('flee', 156), ('pvp', 24), ('to_capture', 5)]
+   first flee at line # [(1, 28), (2, 24), (-1, 22), (0, 19), (4, 17), (5, 14)]
+   sample ['fight fight fight pvp fight kite kite approach', 'to_capture pvp pvp pvp pvp flee flee flee', 'fight fight fight retreat kite kite kite approach']
+Vendetta end enemies5 1.9 end allies5 1.8 max enemies5 2.3 last-seen hp 0.14 end act [('flee', 123), ('pvp', 20), ('to_capture', 7)]
+   first flee at line # [(-1, 26), (1, 23), (2, 14), (3, 13), (8, 9), (6, 8)]
+   sample ['fight fight fight fight fight fight fight capture', 'capture capture pvp pvp pvp duel duel flee', 'to_capture pvp pvp pvp pvp pvp flee pvp']
+Vesper end enemies5 1.8 end allies5 1.6 max enemies5 2.2 last-seen hp 0.11 end act [('flee', 102), ('to_capture', 14), ('pvp', 11)]
+   first flee at line # [(-1, 27), (1, 18), (6, 10), (0, 10), (3, 9), (2, 9)]
+   sample ['capture capture capture capture pvp flee pvp flee', 'resp_wait resp_wait pvp resp_wait resp_wait pvp pvp pvp', 'approach pvp pvp pvp pvp pvp pvp fight']
+Ryth end enemies5 1.9 end allies5 1.6 max enemies5 2.3 last-seen hp 0.11 end act [('flee', 153), ('pvp', 9), ('to_capture', 4)]
+   first flee at line # [(1, 27), (4, 19), (-1, 19), (6, 15), (5, 12), (7, 11)]
+   sample ['fight pvp pvp pvp flee flee flee flee', 'approach pvp pvp pvp flee', 'approach approach approach retreat retreat approach pvp pvp']
+Marcella end enemies5 2.0 end allies5 1.6 max enemies5 2.4 last-seen hp 0.1 end act [('flee', 94), ('pvp', 10), ('retreat', 7)]
+   first flee at line # [(-1, 17), (1, 15), (8, 12), (4, 10), (0, 10), (7, 9)]
+   sample ['approach approach retreat', 'to_capture approach other pvp pvp pvp pvp pvp', 'home_heal']

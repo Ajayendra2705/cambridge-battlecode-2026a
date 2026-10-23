@@ -1,0 +1,140 @@
+TEAMSIZE 5
+ME heart_of_ruin round=1
+SET capture_time=5 camp_sleep_time=2 respawn_time=60 recall_time=5 submit_mult=0.1 submit_base=0 submit_min=1 submit_range=1 max_rounds=2000 winning_gems=1000 kill_gold=100 assist_gold=0 passive_gold=0 spawn_healing=1 active_wards=1 ward_charges=1 shared_mem=8 draft_mem=1024 tile_reveal=1 ward_cooldown=10 ward_lifetime=-1 ward_vision=6 ward_place=2 ctrl_ward_vision=6 ctrl_ward_place=2 lock_hits=5 tp_crystal_time=3
+CHAMP 0 ryth passive=5 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=1200+100 str=45+5 focus=100+10 campmult=1
+  slot0 kind=3 cooldown=8 charges=0 targets=19 attrs=1 dmg(range,mod)=4,1 aoe(range,radius,mod,dur)=4,1,1,1 cc(range,mod,dur)=4,1,1065353216
+  slot1 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CHAMP 1 vesper_vale passive=1 attack_type=1 vision_type=0
+ STATS vision=8 move=1 range=3 hp=1000+100 str=55+5 focus=100+10 campmult=1
+  slot0 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=6 cooldown=8 charges=0 targets=16 attrs=0 dmg(range,mod)=2,0 aoe(range,radius,mod,dur)=2,0,0,0 cc(range,mod,dur)=2,0,0
+CHAMP 2 vendetta passive=6 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=1000+100 str=70+6 focus=100+10 campmult=1
+  slot0 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=6 cooldown=8 charges=0 targets=16 attrs=0 dmg(range,mod)=2,0 aoe(range,radius,mod,dur)=2,0,0,0 cc(range,mod,dur)=2,0,0
+CHAMP 3 cassi passive=0 attack_type=1 vision_type=0
+ STATS vision=8 move=1 range=3 hp=600+65 str=30+3 focus=70+13 campmult=1
+  slot0 kind=2 cooldown=8 charges=0 targets=3 attrs=1 dmg(range,mod)=4,2 aoe(range,radius,mod,dur)=4,2,0,0 cc(range,mod,dur)=4,2,0
+  slot1 kind=4 cooldown=8 charges=0 targets=3 attrs=0 dmg(range,mod)=4,0 aoe(range,radius,mod,dur)=4,0,1.4013e-45,0 cc(range,mod,dur)=4,0,1
+CHAMP 4 issac passive=0 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=900+80 str=40+3 focus=100+10 campmult=1
+  slot0 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=6 cooldown=8 charges=0 targets=16 attrs=0 dmg(range,mod)=2,0 aoe(range,radius,mod,dur)=2,0,0,0 cc(range,mod,dur)=2,0,0
+CHAMP 5 stellar passive=0 attack_type=1 vision_type=0
+ STATS vision=8 move=1 range=3 hp=650+65 str=30+3.5 focus=70+7 campmult=1
+  slot0 kind=2 cooldown=8 charges=0 targets=3 attrs=1 dmg(range,mod)=4,2 aoe(range,radius,mod,dur)=4,2,0,0 cc(range,mod,dur)=4,2,0
+  slot1 kind=3 cooldown=8 charges=0 targets=19 attrs=1 dmg(range,mod)=4,1 aoe(range,radius,mod,dur)=4,1,1.4,0 cc(range,mod,dur)=4,1,1068708659
+CHAMP 6 prism passive=3 attack_type=1 vision_type=0
+ STATS vision=8 move=1 range=3 hp=700+60 str=35+2.5 focus=80+8 campmult=1
+  slot0 kind=4 cooldown=8 charges=0 targets=3 attrs=1 dmg(range,mod)=4,1.5 aoe(range,radius,mod,dur)=4,1.5,1.4013e-45,0 cc(range,mod,dur)=4,1.5,1
+  slot1 kind=3 cooldown=8 charges=0 targets=19 attrs=1 dmg(range,mod)=4,1 aoe(range,radius,mod,dur)=4,1,1,0 cc(range,mod,dur)=4,1,1065353216
+CHAMP 7 marcella passive=8 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=1200+100 str=45+5 focus=60+15 campmult=1
+  slot0 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=1.4013e-45,0 aoe(range,radius,mod,dur)=1.4013e-45,0,0,0 cc(range,mod,dur)=1.4013e-45,0,0
+  slot1 kind=2 cooldown=8 charges=0 targets=3 attrs=1 dmg(range,mod)=4,2 aoe(range,radius,mod,dur)=4,2,0,0 cc(range,mod,dur)=4,2,0
+CHAMP 8 willow passive=0 attack_type=1 vision_type=0
+ STATS vision=8 move=1 range=3 hp=700+50 str=55+3 focus=120+5 campmult=1
+  slot0 kind=5 cooldown=8 charges=0 targets=4 attrs=0 dmg(range,mod)=4,3 aoe(range,radius,mod,dur)=4,3,0,0 cc(range,mod,dur)=4,3,0
+  slot1 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CHAMP 9 ren passive=7 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=900+100 str=35+5 focus=100+9 campmult=1
+  slot0 kind=4 cooldown=8 charges=0 targets=3 attrs=1 dmg(range,mod)=4,0.75 aoe(range,radius,mod,dur)=4,0.75,1.4013e-45,0 cc(range,mod,dur)=4,0.75,1
+  slot1 kind=6 cooldown=8 charges=0 targets=16 attrs=0 dmg(range,mod)=2,0 aoe(range,radius,mod,dur)=2,0,0,0 cc(range,mod,dur)=2,0,0
+CHAMP 10 varg passive=4 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=1000+100 str=40+5 focus=100+10 campmult=1
+  slot0 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=7 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=4,2.5 aoe(range,radius,mod,dur)=4,2.5,7.00649e-45,0 cc(range,mod,dur)=4,2.5,5
+CHAMP 11 tavi passive=2 attack_type=1 vision_type=0
+ STATS vision=8 move=1 range=3 hp=900+75 str=45+5 focus=110+10 campmult=1
+  slot0 kind=1 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=4 cooldown=8 charges=0 targets=3 attrs=1 dmg(range,mod)=4,1.4 aoe(range,radius,mod,dur)=4,1.4,1.4013e-45,0 cc(range,mod,dur)=4,1.4,1
+CHAMP 12 heart_of_ruin passive=10 attack_type=0 vision_type=0
+ STATS vision=8 move=1 range=1 hp=1000+100 str=30+3.5 focus=100+12 campmult=1
+  slot0 kind=7 cooldown=8 charges=0 targets=8 attrs=0 dmg(range,mod)=4,1.5 aoe(range,radius,mod,dur)=4,1.5,7.00649e-45,0 cc(range,mod,dur)=4,1.5,5
+  slot1 kind=6 cooldown=8 charges=0 targets=16 attrs=0 dmg(range,mod)=2,1 aoe(range,radius,mod,dur)=2,1,1.5,1 cc(range,mod,dur)=2,1,1069547520
+CAMP 0 wolf vision=8 move=1 range=3 hp=1350+0 str=20+0 focus=1+0 passive=0
+  slot0 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CAMP 1 elk vision=8 move=1 range=4 hp=2400+0 str=60+0 focus=1+0 passive=0
+  slot0 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CAMP 2 gem_cluster vision=8 move=1 range=3 hp=120+0 str=0+0 focus=1+0 passive=0
+  slot0 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CAMP 3 gold_cluster vision=8 move=1 range=3 hp=120+0 str=0+0 focus=1+0 passive=0
+  slot0 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CAMP 4 monolith vision=8 move=1 range=5 hp=20000+0 str=200+0 focus=1+0 passive=0
+  slot0 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+CAMP 5 golem vision=8 move=1 range=4 hp=5000+0 str=120+0 focus=1+0 passive=0
+  slot0 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+  slot1 kind=0 cooldown=2 charges=0 targets=0 attrs=0 dmg(range,mod)=0,0 aoe(range,radius,mod,dur)=0,0,0,0 cc(range,mod,dur)=0,0,0
+ITEM 0 monster_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=1 combine_cost=150
+ITEM 1 monster_emblem_of_strength cost=150 buy=0 hp=0 str=5 focus=0 passive=1 mag=0.1 combine=0 result=255 combine_cost=0
+ITEM 2 monster_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=3 combine_cost=150
+ITEM 3 monster_emblem_of_focus cost=150 buy=0 hp=0 str=0 focus=5 passive=1 mag=0.1 combine=0 result=255 combine_cost=0
+ITEM 4 monster_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=5 combine_cost=150
+ITEM 5 monster_emblem_of_health cost=150 buy=0 hp=5 str=0 focus=0 passive=1 mag=0.1 combine=0 result=255 combine_cost=0
+ITEM 6 power_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=7 combine_cost=150
+ITEM 7 power_emblem_of_strength cost=150 buy=0 hp=0 str=6 focus=0 passive=0 mag=0 combine=0 result=255 combine_cost=0
+ITEM 8 power_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=9 combine_cost=150
+ITEM 9 power_emblem_of_focus cost=150 buy=0 hp=0 str=0 focus=6 passive=0 mag=0 combine=0 result=255 combine_cost=0
+ITEM 10 power_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=11 combine_cost=150
+ITEM 11 power_emblem_of_health cost=150 buy=0 hp=6 str=0 focus=0 passive=0 mag=0 combine=0 result=255 combine_cost=0
+ITEM 12 durability_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=13 combine_cost=150
+ITEM 13 durability_emblem_of_strength cost=150 buy=0 hp=0 str=5 focus=0 passive=2 mag=0.1 combine=0 result=255 combine_cost=0
+ITEM 14 durability_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=15 combine_cost=150
+ITEM 15 durability_emblem_of_focus cost=150 buy=0 hp=0 str=0 focus=5 passive=2 mag=0.1 combine=0 result=255 combine_cost=0
+ITEM 16 durability_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=17 combine_cost=150
+ITEM 17 durability_emblem_of_health cost=150 buy=0 hp=5 str=0 focus=0 passive=2 mag=0.1 combine=0 result=255 combine_cost=0
+ITEM 18 treasure_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=19 combine_cost=150
+ITEM 19 treasure_emblem_of_strength cost=150 buy=0 hp=0 str=5 focus=0 passive=3 mag=0.2 combine=0 result=255 combine_cost=0
+ITEM 20 treasure_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=21 combine_cost=150
+ITEM 21 treasure_emblem_of_focus cost=150 buy=0 hp=0 str=0 focus=5 passive=3 mag=0.2 combine=0 result=255 combine_cost=0
+ITEM 22 treasure_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=23 combine_cost=150
+ITEM 23 treasure_emblem_of_health cost=150 buy=0 hp=5 str=0 focus=0 passive=3 mag=0.2 combine=0 result=255 combine_cost=0
+ITEM 24 jungle_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=25 combine_cost=150
+ITEM 25 jungle_emblem_of_strength cost=150 buy=0 hp=0 str=5 focus=0 passive=4 mag=0.3 combine=0 result=255 combine_cost=0
+ITEM 26 jungle_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=27 combine_cost=150
+ITEM 27 jungle_emblem_of_focus cost=150 buy=0 hp=0 str=0 focus=5 passive=4 mag=0.3 combine=0 result=255 combine_cost=0
+ITEM 28 jungle_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=29 combine_cost=150
+ITEM 29 jungle_emblem_of_health cost=150 buy=0 hp=5 str=0 focus=0 passive=4 mag=0.3 combine=0 result=255 combine_cost=0
+ITEM 30 home_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=31 combine_cost=150
+ITEM 31 home_emblem_of_strength cost=150 buy=0 hp=0 str=5 focus=0 passive=5 mag=0.5 combine=0 result=255 combine_cost=0
+ITEM 32 home_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=33 combine_cost=150
+ITEM 33 home_emblem_of_focus cost=150 buy=0 hp=0 str=0 focus=5 passive=5 mag=0.5 combine=0 result=255 combine_cost=0
+ITEM 34 home_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=35 combine_cost=150
+ITEM 35 home_emblem_of_health cost=150 buy=0 hp=5 str=0 focus=0 passive=5 mag=0.5 combine=0 result=255 combine_cost=0
+ITEM 36 bruiser_shard_of_strength cost=30 buy=1 hp=0 str=1 focus=0 passive=0 mag=0 combine=5 result=37 combine_cost=150
+ITEM 37 bruiser_emblem_of_strength cost=150 buy=0 hp=1 str=5 focus=1 passive=0 mag=0 combine=0 result=255 combine_cost=0
+ITEM 38 bruiser_shard_of_focus cost=30 buy=1 hp=0 str=0 focus=1 passive=0 mag=0 combine=5 result=39 combine_cost=150
+ITEM 39 bruiser_emblem_of_focus cost=150 buy=0 hp=1 str=1 focus=5 passive=0 mag=0 combine=0 result=255 combine_cost=0
+ITEM 40 bruiser_shard_of_health cost=30 buy=1 hp=1 str=0 focus=0 passive=0 mag=0 combine=5 result=41 combine_cost=150
+ITEM 41 bruiser_emblem_of_health cost=150 buy=0 hp=5 str=1 focus=1 passive=0 mag=0 combine=0 result=255 combine_cost=0
+CONS 0 tp_crystal cost=10 carry=1
+CONS 1 altar_lock cost=10 carry=0
+MAP w=50 h=40 symmetry=1 altars=4 walls=320 holes=80 bushes=60 ally_spawn=12 groups=17
+ALTAR 17,19
+ALTAR 17,20
+ALTAR 32,19
+ALTAR 32,20
+GROUP 0 gems=414 gold=600 respawn=150 camps=monolith@20,19;monolith@20,20;gem_cluster@19,19;gem_cluster@19,20;
+GROUP 1 gems=414 gold=600 respawn=150 camps=monolith@29,19;monolith@29,20;gem_cluster@30,19;gem_cluster@30,20;
+GROUP 2 gems=256 gold=640 respawn=80 camps=golem@24,19;golem@24,20;golem@25,19;golem@25,20;gem_cluster@23,21;gem_cluster@23,18;gem_cluster@23,20;gem_cluster@23,19;gem_cluster@24,18;gem_cluster@24,21;gem_cluster@25,18;gem_cluster@25,21;gem_cluster@26,18;gem_cluster@26,21;gem_cluster@26,19;gem_cluster@26,20;gem_cluster@22,19;gem_cluster@22,20;gem_cluster@27,19;gem_cluster@27,20;
+GROUP 3 gems=29 gold=110 respawn=60 camps=elk@9,8;gem_cluster@10,8;gem_cluster@9,7;gold_cluster@10,7;
+GROUP 4 gems=29 gold=110 respawn=60 camps=elk@9,31;gem_cluster@10,31;gem_cluster@9,32;gold_cluster@10,32;
+GROUP 5 gems=80 gold=270 respawn=60 camps=elk@20,9;elk@21,9;elk@20,8;gem_cluster@21,8;gem_cluster@22,9;gem_cluster@19,9;gem_cluster@20,10;gem_cluster@21,10;
+GROUP 6 gems=80 gold=270 respawn=60 camps=elk@20,30;elk@21,30;elk@20,31;gem_cluster@21,31;gem_cluster@22,30;gem_cluster@19,30;gem_cluster@20,29;gem_cluster@21,29;
+GROUP 7 gems=8 gold=120 respawn=50 camps=wolf@37,8;wolf@37,7;gold_cluster@38,8;gold_cluster@38,7;
+GROUP 8 gems=8 gold=120 respawn=50 camps=wolf@37,31;wolf@37,32;gold_cluster@38,31;gold_cluster@38,32;
+GROUP 9 gems=14 gold=20 respawn=50 camps=gem_cluster@40,1;gold_cluster@41,1;gem_cluster@41,2;
+GROUP 10 gems=14 gold=20 respawn=50 camps=gem_cluster@40,38;gold_cluster@41,38;gem_cluster@41,37;
+GROUP 11 gems=0 gold=40 respawn=50 camps=gold_cluster@4,4;gold_cluster@4,3;
+GROUP 12 gems=0 gold=40 respawn=50 camps=gold_cluster@4,35;gold_cluster@4,36;
+GROUP 13 gems=14 gold=0 respawn=50 camps=gem_cluster@30,10;gem_cluster@31,10;
+GROUP 14 gems=14 gold=0 respawn=50 camps=gem_cluster@30,29;gem_cluster@31,29;
+GROUP 15 gems=15 gold=80 respawn=50 camps=wolf@18,0;gem_cluster@19,0;wolf@19,1;
+GROUP 16 gems=15 gold=80 respawn=50 camps=wolf@18,39;gem_cluster@19,39;wolf@19,38;
+END

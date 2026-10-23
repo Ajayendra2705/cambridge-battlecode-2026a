@@ -1,0 +1,62 @@
+﻿bash.exe : Submitted bot version 359. View submissions at https://2026a.battlecode.co.uk/game/submissions
+At line:1 char:414
++ ... b4l','la1l','lf1l','hb4l2') { & $gb tools/gate8s.sh $b *>> $o }; powe ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Submitted bot v...ame/submissions:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+retry b6eddc2e-0bba-4bb8-ab8b-0938ba05f6b4: error: Public API is busy; retry shortly (HTTP 429); retry after 2 seconds
+hb4l 2546cf4a-1626-4eb1-8a17-bbb5853dbf23 b7f1650a-f020-446b-ae28-0c3deb58ef2e 5ecf45d0-c342-4197-8b7d-984bb3c4c0db 1042d49f-78dc-4d20-bb2f-d23e192d1846
+
+wins 10 of 20 our gems 15081 their gems 16870
+deaths us 163 them 197
+bash.exe : Submitted bot version 360. View submissions at https://2026a.battlecode.co.uk/game/submissions
+At line:1 char:414
++ ... b4l','la1l','lf1l','hb4l2') { & $gb tools/gate8s.sh $b *>> $o }; powe ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Submitted bot v...ame/submissions:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+la1l a9b0f4e6-20ac-4c29-88c2-642c2c0fbcf0 249174aa-4267-4508-88c0-c2b09af2e967 608077d8-d500-47e3-a2df-e084c9d8e344 1cbe629b-b948-4a27-8177-93d0c3f07538
+
+wins 9 of 20 our gems 14724 their gems 17029
+deaths us 147 them 174
+bash.exe : Submitted bot version 361. View submissions at https://2026a.battlecode.co.uk/game/submissions
+At line:1 char:414
++ ... b4l','la1l','lf1l','hb4l2') { & $gb tools/gate8s.sh $b *>> $o }; powe ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Submitted bot v...ame/submissions:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+retry a4247250-fa1e-4d33-811d-d94667bf7a2b: error: Public API is busy; retry shortly (HTTP 429); retry after 2 seconds
+retry a4247250-fa1e-4d33-811d-d94667bf7a2b: error: Public API is busy; retry shortly (HTTP 429); retry after 2 seconds
+lf1l d0703b32-dcdd-4519-a368-517b6bd84ab1 a6ce9572-7eda-44c3-9028-1e626f61af87 ab217f15-9b3c-4838-a182-9ec8a06fdeab c78b1776-168a-4810-92d9-bc3391877518
+
+wins 6 of 20 our gems 11494 their gems 17789
+deaths us 160 them 180
+bash.exe : Submitted bot version 362. View submissions at https://2026a.battlecode.co.uk/game/submissions
+At line:1 char:414
++ ... b4l','la1l','lf1l','hb4l2') { & $gb tools/gate8s.sh $b *>> $o }; powe ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Submitted bot v...ame/submissions:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+retry 67e6d408-0d7f-4f95-af3d-c2b7bad5e8aa: error: Public API is busy; retry shortly (HTTP 429); retry after 2 seconds
+hb4l2 c3c75409-95f9-45d2-914f-68625d6a30b4 1a8fe24a-9d29-41ab-9ab1-d83c44c14208 792fffe8-1040-4d15-af44-258afabe4de8 6e2af996-343c-4fa8-851b-77de90a9c9f0
+
+wins 9 of 20 our gems 15696 their gems 17198
+deaths us 171 them 215
+Uploading C:\Users\ajiit\Desktop\Future\Projects\Cambridge Battlecode\bots\hb4 (30392 bytes)...
+Submitted bot version 363. View submissions at https://2026a.battlecode.co.uk/game/submissions
+hb4l@p8s 20 games 10 wins
+la1l@p8s: 20 shared games | wins 9 vs base 10 | L->W 0 W->L 1 | margin diff -516 (-26/game) | better 9 worse 5 p=0.285
+  up: 
+  down: SkibidiSlo/reverse_sp
+hb4l@p8s 20 games 10 wins
+lf1l@p8s: 20 shared games | wins 6 vs base 10 | L->W 1 W->L 5 | margin diff -4506 (-225/game) | better 6 worse 12 p=0.157
+  up: Patient Bu/swirl
+  down: kitfunso/the_farm kitfunso/split Patient Bu/gem_fields bentheboss/pilgrimage bentheboss/starfish
+hb4l@p8s 20 games 10 wins
+hb4l2@p8s: 20 shared games | wins 10 vs base 10 | L->W 0 W->L 0 | margin diff +0 (+0/game) | better 0 worse 0 p=1.000
+  up: 
+  down: 

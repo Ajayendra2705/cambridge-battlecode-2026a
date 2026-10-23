@@ -1,0 +1,18 @@
+Submitted bot version 260. View submissions at https://2026a.battlecode.co.uk/game/submissions
+df1 61d56f67-b93c-4dbd-a79c-87b9eba0c4fc db486226-12ff-47f8-b671-7a866524050c 2699480e-95e9-4e39-aa6e-8f908ce7cae7 06e95e44-17c2-429d-9952-b1400984224c ee1fff32-b175-46b2-9f17-931059bed686 54252fde-8b49-429c-8305-d59bcfee809a daa38ae4-362b-465c-a0a0-a282afd7af6d eb36e8be-3cf8-4d24-87dd-fb4ea88aa544 db4ea8d6-8ca7-495f-8d9b-1c1ec93ec136
+
+wins 9 of 45 our gems 25266 their gems 44187
+deaths us 497 them 161
+Submitted bot version 261. View submissions at https://2026a.battlecode.co.uk/game/submissions
+gate_safe: df1 exposed for 324 s
+00eight      loss -> loss  margin  -765 ->  -291  deaths 12 ->  6  vs 0:ひななー
+01islands    loss -> WIN   margin  -228 ->  +279  deaths  3 ->  2  vs 0:ひななー
+01concentrated_wealth WIN  -> WIN   margin  +792 ->  +255  deaths  3 -> 12  vs 2:print dont int
+01corridors  loss -> WIN   margin  -158 ->  +126  deaths  0 ->  0  vs 3:dromedaries
+00collision  WIN  -> loss  margin  +393 ->  -800  deaths  5 ->  7  vs 4:Sneaky Bush Campers
+00monolith   loss -> WIN   margin  -155 ->  +285  deaths  6 ->  3  vs 4:Sneaky Bush Campers
+01elk_arena  WIN  -> loss  margin  +360 ->  -456  deaths 37 -> 43  vs 4:Sneaky Bush Campers
+ea3@p4       wins  8/45 (95% CI 9%-31%)  margin -17130  deaths 491
+df1@p4       wins  9/45 (95% CI 11%-34%)  margin -18921  deaths 497
+paired: margin gain -1791, better 12 worse 17 same 16, sign-test p=0.458
+VERDICT INCONCLUSIVE
