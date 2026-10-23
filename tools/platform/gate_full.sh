@@ -1,9 +1,10 @@
 #!/bin/bash
-# Test gate panel: submit BOT (pass "nosubmit" as 2nd arg to skip) and play 90 unranked games (10 maps each) vs nine teams
-# spread from rank 1 to just above us. Group ids are appended to results/gate.log as "BOT ids...".
+# Full gate: bash tools/platform/gate_full.sh BOT [submit|nosubmit] [RUN_NAME]. Submits BOT (unless nosubmit) and plays 100 unranked games
+# (10 groups x 2 map windows, panel 8 = ladder ranks 60-69 on 2026-10-23). Appends "RUN_NAME@p8[@GATE_OFFSET] group-ids..." to results/gate.log.
 # Compare two runs with: python -I tools/platform/rcmp.py OLD NEW   (run them back to back; opponents change bots)
 cd "$(dirname "$0")/../.."
 bot=$1
+name=${3:-${bot##*/}}  # run name in results/gate.log: 3rd arg, else the bot name without its folder
 [ "$2" = "nosubmit" ] || powershell -File tools/cambc.ps1 submit "$bot" 2>&1 | tail -1 >&2
 ids=""
 # GATE_OFFSET (default 0) shifts every opponent's map window, giving a fresh sample of games.
@@ -32,7 +33,7 @@ for spec in $specs; do
   echo "$out" | grep -q groupId || continue
   ids="$ids $(echo "$out" | python -c "import sys,json; print(json.loads(sys.stdin.read())['groupId'])")"
 done
-echo "$bot@p8${GATE_OFFSET:+@$GATE_OFFSET}$ids" >> results/gate.log
+echo "$name@p8${GATE_OFFSET:+@$GATE_OFFSET}$ids" >> results/gate.log
 until [ "$(python -I tools/platform/group.py $ids 2>/dev/null | grep -cE 'WIN|loss')" -ge $(( $(echo $ids | wc -w) * 5 )) ]; do sleep 60; done
 sleep 20
 echo "$bot$ids"

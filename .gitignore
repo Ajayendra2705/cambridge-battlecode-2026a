@@ -13,3 +13,4 @@ data/*
 # Temporary experiment bots (verdict goes to docs/experiments.md, then delete)
 bots/exp/
 .claude/
+.vscode/

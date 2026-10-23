@@ -1,8 +1,10 @@
 #!/bin/bash
-# Small test gate: submit BOT (pass "nosubmit" as 2nd arg to skip) and play 20 unranked games (4 groups of 5). Group ids are appended to results/gate.log as "BOT ids...".
+# Small test gate: bash tools/platform/gate.sh BOT [submit|nosubmit] [RUN_NAME]. Submits BOT (unless nosubmit) and plays 20 unranked
+# games (4 groups of 5 maps). Appends "RUN_NAME@p8s group-ids..." to results/gate.log (RUN_NAME defaults to the bot name).
 # Compare two runs with: python -I tools/platform/rcmp.py OLD NEW   (run them back to back; opponents change bots)
 cd "$(dirname "$0")/../.."
 bot=$1
+name=${3:-${bot##*/}}  # run name in results/gate.log: 3rd arg, else the bot name without its folder
 [ "$2" = "nosubmit" ] || powershell -File tools/cambc.ps1 submit "$bot" 2>&1 | tail -1 >&2
 ids=""
 # 20-game panel (user 2026-10-23: keep tests ~20 games). Groups must have exactly 5 maps, so: 4 panel-8 opponents x their
@@ -21,7 +23,7 @@ for spec in $specs; do
   echo "$out" | grep -q groupId || continue
   ids="$ids $(echo "$out" | python -c "import sys,json; print(json.loads(sys.stdin.read())['groupId'])")"
 done
-echo "$bot@p8s$ids" >> results/gate.log
+echo "$name@p8s$ids" >> results/gate.log
 until [ "$(python -I tools/platform/group.py $ids 2>/dev/null | grep -cE 'WIN|loss')" -ge $(( $(echo $ids | wc -w) * 5 )) ]; do sleep 60; done
 sleep 20
 echo "$bot$ids"

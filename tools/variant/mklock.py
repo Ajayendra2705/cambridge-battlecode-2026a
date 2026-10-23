@@ -1,15 +1,22 @@
-"""Add altar-lock play to a bot: python -I tools/variant/mklock.py BOTDIR [--debug] [--keep N] [--enemy-only]
-Buys altar locks (10 gold) when shopping and places one on every unlocked altar within 2 tiles."""
-import sys
+"""Add altar-lock play to a bot: python -I tools/variant/mklock.py BOT [--debug] [--keep N] [--enemy-only]
+Buys altar locks (10 gold) when shopping and places one on every unlocked altar within 2 tiles.
+Each anchor is patched in whichever bots/BOT/src file holds it."""
+import glob, sys
 bot = sys.argv[1]
 debug = '--debug' in sys.argv
 keep = int(sys.argv[sys.argv.index('--keep') + 1]) if '--keep' in sys.argv else 1
 enemy_only = '--enemy-only' in sys.argv
 cancel = '--cancel' in sys.argv
-p = f'bots/{bot}/src/bot.cpp'
-s = open(p, 'rb').read().decode()
-crlf = '\r\n' in s
-s = s.replace('\r\n', '\n')
+raw = {p: open(p, 'rb').read().decode() for p in glob.glob(f'bots/{bot}/src/*.[ch]*')}
+src = {p: t.replace('\r\n', '\n') for p, t in raw.items()}
+
+
+def put(anchor, text):
+    """Replace the single occurrence of anchor, in whichever source file holds it, with text."""
+    hits = [p for p, t in src.items() if anchor in t]
+    assert len(hits) == 1 and src[hits[0]].count(anchor) == 1, anchor
+    src[hits[0]] = src[hits[0]].replace(anchor, text)
+
 
 D = (lambda x: x) if debug else (lambda x: '')
 func = '''// Altar locks (10 gold): a lock cancels enemy tribute channels at its altar and blocks enemy tributes there until
@@ -42,16 +49,10 @@ void place_altar_lock() {
 }
 
 '''
-anchor = 'void place_ward_forward() {'
-assert s.count(anchor) == 1
-s = s.replace(anchor, func + anchor)
-
-call = '    place_ward_forward();\n'
-assert s.count(call) == 1
-s = s.replace(call, call + '    place_altar_lock();\n')
+put('void place_ward_forward() {', func + 'void place_ward_forward() {')
+put('    place_ward_forward();\n', '    place_ward_forward();\n    place_altar_lock();\n')
 
 buy_anchor = '    if (me.gold_count() < 30) return;\n'
-assert s.count(buy_anchor) == 1
 buy = f'''    try {{
         for (int k = 0; k < {keep} && me.gold_count() >= 10
                         && me.consumables()[cambc::consumable_type::altar_lock].count() < {keep}u; ++k) {{
@@ -62,7 +63,8 @@ buy = f'''    try {{
 ''' + D('''        std::cout << "LK buy error " << e.what() << "\\n";
 ''') + '''    }
 '''
-s = s.replace(buy_anchor, buy + buy_anchor)
-if crlf: s = s.replace('\n', '\r\n')
-open(p, 'wb').write(s.encode())
+put(buy_anchor, buy + buy_anchor)
+for p, t in src.items():
+    if t != raw[p].replace('\r\n', '\n'):
+        open(p, 'wb').write((t.replace('\n', '\r\n') if '\r\n' in raw[p] else t).encode())
 print('lock added to', bot, 'debug' if debug else '', 'keep', keep, 'enemy_only' if enemy_only else '', 'cancel' if cancel else '')

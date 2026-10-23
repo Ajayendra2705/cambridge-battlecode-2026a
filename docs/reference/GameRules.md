@@ -1,5 +1,7 @@
 # CAMBC Game Rules
 
+> **Outdated numbers.** Handbook export from 15 Oct 2026, before patches 1.0.0-1.0.2. For exact current values use `docs/MECHANICS.md`. This file is still the best plain description of the rules.
+
 Event: cambc2026a. Exported from the current handbook, including all published champion specifications. Interactive diagrams are represented as text.
 
 ## The game

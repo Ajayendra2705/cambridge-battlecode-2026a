@@ -4,12 +4,12 @@ Engine 3.0.5 (local `cambc` 3.0.5, matching platform patches 1.0.0-1.0.2). Writt
 
 Every value carries its source:
 
-- **[engine]** read from the engine's own tables by `bots/probe305` (raw dumps in `docs/probe/`). These are exact.
-- **[doc]** stated by the handbook (`docs/GameRules.md`, 15 Oct export, re-checked against the live handbook on 2026-10-22). Rules text is current; its *numbers* are outdated wherever they disagree with [engine].
+- **[engine]** read from the engine's own tables by `bots/probe/probe305` (raw dumps in `docs/reference/probe/`). These are exact.
+- **[doc]** stated by the handbook (`docs/reference/GameRules.md`, 15 Oct export, re-checked against the live handbook on 2026-10-22). Rules text is current; its *numbers* are outdated wherever they disagree with [engine].
 - **[measured]** observed in our own local or platform games.
 - **[unverified]** stated somewhere but not yet confirmed; see the last section.
 
-`docs/GameRules.md` is outdated on numbers: it has no Heart of Ruin, clusters at 500 hp, monolith range 3, wolf 22 gems, kill gold 50, altar lock 3 hits, Vesper +20%, Prism 0.2 focus per gem. Use this file instead.
+`docs/reference/GameRules.md` is outdated on numbers: it has no Heart of Ruin, clusters at 500 hp, monolith range 3, wolf 22 gems, kill gold 50, altar lock 3 hits, Vesper +20%, Prism 0.2 focus per gem. Use this file instead.
 
 ---
 
@@ -204,7 +204,7 @@ Bonuses add, so Treasure on Vesper gives +53%. [doc] The tiebreak counts gold *e
 - Buying Health on spawn also heals that amount; Tavi's purchases away from spawn do not heal. [doc]
 - **Consumables** (10 gold each, bought on spawn or while dead) [engine]:
   - Teleport crystal: carry limit 1.
-  - Altar lock: carry limit **1** (the engine table says 0, but a second buy throws "error 58: Consumable carrying limit reached"). Placed with `consumables()[altar_lock].use(altar)` from within 2 tiles; works on any unlocked altar. [measured 2026-10-23, probe bots/lkp]
+  - Altar lock: carry limit **1** (the engine table says 0, but a second buy throws "error 58: Consumable carrying limit reached"). Placed with `consumables()[altar_lock].use(altar)` from within 2 tiles; works on any unlocked altar. [measured 2026-10-23, probe bot lkp, deleted]
   - Platform rivals (panel 8, ranks 60-69) buy **6.6 altar locks per game** (up to 18); we bought none before lk1. [measured]
 - Example: one Durability-health shard on Ryth adds 100 max health, and through her passive +1 Strength. One strength shard on Vendetta adds 6 Strength.
 
@@ -235,9 +235,9 @@ Bonuses add, so Treasure on Vesper gives +53%. [doc] The tiebreak counts gold *e
 
 ## 15. Map pool (40 maps, local `maps/`)
 
-Totals are for one full clear of every group (shared by both teams). "Max gems/round" = Σ group gems / group respawn: the most gems per round the whole map can produce if every group is taken the moment it respawns. Generated from `docs/probe/maps/*.txt`.
+Totals are for one full clear of every group (shared by both teams). "Max gems/round" = Σ group gems / group respawn: the most gems per round the whole map can produce if every group is taken the moment it respawns. Generated from `docs/reference/probe/maps/*.txt`.
 
-See `docs/probe/map_table.md` for the full table. Highlights:
+See `docs/reference/probe/map_table.md` for the full table. Highlights:
 
 - Gem-poor maps (whole-map gems per round), where 1000 gems is hard or impossible and the tiebreak or contesting decides:
   - fragment 1.2 (68 gems per full clear) and elk_arena 1.2 (72): 1000 is unreachable by round 2000.
@@ -266,7 +266,7 @@ See `docs/probe/map_table.md` for the full table. Highlights:
 
 ## 17. Verified by local experiment (2026-10-23)
 
-Test bots: `bots/mt1` (turn order, camp behaviour) and `bots/mt2` (rooting cast, respawn blocking), on 00collision.
+Test bots: `bots/probe/mt1` (turn order, camp behaviour) and `bots/probe/mt2` (rooting cast, respawn blocking), on 00collision.
 
 | Question | Result |
 |---|---|
