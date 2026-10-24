@@ -22,7 +22,8 @@ def pair_gaps(rounds):
     pair_gaps_dict = {}
     counting = True
     counter = 0
-    for prior_round, latter_round in enumerate(rounds[:, "vis"], rounds[1:, "vis"]):
+    visions = [r["vis"] for r in rounds]
+    for prior_round, latter_round in zip(visions, visions[1:]):
         if counting:
             counter += 1
         if (
@@ -40,6 +41,7 @@ def pair_gaps(rounds):
             prior_round != [] or prior_round != [[], [], [], [], [], [], [], [], [], []]
         ):
             counting = True
+    return pair_gaps_dict
 
 
 def main():
