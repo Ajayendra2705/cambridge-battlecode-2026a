@@ -60,6 +60,7 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `cmp.py MATCH` / `econ.py MATCH` / `timeline.py JSON` / `summ.py JSON` | One match: economy per champion, gem sources, event timeline, metric dump. |
 | `vis_decode.mjs REPLAY [POS]` | Node 22. Decodes a replay with the official visualiser engine (both teams, per-champion fog). Needs `data/vis/`: `python -I tools/replay/vis_assets.py REPLAY` fetches it from `cambc view`. |
 | `rounds_extract.mjs OUTDIR REPLAY...` | Node. Per-round dataset per replay (`.jsonl.gz`): every champion's state, enemies each can see, moves / attacks / casts with the entity hit. About 14 s per replay; run with `xargs -P 4`. |
+| `team_features.py ranked FIGHTDIR` / `ours FIGHTDIR INDEX...` | Per-team behaviour features (tributes by r300/r600, tribute count, deaths, kills, grouping, enemy-half time, shared camp hits, bag) for winners vs losers. |
 | `fight_geo.py FIGHTDIR INDEX...` | Team geometry from those datasets, us vs them by phase: distance to nearest teammate, teammates within 5, time on the enemy half, local numbers at deaths. |
 | `fetch_ranked.py RANKS [--per-team N]` | Download recent ranked replays of a ladder rank range into `data/replays/ranked/`. |
 | `vis_assets.py REPLAY` | Fetch the visualiser engine WASM and decoder JS into `data/vis/` (starts and stops `cambc view`). |

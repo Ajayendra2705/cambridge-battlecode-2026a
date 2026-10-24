@@ -15,7 +15,7 @@ os.makedirs(args.out, exist_ok=True)
 
 def cli_json(*a):
     for attempt in range(8):
-        r = subprocess.run([CAMBC, *a, '--json'], capture_output=True, text=True)
+        r = subprocess.run([CAMBC, *a, '--json'], capture_output=True, text=True, encoding='utf-8', errors='replace')
         if r.returncode == 0: return json.loads(r.stdout)
         wait = re.search(r'retry after (\d+)', r.stderr)
         time.sleep((int(wait.group(1)) if wait else 5) * (attempt + 1))
@@ -33,7 +33,7 @@ rank_of = {t['teamId']: t['rank'] for t in teams}
 print(f'{len(teams)} teams in ranks {lo}-{hi}', flush=True)
 
 index_path = os.path.join(args.out, 'index.jsonl')
-seen = {json.loads(l)['matchId'] for l in open(index_path)} if os.path.exists(index_path) else set()
+seen = {json.loads(l)['matchId'] for l in open(index_path, encoding='utf-8')} if os.path.exists(index_path) else set()
 new = []
 for t in teams:
     try:
@@ -56,7 +56,7 @@ def get(m):
     return os.path.exists(p) and os.path.getsize(p) > 0
 
 done = 0
-with ThreadPoolExecutor(args.jobs) as ex, open(index_path, 'a') as f:
+with ThreadPoolExecutor(args.jobs) as ex, open(index_path, 'a', encoding='utf-8') as f:
     for m, ok in zip(new, ex.map(get, new)):
         if not ok: continue
         sides = {s['side']: s for s in m['teams']}

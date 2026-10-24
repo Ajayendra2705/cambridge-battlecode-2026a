@@ -11,6 +11,8 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | Bot | Parent | Change | Local | Platform | Verdict |
 |---|---|---|---|---|---|
 | fx1 (base) | - | main on b4 | - | b4 13/25 | base |
+| gm1 | dr3 | no gold-first opening: gold at the normal weight from round 0 (we out-build rivals but collect fewer gems early) | quick 185 (dr3 180) | running (b3 + b4) | open |
+| bk4 | dr3 | bank batch capped at 25 gems before r600 (our first tribute median r279 with about 50 gems; rivals r102-130 with about 22) | quick 178 (dr3 180), gems lost 74 vs 47 | b3 11, b4 12: 23/50 vs dr3 28 | R (forced early tributes lose again, as bk1-3) |
 | sh1 / sh2 | dr3 | contested group already claimed by a teammate x1.25 / x1.6 before r600 | quick 187 / - | shared camp hits locally 39% / 35% vs main 37%: metric did not move | R (not gated) |
 | sh3 | dr3 | team-optimal sharing: joining k teammates on a group credits the k x (clear(k) - clear(k+1)) rounds it saves them (greedy scores ignored it). Shared camp hits locally 37% to 49% (rivals 47%; early 57% vs 59%, late 37% vs 39%) | quick 170 (dr3 180) | b3 6 vs dr3 14, b4 12 vs 14: 18/50 vs 28 | R (matching the rivals' sharing rate made us much worse) |
 | c5 | - | batch b3 best | - | b4 12/25 | - |
