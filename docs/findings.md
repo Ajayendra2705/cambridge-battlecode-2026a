@@ -130,3 +130,21 @@ Past postmortems and rival repositories (including measured top-team policies fr
 - fh2 (ge4 + ab1 + fh1 + fh2, kept as `bots/pool/fh2`) vs ge4 on b34, decoded (fh2 37 games, ge4 the same map/side keys): by r800 our hits on champions 125 vs 118, enemy hits on us 152 vs 184, our deaths 4.2 vs 5.5; by r1000 collected 695 vs 640, lost on death 43 vs 63, tributed 537 vs 471. Same direction as fh1 on b5. Wins stayed equal (25 vs 25), so the fight gains are real but not yet large enough to show in 50-game win counts.
 - Tribute channels (fh2 on b6, per game): starts with a bag above 100 gems complete 56% of the time (rivals 81%); 240 gems per game started in such channels, 95 banked. A tribute takes bag / 10 turns standing at the altar: the_farm vs AlphaSlop, 187- and 224-gem channels (19 and 23 turns) at the mid-map altar were interrupted and 487 gems went to the enemy (0-1036). Bags up to 100 complete 93-99% for both teams.
 - b6 always-lost (6 variants): 6 of 11 vs AlphaSlop (expanse, gemfight, reverse_spiral, road_of_riches, swirl, the_farm); boss_battle vs HouseOfCoders (dr3 carried 4295 gems to r1953 and tributed none: the guard monolith beside the altar had died at r1350, the other one lived, and we treat the whole group as the guard); shortcut, hooks, yellow_brick_road, road_of_riches vs The Party of Heroes.
+
+## Where we are behind, team level (b6, decoded, 2026-10-25 02:05)
+
+Per game, us vs rivals (same games for each variant):
+
+| bot | collected r300 | tributed r600 | collected r1000 | tributed r1000 | lost on death r1000 | bag r1000 | deaths r1000 |
+|---|---|---|---|---|---|---|---|
+| dr3 (main) | 133 vs 150 | 189 vs 291 | 593 vs 723 | 406 vs 597 | 80 vs 48 | 107 vs 78 | 7.8 vs 6.1 |
+| sp1 | 163 vs 138 | 237 vs 288 | 634 vs 697 | 460 vs 579 | 70 vs 39 | 104 vs 79 | 7.2 vs 7.2 |
+| ef3 | 164 vs 140 | 247 vs 273 | 676 vs 728 | 479 vs 588 | 82 vs 52 | 116 vs 88 | 7.0 vs 7.2 |
+
+- The ef3/sp1 line out-collects the rivals early and matches deaths, but still tributes about 110 fewer gems by r1000 (dr3: 191 fewer). The rest of the gap is conversion: we carry about 30 more gems at any time and lose about 30 more on death; and from r600 to r1000 we collect 17% less.
+- Per champion type (sp1 + ef3 on b6, per alive round): time use is nearly the same as the rivals' (dead, hitting champions, hitting camps, moving, idle within 0.02) and camp damage per round is equal (Vesper 29 vs 32, Vendetta 26 vs 24). Champion damage per round is not: Vendetta 3.7 vs 5.9, Vesper 4.9 vs 6.7, Marcella 5.4 vs 6.5 (Heart of Ruin 5.0 vs 4.1). We are in as many fights and swing as often, but each fight round does less.
+- Items at r600 (emblems per champion): rival Vespers 3.0 Power-strength, 0.9 Bruiser, 0.8 Treasure, 0.6 Durability; ours (sp1) 1.75 Durability, 1.5 Bruiser, 1.0 Treasure, 0.3 Power. Rival Vendettas 1.8 Bruiser-strength, 0.7 Bruiser-health, 0.6 Treasure-health, 0.6 Jungle-strength, max health 2067 vs our 1728.
+- Damage-heavy items alone (sp4: damage counted twice in the item formula) raised local deaths to 1182 vs 944: the rivals pair damage with more health, so they must have more gold or spend it better.
+- Team wealth (gold held + item value) per game, b6: r300 rivals 1222-1303 vs us 1084-1162 (about 10% behind), r600 3093-3205 vs 2700-2921 (6-15% behind), r1000 about equal. Rival Vespers carry about 30% more item gold than ours by r600 and are their top damage dealers (6050 champion damage per game vs our 4200).
+- Bug: in `pick_group` the capture rule "the claimant who gains most from the gold keeps it" compares `capture_priority(type) * 16 + slot` with a constant `mine = 16 * 16`, which no champion reaches (max 9 * 16 + 5), so it never fires; the first claimant captures. Gold passives are not used either: Vesper gains +33% of every gold gain and Marcella +2 gold per gem she tributes, so gold-rich captures belong to Vesper and gem-rich ones to Marcella. Not fixed tonight (changes every capture; no platform slot left to test it).
+- boss_battle vs HouseOfCoders (sp3, b6): they killed both guard monoliths by r550-700, tributed from r611 and reached 1365 by r799; we carried 651 gems at r600 and never reached the altar, which their five held. Whoever kills the guard first owns the only altar.
