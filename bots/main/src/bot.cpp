@@ -331,7 +331,17 @@ void Bot::play_turn() {
         const bool healthy = S.hp >= S.max_hp * 0.5f && !hit_by_enemy;
         if (healthy && !in_danger(S.me)) {
             // Already out of reach: keep working, staying out of it.
-        } else if (healthy && step_out_of_danger()) {
+        } else if (healthy && [&] {
+                       // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target
+                       // that cannot reach us cannot answer (b5 ge4: with an enemy within 3 the rivals hit a champion in
+                       // 50% of rounds, we in 35%, and stand idle 12% vs 6%).
+                       const ChampSnap* t = nullptr;
+                       for (const auto& e : S.enemies)
+                           if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (S.range <= 1 || dist(S.me, e.pos) > e.range)
+                               && (!t || e.hp < t->hp)) t = &e;
+                       if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
+                       return step_out_of_danger();
+                   }()) {
             ACT("kite");
             return;
         } else {
@@ -374,6 +384,14 @@ void Bot::play_turn() {
             // Hurt, hit by something unseen, or cornered: run home, striking whoever is still in reach.
             S.avoid_danger = false;
             use_support_abilities(true);
+            // Melee hits before running: it keeps its move after attacking, and after the step the chaser is often out of
+            // reach (fh1 b5 decoded: with an enemy adjacent we hit in 58% of rounds, the rivals in 82%). The weakest first.
+            if (S.range <= 1) {
+                const ChampSnap* t = nullptr;
+                for (const auto& e : S.enemies)
+                    if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (!t || e.hp < t->hp)) t = &e;
+                if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
+            }
             if (!at_spawn && !flee_bush()) walk_home();
             for (const auto& e : S.enemies)
                 if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
@@ -393,7 +411,29 @@ void Bot::play_turn() {
         if (t) {
             call_focus(*t);
             use_champion_abilities(*t);
-            if (dist(S.me, t->pos) <= S.range && (S.range <= 1 || S.hp > S.max_hp * 0.5f) && attack_unit(t->ch))
+            // Vendetta closes 2 tiles with her dash and hits the same round: with an enemy 2-3 tiles away the rivals'
+            // Vendettas hit a champion in 26% of rounds, ours in 16% (b6 decoded). Only when the fight is not lost
+            // (we are past the flee branch) and the simulation does not say we die.
+            if (me.champion_name() == cambc::champion_type::vendetta && !sim_me_dies && dist(S.me, t->pos) >= 2 && dist(S.me, t->pos) <= 3
+                && me.can_attack() && me.can_cast()) {
+                for (const auto& ab : me.abilities()) {
+                    if (!ab.is_ready() || !ab.is_dash()) continue;
+                    vec2 best{-1, -1};
+                    for (auto land : ab.valid_tiles().positions()) {
+                        if (S.occ.is_set(land) || W.terrain.is_set(land) || dist(land, t->pos) > S.range) continue;
+                        if (best.x < 0 || dist(land, S.me) < dist(best, S.me)) best = land;
+                    }
+                    if (best.x < 0) continue;
+                    try {
+                        if (ab.use(best)) { S.me = best; break; }
+                    } catch (const cambc::error&) {
+                    }
+                }
+            }
+            // Ranged champions also shoot when hurt unless the enemies near can burst them this round: our Vespers hit in
+            // 41% of rounds with an enemy in range, the rivals' 53% (b6 decoded).
+            if (dist(S.me, t->pos) <= S.range && (S.range <= 1 || S.hp > S.max_hp * 0.5f || dist(S.me, t->pos) > t->range || !in_kill_range)
+                && attack_unit(t->ch))
                 try_attack_reset_and_hit(t->ch);
         }
     }
@@ -506,7 +546,20 @@ void Bot::play_turn() {
                 walk = std::min(walk, std::max(0.0, static_cast<double>(altar_d + target_altar - to_target)));
         }
         const double tau = walk + (gems + 9) / 10 + 1;
-        const double batch = std::sqrt(2.0 * c * tau / (m * h));
+        // Order quantity: a trip costs c * tau gems of lost collection (the old form used tau, a factor 1/sqrt(c), about
+        // 2.8x too big: our median tribute 32 gems vs the rivals' 15). Per gem banked the cost is c tau / g for trips plus
+        // g (m h / 2c) for the bag at risk plus g lambda / 10 for the channel (bag / 10 turns at the altar), so
+        // g* = sqrt(2 c^2 tau / (m h + lambda c / 5)). lambda, the per-turn chance a channel is broken, is fitted on 5.8k
+        // of our platform tributes (b5, b6, b34): 0.0065 + 0.009 per enemy within 10 of the altar (0.0068 / 0.0152 / 0.0254).
+        int near_altar = 0;
+        for (const auto& e : S.enemies)
+            for (auto a : W.altars)
+                if (!W.enemy_spawn.is_set(e.pos) && dist(e.pos, a) <= 10 && W.altar_field.get(a) <= altar_d + 1) { ++near_altar; break; }
+        const double lambda = 0.0065 + 0.009 * std::min(near_altar, 3);
+        // Measured trip overhead: with the plain c * tau trip cost (ef1) the b6 bags halved (median about 15) and collection
+        // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
+        // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
+        const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
         if ((gems >= batch && S.round >= bank_blocked_until) || endgame) {
             // Give up for a while if the way to the altar makes no progress (blocked or contested).
             if (altar_d < bank_best) bank_best = altar_d, bank_stall = 0;

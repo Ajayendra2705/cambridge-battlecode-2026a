@@ -106,10 +106,23 @@ Logging costs fuel and changes play. Never put a logging variant (`*l`, for exam
 - `bot.cpp` (dr3): prey is the lowest-health enemy in reach. `sim.h`: `cached_slots` reads each champion's ability slots once per round.
 - `draft.cpp` (dr3): teams of 5 or fewer draft Heart of Ruin, Vendetta, Vesper, Varg, Marcella (Varg replaced Ryth).
 
+## Changes in cp3 (ladder bot from 2026-10-25 03:09 IST)
+
+cp3 = dr3 plus these layers, each with its experiments row (batches b5 and b6):
+
+- `targets.h` (ge4): gold counts `gold_weight(round)` also before the first emblem (no x2), and the mid-push x2 bonus is off. Collection by r300 went from 108 to 140 on b5 (rivals 127).
+- `targets.h` `bank_gems` (ab1, ab2): the altar guard blocks banking only while a guard camp next to an altar is alive in our knowledge, and never within 100 rounds of an enemy tribute (an enemy tribute means a tile is free).
+- `bot.cpp` threat branch (fh1): before kiting away, hit the weakest enemy in reach when the hit is free (melee keeps its move; a target out of its own reach cannot answer). Attack on sight: ranged champions also shoot targets that cannot reach them.
+- `bot.cpp` flee (fh2): melee hits the weakest adjacent enemy before running home.
+- `bot.cpp` bank (ef3): order quantity `g* = sqrt(2 * 3 * c^2 * tau / (m * h + lambda * c / 5))`; the trip costs c x tau gems of lost collection (the old form dropped one c), x3 for the measured overhead of breaking the farming flow, and lambda = 0.0065 + 0.009 per enemy within 10 of an altar is the fitted chance per turn that a tribute channel breaks.
+- `shop.h` (sp1, sp3): after the Treasure emblem each emblem is chosen by its fight-power gain: Power 6 gm / main, Bruiser 5 gm / main + gh / hp, Durability 5 gh / hp (+0.11 for the first), Jungle 5 gh / hp (+0.15 for the first). An emblem is finished once started (its bonus comes on completion).
+- `targets.h` capture (cp1): the `capture_priority` rule now runs (it compared against the constant `16 * 16` before). The claimant whose passive adds most captures: Vesper +33% of the gold, Marcella +2 gold per gem; then damage growth, then slot.
+- `bot.cpp` attack on sight (cp2, cp3): hurt ranged champions shoot unless the enemies near can burst them this round; Vendetta dashes next to an enemy 2-3 tiles away and hits, when past the flee branch and the simulation does not say she dies.
+
 ## Known leftovers (harmless)
 
 - `bot.cpp`: an `if (false)` feature-log block and comments naming deleted tools (`hazard.py`, `calib.py`; source in tag `archive/pre-cleanup`).
-- `targets.h`: `capture_priority` check compares against `16 * 16` and never fires. A dead `recent` loop and two orphan comments about the altar guard.
+- `targets.h`: a dead `recent` loop. (The `capture_priority` check that never fired is fixed in cp3.)
 - `enemies.h`: unused `shared_sighting_seen` and `first`.
 - `shop.h`: `burst_caster` is computed and unused.
 

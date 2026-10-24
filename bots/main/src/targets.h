@@ -75,13 +75,13 @@ int pick_group(int current) {
         if (travel == UNREACH) continue;
         // Before the first emblem gold is worth a gem: it buys the stats that win the next fights (top-10 teams take
         // 6.9 gold clusters and 7.0 small groups before round 300, we took 4.0 and 3.5).
-        const double value = g.gems + g.gold * (solo ? 2.0 : gold_weight(round));
+        const double value = g.gems + g.gold * gold_weight(round);
         if (value <= 0) continue;
         const int side = W.group_side[i];
         const bool safe_speed = side <= 0 || round - enemy_seen_round > 30;
         // Small teams lose the early middle fights (b2: 3-4 champion maps); a full team pushes it only until an enemy
         // has killed this champion (the middle is contested: b3 3.5 deaths per lost game before r300).
-        const bool mid_push = W.team_count > 4 && death_rounds.empty();
+        const bool mid_push = false;
         double mult = mid_push && round < 400 && side >= -6 && side <= 6 && travel <= 20 ? 2.0 : 1.0;
         if (side > 0) mult /= 1.0 + std::min(side, 20) / 20.0;
         // Clearing takes at least its health over our damage (champion-rounds), except a defeated group: capture only.
@@ -117,10 +117,19 @@ int pick_group(int current) {
         int score_n = 1;
         if (g.state == 1) {
             // One capturer: the claimant who gains most from the gold keeps it, everyone else moves on.
-            const int mine = 16 * 16;
+            // Fixed: 'mine' was the constant 16 * 16, which no claimant reaches, so this rule never ran. The claimant whose
+            // passive adds most to the reward captures: Vesper +33% of the gold, Marcella +2 gold per gem she tributes;
+            // then the champion whose damage grows most from shards.
+            const auto claim_value = [&](int s) {
+                using ct = cambc::champion_type;
+                const auto t = W.slot_types[s];
+                const double bonus = t == ct::vesper_vale ? 0.33 * g.gold : t == ct::marcella ? 2.0 * g.gems : 0.0;
+                return bonus * 1000.0 + capture_priority(t) * 16 + s;
+            };
+            const double mine = W.slot < static_cast<int>(W.slot_types.size()) ? claim_value(W.slot) : 0.0;
             bool better_claim = false;
             for (int s = 0; s < MAX_SLOTS && s < static_cast<int>(W.slot_types.size()); ++s)
-                if (claim_cache[s] == i && capture_priority(W.slot_types[s]) * 16 + s > mine) better_claim = true;
+                if (s != W.slot && claim_cache[s] == i && claim_value(s) > mine) better_claim = true;
             if (better_claim || (others > 0 && i != current)) continue;
             // At most two share a capture: the two with the fewest items stay, so gold reaches the poorest champions
             // (platform lg1: slot order starved Ryth and Marcella, slots 3 and 4, to half the gold of the others).
@@ -168,7 +177,7 @@ int pick_group(int current) {
         if (side > 0) score /= 1.0 + std::min(side, 20) / 20.0;
         // Take the middle first: in losses the enemy took 4.9 mid groups before round 300 (1.9 in our wins) and killed
         // us twice there; we farmed our own half. Contested groups are worth more to us before they are worth it to them.
-        if (W.team_count > 4 && death_rounds.empty() && round < 400 && side >= -6 && side <= 6 && travel <= 20) score *= 2.0;
+
         // Avoid walking into enemy groups; a lone enemy matters less than several.
         const auto gd0 = cambc::fuel_remaining();
         const double danger = sightings.empty() ? 0.0 : group_danger(g);
@@ -193,7 +202,21 @@ int pick_group(int current) {
 // A defeated group nearby that nobody is capturing yet: one champion stays to capture it.
 bool bank_gems() {
     // While the altar guard lives, every tile in tribute range is blocked: a trip there only wastes rounds.
-    if (W.altar_guard >= 0 && W.groups[W.altar_guard].state == 0) return false;
+    // Unless the enemy is tributing: then a tile is free (b5 boss_battle: the enemy tributed 919 gems from round 800
+    // while we, believing the unseen guard alive, carried 1072 and tributed none, and lost).
+    static int enemy_sub = 0, enemy_rise = -1000;
+    const int e_now = static_cast<int>(cambc::global_submitted_gems(team::enemy));
+    if (e_now > enemy_sub) enemy_sub = e_now, enemy_rise = S.round;
+    // Only the guard camps next to an altar block it: on boss_battle one of the two monoliths stands beside the altar,
+    // and b6 dr3 carried 4295 gems to round 1953 with that one dead since r1350 (the other alive) and tributed none.
+    bool guard_blocks = false;
+    if (W.altar_guard >= 0 && W.groups[W.altar_guard].state == 0) {
+        const auto& g = W.groups[W.altar_guard];
+        for (size_t i = 0; i < g.spawns.size() && i < g.hp.size(); ++i)
+            if (g.hp[i] > 0)
+                for (auto a : W.altars) if (dist(g.spawns[i], a) <= 1) guard_blocks = true;
+    }
+    if (guard_blocks && S.round - enemy_rise > 100) return false;
     auto& me = cambc::self();
     for (auto altar : W.altars) {
         if (dist(S.me, altar) <= cambc::constants::submit_gems_range) {

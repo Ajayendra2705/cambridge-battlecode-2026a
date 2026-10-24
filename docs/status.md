@@ -1,8 +1,8 @@
-# Status (updated 2026-10-24 23:20 IST)
+# Status (updated 2026-10-25 03:15 IST)
 
 ## Now
 
-- **Ladder bot:** `dr3` (= `bots/main`, resubmitted after every gate; latest version 654 at 23:08 IST on 10-24). No variant of the evening beat it beyond platform noise. Previous: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`). Rank 94 at 16:25 (it fell from 76 while test bots played ranked games during gates).
+- **Ladder bot (Sprint 2 entry):** `cp3` (= `bots/main`, submitted as version 689 at 03:09 IST on 10-25, before the 04:29 IST lock). It is dr3 plus the layers listed in `docs/ARCHITECTURE.md` ("Changes in cp3"). On the same 90 games tonight (b5 + b6) it won 39 against dr3g's 36 (dr3 + the altar-guard fixes): b6 20 vs 15, b5 19 vs 21, better score margin in 49 games and worse in 39 (p = 0.29). Decoded, its champion damage per game is at the rivals' level (13.4k vs 13.8k; dr3 11.1k vs 15.3k). Previous: `dr3` (`bots/pool/dr3`), `fx1`, `fe1`, `hb4`. Rank 77 at 23:25.
 - **Deadline:** Sprint 2 locks Sat 24 Oct 23:59 BST. The bot submitted at that moment is the tournament bot. Sprint 3 locks Sat 31 Oct 23:59 GMT. Season ends 18 Nov.
 - **Event:** cambc2026a, https://2026a.battlecode.co.uk, account Ajay_2705 (team id `118dbffc-87ec-48a6-ac9c-dc1e371ba364`).
 - **Method (batch loop):** panel = the 5 ladder teams at ranks R-15 to R-11, 5 fixed maps each (`data/specs_bN.txt`), base = main on it, improve until 17/25, then confirm on a second map set (`data/specs_bNx.txt`) against the same teams before adopting.
