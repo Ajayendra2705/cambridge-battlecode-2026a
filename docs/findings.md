@@ -82,6 +82,16 @@ Measured facts that shaped the bot, and what we know about stronger teams. Exact
 - Draft on b3: Varg instead of Ryth (dr3) +1 on b3 and -1 on b3x; Marcella second (dr2), Varg second (dr5, dr6), Tavi (dr4), Ryth fifth (dr9) and a Bruiser Varg (dr10) all lost 2-6 on b3. Our Ryth and Vendetta deal half the damage of the rivals' (6.9k vs 11.2k, 5.3k vs 10.5k) but swapping them out does not help.
 - Platform group quota (50 groups per 30-minute window) binds with combined 10-group gates: plan at most 4-5 combined gates per hour.
 
+## Decoded replays (vis_decode / rounds_extract, 50 c5 games on b3 + b3x, 2026-10-24)
+
+- Full per-round state of both teams is now available (`tools/replay/rounds_extract.mjs`, about 14 s per game; `tools/replay/fight_geo.py` for team geometry).
+- Rivals keep more company: mean teammates within 5 tiles 1.0-1.6 vs ours 0.66-1.22; in our losses the gap is 1.01 vs 0.66 after round 300. Champion-rounds with 2+ teammates within 5: theirs 36%, ours 24%.
+- Death hazard depends on company only when enemies are near (about 0 per 1000 rounds with no enemy within 8). With 2 enemies near: alone 5.8 per 1000 rounds, with 2+ mates 2.0. Per situation our hazard equals theirs: we do not fight worse, we are alone more often.
+- Rivals clear camps together: 47% of their camp-hit rounds have a teammate hitting a camp within 3 tiles (59% before r600), ours 36% (43%). Our greedy per-champion score ignores the time a joiner saves its teammates.
+- Copying the sharing rate does not copy the result: a team-optimal sharing credit (sh3) raised our shared camp hits from 37% to 49% (rivals 47%) and lost 18 of 50 platform games against main's 28. Their sharing is a symptom, not the cause.
+- In our losses rivals spend 24-28% of their rounds on our half, we 12% on theirs.
+- Reinforcement is even: around our victims enemy numbers rise from 1.53 to 2.62 in the last 10 rounds, around theirs ours rise from 1.32 to 2.18. Total deaths over the 50 games are equal (398 vs 404).
+
 ## Testing lessons
 
 See `docs/WORKFLOW.md`. In short: local results do not predict the platform for fighting, items or draft. Always run the base at the same time. Never select games by past result. Judge every fix by its own target metric as well as by wins.
