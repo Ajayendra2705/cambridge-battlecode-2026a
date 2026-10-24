@@ -1,6 +1,6 @@
 # Bot architecture (`bots/main`)
 
-`bots/main` is the current best bot. It is byte-identical to the ladder bot `bots/pool/hb4`: the same code split into files by concern. Read this page before you open the code.
+`bots/main` is the current best bot, ladder bot `dr3` (2026-10-24): `pool/hb4` split into files by concern, plus the batch-b1 changes listed under "Changes since hb4". Read this page before you open the code.
 
 ## Game in one paragraph
 
@@ -92,7 +92,21 @@ Logging costs fuel and changes play. Never put a logging variant (`*l`, for exam
 - **Camps:** they never regenerate or chase, sleeping camps never attack, and a woken camp hits the nearest champion. Damage dealt is banked: fight until low, step out of reach, heal, return.
 - **Danger tiles:** after the engage decision, moves avoid tiles where a visible enemy's one-round burst would exceed 30% of our hp.
 
-## Known leftovers (harmless, kept for byte-identity with `pool/hb4`)
+## Changes since hb4 (batches b1-b3, 2026-10-24)
+
+- `targets.h` `pick_group`: groups are scored in order of a cheap upper bound (value x side and mid factors over travel + health / our best damage); a group whose bound cannot beat the best is skipped. Same choices as hb4, far less fuel.
+- `targets.h` travel fields: one distance field per group (rooted at its camps), built on non-pick turns while 50k+ fuel is left. Walking distance is symmetric, so `travel_fields[g]->get(me)` equals the BFS from us; until all exist the BFS is used.
+- `targets.h` futility: `group_invested[g]` counts rounds this champion targeted g since g was last seen down; score / (1 + invested / 150).
+- `targets.h` cover: a cluster (no strength) beside sleeping elks is not covered (elks reach 4 since 3.0 and count as covering camps).
+- `bot.cpp` camp retreat: rejoin only with health for the target group's remaining strength, shared by its claimants, for range + 2 rounds.
+- `bot.cpp` bank: the order-quantity trip cost is the detour through the altar on the way to the target (from the travel fields), not a round trip.
+- `targets.h` middle bonus (x2 for mid groups before r400) only on teams of 5 (fx1): small teams lost the early middle fights.
+- `camps.h`: `clear_stats` range and the static part of `standoff` are cached per group (`static_range`, `static_standoff`).
+- `targets.h` (dr3): the middle bonus for full teams lasts only until this champion has been killed by an enemy; contested groups (side > -3) score / (1 + deaths to enemies in the last 400 rounds).
+- `bot.cpp` (dr3): prey is the lowest-health enemy in reach. `sim.h`: `cached_slots` reads each champion's ability slots once per round.
+- `draft.cpp` (dr3): teams of 5 or fewer draft Heart of Ruin, Vendetta, Vesper, Varg, Marcella (Varg replaced Ryth).
+
+## Known leftovers (harmless)
 
 - `bot.cpp`: an `if (false)` feature-log block and comments naming deleted tools (`hazard.py`, `calib.py`; source in tag `archive/pre-cleanup`).
 - `targets.h`: `capture_priority` check compares against `16 * 16` and never fires. A dead `recent` loop and two orphan comments about the altar guard.

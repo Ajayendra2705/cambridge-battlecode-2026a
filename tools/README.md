@@ -17,7 +17,8 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 
 | Tool | Use |
 |---|---|
-| `gate.sh BOT [submit\|nosubmit] [RUN_NAME]` | Small gate: submit, then play 20 games (4 fixed groups of 5). Logs `RUN_NAME@p8s`. |
+| `gate.sh BOT [submit\|nosubmit] [RUN_NAME]` | Small gate: submit (aborts if the upload fails), then play 20 games (4 fixed groups of 5). Logs `RUN_NAME@p8s`. Override the groups with `GATE_SPECS="TEAM:m1,m2,m3,m4,m5 ..."` and the panel tag with `GATE_PANEL` (rank-30 AlphaSlop on all 40 maps: `GATE_SPECS="$(cat data/specs_r30.txt)" GATE_PANEL=r30`). |
+| `gateq.sh [WAIT_RUN]` | Gate queue: runs `gate.sh` for each "BOT RUN_NAME" line of `data/gate_queue.txt` in order (edit the file to reorder or add while it runs), resubmitting `main` after each (retrying through the 20-uploads-per-hour limit; a gate whose submit fails is requeued; a queued `main` gate skips the upload). Optionally waits for a running gate first. Batch panels: `data/specs_bN.txt`, second map set `data/specs_bNx.txt`, both together `data/specs_bNc.txt`. |
 | `gate_full.sh BOT [submit\|nosubmit] [RUN_NAME]` | Full gate: 100 games against panel 8 (ranks 60-69). `GATE_OFFSET=N` shifts map windows. Logs `RUN_NAME@p8[@N]`. |
 | `rcmp.py BASE NEW...` | Paired comparison of runs on shared (opponent, map) games: flips, margin, sign test. Caches in `data/cache/`; give every run a unique name. |
 | `group.py GROUP...` | Results of match groups. Saves summaries to `data/summaries/`. |

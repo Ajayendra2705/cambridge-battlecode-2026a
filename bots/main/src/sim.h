@@ -32,6 +32,22 @@ template <class C> std::array<SimSlot, 2> read_slots(const C& c) {
     return out;
 }
 
+// Fuel: a champion's slots are read with about 14 host calls; enemies were read twice per turn (damage prediction and
+// the fight sim). Their cooldowns cannot change during our turn, so one read per champion per round is exact.
+std::array<SimSlot, 2> cached_slots(const cambc::champion& c) {
+    struct Entry { std::uint32_t id; int round; std::array<SimSlot, 2> slots; };
+    static std::vector<Entry> cache;
+    const std::uint32_t id = handle_id(c);
+    const int round = static_cast<int>(cambc::round_number());
+    for (auto& e : cache)
+        if (e.id == id) {
+            if (e.round != round) e.slots = read_slots(c), e.round = round;
+            return e.slots;
+        }
+    cache.push_back({id, round, read_slots(c)});
+    return cache.back().slots;
+}
+
 struct SimResult { int dead[2] = {0, 0}; float hp_frac[2] = {1, 1}; bool unit0_dead = false; };
 
 // side 0 = us (unit 0 is this champion), side 1 = them; `them_first` makes the enemy act first each round.

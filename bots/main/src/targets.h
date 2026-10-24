@@ -32,25 +32,68 @@ bool solo_phase() {
     return true;
 }
 
+// Fuel: the BFS from us costs about 30k on big maps. Walking distance is symmetric, so the distance from us to a
+// group's nearest camp is that group's own field (rooted at its camps) read at our tile: same numbers for one read
+// each. The fields are built once, one per turn without a pick (build_travel_field); until all exist we use the BFS.
+std::vector<std::unique_ptr<distance_field>> travel_fields;
+int travel_built = 0;
+void build_travel_field() {
+    if (travel_fields.empty()) travel_fields.resize(W.groups.size());
+    if (travel_built >= static_cast<int>(W.groups.size())) return;
+    bitboard roots;
+    roots.clear();
+    for (auto s : W.groups[travel_built].spawns) roots.set(s);
+    auto f = std::make_unique<distance_field>();
+    bitboard visited;
+    f->compute(W.terrain & ~roots, roots, visited);
+    travel_fields[travel_built++] = std::move(f);
+}
+
+std::vector<int> group_invested;  // Per group: rounds we targeted it since it was last seen defeated.
 int pick_group(int current) {
     const int round = S.round;
     std::uint64_t gd_fuel = 0;
     const auto pf0 = cambc::fuel_remaining();
-    const auto f = from_me_field();
+    const bool fields_ready = travel_built >= static_cast<int>(W.groups.size()) && travel_built > 0;
+    const distance_field f = fields_ready ? distance_field{} : from_me_field();
     const auto pf1 = cambc::fuel_remaining();
     const float dps = my_dps();
+    // Fastest our damage can take a group down, for the bound: its health over our best damage per round.
+    const double bound_dps = std::max({1.0, static_cast<double>(dps), static_cast<double>(my_spell_dps())});
     const int team_alive = alive_allies();
     const bool solo = solo_phase();
     double best = 0, current_score = 0;
     int best_i = -1, best_n = 1, current_n = 1;
+    // Fuel: big_world and road_of_riches ran out of fuel 200-380 times per game in this loop. Score every group's
+    // upper bound first (travel weight, side and mid factors; the rest only lowers a score), then do the costly
+    // estimate in bound order and skip groups whose bound cannot beat the best so far.
+    struct Cand { double ub, value; int i, travel; };
+    std::vector<Cand> cands;
     for (int i = 0; i < static_cast<int>(W.groups.size()); ++i) {
         const auto& g = W.groups[i];
-        const int travel = travel_to(f, g);
+        const int travel = fields_ready ? travel_fields[i]->get(S.me) : travel_to(f, g);
         if (travel == UNREACH) continue;
         // Before the first emblem gold is worth a gem: it buys the stats that win the next fights (top-10 teams take
         // 6.9 gold clusters and 7.0 small groups before round 300, we took 4.0 and 3.5).
         const double value = g.gems + g.gold * (solo ? 2.0 : gold_weight(round));
         if (value <= 0) continue;
+        const int side = W.group_side[i];
+        const bool safe_speed = side <= 0 || round - enemy_seen_round > 30;
+        // Small teams lose the early middle fights (b2: 3-4 champion maps); a full team pushes it only until an enemy
+        // has killed this champion (the middle is contested: b3 3.5 deaths per lost game before r300).
+        const bool mid_push = W.team_count > 4 && death_rounds.empty();
+        double mult = mid_push && round < 400 && side >= -6 && side <= 6 && travel <= 20 ? 2.0 : 1.0;
+        if (side > 0) mult /= 1.0 + std::min(side, 20) / 20.0;
+        // Clearing takes at least its health over our damage (champion-rounds), except a defeated group: capture only.
+        const double fight = g.state == 1 ? 0.0 : g.hp_left() / bound_dps;
+        cands.push_back({value * mult / ((safe_speed ? 1.0 : 0.7) * travel + fight + 5.0), value, i, travel});
+    }
+    std::sort(cands.begin(), cands.end(), [](const Cand& a, const Cand& b) { return a.ub > b.ub; });
+    for (const auto& cand : cands) {
+        const int i = cand.i, travel = cand.travel;
+        const double value = cand.value;
+        if (i != current && cand.ub <= best) continue;
+        const auto& g = W.groups[i];
         // Speed where it is safe: on our half, or with no enemy seen for 30 rounds, favour near groups and never wait
         // for respawns (farm race vs starter: -4% rounds). Contested groups keep the careful weights: there the faster
         // picks walked into enemies (concentrated_wealth, corridors: flee deaths +21%).
@@ -62,7 +105,10 @@ int pick_group(int current) {
             const auto& cb = W.groups[b];
             if (cb.state != 0) continue;
             const bool strong = *std::max_element(cb.strength.begin(), cb.strength.end()) >= 100.0f;
-            if (!strong || round - cb.awake_round <= 10) covered = true;
+            // Elks reach 4 since 3.0 and count as covering camps. Asleep they hit nobody: a cluster (no strength, cleared
+            // in a few hits) beside sleeping elks is free (starvation: the enemy farmed one 19 times, we never did).
+            const bool cluster = *std::max_element(g.strength.begin(), g.strength.end()) <= 0.0f;
+            if ((!strong && !cluster) || round - cb.awake_round <= 10) covered = true;
         }
         // The altar guard is itself a monolith group: its own range must not exclude it.
         if (covered) continue;
@@ -116,17 +162,21 @@ int pick_group(int current) {
         if (side > -8) {
             int recent = 0;
             for (int r : death_rounds) if (round - r < 400) ++recent;
-            (void)recent;  // Aggressive: keep contesting even after deaths.
+            // Each recent death to an enemy (last 400 rounds) says they hold that ground: contested groups cost more.
+            if (side > -3) score /= 1.0 + recent;
         }
         if (side > 0) score /= 1.0 + std::min(side, 20) / 20.0;
         // Take the middle first: in losses the enemy took 4.9 mid groups before round 300 (1.9 in our wins) and killed
         // us twice there; we farmed our own half. Contested groups are worth more to us before they are worth it to them.
-        if (round < 400 && side >= -6 && side <= 6 && travel <= 20) score *= 2.0;
+        if (W.team_count > 4 && death_rounds.empty() && round < 400 && side >= -6 && side <= 6 && travel <= 20) score *= 2.0;
         // Avoid walking into enemy groups; a lone enemy matters less than several.
         const auto gd0 = cambc::fuel_remaining();
         const double danger = sightings.empty() ? 0.0 : group_danger(g);
         gd_fuel += gd0 - cambc::fuel_remaining();
         if (danger > 0) score /= 1.0 + danger * 0.25;
+        // Futility: rounds this champion already spent on the group since it last went down. Platform starvation and
+        // rows: the team worked one contested group for 250-400 rounds per champion while the enemy farmed and took it.
+        if (!group_invested.empty()) score /= 1.0 + group_invested[i] / 150.0;
         // The altar guard blocks every tribute: its worth grows with the gems we cannot bank, and it takes the team.
         if (i == current) current_score = score, current_n = score_n;
         if (score > best) best = score, best_i = i, best_n = score_n;

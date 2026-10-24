@@ -12,7 +12,8 @@ void play_draft() {
     const auto chosen = cambc::draft::current_draft(cambc::team::ally);
     // Small teams (3-4 picks) need bodies that survive alone: no linked pair.
     // Engine 3.0.4 meta (top-10 ranked drafts, 2026-10-21): Heart of Ruin, Vendetta, Vesper, Ryth, Marcella.
-    static constexpr std::array small_pref{cd::heart_of_ruin, cd::vendetta, cd::vesper_vale, cd::ryth, cd::marcella};
+    // Batch b3: our Ryth dealt 6854 damage per game against theirs 11207 (K/D 1.3/2.6); rivals draft Varg often.
+    static constexpr std::array small_pref{cd::heart_of_ruin, cd::vendetta, cd::vesper_vale, cd::varg, cd::marcella};
     if (cambc::draft::team_size() <= 5)
         for (auto pick : small_pref)
             if (std::find(chosen.begin(), chosen.end(), pick) == chosen.end()) {

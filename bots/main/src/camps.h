@@ -25,10 +25,18 @@ float camp_incoming(vec2 at) {
 
 // Estimated rounds to clear a group with n champions, including heal trips.
 struct ClearStats { double hp, strength, hardest; bool several; int range = 3; };
+// Fuel: the parts of clear_stats and standoff that never change are computed once per group.
+std::vector<int> static_range;          // Max camp reach of the group.
+std::vector<signed char> static_standoff;  // -1 unknown, else: full strength >= 300 and no camp reaching 4+.
 ClearStats clear_stats(const Group& g) {
-    int range = CAMP_RANGE;
     const int gi = static_cast<int>(&g - W.groups.data());
-    for (const auto& c : W.strong_camps) if (c.group == gi) range = std::max(range, c.range);
+    if (static_range.empty()) static_range.assign(W.groups.size(), -1);
+    if (static_range[gi] < 0) {
+        int r = CAMP_RANGE;
+        for (const auto& c : W.strong_camps) if (c.group == gi) r = std::max(r, c.range);
+        static_range[gi] = r;
+    }
+    const int range = static_range[gi];
     return {g.hp_left(), g.strength_left(), g.hardest(), g.spawns.size() > 1, range};
 }
 
@@ -48,14 +56,18 @@ double clear_time(const ClearStats& g, int n, float dps, float hp, int home_dist
 // Groups too strong to stand next to (monoliths): only casters work on them, from spell range, where the camps
 // cannot hit back. Camps never regenerate, so the damage keeps.
 bool standoff(const Group& g) {
-    float full = 0;
-    for (float s : g.strength) full += s;
-    if (g.hardest() >= 150.0f || full < 300.0f) return false;
-    // Only when casters really outrange it: spells reach 4, so every attacking camp must reach less (elks reach 4).
     const int gi = static_cast<int>(&g - W.groups.data());
-    for (const auto& k : known_camps)
-        if (k.group == gi && k.str > 0 && k.range >= 4) return false;
-    return true;
+    if (static_standoff.empty()) static_standoff.assign(W.groups.size(), -1);
+    if (static_standoff[gi] < 0) {
+        float full = 0;
+        for (float s : g.strength) full += s;
+        bool ok = full >= 300.0f;
+        // Only when casters really outrange it: spells reach 4, so every attacking camp must reach less (elks reach 4).
+        for (const auto& k : known_camps)
+            if (k.group == gi && k.str > 0 && k.range >= 4) ok = false;
+        static_standoff[gi] = ok ? 1 : 0;
+    }
+    return static_standoff[gi] == 1 && g.hardest() < 150.0f;
 }
 
 // Gold buys stats early; late it only matters as a tiebreak.

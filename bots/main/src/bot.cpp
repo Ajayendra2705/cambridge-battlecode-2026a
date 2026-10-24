@@ -184,7 +184,7 @@ void Bot::play_turn() {
             const bool basic = e.range <= 1 ? d <= 2 : d <= e.range;
             float spell = 0;
             if (d <= 5)
-                for (const auto& sl : read_slots(e.ch)) if (sl.cd <= 0) spell = std::max(spell, sl.dmg);
+                for (const auto& sl : cached_slots(e.ch)) if (sl.cd <= 0) spell = std::max(spell, sl.dmg);
             pred += (basic ? e.str : 0.0f) + spell;
         }
         const float actual = std::max(0.0f, taken - incoming);
@@ -209,7 +209,7 @@ void Bot::play_turn() {
         enemy_dps += e.dps;
         ++enemy_count;
         // Focus whoever dies fastest relative to the damage they deal.
-        if (!safe_home && dist(p, e.pos) <= std::max(S.range, 4) && (!prey || e.dps / e.hp * (1.0f + e.gems / 40.0f) > prey->dps / prey->hp * (1.0f + prey->gems / 40.0f))) prey = &e;
+        if (!safe_home && dist(p, e.pos) <= std::max(S.range, 4) && (!prey || e.hp < prey->hp)) prey = &e;  // Rivals hit the lowest-health enemy in reach.
     }
     // An enemy fighting a nearby ally is our fight too: go and help.
     if (!prey)
@@ -248,11 +248,11 @@ void Bot::play_turn() {
         };
         add(0, S.hp, S.str, S.range, p, read_slots(cambc::self()), cambc::self().champion_name());
         for (const auto& a : S.allies)
-            if (dist(p, a.pos) <= 8) add(0, a.hp, a.str, a.range, a.pos, read_slots(a.ch), a.type);
+            if (dist(p, a.pos) <= 8) add(0, a.hp, a.str, a.range, a.pos, cached_slots(a.ch), a.type);
         for (const auto& e : S.enemies)
             if (dist(p, e.pos) <= 8 && !(W.enemy_spawn.is_set(e.pos) && dist(p, e.pos) > e.range))
                 {
-                    auto sl = read_slots(e.ch);
+                    auto sl = cached_slots(e.ch);
                     for (auto& x : sl) x.dmg *= cal_f;
                     add(1, e.hp, e.str * cal_f, e.range, e.pos, sl, e.type);
                 }
@@ -447,7 +447,14 @@ void Bot::play_turn() {
         }
         // Out of reach: rejoin if still healthy, otherwise go home to heal.
         const float hardest = current_target >= 0 ? W.groups[current_target].hardest() : 0.0f;
-        if (S.hp >= S.max_hp * (quiet ? 0.3f : 0.5f) && S.hp >= hardest * (quiet ? 4.0f : 6.0f) + 40.0f) {
+        // Rejoin only with health for every camp of the group (shared among its claimants) for the walk in, a hit and
+        // the walk out: rejoining at 30-50% against 4 elks (240 per round) killed us (local interlock, rows, shortcut).
+        float pressure = 0;
+        if (current_target >= 0) {
+            const auto& tg = W.groups[current_target];
+            pressure = tg.strength_left() * (clear_stats(tg).range + 2) / std::max(1, claimants(current_target));
+        }
+        if (S.hp >= S.max_hp * (quiet ? 0.3f : 0.5f) && S.hp >= hardest * (quiet ? 4.0f : 6.0f) + 40.0f && S.hp >= pressure + 40.0f) {
             retreating = false;
         } else {
             write_claim(-1);
@@ -487,7 +494,18 @@ void Bot::play_turn() {
         const double c = (collected + 0.15 * 200.0) / (alive_rounds + 200.0);
         const double h = (my_deaths + 1.0) / (alive_rounds + 600.0) + 1.0 / std::max(1.0, t_end);
         const double m = 1.0 + (kill_deaths + 0.85 * 2.0) / (my_deaths + 2.0);
-        const double tau = 2.0 * altar_d + (gems + 9) / 10 + 1;
+        // Trip cost: the detour through the altar on the way to our target (altar beside the route costs little), not a
+        // round trip. Rivals tribute 2-3x as often (road_of_riches by r600: 30 tributes vs our 0, altars mid-map).
+        double walk = 2.0 * altar_d;
+        if (current_target >= 0 && travel_built >= static_cast<int>(W.groups.size())) {
+            const auto& tg = W.groups[current_target];
+            int target_altar = UNREACH;
+            for (auto sp : tg.spawns) target_altar = std::min<int>(target_altar, W.altar_field.get(sp));
+            const int to_target = travel_fields[current_target]->get(p);
+            if (target_altar != UNREACH && to_target != UNREACH && altar_d != UNREACH)
+                walk = std::min(walk, std::max(0.0, static_cast<double>(altar_d + target_altar - to_target)));
+        }
+        const double tau = walk + (gems + 9) / 10 + 1;
         const double batch = std::sqrt(2.0 * c * tau / (m * h));
         if ((gems >= batch && S.round >= bank_blocked_until) || endgame) {
             // Give up for a while if the way to the altar makes no progress (blocked or contested).
@@ -541,8 +559,13 @@ void Bot::play_turn() {
         current_target = pick_group(current_target);
         last_pick_round = S.round;
         last_pick_state = current_target >= 0 ? W.groups[current_target].state : -1;
+    } else if (cambc::fuel_remaining() > 50000) {
+        build_travel_field();  // A big-map field costs about 30k: build only with room left this turn.
     }
     write_claim(current_target);
+    if (group_invested.empty()) group_invested.assign(W.groups.size(), 0);
+    for (size_t i = 0; i < W.groups.size(); ++i) if (W.groups[i].state != 0) group_invested[i] = 0;
+    if (current_target >= 0 && W.groups[current_target].state == 0) ++group_invested[current_target];
     STAGE("camp fight");
     if (current_target < 0) {
         if (gems > 0) bank_gems();

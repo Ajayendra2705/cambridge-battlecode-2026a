@@ -41,8 +41,12 @@ c9 -> c12 -> c14 (Bruiser health tier, shared captures) -> c25 (max-2 capture sh
 | **ts1** | speed weights only where safe (own half or quiet) | p7 20 vs 15 /45 |
 | **gb2** | capture sharing by fewest owned shards (fixes Ryth/Marcella gold starvation) | L7 23 vs 20 /45 |
 | **hb4** | help call: caught champion on our half writes its position, healthy teammates within 14 come | p7@20 34 vs 29 /90 |
+| **fe1** (2026-10-24) | hb4 + exact fuel fixes (pick_group branch-and-bound, per-group travel fields built when fuel allows), futility scoring (rounds sunk into a group lower its score), clusters beside sleeping elks farmable, camp-retreat rejoin needs health for the whole group, bank trip cost = detour via the altar | b1 (ranks 81-85) 17 vs 12 /25; b1x 13 vs 9 /25; local 414/560 (hb4 384) |
+| **fx1** (2026-10-24) | fe1 + no early middle bonus for teams of 4 or fewer, static parts of standoff / clear_stats cached (exact fuel cut) | b2 (ranks 83-87) 19 vs 11 /25; b2x 15 vs 15 /25 |
+| **dr3** (2026-10-24 16:56) | fx1 + early middle bonus for full teams only until killed, lowest-health prey, contested groups cost more after recent deaths, ability-slot cache, Varg drafted instead of Ryth | b3 14 vs 12, b3x 13 vs 11, b4 14 vs 13 (41/75 vs 36); below the 17/25 bar, adopted by the user's call |
 
-`hb4` is the ladder bot and `bots/main` (byte-identical, split into files).
+
+`dr3` is the ladder bot and `bots/main` (submitted as version 619 on 2026-10-24). Previous ladder bots: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`, same wasm as the old split `bots/main`).
 
 Also in the pool: **tf1** (local default pool), **bt1** and **bt8** (best local banking variants of hb4: 405 and 410 of 560 locally, no platform gain; kept as strong local opponents).
 
