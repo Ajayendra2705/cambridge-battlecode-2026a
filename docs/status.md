@@ -1,8 +1,8 @@
-# Status (updated 2026-10-24 17:00 IST)
+# Status (updated 2026-10-24 22:15 IST)
 
 ## Now
 
-- **Ladder bot:** `dr3` (= `bots/main`, submitted as version 619 at 16:56 IST on 10-24). Previous: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`). Rank 94 at 16:25 (it fell from 76 while test bots played ranked games during gates).
+- **Ladder bot:** `dr3` (= `bots/main`, resubmitted after every gate; latest version 646 at 22:00 IST on 10-24). No variant of the evening beat it beyond platform noise. Previous: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`). Rank 94 at 16:25 (it fell from 76 while test bots played ranked games during gates).
 - **Deadline:** Sprint 2 locks Sat 24 Oct 23:59 BST. The bot submitted at that moment is the tournament bot. Sprint 3 locks Sat 31 Oct 23:59 GMT. Season ends 18 Nov.
 - **Event:** cambc2026a, https://2026a.battlecode.co.uk, account Ajay_2705 (team id `118dbffc-87ec-48a6-ac9c-dc1e371ba364`).
 - **Method (batch loop):** panel = the 5 ladder teams at ranks R-15 to R-11, 5 fixed maps each (`data/specs_bN.txt`), base = main on it, improve until 17/25, then confirm on a second map set (`data/specs_bNx.txt`) against the same teams before adopting.
@@ -17,6 +17,10 @@ Work only on gems collected until we match the rivals; no other factor until the
 
 - Gem targets (rival winners, 94 decoded rival-vs-rival ranked games, by r600): collected 360, tributed 279, lost on death 17, bag 64. ge4: 319 / 200 / 42 / 77.
 - Next phase (team request, after about 3-4 hours on gems): replace hand-tuned constants with functions of the variables they depend on (for example a death hazard from visible enemies, distance and health instead of fixed multipliers; gold value as the marginal win value of the next item). One constant family at a time, each derived, then tested.
+
+- Result of the gem phase (18:50-22:15): collection matched (ge4: 140 vs 127 by r300 on b5). Tribute conversion not matched (200 vs 273 by r600); the gap is gems lost when carriers die (42 vs 15). Eight banking and carrier-safety variants gave no platform gain. Kept as candidate layers: `bots/exp/ge4` (gold not doubled before the first emblem, no mid-push bonus) and `bots/exp/ab1` (ge4 + bank when the enemy tributes past an unseen altar guard).
+- Measurement limit: a 50-game panel has about 2.2 wins of noise per run (26 of 50 b5 games swing between near-identical bots; findings). Judge changes on the always-lost games or on many more games, not on 50-game win counts.
+- Next: deaths in champion fights (3.1 vs 2.0 per game by r600; contest: 35-43 deaths per game in fights, 0 gems); always-lost maps one at a time (findings, platform noise section).
 
 ## Batch b4 (2026-10-24 16:25 IST): check run
 
