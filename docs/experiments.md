@@ -11,7 +11,7 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | Bot | Parent | Change | Local | Platform | Verdict |
 |---|---|---|---|---|---|
 | fx1 (base) | - | main on b4 | - | b4 13/25 | base |
-| gm1 | dr3 | no gold-first opening: gold at the normal weight from round 0 (we out-build rivals but collect fewer gems early) | quick 185 (dr3 180) | running (b3 + b4) | open |
+| gm1 | dr3 | no gold-first opening: gold at the normal weight from round 0 (we out-build rivals but collect fewer gems early) | quick 185 (dr3 180) | b3 12, b4 12: 24/50 vs dr3 28 (dr3's 28 is inflated: it was chosen on these games) | retest on fresh panel b5 |
 | bk4 | dr3 | bank batch capped at 25 gems before r600 (our first tribute median r279 with about 50 gems; rivals r102-130 with about 22) | quick 178 (dr3 180), gems lost 74 vs 47 | b3 11, b4 12: 23/50 vs dr3 28 | R (forced early tributes lose again, as bk1-3) |
 | sh1 / sh2 | dr3 | contested group already claimed by a teammate x1.25 / x1.6 before r600 | quick 187 / - | shared camp hits locally 39% / 35% vs main 37%: metric did not move | R (not gated) |
 | sh3 | dr3 | team-optimal sharing: joining k teammates on a group credits the k x (clear(k) - clear(k+1)) rounds it saves them (greedy scores ignored it). Shared camp hits locally 37% to 49% (rivals 47%; early 57% vs 59%, late 37% vs 39%) | quick 170 (dr3 180) | b3 6 vs dr3 14, b4 12 vs 14: 18/50 vs 28 | R (matching the rivals' sharing rate made us much worse) |
@@ -287,3 +287,18 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 ## Engine 2.x era (2026-10-18 to 10-20)
 
 Variants c1-c37, e_* (e_bank20, e_fuel, e_power, e_flee, e_jung, e_jung1, e_hp, e_stand, e_prism, e_pf, e_sp), j_* (j_end, j_end2, j_goldmap, j_prism, j_standh), k_danger0/1/25, k_stall12, jc_*. Accepted: c36, c37, e_jung, j_standht. Lessons are in `docs/findings.md`. Results are in `docs/journal/findings_log.md`.
+
+## Batch b5 (fresh panel, ranks 72-77 without 75, two 5-map windows; counters the winner's curse of b3/b4)
+
+| bot | parent | change | local | platform | verdict |
+|---|---|---|---|---|---|
+| dr3 (main) | - | base | - | b5 23/50; gems 31450 vs 39536, deaths 515 vs 394 | base |
+| gm1 | dr3 | no solo x2 gold weight | quick 185 | b34 24/50; b5 21/50 (dr3 23) | rejected on both panels |
+| bk4 | dr3 | bank batch capped at 25 gems before round 600 | see b34 row | b34 23/50; b5 21/50 (dr3 23) | rejected on both panels: earlier banking alone does not close the gem gap |
+| hp1 | dr3 | help call when an enemy is within 5 (was 3); answer from up to 22 tiles (was 14) with under 150 gems (was 100) | quick 186 | not gated | dropped: the team chose to work on gem collection only |
+| ge1 | dr3 | = gm1 (gold not doubled before the first emblem) | quick 185; gems collected by r300 145 vs main 121 (coll_at.py) | b5 as gm1: r300 gems 123 vs dr3 108 (rivals 133) | gem metric up; base of ge4 |
+| ge2 | dr3 | gold x0.5 before the first emblem (cluster 10 vs gem 7) | quick 181; r300 gems 137 | - | dropped: ge1 collects more |
+| ge3 | dr3 | gold worth 0 before the first emblem | quick 138; r300 gems 158 but whole-game collection 971 vs 1072 | - | broken: no gold, no items, gems fall later |
+| ge4 | ge1 | no mid-push x2 bonus | quick 183; r300 gems 151, r600 375 (main 121 / 345) | b5 23/50 (= dr3). Collected gems matched: r300 140 vs rivals 127 (dr3 108 vs 133), r600 319 vs 320. Tributed still behind: r300 62 vs 89, r600 200 vs 256; we lose 42 gems per game on death by r600 (rivals 12) | gem-collection gap closed; base for the tribute (conversion) work |
+| ge5 | ge4 | shop trip at 250 gold (was 150) unless within 8 of spawn | quick 183; r300 150, r600 376 | - | no gain over ge4 |
+| ge6 | ge4 | bk4 batch cap (25 gems before r600) | quick 168; tributed r300 90 vs ge4 71, but collected r600 354 vs 375 | - | rejected: banking more often costs collection |

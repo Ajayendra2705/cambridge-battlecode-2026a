@@ -9,6 +9,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | Tool | Use |
 |---|---|
 | `multi.py CANDS [--pool a,b] [--maps m1,m2] [--jobs 6] [--keep]` | Every candidate vs every pool bot on every map, both sides. Default: 7 pool bots x 40 maps = 560 games per candidate. Prints wins, kills, deaths, flee deaths, margin, gold, captures, gems collected/lost/carried, and per-champion damage. |
+| `coll_at.py RUNDIR [ROUND...]` | Gems collected by our team and the opponent by each round (default 300, 600), per candidate, from a `multi.py` run's replay timelines. The early-gem metric; matches the platform direction (gm1/ge1: +24 locally, +15 on b5). |
 | `rr.py BOTS [--jobs 6]` | Round robin among the given bots: win matrix and new-vs-previous rows. |
 | `log.py [bundle] [regex]` | Print a team's stdout from the newest local replay bundle. |
 | `allmaps.txt` | All 40 map names (default `--maps`). |

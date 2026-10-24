@@ -101,3 +101,10 @@ See `docs/WORKFLOW.md`. In short: local results do not predict the platform for 
 ## Outside references
 
 Past postmortems and rival repositories (including measured top-team policies from decoded replays) are listed in `docs/journal/references.md`.
+
+## Gem collection vs rivals (b5 panel, ranks 72-77, decoded replays, 2026-10-24 evening)
+
+- dr3 collected 108 gems by round 300 vs the rivals' 133; the gap opens in the first 50 rounds (9 vs 15). Before the first emblem dr3 valued gold double, so a gold cluster scored 40 against a gem cluster's 7: it opened on gold clusters (99 first hits vs 65) and elks (46 vs 24), the rivals on wolves and gem clusters.
+- ge4 (gold not doubled, no mid-push bonus) collected 140 by r300 vs the rivals' 127 and 319 vs 320 by r600: collection matched. Wins stayed 23/50.
+- What remains is conversion: by r600 ge4 tributed 200 vs 256. We lose 42 gems per game on death (rivals 12) and carry 77 in bags (rivals 51).
+- Local `tools/local/coll_at.py` reproduces the direction (ge1/gm1 +24 collected by r300 locally, +15 on the platform).
