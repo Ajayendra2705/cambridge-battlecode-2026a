@@ -14,6 +14,7 @@ bots/
   starter/       engine starter bots (cpp, rust)
   exp/           your temporary variants (gitignored)
 tools/           scripts by purpose: local/ platform/ variant/ replay/ (tools/README.md)
+ml/              learned fight decision, Python + uv (ml/README.md)
 results/
   gate.log       every platform test run: "RUN@PANEL group-ids" (input to rcmp.py, gdl.py)
   analysis/      saved outputs of local runs and replay analyses
