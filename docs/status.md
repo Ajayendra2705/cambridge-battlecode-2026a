@@ -1,8 +1,8 @@
-# Status (updated 2026-10-24 22:15 IST)
+# Status (updated 2026-10-24 23:20 IST)
 
 ## Now
 
-- **Ladder bot:** `dr3` (= `bots/main`, resubmitted after every gate; latest version 646 at 22:00 IST on 10-24). No variant of the evening beat it beyond platform noise. Previous: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`). Rank 94 at 16:25 (it fell from 76 while test bots played ranked games during gates).
+- **Ladder bot:** `dr3` (= `bots/main`, resubmitted after every gate; latest version 654 at 23:08 IST on 10-24). No variant of the evening beat it beyond platform noise. Previous: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`). Rank 94 at 16:25 (it fell from 76 while test bots played ranked games during gates).
 - **Deadline:** Sprint 2 locks Sat 24 Oct 23:59 BST. The bot submitted at that moment is the tournament bot. Sprint 3 locks Sat 31 Oct 23:59 GMT. Season ends 18 Nov.
 - **Event:** cambc2026a, https://2026a.battlecode.co.uk, account Ajay_2705 (team id `118dbffc-87ec-48a6-ac9c-dc1e371ba364`).
 - **Method (batch loop):** panel = the 5 ladder teams at ranks R-15 to R-11, 5 fixed maps each (`data/specs_bN.txt`), base = main on it, improve until 17/25, then confirm on a second map set (`data/specs_bNx.txt`) against the same teams before adopting.
@@ -20,7 +20,8 @@ Work only on gems collected until we match the rivals; no other factor until the
 
 - Result of the gem phase (18:50-22:15): collection matched (ge4: 140 vs 127 by r300 on b5). Tribute conversion not matched (200 vs 273 by r600); the gap is gems lost when carriers die (42 vs 15). Eight banking and carrier-safety variants gave no platform gain. Kept as candidate layers: `bots/exp/ge4` (gold not doubled before the first emblem, no mid-push bonus) and `bots/exp/ab1` (ge4 + bank when the enemy tributes past an unseen altar guard).
 - Measurement limit: a 50-game panel has about 2.2 wins of noise per run (26 of 50 b5 games swing between near-identical bots; findings). Judge changes on the always-lost games or on many more games, not on 50-game win counts.
-- Next: deaths in champion fights (3.1 vs 2.0 per game by r600; contest: 35-43 deaths per game in fights, 0 gems); always-lost maps one at a time (findings, platform noise section).
+- Fight phase (22:15-23:20): we lose fights we start (0.36-0.55 own deaths vs 0.31-0.38 kills per start; rivals 0.2 vs 0.5-0.64) because we hit less (124 vs 208 champion hits per game by r800; adjacent enemy: we hit 58% of rounds, rivals 82%). fh1 (free hit before kiting) and fh2 (melee hits before fleeing) raise hits and cut deaths on b5 and b34, and fh2 is best locally (194/240), but platform wins equal ge4 (25/50 on b34 vs dr3's selection-inflated 28). Candidate kept as `bots/pool/fh2`.
+- Next: build on `bots/pool/fh2`: the remaining hit gap (ranged champions, idle rounds near enemies), eight-style 5-stacks (rg1's early-threat rule rarely fired), then a larger platform sample before adopting. Old next item: deaths in champion fights (3.1 vs 2.0 per game by r600; contest: 35-43 deaths per game in fights, 0 gems); always-lost maps one at a time (findings, platform noise section).
 
 ## Batch b4 (2026-10-24 16:25 IST): check run
 

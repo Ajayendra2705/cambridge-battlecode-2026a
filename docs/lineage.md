@@ -48,7 +48,7 @@ c9 -> c12 -> c14 (Bruiser health tier, shared captures) -> c25 (max-2 capture sh
 
 `dr3` is the ladder bot and `bots/main` (submitted as version 619 on 2026-10-24). Previous ladder bots: `fx1` (`bots/pool/fx1`), `fe1` (`bots/pool/fe1`), `hb4` (`bots/pool/hb4`, same wasm as the old split `bots/main`).
 
-Also in the pool: **tf1** (local default pool), **bt1** and **bt8** (best local banking variants of hb4: 405 and 410 of 560 locally, no platform gain; kept as strong local opponents).
+Also in the pool: **fh2** (candidate, never main: dr3 + gold not doubled before the first emblem, no mid-push bonus, bank past an unseen altar guard once the enemy tributes, take free hits before kiting, melee hits before fleeing; quick 194/240; platform b5 / b34 wins equal to ge4, but fewer deaths, more hits and more gems tributed on both panels; see experiments 2026-10-24 evening), **tf1** (local default pool), **bt1** and **bt8** (best local banking variants of hb4: 405 and 410 of 560 locally, no platform gain; kept as strong local opponents).
 
 ## Lineage check
 
