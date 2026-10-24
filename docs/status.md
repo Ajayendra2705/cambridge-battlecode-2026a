@@ -2,7 +2,7 @@
 
 ## Now
 
-- **Ladder bot (Sprint 2 entry):** `cp3` (= `bots/main`, submitted as version 689 at 03:09 IST on 10-25, before the 04:29 IST lock). It is dr3 plus the layers listed in `docs/ARCHITECTURE.md` ("Changes in cp3"). On the same 90 games tonight (b5 + b6) it won 39 against dr3g's 36 (dr3 + the altar-guard fixes): b6 20 vs 15, b5 19 vs 21, better score margin in 49 games and worse in 39 (p = 0.29). Decoded, its champion damage per game is at the rivals' level (13.4k vs 13.8k; dr3 11.1k vs 15.3k). Previous: `dr3` (`bots/pool/dr3`), `fx1`, `fe1`, `hb4`. Rank 77 at 23:25.
+- **Ladder bot (Sprint 2 entry):** `cp3` (= `bots/main`, submitted as version 689 at 03:09 IST on 10-25, before the 04:29 IST lock). It is dr3 plus the layers listed in `docs/ARCHITECTURE.md` ("Changes in cp3"). On the same 90 games tonight (b5 + b6) it won 39 against dr3g's 36 (dr3 + the altar-guard fixes): b6 20 vs 15, b5 19 vs 21, better score margin in 49 games and worse in 39 (p = 0.29). Decoded, its champion damage per game is at the rivals' level (13.4k vs 13.8k; dr3 11.1k vs 15.3k). Full local check: 406/560 (dr3 391), no bot faults. Previous: `dr3` (`bots/pool/dr3`), `fx1`, `fe1`, `hb4`. Rank 77 at 23:25.
 - **Deadline:** Sprint 2 locks Sat 24 Oct 23:59 BST. The bot submitted at that moment is the tournament bot. Sprint 3 locks Sat 31 Oct 23:59 GMT. Season ends 18 Nov.
 - **Event:** cambc2026a, https://2026a.battlecode.co.uk, account Ajay_2705 (team id `118dbffc-87ec-48a6-ac9c-dc1e371ba364`).
 - **Method (batch loop):** panel = the 5 ladder teams at ranks R-15 to R-11, 5 fixed maps each (`data/specs_bN.txt`), base = main on it, improve until 17/25, then confirm on a second map set (`data/specs_bNx.txt`) against the same teams before adopting.
@@ -33,6 +33,18 @@ In order of expected value, each with its measured gap (details in `docs/finding
 ## Batch b6 (2026-10-24 23:25 IST, rank 77)
 
 Panel ranks 60, 62-65 (61 KKB and 66 The Mania have no eligible bot): 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters, HouseOfCoders, The Party of Heroes; two 5-map windows each covering all 40 maps (`data/specs_b6.txt`, seed 6060). First run: dr3 vs pool/fh2.
+
+Result (closed 03:09 on 10-25): wins on the same games, tonight's runs only:
+
+| bot | b6 (40) | b5 (50) | total |
+|---|---|---|---|
+| dr3g (dr3 + guard fixes, fresh base) | 15 | 21 | 36 |
+| cf1 (dr3 + fight layers + guard) | 18 | 19 | 37 |
+| **cp3** (adopted) | **20** | 19 | **39** |
+| sp3 / sp1 / ef3 | 18 / 17 / 17 | - / - / 18 | - |
+| fh2 | 13 | 20 | 33 |
+
+dr3's evening b5 run (23) no longer reproduces: only 19 of 50 scores match the re-run, so b5 opponents changed bots in between. b6 matched in 29 of 40.
 
 ## Single factor: gem collection (team decision, 2026-10-24 18:50 IST)
 
