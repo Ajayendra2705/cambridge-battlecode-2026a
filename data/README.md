@@ -11,4 +11,7 @@ Bulky or regenerable files. Everything here except this README is gitignored. De
 | `runs/` | Local run output (`multi-*`, `rr-*`): summaries per game, replays only with `--keep` | `tools/local/*.py` |
 | `cache/` | `rcmp.py` result cache per run name | `tools/platform/rcmp.py` |
 | `probe_out/` | Per-map camp group dumps from the probe bots | `bots/probe/*` |
+| `vis/` | Official visualiser engine WASM files and decoder JS, used by `tools/replay/vis_decode.mjs` | from a running `cambc view --port 7099 <replay>`: fetch `index.html`, its `assets/*.js` and the `v*.wasm` files they name |
+| `fights/<source>/` | Per-round datasets (`.jsonl.gz`, one per replay) | `node tools/replay/rounds_extract.mjs` |
+| `replays/ranked/` | Ranked replays of a ladder rank range + `index.txt` | `python -I tools/replay/fetch_ranked.py RANKS` |
 | `old/` | Leftovers from before the cleanup (unsorted replays, debug output) | safe to delete |

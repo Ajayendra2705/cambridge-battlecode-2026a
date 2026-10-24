@@ -9,6 +9,8 @@ Measured facts that shaped the bot, and what we know about stronger teams. Exact
 - Always test with `--release`, because the platform runs release builds.
 - Our champions hit fuel exhaustion about 10 times per game, against about 4 for rivals, mostly on big maps. `pick_group`'s BFS costs about 45k fuel.
 - `init_world` spreads over the first rounds.
+- Fight-turn fuel (probe `exp/fuelm`, hb4 code, 32 local games vs hb4/tf3 on 8 maps, 2026-10-24): turns with a prey use 41.7k on average (p50 41k, p90 56k, p99 70k, max 88k). Building the sim inputs costs 10k (max 44k) and `simulate_fight` 4.5k (max 11k), with 3.7 units on average. `fuel_remaining()` costs 6 fuel.
+- Small dense nets cost about 7 fuel per multiply-add as written (scalar loops, no vectorisation): a set encoder with phi 6->16 and head 32->16->1 cost 6.8k on average (max 9.3k), and a 2-layer phi 6->16->16 cost 13.9k (max 47k incl. first-call weight init). Clang `-O3 -msimd128` only half-vectorises dot-product loops (`a += W[j][k] * x[k]`), because it may not reorder float adds. Transposed weights with explicit `wasm_simd128.h` axpy loops (`acc[j] += W[k][j] * x[k]`) cut this to 2.9k (max 3.7k) and 7.0k (max 16k), with outputs equal to the scalar nets within 6e-8.
 
 ## Camps and economy
 
