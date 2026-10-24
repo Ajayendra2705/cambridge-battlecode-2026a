@@ -322,3 +322,12 @@ Variants c1-c37, e_* (e_bank20, e_fuel, e_power, e_flee, e_jung, e_jung1, e_hp, 
 | rg1 | fh1 | a stack of 3+ enemies within 8 that outnumbers our nearby champions counts as a threat | quick 184 | b5 23/50; vs fh1 only one game changed result (fragment vs :3 won) and 10 changed margin: the rule rarely fires; eight still lost 0-1016 | no gain |
 | fh3 | fh2 | fh2 + rg1 rule | quick 189 (fh2 194) | - | rejected |
 | fh4 | fh2 | ranged champions also hit an adjacent chaser before running (more than 3 from spawn) | quick 181 (fh2 194) | - | rejected |
+
+## Batch b6 (fresh panel at rank 77: ranks 60, 62-65; 40 games, Stubborn Gold Clusters had no eligible bot)
+
+| bot | parent | change | local | platform | verdict |
+|---|---|---|---|---|---|
+| dr3 (main) | - | base | - | b6 14/40; hits on champions by r800 112 (rivals 200), deaths 6.3; collected r600 321, tributed r1000 406 | base |
+| fh2 | (pool) | candidate | quick 194 | b6 13/40 (7 L->W, 6 W->L vs dr3); hits 129 (rivals 180), deaths 5.9 (rivals 4.3); collected r600 358, tributed r1000 434; won boss_battle vs 剑桥夜爬者 | fight and gem metrics better on a third panel; wins equal |
+| tc1 | fh2 | bank batch capped at 50 gems (channel at most 5 turns) | quick 190, tributed r600 277 | b6 12/40 (fh2 13); 100+ gem channels still 0.7 per game (46% completed: big bags come from the 150-gem and deadline paths), lost on death r600 50 vs 34 | rejected |
+| ef1 | fh2 | order quantity fixed: g* = sqrt(2 c^2 tau / (m h + lambda c / 5)), trip cost c x tau (old form dropped c), lambda = 0.0065 + 0.009 per enemy within 10 of an altar (fitted on 5.8k platform tributes) | quick 175 (fh2 194): tributed r600 283 vs 265 but collected 358 vs 375 (local bots rarely kill carriers, so smaller bags only cost trips there) | b6 13/40 (= fh2; 5 L->W, 5 W->L; won the_farm). Tributes now small (12.6 starts per game of 20 gems or less vs 4.6), lost on death r600 26 vs 34 and r1000 59 vs 76, but collected r600 316 vs 358 and r1000 594 vs 635, so tributed r1000 411 vs 434 | rejected as is: the trip cost is underestimated (tau uses the detour past the altar), so it banks too often; the holding side of the formula works |
