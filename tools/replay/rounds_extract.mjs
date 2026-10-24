@@ -34,7 +34,8 @@ function snapshot(R, s) {
     v.champions.forEach((c, i) => { if (c.team !== me.team && c.position) seen.push(i); });
     return seen;
   });
-  return { r: s.round, sg: s.submittedGems.map(Number), c: champs, vis };
+  // mh: every camp's health this round (index = camp entity index, types in the meta line).
+  return { r: s.round, sg: s.submittedGems.map(Number), c: champs, vis, mh: s.camps.map((c) => Math.round(c.health)) };
 }
 
 export function extract(file, out) {

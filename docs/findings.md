@@ -108,3 +108,5 @@ Past postmortems and rival repositories (including measured top-team policies fr
 - ge4 (gold not doubled, no mid-push bonus) collected 140 by r300 vs the rivals' 127 and 319 vs 320 by r600: collection matched. Wins stayed 23/50.
 - What remains is conversion: by r600 ge4 tributed 200 vs 256. We lose 42 gems per game on death (rivals 12) and carry 77 in bags (rivals 51).
 - Local `tools/local/coll_at.py` reproduces the direction (ge1/gm1 +24 collected by r300 locally, +15 on the platform).
+- Whole-game gem accounting (ge9 on b5): collected 859 vs 862, but tributed 580 vs 701. In losses gems collected by r400 decide the game; the largest deficits are road_of_riches (199 vs 546), concentrated_wealth, shortcut, packs, elk_arena. On road_of_riches and shortcut the rivals take gem clusters next to our home (357 and 182 gems by r400; we 11 and 0).
+- Cause on road_of_riches: those clusters lie behind a one-tile hole line. A dash crosses it (MECHANICS 4), but our route fields treated holes as walls: walk 117 to the centre vs about 20 with a dash. 30 of 40 maps have holes.

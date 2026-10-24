@@ -15,6 +15,9 @@ Work only on gems collected until we match the rivals; no other factor until the
 - Cause found: before the first emblem a gold cluster scores 40 (gold x2) and a gem cluster 7, so we skip gem clusters. gm1 (no x2) raised the metric to 123 but won 21/50 vs 23.
 - We hit elks more often than rivals (124 vs 105 hits per game before r300) but collect fewer elk gems: elk bouts are abandoned or lost.
 
+- Gem targets (rival winners, 94 decoded rival-vs-rival ranked games, by r600): collected 360, tributed 279, lost on death 17, bag 64. ge4: 319 / 200 / 42 / 77.
+- Next phase (team request, after about 3-4 hours on gems): replace hand-tuned constants with functions of the variables they depend on (for example a death hazard from visible enemies, distance and health instead of fixed multipliers; gold value as the marginal win value of the next item). One constant family at a time, each derived, then tested.
+
 ## Batch b4 (2026-10-24 16:25 IST): check run
 
 - Panel ranks 79-83 (`data/specs_b4.txt`): fx1 13/25, c5 12, dr3 14. Over b3 + b3x + b4 (75 games) dr3 41, c5 39, fx1 36: dr3 beats fx1 on every set, so it was adopted below the 17/25 bar at the user's call.
