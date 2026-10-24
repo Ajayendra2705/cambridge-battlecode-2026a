@@ -30,3 +30,10 @@ Look things up through the "Where is ..." table in `README.md` instead of search
 - Never ship logging bots (`*l`) or heavy prints: they cost fuel and change play.
 - Heavy local runs: `--jobs 6` or fewer (RAM).
 - Keep `bots/main` changes verifiable: a pure refactor must give a byte-identical wasm (`sha256sum bots/main/.cambc/build-release/bot.wasm`).
+
+## Lessons from the 10-24/25 session (agent)
+
+- A 50-game platform result moves by about 3 wins between near-identical bots. The team agreed batch panels of 40-90 games (`results/panels/`, one gate over a combined panel such as `b56`); judge with decoded metrics (`tools/replay/decode_run.sh`, `tools/replay/decoded.py`), and write the decision rule down before the result arrives.
+- Opponents change bots during the day: run the base in the same session (`main` line in the `gatechain.sh` plan), never against a base from hours earlier.
+- Run gates only through `tools/platform/gatechain.sh` (it refuses to start beside another gate). Find or stop processes with `tools/platform/procs.sh`: Git Bash `ps` does not show command lines.
+- Never delete `data/runs/` while a local run writes there. Edit bot code with the editor, not through shell or Python string escapes.

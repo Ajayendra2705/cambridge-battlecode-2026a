@@ -1,6 +1,6 @@
 # Bot architecture (`bots/main`)
 
-`bots/main` is the current best bot, ladder bot `dr3` (2026-10-24): `pool/hb4` split into files by concern, plus the batch-b1 changes listed under "Changes since hb4". Read this page before you open the code.
+`bots/main` is the current best bot, ladder bot `cp3` (2026-10-25, Sprint 2 entry): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`) and "Changes in cp3". Read this page before you open the code.
 
 ## Game in one paragraph
 
@@ -20,7 +20,7 @@ Two teams of 3-5 champions share a grid map. Neutral camp groups (wolves, elks, 
 | File | Concern |
 |---|---|
 | `main.cpp` | Entry loop: draft or turn, error logging. |
-| `draft.cpp` | Draft: on teams of 5 or fewer, picks Heart of Ruin, Vendetta, Vesper, Ryth, Marcella (the top-10 meta). |
+| `draft.cpp` | Draft: on teams of 5 or fewer, picks Heart of Ruin, Vendetta, Vesper, Varg, Marcella (Varg replaced Ryth in dr3). |
 | `random.h` | Seeded RNG (WASI randomness is always zero). Currently unused by the turn logic. |
 | `core.h` | Constants (`MAX_SLOTS`, `CAMP_RANGE`), `dist` (Chebyshev), debug tracing (`STAGE`, `TRACE`), activity counters (`ACT`). |
 | `world.h` | `Group` and `World W`: static map knowledge built once by `init_world()`. Holds camp groups, altars, distance fields (to altars, own spawn, enemy spawn), strong camps, altar guard and team slots. Also holds the observed state of each group (alive / reward ready / respawning, member hp, last awake round). |
@@ -29,12 +29,12 @@ Two teams of 3-5 champions share a grid map. Neutral camp groups (wolves, elks, 
 | `knowledge.h` | Known units (camps by tile, every champion handle). `take_snapshot()` makes one raw engine call per unit. `build_phantoms()` covers unseen camps of recently awake groups. `update_knowledge()` updates group states. |
 | `comms.h` | Shared memory: target claims, help call, respawn broadcast, `home_side`. |
 | `move.h` | Movement: field descent, dashes, `step_to_tiles`, `step_away`, `step_out_of_danger`, `walk_home` (avoids awake camp reach), `go_home` (recall only when no enemy is near). |
-| `shop.h` | Item plan per champion type (Treasure, Durability, Jungle emblems, then Power or Bruiser shards). Also holds capture priority and wealth (owned shards). |
+| `shop.h` | Items: the Treasure emblem first, then each emblem chosen by its fight-power gain (Power, Bruiser, Durability, Jungle; see "Changes in cp3"). Also holds capture priority and wealth (owned shards). |
 | `abilities.h` | Casting on camps (stun, area hit, landing dash, damage spell) and on champions. Also attack resets, heals, shields, ward placement and basic attacks. |
 | `camps.h` | Camp threat and incoming damage, `clear_time` estimate, `standoff` groups (casters hit from spell range 4), `gold_weight`. |
 | `enemies.h` | Enemy sightings (per champion, last 40 rounds), the team focus call, and `group_danger`. |
 | `state.h` | Banking statistics for the order-quantity rule, per-champion turn state, the death context (`D` line). |
-| `targets.h` | `pick_group()` scores every group as value per champion-round. `bank_gems()` walks to an altar, breaks enemy altar locks and tributes. `choose_camp()` picks the camp to hit. |
+| `targets.h` | `pick_group()` scores every group as value per champion-round and decides who captures a defeated group. `bank_gems()` walks to an altar (unless the altar guard blocks it), breaks enemy altar locks and tributes. `choose_camp()` picks the camp to hit. |
 | `camp_fight.h` | `fight_or_approach()`: wait beside a respawning group, capture, standoff casting, gather for big groups, approach and hit camps. |
 | `bot.cpp` | `Bot::play_turn()`: the decision pipeline below. |
 
@@ -51,12 +51,12 @@ Each step either acts and returns, or falls through to the next. The activity na
 7. **Damage accounting:** damage taken that camps do not explain is blamed on an unseen camp in range, or else on an unseen enemy. A big hit (>25% hp) prints an `H` line.
 8. **Calibration:** `cal_f` scales enemy damage in the simulator when the opponent hits harder than local play (clamped 1-2).
 9. **Engage enemy** (`pvp`): choose prey (best dps/hp weighted by its gems, an enemy fighting an ally, or the team focus call). Engage when the simulation says we win, when the prey is nearly dead (`finisher`), when it carries 30+ gems (`rich`), or when we stand on our spawn. A lone 1v1 with a close kill race also counts as winning. Never engage with 150+ gems in the bag.
-10. **Threat** (`kite`, `duel`, `flee`): if threatened and losing (outnumbered, weaker, under 40% hp, in kill range, or the simulation says we die), step out of danger when healthy. Duel a lone adjacent chaser only if we kill it first, or if running home is fatal anyway. Otherwise flee home through bushes, hitting whatever is in range, and call focus on the chaser.
-11. **Attack on sight:** hit the weakest enemy in reach before anything else.
+10. **Threat** (`kite`, `duel`, `flee`): if threatened and losing (outnumbered, weaker, under 40% hp, in kill range, or the simulation says we die), step out of danger when healthy, first hitting the weakest enemy in reach if the hit is free (melee keeps its move; a target out of its own reach cannot answer). Duel a lone adjacent chaser only if we kill it first, or if running home is fatal anyway. Otherwise flee home through bushes: melee first hits the weakest adjacent enemy, then the run hits whatever is in range, and calls focus on the chaser.
+11. **Attack on sight:** hit the weakest enemy in reach before anything else. Vendetta first dashes next to an enemy 2-3 tiles away when the simulation does not say she dies. Ranged champions shoot when healthy, when the target cannot reach them, or when the enemies near cannot burst them this round.
 12. **Heal wait** (`heal_wait`): at spawn below 90% hp.
 13. **Camp retreat** (`retreat`, `home_heal`): sum the camps that target us and the steps needed to leave all their reaches. Leave before the next hits could kill. Rejoin if healthy, else go home (bank on the way if an altar is within 3).
 14. **Low health** (`home_heal`): below 50% (20% when quiet) with no camp hitting us.
-15. **Bank** (`bank`): order-quantity batch `g* = sqrt(2 c tau / (m h))`, where c = collection rate, tau = trip length, h = death plus game-end hazard, and m = loss multiplier for champion kills. Bank at once near the game end (deadline from the enemy's tribute rate), after round 1900, or when the bag would win.
+15. **Bank** (`bank`): order-quantity batch `g* = sqrt(2 * 3 * c^2 * tau / (m h + lambda c / 5))`, where c = collection rate (gems per round), tau = trip length (detour past the altar plus the channel), x3 = measured overhead of a trip, h = death plus game-end hazard, m = loss multiplier for champion kills, and lambda = fitted chance per turn that a tribute channel breaks (0.0065 + 0.009 per enemy within 10 of an altar). Bank at once near the game end (deadline from the enemy's tribute rate), after round 1900, or when the bag would win.
 16. **Shop trip** (`shop_trip`): 150+ gold, or 90+ within 8 tiles of spawn.
 17. **Answer help** (`help`): healthy, under 100 gems, nothing in view, call 3-14 tiles away on our half.
 18. **Target:** re-pick every 3 rounds or when the target's state changes, unless fighting. Write the claim. Then `fight_or_approach` (`resp_wait`, `capture`, `to_capture`, `standoff`, `gather`, `approach`, `fight`), or bank if there is no target.

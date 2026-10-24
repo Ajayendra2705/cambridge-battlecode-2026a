@@ -14,14 +14,17 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `log.py [bundle] [regex]` | Print a team's stdout from the newest local replay bundle. |
 | `allmaps.txt` | All 40 map names (default `--maps`). |
 
-## platform/ (unranked games on the website; quota 50 groups per hour)
+## platform/ (unranked games on the website; quota 50 groups per rolling 30 minutes)
 
 | Tool | Use |
 |---|---|
-| `gate.sh BOT [submit\|nosubmit] [RUN_NAME]` | Small gate: submit (aborts if the upload fails), then play 20 games (4 fixed groups of 5). Logs `RUN_NAME@p8s`. Override the groups with `GATE_SPECS="TEAM:m1,m2,m3,m4,m5 ..."` and the panel tag with `GATE_PANEL` (rank-30 AlphaSlop on all 40 maps: `GATE_SPECS="$(cat data/specs_r30.txt)" GATE_PANEL=r30`). |
-| `gateq.sh [WAIT_RUN]` | Gate queue: runs `gate.sh` for each "BOT RUN_NAME" line of `data/gate_queue.txt` in order (edit the file to reorder or add while it runs), resubmitting `main` after each (retrying through the 20-uploads-per-hour limit; a gate whose submit fails is requeued; a queued `main` gate skips the upload). Optionally waits for a running gate first. Batch panels: `data/specs_bN.txt`, second map set `data/specs_bNx.txt`, both together `data/specs_bNc.txt`. |
+| `gate.sh BOT [submit\|nosubmit] [RUN_NAME]` | Small gate: submit (aborts if the upload fails), then play 20 games (4 fixed groups of 5). Logs `RUN_NAME@p8s`. Override the groups with `GATE_SPECS="TEAM:m1,m2,m3,m4,m5 ..."` and the panel tag with `GATE_PANEL` (rank-30 AlphaSlop on all 40 maps: `GATE_SPECS="$(cat results/panels/specs_r30.txt)" GATE_PANEL=r30`). |
+| `gateq.sh [WAIT_RUN]` | Gate queue: runs `gate.sh` for each "BOT RUN_NAME" line of `data/gate_queue.txt` in order (edit the file to reorder or add while it runs), resubmitting `main` after each (retrying through the 20-uploads-per-hour limit; a gate whose submit fails is requeued; a queued `main` gate skips the upload). Optionally waits for a running gate first. Batch panels: `results/panels/specs_bN.txt`, second map set `results/panels/specs_bNx.txt`, both together `results/panels/specs_bNc.txt`. |
 | `gate_full.sh BOT [submit\|nosubmit] [RUN_NAME]` | Full gate: 100 games against panel 8 (ranks 60-69). `GATE_OFFSET=N` shifts map windows. Logs `RUN_NAME@p8[@N]`. |
-| `rcmp.py BASE NEW...` | Paired comparison of runs on shared (opponent, map) games: flips, margin, sign test. Caches in `data/cache/`; give every run a unique name. |
+| `rcmp.py BASE NEW...` | Paired comparison of runs on shared (opponent, map) games: flips, margin, sign test. Caches in `data/cache/`; give every run a unique name. Join runs with `+` to match a combined panel: `rcmp.py "A@b5+B@b6" C@b56`. |
+| `gatechain.sh PLAN [CUTOFF]` | Run gates one after another from a plan of `BOT RUN PANEL` lines (panels in `results/panels/`), through `gateq.sh`. Refuses to start while another gate runs; starts no gate after `CUTOFF` (HHMM). Run it in the background. |
+| `procs.sh [kill]` | List (or stop) running gates, chains and local runs. Git Bash `ps` hides command lines; this reads `/proc/PID/cmdline`. |
+| `adopt.sh NEW OLD_NAME` | Make `bots/exp/NEW` the ladder bot: old main to `bots/pool/OLD_NAME`, copy, one-game build check, submit main until "Submitted". Refuses while a gate runs. |
 | `group.py GROUP...` | Results of match groups. Saves summaries to `data/summaries/`. |
 | `panel_result.py GROUP...` | Totals (wins, gems, deaths) for a set of groups. |
 | `qwait.sh [N]` | Block until N groups of quota are free. |
@@ -60,6 +63,8 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `agg.py RUN` / `compare_teams.py RUN...` / `killers.py RUN` / `deaths.py RUN` | Whole-run tables: per-champion averages, every metric us vs them, who kills whom, death contexts. |
 | `cmp.py MATCH` / `econ.py MATCH` / `timeline.py JSON` / `summ.py JSON` | One match: economy per champion, gem sources, event timeline, metric dump. |
 | `vis_decode.mjs REPLAY [POS]` | Node 22. Decodes a replay with the official visualiser engine (both teams, per-champion fog). Needs `data/vis/`: `python -I tools/replay/vis_assets.py REPLAY` fetches it from `cambc view`. |
+| `decode_run.sh RUN@PANEL [JOBS]` | Download and decode a whole run into `data/fights/<RUN>_<PANEL>/` with a clean `index.txt`, ready for `decoded.py`. |
+| `decoded.py CMD DIR...` | Us vs the opponents in decoded games: `gems` (collected, tributed, lost on death, bag, deaths by round), `fights` (hits, champion damage, deaths, fight-start outcomes), `channels` (tribute completion by bag size, break rate by enemies near the altar), `types` (per champion type: deaths, damage, gems, hit rate by distance), `items` (emblems per type at a round), `risk` (P(death in 10 rounds) by enemies, allies, health), `sources` (gems by camp type). Several DIRs pool. |
 | `rounds_extract.mjs OUTDIR REPLAY...` | Node. Per-round dataset per replay (`.jsonl.gz`): every champion's state, enemies each can see, moves / attacks / casts with the entity hit, every camp's health (`mh`, by camp entity index) and camp types in the first (meta) line (`camps`). About 14 s per replay; run with `xargs -P 4`. It skips replays whose output already exists, so write to a new folder after changing it. |
 | `team_features.py ranked FIGHTDIR` / `ours FIGHTDIR INDEX...` | Per-team behaviour features (tributes by r300/r600, tribute count, deaths, kills, grouping, enemy-half time, shared camp hits, bag) for winners vs losers. |
 | `fight_geo.py FIGHTDIR INDEX...` | Team geometry from those datasets, us vs them by phase: distance to nearest teammate, teammates within 5, time on the enemy half, local numbers at deaths. |

@@ -1,8 +1,10 @@
 """Robust game-by-game comparison of platform runs: python -I tools/platform/rcmp.py BASE NEW [NEW2 ...]
 Fetches every group of each run (results/gate.log) with retries until it has 5 results (losscmp.py drops games on
 HTTP 429), caches them in data/cache/res_<run>.json, and compares each NEW run with BASE on the shared
-(opponent, map) games: wins, flips, margin (our - their gems) and a sign test."""
+(opponent, map) games: wins, flips, margin (our - their gems) and a sign test. A run may be several runs joined with +
+(`dr3_b5@b5+dr3_b6@b6`) to compare with one gate over a combined panel (`cp3_b56@b56`)."""
 import json, math, os, re, subprocess, sys, time
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # team names are not all Latin
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 OUT = os.path.join(ROOT, 'data', 'cache')
 os.makedirs(OUT, exist_ok=True)
@@ -10,6 +12,15 @@ ROW = re.compile(r'^(\S+)\s+(WIN|loss)\s+(\d+)\s*-\s*(\d+)\s+r\s*(\d+).*vs (.+)$
 
 
 def fetch(run):
+    # 'A@b5+B@b6' merges runs in order, as one gate over both panels (results/panels/specs_b56.txt = b5 then b6) would
+    # log them: a (opponent, map) seen again gets a '+' suffix. So a b56 run compares with separate b5 and b6 runs.
+    if '+' in run:
+        res = {}
+        for part in run.split('+'):
+            for k, v in fetch(part).items():
+                while k in res: k = (k[0], k[1] + '+')
+                res[k] = v
+        return res
     cache = os.path.join(OUT, 'res_' + run.replace('@', '_') + '.json')
     if os.path.exists(cache):
         return {tuple(k.split('|')): v for k, v in json.load(open(cache)).items()}

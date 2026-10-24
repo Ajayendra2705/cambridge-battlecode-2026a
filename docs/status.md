@@ -1,118 +1,82 @@
-# Status (updated 2026-10-25 03:15 IST)
+# Status (updated 2026-10-25 04:00 IST)
 
 ## Now
 
-- **Ladder bot (Sprint 2 entry):** `cp3` (= `bots/main`, submitted as version 689 at 03:09 IST on 10-25, before the 04:29 IST lock). It is dr3 plus the layers listed in `docs/ARCHITECTURE.md` ("Changes in cp3"). On the same 90 games tonight (b5 + b6) it won 39 against dr3g's 36 (dr3 + the altar-guard fixes): b6 20 vs 15, b5 19 vs 21, better score margin in 49 games and worse in 39 (p = 0.29). Decoded, its champion damage per game is at the rivals' level (13.4k vs 13.8k; dr3 11.1k vs 15.3k). Full local check: 406/560 (dr3 391), no bot faults. After adoption a third panel (b34) went the other way: cp3 20, dr3g 24. Over all 140 games run tonight cp3 won 59 and dr3g 60 (a tie; cp3 had the better margin in 73 games, worse in 63), so cp3 stayed (rule set before the result: switch only if 2+ wins behind). cp3 does best against the higher-ranked b6 teams (+5) and worse against b34 (-4) and b5 (-2). Final submission: version 691 at 03:30 IST. Previous: `dr3` (`bots/pool/dr3`), `fx1`, `fe1`, `hb4`. Rank 77 at 23:25.
-- **Deadline:** Sprint 2 locks Sat 24 Oct 23:59 BST. The bot submitted at that moment is the tournament bot. Sprint 3 locks Sat 31 Oct 23:59 GMT. Season ends 18 Nov.
-- **Event:** cambc2026a, https://2026a.battlecode.co.uk, account Ajay_2705 (team id `118dbffc-87ec-48a6-ac9c-dc1e371ba364`).
-- **Method (batch loop):** panel = the 5 ladder teams at ranks R-15 to R-11, 5 fixed maps each (`data/specs_bN.txt`), base = main on it, improve until 17/25, then confirm on a second map set (`data/specs_bNx.txt`) against the same teams before adopting.
-- **Upload limit:** 20 submissions per hour. See `docs/WORKFLOW.md`.
+- **Ladder bot and Sprint 2 entry:** `cp3` (= `bots/main`), submitted as version 691 at 03:30 IST on 10-25, before the lock (Sat 24 Oct 23:59 BST = 04:29 IST). What it changes over `dr3`: `docs/ARCHITECTURE.md`, "Changes in cp3". Previous ladder bot: `dr3` (`bots/pool/dr3`).
+- **How good it is:** over 140 platform games run on the night of 10-24/25 (panels b5, b6, b34) cp3 won 59 and `dr3g` (dr3 + the altar-guard fixes) 60: a tie in wins. cp3 had the better score margin in 73 games and the worse in 63. It is better against the higher-ranked b6 teams (20 vs 15 of 40) and worse against b34 (20 vs 24 of 50) and b5 (19 vs 21 of 50). Decoded, its fights are level with the rivals' (champion damage 13.4k vs 13.8k per game by round 800; dr3 had 11.1k vs 15.3k). Full local run: 406/560 (dr3 391), no bot faults.
+- **Next deadline:** Sprint 3 locks Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST). The bot submitted at that moment is the tournament bot. Season ends 18 Nov.
+- **Event:** cambc2026a, https://2026a.battlecode.co.uk, account Ajay_2705 (team id `118dbffc-87ec-48a6-ac9c-dc1e371ba364`). Rank 77 at 23:25 on 10-24 (rating moves while test bots play ranked games during gates).
+- **Branch:** the work of 10-24/25 is on `batch-loop-2026-10-24` (not merged into `master`).
 
-## Mistakes so far (review 2026-10-24 23:30 IST)
+## Next steps (in order of expected value)
 
-- Judged variants on 50-game win counts. Near-identical bots differ by about 3 wins from chaos alone; most rejections of the evening were inside that noise. Use decoded continuous metrics (hits, deaths, gems collected/tributed/lost) and the always-lost games.
-- Winner's curse: dr3 was picked as best of about 40 variants on b3/b4, so its 28/50 there is inflated, and every later candidate was compared against it on the same games. Compare on a fresh panel (b6).
-- Spent about an hour on dash routing over holes (gd1) without first checking team-level effects (champions without a dash split off). Check the whole flow before building.
-- Deleted variant folders before their platform verdict and rebuilt them later; keep a candidate until its gate is read.
-- Hunted symptoms map by map before measuring where the gap was overall; the biggest gap (we land 40% fewer hits in fights) was found late.
-- 01:15 on 10-25: `ps | grep` in Git Bash shows only `/usr/bin/bash`, not the command line, so a kill of the gate chain matched nothing and two chains ran gates at once (sp1_b5 and sp2_b5 overlapped). Find processes through `/proc/PID/cmdline` before killing, and check that only one gate chain is alive.
-- Edited bot code through shell and Python string escapes and broke builds three times ('
-' became a real newline).
+Each step names the measured gap, where to change the code and how to judge it. Measure with
+`bash tools/replay/decode_run.sh RUN@PANEL` then `python -I tools/replay/decoded.py CMD data/fights/RUN_PANEL` (numbers
+below are cp3 on b56, 70 decoded games, per game, us vs the rivals; full tables in `docs/findings.md`).
 
-## Improvement plan (written 2026-10-25 02:20 IST, for the next session)
+1. **Heart of Ruin is built too thin.** At r600 it has 1184 max health vs the rivals' 1700 and dies 1.79 times per game by r1000 vs 1.27 (champion damage 3032 vs 3739). cp3's item formula (`shop.h`) gives it Power-focus because focus growth 12 looks big against its focus, but Heart of Ruin trades blows in melee; the rivals build it Bruiser-focus, Treasure-focus and Jungle. Make the formula count health for melee front-liners (or use Bruiser for them, as before sp1). Judge by `decoded.py types` (deaths, damage) and `items`.
+2. **Vendetta still does little.** Champion damage 2972 vs 4317 per game, gems 91 vs 168, hit-round share 0.029 vs 0.041, hit rate at 2-3 tiles 0.16 vs 0.23. Her kills reset all cooldowns: chain dash and attack reset after a kill. Code: `bot.cpp` attack on sight (cp3 dash-in) and the pvp step. Judge by `decoded.py types`.
+3. **Big tributes still break.** cp3 starts 1.2 channels per game with a bag over 100 gems and only 61% complete: 406 gems started, 118 banked per game (rivals 0.6 such channels). A tribute stands for bag / 10 turns. Find where the big bags come from (monolith or golem captures, the 150-gem and deadline paths in `bot.cpp` bank) and bank before them or at a safe altar. Judge by `decoded.py channels`.
+4. **Carriers still lose bags.** By r1000 we lose 68 gems on death (rivals 31) and carry 117 at any time (87). Order-quantity banking (`bot.cpp`, "Order quantity") uses a fitted trip overhead x3 from one panel; fit it on b56 instead, and check the hazard term `h` against `decoded.py risk`.
+5. **Centre groups on b5/b34 maps.** cp3 lost elk_arena (576-648; dr3 won 1008-108), contest and corridors that dr3 won. ge4 removed the mid-push x2 (`targets.h`); test restoring it inside cp3 as one variant, on b56 + b34.
+6. **Maps every version loses:** boss_battle (whoever kills the guard monolith beside the altar first owns the only altar; HouseOfCoders did it by r550-700), hooks (4v4 centre fight, 0-1012), road_of_riches and gemfight (rivals cross hole lines with dashes; our routing cannot, and gd1's dash routing failed locally because champions without a dash split off), shortcut (we collect 398 vs 1161 by r1000), contest and eight (5-stacks).
+7. **Draft:** we field Varg where the rivals field Ryth or Marcella; Varg deals the least champion damage of ours (2411 per game) and dies 1.74 times. Only the platform can judge a draft change.
 
-In order of expected value, each with its measured gap (details in `docs/findings.md`):
+Method for every step: one change at a time on `main`, local quick pool as a breakage filter (floor about 165/240), then one combined gate on `b56` (90 games, `tools/platform/gatechain.sh`) with a fresh base run of main in the same session, compared with `rcmp.py` and the decoded metric. 50-game win counts move by about 3 wins from chaos alone (`docs/findings.md`, "Platform noise"), so a change needs its metric to move, not only its wins.
 
-1. Ranged champions shoot when an enemy is in range instead of stepping (Vesper hits in 41% of in-range rounds, rivals 53%). Check the attack-on-sight health gate and the plan's move before the attack.
-2. Vendetta dashes in on an enemy 2-3 tiles away when the fight is not lost (16% vs 26% hit rounds at that distance).
-3. Capture priority: fix the dead rule (`mine = 16 * 16`) and give captures to the passives that pay (cp1: Vesper +33% gold, Marcella +2 gold per tributed gem; local gold +5%, tributed r600 304).
-4. Items: the formula (sp1/sp3) moved Power emblems from 0.07 to 0.45 per champion, but rival Vespers hold 3.0; damage counted twice (sp4) dies too much locally. Needs the gold from 3 first.
-5. Banking: we carry about 30 more gems and lose about 30 more on death by r1000 than the rivals; ef3's trip-overhead factor 3 is a fit to one panel.
-6. Maps: boss_battle (kill the guard first or hold the altar), hooks (centre 4v4), hole maps (dash routing failed as gd1; needs team-level planning).
+## Mistakes to avoid (from 10-24/25)
 
-## Batch b6 (2026-10-24 23:25 IST, rank 77)
+- Judging variants on 50-game win counts: near-identical bots differ by about 3 wins from chaos alone. Use decoded continuous metrics and the always-lost games.
+- Winner's curse: dr3 was picked as the best of about 40 variants on b3/b4, so its 28/50 there was inflated, and later candidates were judged against it on the same games. Compare on a fresh panel, with a fresh base run.
+- Comparing with old base runs: opponents change bots (dr3's evening b5 score of 23 reproduced only 19 of 50 game scores 9 hours later and became 21).
+- Building before checking the whole flow: an hour went into dash routing over holes (gd1) before checking what happens to champions without a dash.
+- Deleting variant folders before their platform verdict, then rebuilding them.
+- Hunting map by map before measuring where the gap is overall: the biggest gap (rival champions land 40% more hits) was found late.
+- Process control in Git Bash: `ps | grep` shows only `/usr/bin/bash`, so a kill matched nothing and two gate chains ran at once (their results are void). Use `bash tools/platform/procs.sh` (it reads `/proc/PID/cmdline`).
+- `rm -rf data/runs/multi-*` while a local run was writing there: it lost most of that run.
+- Editing bot code through shell and Python string escapes: `'\n'` became a real newline and broke three builds. Edit files directly, then build.
 
-Panel ranks 60, 62-65 (61 KKB and 66 The Mania have no eligible bot): 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters, HouseOfCoders, The Party of Heroes; two 5-map windows each covering all 40 maps (`data/specs_b6.txt`, seed 6060). First run: dr3 vs pool/fh2.
+## History
 
-Result (closed 03:09 on 10-25): wins on the same games, tonight's runs only:
+### Night of 10-24/25: gems, fights, final pick (batches b5, b6)
 
-| bot | b6 (40) | b5 (50) | total |
-|---|---|---|---|
-| dr3g (dr3 + guard fixes, fresh base) | 15 | 21 | 36 |
-| cf1 (dr3 + fight layers + guard) | 18 | 19 | 37 |
-| **cp3** (adopted) | **20** | 19 | **39** |
-| sp3 / sp1 / ef3 | 18 / 17 / 17 | - / - / 18 | - |
-| fh2 | 13 | 20 | 33 |
+- **Gem phase (18:50-22:15, team decision: only gem collection until matched).** On b5 dr3 collected 108 gems by r300 vs the rivals' 133. Cause: before the first emblem gold counted double, so a gold cluster scored 40 against a gem cluster's 7. ge4 (no x2, no mid-push) collected 140 vs 127 by r300 and 319 vs 320 by r600; tributes stayed behind (200 vs 256 by r600) because carriers died with bags. Eight banking and carrier-safety variants gave no platform gain.
+- **Fight phase (22:15-23:20).** We lost fights we started (0.36-0.55 own deaths vs 0.31-0.38 kills per start; rivals 0.2 vs 0.5-0.64) because we hit less. fh1 (free hit before kiting) and fh2 (melee hits before fleeing) raised hits and cut deaths on b5, b34 and b6.
+- **Batch b6 (fresh panel at rank 77) and the final comparison (23:25-03:30).** The banking formula was missing a factor (ef1, ef3), items were bought from a fixed health-heavy list (sp1, sp3), a capture rule never ran (cp1), Vesper held fire when hurt (cp2), and Vendetta did not dash in (cp3). Tonight's runs on the same games:
 
-dr3's evening b5 run (23) no longer reproduces: only 19 of 50 scores match the re-run, so b5 opponents changed bots in between. b6 matched in 29 of 40.
+| bot | b6 (40) | b5 (50) | b34 (50) | total |
+|---|---|---|---|---|
+| dr3g (dr3 + guard fixes) | 15 | 21 | 24 | 60 / 140 |
+| **cp3** (adopted) | **20** | 19 | 20 | 59 / 140 |
+| cf1 (dr3 + fight layers + guard) | 18 | 19 | - | 37 / 90 |
+| sp3 / sp1 / ef3 | 18 / 17 / 17 | - / - / 18 | - / - / 25 | - |
+| fh2 | 13 | 20 | 25 | 58 / 140 |
 
-## Single factor: gem collection (team decision, 2026-10-24 18:50 IST)
+  dr3's b5 score from 18:14 (23) did not reproduce later: b5 opponents changed bots in between. b6 matched in 29 of 40 games.
 
-Work only on gems collected until we match the rivals; no other factor until then.
-- Metric: gems collected by round 300 per game, from decoded replays (`tools/replay/rounds_extract.mjs`, which now stores camp types in the meta line). Fresh panel b5 (ranks 72-77): dr3 108, rivals 133. In b5 losses we take 6 gems from gem clusters vs their 30, elk 33 vs 61, wolf 28 vs 43.
-- Cause found: before the first emblem a gold cluster scores 40 (gold x2) and a gem cluster 7, so we skip gem clusters. gm1 (no x2) raised the metric to 123 but won 21/50 vs 23.
-- We hit elks more often than rivals (124 vs 105 hits per game before r300) but collect fewer elk gems: elk bouts are abandoned or lost.
+### Batch b4 (10-24 16:25, ranks 79-83)
 
-- Gem targets (rival winners, 94 decoded rival-vs-rival ranked games, by r600): collected 360, tributed 279, lost on death 17, bag 64. ge4: 319 / 200 / 42 / 77.
-- Next phase (team request, after about 3-4 hours on gems): replace hand-tuned constants with functions of the variables they depend on (for example a death hazard from visible enemies, distance and health instead of fixed multipliers; gold value as the marginal win value of the next item). One constant family at a time, each derived, then tested.
+fx1 13/25, c5 12, dr3 14. Over b3 + b3x + b4 (75 games) dr3 41, c5 39, fx1 36: dr3 beat fx1 on every set and was adopted below the 17/25 bar at the user's call.
 
-- Result of the gem phase (18:50-22:15): collection matched (ge4: 140 vs 127 by r300 on b5). Tribute conversion not matched (200 vs 273 by r600); the gap is gems lost when carriers die (42 vs 15). Eight banking and carrier-safety variants gave no platform gain. Kept as candidate layers: `bots/exp/ge4` (gold not doubled before the first emblem, no mid-push bonus) and `bots/exp/ab1` (ge4 + bank when the enemy tributes past an unseen altar guard).
-- Measurement limit: a 50-game panel has about 2.2 wins of noise per run (26 of 50 b5 games swing between near-identical bots; findings). Judge changes on the always-lost games or on many more games, not on 50-game win counts.
-- Fight phase (22:15-23:20): we lose fights we start (0.36-0.55 own deaths vs 0.31-0.38 kills per start; rivals 0.2 vs 0.5-0.64) because we hit less (124 vs 208 champion hits per game by r800; adjacent enemy: we hit 58% of rounds, rivals 82%). fh1 (free hit before kiting) and fh2 (melee hits before fleeing) raise hits and cut deaths on b5 and b34, and fh2 is best locally (194/240), but platform wins equal ge4 (25/50 on b34 vs dr3's selection-inflated 28). Candidate kept as `bots/pool/fh2`.
-- Next: build on `bots/pool/fh2`: the remaining hit gap (ranged champions, idle rounds near enemies), eight-style 5-stacks (rg1's early-threat rule rarely fired), then a larger platform sample before adopting. Old next item: deaths in champion fights (3.1 vs 2.0 per game by r600; contest: 35-43 deaths per game in fights, 0 gems); always-lost maps one at a time (findings, platform noise section).
+### Batch b3 (10-24 09:20-16:25, ranks 62-66)
 
-## Batch b4 (2026-10-24 16:25 IST): check run
+Base fx1: b3 12/25, b3x 11/25. Gap: early deaths while fleeing near our spawn, enemy rushes (swirl: all four of ours dead by r90). About 40 variants; best c5 (27/50) and dr3 (c5 + Varg instead of Ryth, 27/50). 'will think later' (rank 66) beat us 8 of 10.
 
-- Panel ranks 79-83 (`data/specs_b4.txt`): fx1 13/25, c5 12, dr3 14. Over b3 + b3x + b4 (75 games) dr3 41, c5 39, fx1 36: dr3 beats fx1 on every set, so it was adopted below the 17/25 bar at the user's call.
-- Next session: start a fresh batch from the rank after a quiet ladder period (no gates), so the rating reflects dr3.
+### Batch b2 (10-24 06:55-09:20, ranks 83-87)
 
-## Batch b3 (2026-10-24 09:20 IST -): closed
+Base fe1: b2 11/25, b2x 15/25. Accepted `fx1`: b2 19/25, b2x 15/25. Fight-behaviour variants and teleports did not hold on b2x.
 
-- Rank 77 at the start. Panel ranks 62-66: The Mania, cronjohn, Zkey Farming, DOOMSDAY, will think later (`data/specs_b3.txt`, `data/specs_b3x.txt`).
-- Base fx1: b3 12/25, b3x 11/25. Gap: early deaths (3.5 per lost game before r300, fleeing near our spawn) and enemy rushes (swirl: all four of ours dead by r90).
-- Best so far c5 (nm5 + lowest-health prey + contested groups cost more after recent deaths + ability-slot cache): b3 13, b3x 14 (27/50 vs 23). Far from 17; not adopted. About 20 variants tested (`docs/experiments.md`, batch b3). Deadline extended to 17:00 IST; the platform group quota (50 per window) now limits gates to about 5 combined gates per hour, so variants are screened on b3 alone first.
-- Later (13:35-15:20): about 20 more variants (cohesion, help calls, travel weights, draft, endgame, fuel, tribute safety). Best on b3 is `dr3` (c5 drafting Varg instead of Ryth): b3 14, b3x 13, 27/50, the same total as c5. Source of c5 and dr3 is kept in `bots/exp/` for the next session. Main stays `fx1`.
-- Next session: continue batch b3 from c5/dr3. Remaining gap: early and mid-game deaths while fleeing from 2-4 enemies (79% of deaths in losses); 'will think later' (rank 66) beats us 8 of 10.
+### Batch b1 (10-24 03:00-06:55, ranks 81-85)
 
-## Batch b2 (2026-10-24 06:55-09:20 IST): done
+Base hb4: 15/25 (12/25 after Shawn changed bot). Accepted `fe1`: b1 17/25, b1x 13/25, local 414/560. Still lost by every variant: starvation, road_of_riches, interlock, rows, gem_fields.
 
-- Rank 98 at the start (82 by 08:30 with fe1). Panel ranks 83-87: Brakence Fan Club, Agentic Loop Builders, Sic Mundus Creatus Est, test4, HouseOfCoders (`data/specs_b2.txt`, `data/specs_b2x.txt`).
-- Base fe1: b2 11/25, b2x 15/25. Accepted `fx1`: b2 19/25 (8 up, 0 down), b2x 15/25. Gap: early deaths in the contested middle on small-team maps.
-- Fight-behaviour variants (lh2, fp1, ch1, fp3, sh1, bg1) and teleports moved b2 by +1 to -6 and did not hold on b2x. Details: `docs/experiments.md`, batch b2.
-- Next: batch b3 (open, see above).
+### Rank 30 AlphaSlop push (10-23 evening)
 
-## Batch b1 (2026-10-24 03:00-06:55 IST): done
+hb4 11/40 against AlphaSlop on all 40 maps, exactly repeatable. Best variant pk4 13/40 but 22 vs 24 on ranks 70-80, so not adopted. Teams that beat AlphaSlop take the middle before round 600 and bank within 15 rounds; pushing us into the middle (md1) lost, because we lost the fights there.
 
-- Rank 96 at the start. Panel ranks 81-85: Ninja Turtles, DOOMSDAY, Sic Mundus Creatus Est, error404, Shawn (`data/specs_b1.txt`, second set `data/specs_b1x.txt`).
-- Base hb4: 15/25, then 12/25 after Shawn changed bot (rerun hb4_b1b). b1x: 9/25.
-- Accepted `fe1`: b1 17/25 (6 up, 1 down), b1x 13/25 (6 up, 2 down), local 414/560 (hb4 384). Its parts and every rejected variant: `docs/experiments.md`, batch b1. Facts found: `docs/findings.md`, batch b1.
-- Still lost by every variant: starvation (enemy owns the centre gem cluster), road_of_riches (enemy camps the mid-map altars), interlock, rows, gem_fields. Rivals tribute 2-3x as often (median bag 22 vs our 29) and hunt in packs (Shawn).
-- Next: batch b2 (done, see above).
+## Parked ideas (not settled on the platform)
 
-## Rank 30 AlphaSlop push (2026-10-23 evening to 10-24 01:30): result
-
-- Ladder bot is still hb4 (`main`, submitted as version 410 at 01:28 on 10-24).
-- Panel `r30` (AlphaSlop, all 40 maps, `data/specs_r30.txt`): hb4 11/40, exactly repeatable. Best variant pk4 13/40, but on panel `r70` (ranks 70-80, 55 games, `data/specs_r70.txt`) pk4 22 vs hb4 24: the gain is specific to AlphaSlop, so it was not adopted. fn1 also lost on r70 (22 vs 24).
-- About 20 ideas tested (`docs/experiments.md`, rows from pv1 to md1). None gave a reliable gain; most moved 1-3 games either way.
-- What the teams that beat AlphaSlop do (`docs/findings.md`): they take the middle before round 600 (first mid capture at round 86-105, ours 351) and bank within 15 rounds. Pushing us into the middle (md1) lost, because we lose the fights there: fight strength and gold (we earn 60-85% of AlphaSlop's) come first.
-- Next: the gold gap (team earned gold), not the middle or banking. Use panel r70 with hb4_70@r70 as the paired base (24/55) to check any change against more than one opponent.
-
-## Fix list (in order)
-
-1. Help teammates: done (hb4).
-2. Bank smaller batches: caps 25/30/40 lost locally and on the platform (bk1-bk3). Parked.
-3. Vendetta/Vesper damage: same cause as 1 (we die and flee more).
-4. **Next: maps we lose every game** (elk_arena, boss_battle, lanes, contest, starfish, quadrants). See `docs/findings.md`, "Maps".
-
-## Open, not yet tested on the platform
-
-- `lkh`: hb4 + altar locks (`tools/variant/mklock.py`). Rivals buy 4-6 per game, we buy none. Locks were only rejected locally, where local bots rarely tribute. Target metric: enemy tributed gems per game.
-- `lc1`: flee at enemy power > 0.7x ours (more caution). Local 385.
-- `fl3`: also losing when hit for > 40% hp last round. Its small-gate groups were created and may hold results: `python -I tools/platform/rcmp.py hb4l@p8s fl3l@p8s`.
-- Elk_arena: regroup and do not contest the centre early.
-- Boss_battle: team monolith assault plus an altar lock after the kill.
-- Lineage round robin (`docs/lineage.md`).
-
-## Main loss shape (gb2l and hb4l logs)
-
-Blowouts are decided before round 600: deaths before round 300 are 2.7 vs 0.9, camps cleared 19.6 vs 35.1, tributes 2.5 vs 15. Fatal engagements start even and end outnumbered while fleeing.
+- `lc1`: flee at enemy power > 0.7x ours (more caution). Local 385, never gated.
+- `fl3`: also count as losing when hit for > 40% health last round. Its small-gate groups may still hold results (`rcmp.py hb4l@p8s fl3l@p8s`).
+- Altar locks: rivals buy 4-6 per game. Our tries (lk1-lk3, lke, lkh, pl1) gave no gain; lk3 (lock only to cancel an enemy tribute) never fired.
+- cp1's passive-aware capture rule and cp2/cp3's fight rules are in cp3; their separate platform effect is unknown.
