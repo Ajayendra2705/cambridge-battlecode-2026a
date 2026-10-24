@@ -19,7 +19,27 @@ def load_game(path):
 
 
 def pair_gaps(rounds):
-    pass
+    pair_gaps_dict = {}
+    counting = True
+    counter = 0
+    for prior_round, latter_round in enumerate(rounds[:, "vis"], rounds[1:, "vis"]):
+        if counting:
+            counter += 1
+        if (
+            prior_round == [] or prior_round == [[], [], [], [], [], [], [], [], [], []]
+        ) and (
+            latter_round != []
+            or latter_round != [[], [], [], [], [], [], [], [], [], []]
+        ):
+            counting = False
+            pair_gaps_dict[counter] = pair_gaps_dict.get(str(counter), 0) + 1
+        if (
+            latter_round == []
+            or latter_round == [[], [], [], [], [], [], [], [], [], []]
+        ) and (
+            prior_round != [] or prior_round != [[], [], [], [], [], [], [], [], [], []]
+        ):
+            counting = True
 
 
 def main():
