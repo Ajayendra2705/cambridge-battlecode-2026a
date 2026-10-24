@@ -8,6 +8,20 @@
 - **Method (batch loop):** panel = the 5 ladder teams at ranks R-15 to R-11, 5 fixed maps each (`data/specs_bN.txt`), base = main on it, improve until 17/25, then confirm on a second map set (`data/specs_bNx.txt`) against the same teams before adopting.
 - **Upload limit:** 20 submissions per hour. See `docs/WORKFLOW.md`.
 
+## Mistakes so far (review 2026-10-24 23:30 IST)
+
+- Judged variants on 50-game win counts. Near-identical bots differ by about 3 wins from chaos alone; most rejections of the evening were inside that noise. Use decoded continuous metrics (hits, deaths, gems collected/tributed/lost) and the always-lost games.
+- Winner's curse: dr3 was picked as best of about 40 variants on b3/b4, so its 28/50 there is inflated, and every later candidate was compared against it on the same games. Compare on a fresh panel (b6).
+- Spent about an hour on dash routing over holes (gd1) without first checking team-level effects (champions without a dash split off). Check the whole flow before building.
+- Deleted variant folders before their platform verdict and rebuilt them later; keep a candidate until its gate is read.
+- Hunted symptoms map by map before measuring where the gap was overall; the biggest gap (we land 40% fewer hits in fights) was found late.
+- Edited bot code through shell and Python string escapes and broke builds three times ('
+' became a real newline).
+
+## Batch b6 (2026-10-24 23:25 IST, rank 77)
+
+Panel ranks 60, 62-65 (61 KKB and 66 The Mania have no eligible bot): 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters, HouseOfCoders, The Party of Heroes; two 5-map windows each covering all 40 maps (`data/specs_b6.txt`, seed 6060). First run: dr3 vs pool/fh2.
+
 ## Single factor: gem collection (team decision, 2026-10-24 18:50 IST)
 
 Work only on gems collected until we match the rivals; no other factor until then.
