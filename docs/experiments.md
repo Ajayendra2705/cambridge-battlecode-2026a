@@ -338,3 +338,8 @@ Variants c1-c37, e_* (e_bank20, e_fuel, e_power, e_flee, e_jung, e_jung1, e_hp, 
 | ab2 | sp1 | the altar guard blocks banking only while a guard camp next to an altar is alive (boss_battle: one of its two monoliths) | boss_battle/ambush/corners local 10/12 | waiting for a platform slot | open |
 | fh2 (b5) | - | candidate on b5 | - | b5 20/50 (dr3 23, fh1 22) | b5+b6 total 33/90 (dr3 37, ef3 35) |
 | sp2 | fh2 | sp1's item formula on fh2 (without ef3's banking) | quick 181 | b6 12/40; sp1 beat it 9 L->W to 4 W->L, better margin in 27 of 40 games (p = 0.016) | rejected: the item formula needs ef3's banking |
+| rg2 | sp1 | against a 3+ enemy stack within 8 that outnumbers us, fall back to spawn even when out of reach | quick 172 (sp1 181) | - | rejected: retreats cost farming |
+| sp1 / sp2 (b5) | - | - | - | sp1_b5 22/50 and sp2_b5 ran at the same time (two gate chains overlapped after a kill missed them), so each may have played with the other's submission: not trustworthy | discarded |
+| sp3 | ab2 | Jungle back in the item formula: first Jungle emblem worth +0.15 (camps deal about 57% of the damage we take locally) | quick 189 (sp1 181) | gating b6 | open |
+| dr3g | dr3 (main) | only the two altar-guard fixes (ab1 + ab2): bank once the enemy tributes, and only a guard camp beside an altar blocks it | identical to main locally (local bots never kill the guard) | gating b5+b6 | safe default for the final pick |
+| cf1 | dr3g | + the fight layers fh1 and fh2 (bot.cpp only); keeps dr3's gold x2 before the first emblem and mid-push x2 (validated earlier: pg5, mid4) and its banking and items | quick 181 (main 180), deaths 889 vs 896, lost/g 44 vs 47 | gating b5+b6 | candidate: the parts with consistent evidence |

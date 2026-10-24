@@ -15,6 +15,7 @@
 - Spent about an hour on dash routing over holes (gd1) without first checking team-level effects (champions without a dash split off). Check the whole flow before building.
 - Deleted variant folders before their platform verdict and rebuilt them later; keep a candidate until its gate is read.
 - Hunted symptoms map by map before measuring where the gap was overall; the biggest gap (we land 40% fewer hits in fights) was found late.
+- 01:15 on 10-25: `ps | grep` in Git Bash shows only `/usr/bin/bash`, not the command line, so a kill of the gate chain matched nothing and two chains ran gates at once (sp1_b5 and sp2_b5 overlapped). Find processes through `/proc/PID/cmdline` before killing, and check that only one gate chain is alive.
 - Edited bot code through shell and Python string escapes and broke builds three times ('
 ' became a real newline).
 
