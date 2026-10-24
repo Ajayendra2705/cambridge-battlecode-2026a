@@ -19,6 +19,17 @@
 - Edited bot code through shell and Python string escapes and broke builds three times ('
 ' became a real newline).
 
+## Improvement plan (written 2026-10-25 02:20 IST, for the next session)
+
+In order of expected value, each with its measured gap (details in `docs/findings.md`):
+
+1. Ranged champions shoot when an enemy is in range instead of stepping (Vesper hits in 41% of in-range rounds, rivals 53%). Check the attack-on-sight health gate and the plan's move before the attack.
+2. Vendetta dashes in on an enemy 2-3 tiles away when the fight is not lost (16% vs 26% hit rounds at that distance).
+3. Capture priority: fix the dead rule (`mine = 16 * 16`) and give captures to the passives that pay (cp1: Vesper +33% gold, Marcella +2 gold per tributed gem; local gold +5%, tributed r600 304).
+4. Items: the formula (sp1/sp3) moved Power emblems from 0.07 to 0.45 per champion, but rival Vespers hold 3.0; damage counted twice (sp4) dies too much locally. Needs the gold from 3 first.
+5. Banking: we carry about 30 more gems and lose about 30 more on death by r1000 than the rivals; ef3's trip-overhead factor 3 is a fit to one panel.
+6. Maps: boss_battle (kill the guard first or hold the altar), hooks (centre 4v4), hole maps (dash routing failed as gd1; needs team-level planning).
+
 ## Batch b6 (2026-10-24 23:25 IST, rank 77)
 
 Panel ranks 60, 62-65 (61 KKB and 66 The Mania have no eligible bot): 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters, HouseOfCoders, The Party of Heroes; two 5-map windows each covering all 40 maps (`data/specs_b6.txt`, seed 6060). First run: dr3 vs pool/fh2.
