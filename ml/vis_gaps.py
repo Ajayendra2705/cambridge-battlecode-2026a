@@ -19,29 +19,17 @@ def load_game(path):
 
 
 def pair_gaps(rounds):
-    pair_gaps_dict = {}
-    counting = True
-    counter = 0
-    visions = [r["vis"] for r in rounds]
-    for prior_round, latter_round in zip(visions, visions[1:]):
-        if counting:
-            counter += 1
-        if (
-            prior_round == [] or prior_round == [[], [], [], [], [], [], [], [], [], []]
-        ) and (
-            latter_round != []
-            or latter_round != [[], [], [], [], [], [], [], [], [], []]
-        ):
-            counting = False
-            pair_gaps_dict[counter] = pair_gaps_dict.get(str(counter), 0) + 1
-        if (
-            latter_round == []
-            or latter_round == [[], [], [], [], [], [], [], [], [], []]
-        ) and (
-            prior_round != [] or prior_round != [[], [], [], [], [], [], [], [], [], []]
-        ):
-            counting = True
-    return pair_gaps_dict
+    last_seen = {}
+    gaps = []
+    for rnd in rounds:
+        r = rnd["r"]
+        for champ, enemies in enumerate(rnd["vis"]):
+            for enemy in enemies:
+                pair = (champ, enemy)
+                if pair in last_seen and r - last_seen[pair] > 1:
+                    gaps.append(r - last_seen[pair] - 1)
+                last_seen[pair] = r
+    return gaps
 
 
 def main():
