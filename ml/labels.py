@@ -2,6 +2,10 @@ import pandas as pd
 
 from common import OUT, load_game
 
+CARRIED_WEIGHT = 0.71
+LAM = 50
+H = 20
+
 
 def label(rounds, idx, champ, H, lam):
     end = min(idx + H, len(rounds) - 1)
@@ -37,15 +41,23 @@ def label(rounds, idx, champ, H, lam):
                     my_deaths += 1
     our_deaths, their_deaths = deaths[us], deaths[them]
 
+    return (
+        (our_tributed_end - our_tributed_start)
+        + CARRIED_WEIGHT * (our_carried_end - our_carried_start)
+        + CARRIED_WEIGHT * (their_carried_start - their_carried_end)
+        + (their_tributed_start - their_tributed_end)
+        + lam * (their_deaths - our_deaths)
+    )
+
 
 def main():
     events = pd.read_parquet(OUT / "events.parquet")
     game = events["game"].iloc[0]
     _, rounds = load_game(game)
     sample = events[events["game"] == game].groupby(["idx", "champ"]).head(1).head(5)
-    for idx, champ, enemy in sample[["idx", "champ", "enemy"]].itertuples(index=False):
+    for idx, champ, enemy in zip(sample["idx"], sample["champ"], sample["enemy"]):
         print(
-            f"round {rounds[idx]['r']} champ {champ} enemy {enemy}: label {label(rounds, idx, champ, H=20, lam=10)}"
+            f"round {rounds[idx]['r']} champ {champ} enemy {enemy}: label {label(rounds, idx, champ, H=H, lam=LAM)}"
         )
 
 

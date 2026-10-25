@@ -14,6 +14,9 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 | Action | Per enemy in reach: engage = this round it attacked or cast on that enemy, or moved closer to it; else don't engage | Matches the bot's engage branch (hit the prey or step toward it) |
 | Model family | Set encoder (phi 6->16, pool, head 32->16->1), about 3k fuel with SIMD | Measured in `bots/exp/fuelm` (`docs/findings.md`) |
 | Split | By game: 930 train / 199 val / 199 test (`data/ml/games.parquet`, seed 0) | Rows from one game are correlated |
+| Label constants | Carried gem = 0.71 tributed gem, a death (lambda) = 50 tributed gems | Logistic regression of game result on team differences (tributed, carried, alive) over train snapshots every 50 rounds (`snapshots.py`), boss_battle excluded. lambda is likely inflated (strong teams both survive and win) |
+| Horizon H | 20 rounds | Engaged-minus-not label gap / std peaks flat at H = 10-20 (0.32), then falls; a 1v1 from full hp takes about 12-20 rounds plus 0-3 to close in |
+| boss_battle | Excluded from training; the bot keeps `simulate_fight` there | Tributing is blocked until the monolith dies, so carried gems mean something else; 38 games are too few to fit or train separately |
 | Inputs | Only what the champion can see in-game (its `vis` list, plus its own team) | Feature parity with the bot |
 
 ## Files
@@ -52,3 +55,8 @@ Stop rules:
 
 - Vendetta cooldowns are approximate (see above).
 - Actions are what other teams' bots did. Situations where no bot engages have few "engaged" examples, so Q is least reliable there (selection bias).
+
+## Ideas to try later
+
+- Hybrid label: add the deciding champion's own carried-gem change on top of the team swing (extra weight for its own bag). Compare against the pure team label in the offline eval.
+- Carried weight 0.38 (all-maps fit) vs 0.71, compared in the offline eval.

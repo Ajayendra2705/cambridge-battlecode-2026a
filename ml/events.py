@@ -26,6 +26,7 @@ def find_decisions(game):
 
 def main():
     games = load_games()
+    games = games[~games["map"].str.contains("boss_battle")]
     with Pool(6) as pool:
         chunks = pool.map(find_decisions, games["game"], chunksize=8)
     events = pd.DataFrame(
