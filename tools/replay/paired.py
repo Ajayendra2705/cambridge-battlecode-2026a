@@ -1,6 +1,7 @@
 """Pair the decoded games of two platform runs on (opponent, map, repeat) and compare them game by game.
 
-usage: python -I tools/replay/paired.py BASE_RUN NEW_RUN [ROUND]     (runs as in results/gate.log, e.g. cand6_b3456@b3456)
+usage: python -I tools/replay/paired.py BASE_RUN NEW_RUN [ROUND] [--drop OPP1,OPP2]   (runs as in results/gate.log, e.g.
+       cand6_b3456@b3456; --drop skips opponents whose names start so, e.g. the ones sandwich.py found changed)
 
 Both runs must be decoded first (tools/replay/decode_run.sh RUN). The opponent of each match comes from
 `cambc match-groups show` (cached in data/cache/mm_<run>.json). Platform games are deterministic, so on opponents that
@@ -82,10 +83,14 @@ def stats(run, R):
 
 
 if __name__ == '__main__':
-    base, new = sys.argv[1], sys.argv[2]
-    R = int(sys.argv[3]) if len(sys.argv) > 3 else 1000
+    args = sys.argv[1:]
+    drop = []
+    if '--drop' in args:  # opponents that changed bots between the runs (sandwich.py names them): name prefixes
+        j = args.index('--drop'); drop = args[j + 1].split(','); args = args[:j] + args[j + 2:]
+    base, new = args[0], args[1]
+    R = int(args[2]) if len(args) > 2 else 1000
     A, B = stats(base, R), stats(new, R)
-    keys = [k for k in A if k in B]
+    keys = [k for k in A if k in B and not any(k[0].startswith(d) for d in drop)]
     print(f'{len(keys)} paired decoded games (to r{R}); base -> new')
     cls = collections.defaultdict(list)
     for k in keys:

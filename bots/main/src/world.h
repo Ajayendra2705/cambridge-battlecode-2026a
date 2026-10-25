@@ -11,9 +11,13 @@ struct Group {
     int state = 0;                // 0 alive, 1 reward available, 2 respawning.
     int respawn_round = 0;
     int awake_round = -100;      // Last round a member was seen awake (or hit us from fog).
+    int first_camp = 0, camp_count = 0;  // This group's entries in known_camps (init_units stores them group by group).
+    int row_lo = 0, row_hi = -1;          // Rows of its spawn tiles: a view that misses them cannot see the group.
     double bank_cost = 0;         // Rounds to walk the reward to the nearest altar and tribute it.
     std::unique_ptr<distance_field> field;
     std::uint64_t field_key = 0;  // Which strong camps' reaches `field` avoids (bit per W.strong_camps entry).
+    int opened_round = -100;      // When `field` was last rebuilt to let us out of a reach we stood in (see group_field).
+    std::unique_ptr<bitboard> open_reach;  // The reach `field` lets us through until we are out of it.
 
     // Health and strength still to beat; a group that is not up will come back at full health.
     float hp_left() const {
@@ -64,34 +68,12 @@ void compute_field(distance_field& field, const bitboard& roots) {
     field.compute(W.terrain & ~roots, roots, visited);
 }
 
-// Route to a group around the reaches of other live monoliths and golems. The field was built once and kept, so the
-// detour stayed after the strong camp died (and was missing after it came back): rebuild when that set changes.
-distance_field& group_field(Group& g) {
-    const int gi = static_cast<int>(&g - W.groups.data());
-    std::uint64_t key = 0;
-    for (size_t i = 0; i < W.strong_camps.size() && i < 64; ++i) {
-        const auto& c = W.strong_camps[i];
-        if (c.group != gi && W.groups[c.group].state == 0) key |= std::uint64_t{1} << i;
-    }
-    // A rebuild costs up to about 30k fuel: on a turn with less left, the old route serves one more turn.
-    if (!g.field || (key != g.field_key && cambc::fuel_remaining() > 40000)) {
-        if (!g.field) g.field = std::make_unique<distance_field>();
-        g.field_key = key;
-        bitboard zone;
-        zone.clear();
-        for (size_t i = 0; i < W.strong_camps.size() && i < 64; ++i)
-            if (key >> i & 1) zone.draw_chebyshev(W.strong_camps[i].pos, static_cast<float>(W.strong_camps[i].range));
-        bitboard visited;
-        g.field->compute((W.terrain | zone) & ~g.tiles, g.tiles, visited);
-        // Fall back to the plain route when the detour cuts the group off from home (the old check read only the
-        // first spawn tile).
-        bool ok = false;
-        for (const auto sp : W.ally_spawn.positions())
-            if (g.field->get(sp) != UNREACH) { ok = true; break; }
-        if (!ok) compute_field(*g.field, g.tiles);
-    }
-    return *g.field;
-}
+// Fuel one full-map field takes on this map, measured on each build (a 100x100 field can take over 50k: building one
+// with less left ran the turn out of fuel, bf7 first try on big_world).
+std::uint64_t field_cost = 30000;
+
+// Route to a group around the reaches of other live monoliths and golems (defined in move.h: it reads our position).
+distance_field& group_field(Group& g);
 
 std::uint32_t handle_id(const cambc::champion& c) {
     return static_cast<std::uint32_t>(static_cast<cambc::handle_champion_t>(c));
@@ -138,6 +120,8 @@ void init_world() {
             g.max_hp.push_back(s.base_health);
             g.strength.push_back(s.base_strength);
         }
+        g.row_lo = cm::height();
+        for (auto sp : g.spawns) g.row_lo = std::min(g.row_lo, sp.y), g.row_hi = std::max(g.row_hi, sp.y);
         g.reset();
         W.groups.push_back(std::move(g));
     }

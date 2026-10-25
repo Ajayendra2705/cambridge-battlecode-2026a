@@ -37,9 +37,6 @@ bool solo_phase() {
 // each. The fields are built once, one per turn without a pick (build_travel_field); until all exist we use the BFS.
 std::vector<std::unique_ptr<distance_field>> travel_fields;
 int travel_built = 0;
-// Fuel one full-map field takes on this map, measured on each build (a 100x100 field can take over 50k: building one
-// with less left ran the turn out of fuel, bf7 first try on big_world).
-std::uint64_t field_cost = 30000;
 bool travel_ready() { return travel_built >= static_cast<int>(W.groups.size()) && travel_built > 0; }
 void build_travel_field() {
     if (travel_fields.empty()) travel_fields.resize(W.groups.size());
@@ -245,7 +242,7 @@ bool bank_gems() {
                 if (cambc::vision::has_altar_lock(altar)) {
                     const auto lock = cambc::vision::altar_lock_at(altar);
                     if (lock.is_enemy()) {
-                        if (me.can_attack() && dist(S.me, lock.position()) <= S.range) {
+                        if (me.can_attack() && dist(S.me, lock.position()) <= S.range && !stale()) {
                             me.attack(lock);
                             return true;
                         }
@@ -255,6 +252,7 @@ bool bank_gems() {
                 }
             } catch (const cambc::error&) {
             }
+            if (stale()) return true;
             try {
                 me.submit_gems(altar);
                 return true;

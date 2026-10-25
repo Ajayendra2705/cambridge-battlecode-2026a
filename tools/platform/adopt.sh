@@ -15,4 +15,4 @@ rm -rf "bots/pool/$old/.cambc"
 cp -r "bots/exp/$new" bots/main
 rm -rf bots/main/.cambc
 python -I tools/local/multi.py main --pool pool/tf3 --maps 00ambush --jobs 2 | grep -E "^main|error" || true
-until powershell -File tools/cambc.ps1 submit main 2>&1 | tail -1 | tee /dev/stderr | grep -q Submitted; do sleep 30; done
+until powershell -File tools/cambc.ps1 submit main 2>&1 | tail -1 | tee -a /dev/stderr | grep -q Submitted; do sleep 30; done

@@ -1,6 +1,6 @@
 # Bot architecture (`bots/main`)
 
-`bots/main` is the current best bot, ladder bot `cand1` (2026-10-25 17:05 IST, version 704): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`) and "Changes in cand1". Read this page before you open the code.
+`bots/main` is the current best bot, ladder bot `fd2z` (2026-10-26 02:14 IST, version 723): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`), "Changes in cand1" (now `bots/pool/cand1`) and "Changes in fd2z". Read this page before you open the code.
 
 ## Game in one paragraph
 
@@ -76,11 +76,10 @@ Slot = rank of this champion's handle among allied handles (sorted), set in `ini
 
 | Line | When | Format |
 |---|---|---|
-| `R<round> s<slot> ...` | every 20 rounds | type, hp, gems, gold, target, position |
-| `G <round> <ours> <theirs>` | slot 0, every 10 rounds | tributed gems both teams |
+| `R<round> s<slot> ...` | every 100 rounds, and on death | type, hp, gems, gold, target, position (integers only) |
+| `G <round> <ours> <theirs>` | slot 0, every 100 rounds | tributed gems both teams |
 | `A s<slot> r<round> ...` | round 30 and every 250 | attack/cast counters, rounds per activity |
 | `D<round> s<slot> r<last> hp=... <activity> en: type@dist/hp...` | on death | what this champion last saw |
-| `H<round> s<slot> ...` | hit for >25% hp in one round | position, damage, camps, enemies with burst |
 | `V...` | only in logging variants (`tools/variant/mklog.py`) | per-turn combat state; read by `tools/replay/vana.py`, `dpre2.py` |
 
 Logging costs fuel and changes play. Never put a logging variant (`*l`, for example `hb4l`) on the ladder.
@@ -136,6 +135,22 @@ cand1 = cp3 plus the bug-fix line bf1-bf7 (found by the check builds au1-au9) an
 - `shop.h` (hr1): Heart of Ruin values Bruiser-focus's strength growth (its basic attack scales with strength).
 
 Decoded on b56 (78 games, by r1000, against base1025c = cp3 in the same session): champion damage per game Heart of Ruin 4090 (3172), Vendetta 3676 (2657), Varg 2637 (2030); Vesper deaths 1.60 (1.21) and gems 162 (240).
+
+## Changes in fd2z (ladder bot from 2026-10-26 02:14 IST)
+
+fd2z = cand1 plus the audit line cand6 (check builds au10-au17, probes pf7-pf18) and two changes from plan8 (fd2's flee dash, fz1's fight-turn fuel fixes), each with its experiments row:
+
+- `move.h` (cand3): one move per turn in `safe_move`; occupancy read again after our own move or dash, before the next move or landing; our own `walk_towards` (around tiles known to be held, never onto a held goal); a group route that reads unreachable at our tile opens the strong-camp reach we stand in and closes it again once we are out; the local-search fuel guard follows the measured worst cost (decaying maximum + 5k) instead of a fixed 20k; the respawn-wait loop checks that the move is still unused.
+- `abilities.h` (cand3): the attack reset checks the round right before casting.
+- `bot.cpp` (cand3): status lines every 100 rounds, integers only (one line cost 13k fuel).
+- `snapshot.h`, `knowledge.h` (cand3, cand4: fuel): the view is read as packed bits in one call (`export_linear_buffer`) instead of a round stamp on every visible tile; awake camps get a round stamp per camp; the knowledge update skips groups outside the view's rows; phantoms are built group by group.
+- `snapshot.h` (cand6): `stale()` is also true under 1000 fuel left.
+- `abilities.h`, `move.h`, `sim.h`, `targets.h` (cand6): every action that follows a search (dashes, casts, attacks, ward, tribute, recall) checks `stale()` right before the call, and `read_slots` stops when stale; occupancy is read again after placing a ward; dash paths are closed at enemy spawn tiles.
+- `bot.cpp` (cand4, cand6: opening): the opening turn ends after a setup that leaves under 50k fuel, or under 80k when the setup ran into a later round; no camp fight starts under 15k fuel (the turn ends instead).
+- `bot.cpp` (fd2): a fleeing champion with a dash ready dashes first, to the landing closer to home that ends farthest from the enemies and outside awake camps' reach, then walks.
+- `bot.cpp`, `sim.h` (fz1): the big-hit `H` log line is gone (37.6k fuel a line); the fight simulator keeps its unit buffers across turns and `simulate_fight` works on a reused copy.
+
+Audit result (cand6): 0 caught engine errors and 0 bot errors in 400 local games of its check builds (au15, au16); 0 `botFault` events on the platform in plan8 (700 games). Platform (plan8, b3456, 95 games against opponents that kept their bots): fd2 49 and fz1 41 wins vs cand1's 48 and cand6's 41; paired decoded margin fd2 +18 per game, our deaths -0.8 per game.
 
 ## Known leftovers (harmless)
 

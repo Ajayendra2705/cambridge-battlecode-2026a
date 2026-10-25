@@ -4,7 +4,7 @@ RUN is a run name as in results/gate.log (e.g. cand6_b3456@b3456). Reads the mat
 data/summaries/ when missing) and prints per run: games, botFault events, fuelExhausted events per game for us and
 for the opponents, ours by round (1-3 = the setup spilling over, 4-30, 31 on), by map size and by champion.
 """
-import json, os, re, subprocess, sys, collections
+import json, os, re, subprocess, sys, time, collections
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 CAMBC = os.path.expandvars(r'%LOCALAPPDATA%\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts\cambc.exe')
 OUR = '118dbffc-87ec-48a6-ac9c-dc1e371ba364'
@@ -12,8 +12,12 @@ for run in sys.argv[1:]:
     ids = [l.split()[1:] for l in open('results/gate.log') if l.split()[:1] == [run]][-1]
     rounds = collections.Counter(); maps = collections.Counter(); champs = collections.Counter(); faults = 0; n = 0; them = 0
     for gid in ids:
-        text = subprocess.run([CAMBC, 'match-groups', 'show', gid], capture_output=True, text=True, encoding='utf-8').stdout
-        for mid, ta in re.findall(r'^(\S{36})\s+finished\s+\S+\s*\n\s+(\S{36})', text, re.M):
+        for attempt in range(6):  # the listing comes back empty under load (10-26: 45-120 of 140 games read)
+            text = subprocess.run([CAMBC, 'match-groups', 'show', gid], capture_output=True, text=True, encoding='utf-8').stdout
+            found = re.findall(r'^(\S{36})\s+finished\s+\S+\s*\n\s+(\S{36})', text, re.M)
+            if found: break
+            time.sleep(5 * (attempt + 1))
+        for mid, ta in found:
             p = f'data/summaries/{mid}.json'
             if not os.path.exists(p):
                 subprocess.run([CAMBC, 'matches', 'summary', mid, '--json', '-o', p], capture_output=True)

@@ -47,8 +47,9 @@ bool strike_dash(const std::vector<vec2>& targets, bool skip_danger) {
             if (hits > best_hits || (hits == best_hits && hits > 0 && nearest < best_d)) best_hits = hits, best = t, best_d = nearest;
         }
         if (best_hits == 0) continue;
+        if (stale()) return false;  // The landing search can run the turn out of fuel.
         try {
-            if (ab.use(best)) { S.me = best; return true; }
+            if (ab.use(best)) { moved_to(best); return true; }
             S.occ.set(best);  // A hidden unit holds the landing tile.
         } catch (const cambc::error&) {
             S.occ.set(best);
@@ -93,8 +94,9 @@ bool dash_next_to(const ChampSnap& target) {
             if (best.x < 0 || e < best_e) best = t, best_e = e;
         }
         if (best.x < 0) continue;
+        if (stale()) return false;
         try {
-            if (ab.use(best)) { S.me = best; return true; }
+            if (ab.use(best)) { moved_to(best); return true; }
             S.occ.set(best);
         } catch (const cambc::error&) {
             S.occ.set(best);
@@ -121,7 +123,9 @@ void place_ward_forward() {
             const int v = W.enemy_field.get(t);
             if (v < best_v) best_v = v, best = t;
         }
-        if (best.x >= 0) me.place_ward(best);
+        // The new ward shows units that were out of view at the snapshot, and a move onto one threw "Known occupied
+        // destination" (3 of the 9 caught errors per 80 games in the au14 audit): read the occupancy again before it.
+        if (best.x >= 0 && !stale()) me.place_ward(best), S.view_moved = true;
     } catch (const cambc::error&) {
     }
 }
@@ -146,6 +150,7 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
             }
         }
         if (!best) continue;
+        if (stale()) return false;
         try {
             if (ab.can_target_ground() ? ab.use(best->pos) : ab.use(best->camp)) { ++n_cc; return true; }
         } catch (const cambc::error&) {
@@ -171,6 +176,7 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
             }
         }
         if (best_hits == 0) continue;
+        if (stale()) return false;
         try {
             if (ab.use(best_tile)) { ++n_aoe; return true; }
         } catch (const cambc::error&) {
@@ -186,6 +192,7 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
             for (const auto* c : live)
                 if (c != &focus && tiles.is_set(c->pos) && (!t || c->hp < t->hp) && unit_alive(c->camp)) t = c;
         if (!t) continue;
+        if (stale()) return false;
         try {
             if (ab.use(t->camp)) { ++n_dmg; return true; }
         } catch (const cambc::error&) {
@@ -203,7 +210,7 @@ bool cast_from_range(const std::vector<const CampSnap*>& live, const CampSnap& f
     for (const auto& ab : me.abilities()) {
         if (!castable_now(ab) || !ab.is_cc() || ab.can_target_ground()) continue;
         try {
-            if (ab.damage_amount() > 0 && ab.valid_tiles().is_set(focus.pos) && ab.use(focus.camp)) { ++n_dmg; return true; }
+            if (ab.damage_amount() > 0 && ab.valid_tiles().is_set(focus.pos) && !stale() && ab.use(focus.camp)) { ++n_dmg; return true; }
         } catch (const cambc::error&) {
         }
     }
@@ -214,6 +221,43 @@ int nearest_enemy_dist(vec2 t) {
     int m = 99;
     for (const auto& e : S.enemies) if (!W.enemy_spawn.is_set(e.pos)) m = std::min(m, dist(t, e.pos));
     return m;
+}
+// Fleeing walked home one tile a turn and never dashed: a chaser that walks as fast kept hitting every round (cand1 on
+// b56, decoded by r1000: Vesper died 1.60 times per game, the rivals' Vesper 0.77; Vendetta 1.92 against 1.38). A dash
+// gains two tiles: land closer to home, as far from the enemies as possible and outside awake camps' reach.
+bool flee_dash() {
+    if (stale()) return false;
+    auto& me = cambc::self();
+    if (!me.can_cast()) return false;
+    const int here = W.spawn_field.get(S.me);
+    if (here == UNREACH) return false;
+    bitboard reach;
+    for (const auto& c : S.camps) if (c.awake) reach.draw_chebyshev(c.pos, static_cast<float>(c.range));
+    for (const auto& c : S.phantoms) reach.draw_chebyshev(c.pos, static_cast<float>(c.range));
+    for (const auto& ab : me.abilities()) {
+        if (!ab.is_dash() || !castable_now(ab)) continue;
+        vec2 best = S.me;
+        int best_e = nearest_enemy_dist(S.me), best_h = here;
+        for (auto t : dash_landings(ab).positions()) {
+            if (S.occ.is_set(t) || W.terrain.is_set(t) || reach.is_set(t)) continue;
+            const int h = W.spawn_field.get(t);
+            if (h == UNREACH || h >= here) continue;
+            const int e = nearest_enemy_dist(t);
+            if (e > best_e || (e == best_e && h < best_h)) best = t, best_e = e, best_h = h;
+        }
+        if (best == S.me) continue;
+        if (stale()) return false;  // The landing search can run the turn out of fuel.
+        try {
+            if (ab.use(best)) {
+                moved_to(best);
+                return true;
+            }
+            S.occ.set(best);
+        } catch (const cambc::error&) {
+            S.occ.set(best);
+        }
+    }
+    return false;
 }
 bool flee_bush() {
     if (!cambc::self().can_move()) return false;
@@ -243,6 +287,7 @@ bool use_champion_abilities(const ChampSnap& target) {
         if (!best) continue;
         try {
             if (best->ch.buffs().has_stun()) continue;
+            if (stale()) return false;
             if (ab.can_target_ground() ? ab.use(best->pos) : ab.use(best->ch)) return true;
         } catch (const cambc::error&) {
         }
@@ -259,9 +304,9 @@ bool use_champion_abilities(const ChampSnap& target) {
                 if (!t)
                     for (const auto& e : S.enemies)
                         if (tiles.is_set(e.pos) && !W.enemy_spawn.is_set(e.pos) && (!t || e.hp < t->hp) && unit_alive(e.ch)) t = &e;
-                if (t && ab.use(t->ch)) return true;
+                if (t && !stale() && ab.use(t->ch)) return true;
             } else if (ab.is_aoe_damage()) {
-                if (ab.valid_tiles().is_set(target.pos) && ab.use(target.pos)) return true;
+                if (ab.valid_tiles().is_set(target.pos) && !stale() && ab.use(target.pos)) return true;
             }
         } catch (const cambc::error&) {
         }
@@ -301,7 +346,9 @@ template <class U> bool try_attack_reset_and_hit(const U& target) {
     for (const auto& ab : me.abilities()) {
         if (!ab.is_attack_reset() || !ab.is_ready()) continue;
         const cambc::unit* hit = reset_target(target);
-        if (!hit) return false;
+        // The ability list and the target search are host calls: a turn that ran out of fuel here resumed next round
+        // with a fresh attack and cast the reset on it (all 5 refusals in the au10 audit).
+        if (!hit || stale()) return false;
         try {
             if (ab.use() && me.can_attack()) {
                 ++n_reset;
@@ -328,11 +375,11 @@ void use_support_abilities(bool in_combat) {
                     const float missing = a.max_hp - a.hp;
                     if (missing > best_missing && ab.valid_tiles().is_set(a.pos)) best_missing = missing, best = &a;
                 }
-                if (best && ab.use(best->ch)) return;
+                if (best && !stale() && ab.use(best->ch)) return;
             }
             // A shield absorbs most when raised before the hits land: any fight, any health.
             if (ab.is_shield() && in_combat) {
-                if (ab.use()) return;
+                if (!stale() && ab.use()) return;
             }
         } catch (const cambc::error&) {
         }
@@ -346,7 +393,7 @@ template <class U> bool attack_unit(const U& target) {
     // This turn's own spell can have killed the target already (131 attacks on dead targets per 80 games in the audit
     // build): the basic attack then goes to the next unit in reach, as the reset does.
     const cambc::unit* hit = reset_target(target);
-    if (!hit) return false;
+    if (!hit || stale()) return false;
     try {
         me.attack(*hit);
         ++n_attack;

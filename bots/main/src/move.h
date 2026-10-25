@@ -5,11 +5,82 @@
 constexpr std::array<vec2, 8> DIRS{vec2{1, 0}, vec2{-1, 0}, vec2{0, 1}, vec2{0, -1}, vec2{1, 1}, vec2{1, -1},
     vec2{-1, 1}, vec2{-1, -1}};
 
+// Route to a group around the reaches of other live monoliths and golems. The field was built once and kept, so the
+// detour stayed after the strong camp died (and was missing after it came back): rebuild when that set changes.
+distance_field& group_field(Group& g) {
+    const int gi = static_cast<int>(&g - W.groups.data());
+    std::uint64_t key = 0;
+    for (size_t i = 0; i < W.strong_camps.size() && i < 64; ++i) {
+        const auto& c = W.strong_camps[i];
+        if (c.group != gi && W.groups[c.group].state == 0) key |= std::uint64_t{1} << i;
+    }
+    const auto zone_of = [&] {
+        bitboard zone;
+        for (size_t i = 0; i < W.strong_camps.size() && i < 64; ++i)
+            if (key >> i & 1) zone.draw_chebyshev(W.strong_camps[i].pos, static_cast<float>(W.strong_camps[i].range));
+        return zone;
+    };
+    // A rebuild is a full-map field: on a turn with less fuel left than its measured cost, the old route serves one more
+    // turn (a fixed 40k floor ran big_world turns out of fuel, where one field costs over 50k).
+    const auto affordable = [] { return cambc::fuel_remaining() > field_cost + 15000; };
+    const auto build = [&](const bitboard& blocked) {
+        const auto f0 = cambc::fuel_remaining();
+        bitboard visited;
+        g.field->compute(blocked & ~g.tiles, g.tiles, visited);
+        const auto f1 = cambc::fuel_remaining();
+        if (f1 < f0) field_cost = std::max(field_cost, f0 - f1);
+    };
+    const auto build_detour = [&] {
+        build(W.terrain | zone_of());
+        // Fall back to the plain route when the detour cuts the group off from home (the old check read only the
+        // first spawn tile); with no fuel left for it, finish on a later turn.
+        bool ok = false;
+        for (const auto sp : W.ally_spawn.positions())
+            if (g.field->get(sp) != UNREACH) { ok = true; break; }
+        if (ok) return;
+        if (affordable()) build(W.terrain);
+        else g.field_key = ~key;
+    };
+    if (!g.field || (key != g.field_key && affordable())) {
+        if (!g.field) g.field = std::make_unique<distance_field>();
+        g.field_key = key;
+        g.opened_round = -100;
+        g.open_reach.reset();
+        build_detour();
+    } else if (g.open_reach && !g.open_reach->is_set(S.me) && affordable()) {
+        // Out of the reach the route was opened for: close it again, or a shorter way could lead back through it.
+        g.open_reach.reset();
+        build_detour();
+    }
+    // Standing in a reach the route avoids (a fight or a flight put us there), or behind one, the route read
+    // unreachable here and walks to the group stood still: 66 of 80 traced stuck walks to a capture in the au9 audit.
+    // Open the reach we stand in until we are out of it, else take the plain route; at most every 5 rounds.
+    if (g.field->get(S.me) == UNREACH && S.round - g.opened_round >= 5 && affordable()) {
+        g.opened_round = S.round;
+        const bitboard zone = zone_of();
+        if (zone.is_set(S.me)) {
+            bitboard inside = (~zone | W.terrain).reachable_tiles(S.me, 255);
+            inside.set(S.me);
+            build(W.terrain | (zone & ~inside));
+            g.open_reach = std::make_unique<bitboard>(inside);
+        }
+        if (g.field->get(S.me) == UNREACH && affordable()) {
+            build(W.terrain);
+            g.open_reach.reset();
+        }
+    }
+    return *g.field;
+}
+
 bool safe_move(vec2 t) {
-    if (stale()) return false;
+    // One move per turn. Loops that try each neighbour in turn hit "Movement already used" once the move was spent
+    // (55 per 80 games in the au9 audit) and marked every tile they tried as occupied for the rest of the turn.
+    if (stale() || S.walked || !cambc::self().can_move()) return false;
+    refresh_occ();
+    if (S.occ.is_set(t) || stale()) return false;
     try {
         if (cambc::self().move_absolute(t)) {
-            S.me = t;
+            moved_to(t);
             S.walked = true;
             return true;
         }
@@ -22,18 +93,30 @@ bool safe_move(vec2 t) {
     return false;
 }
 
-// The engine's own path step towards `t`; keeps S.me and S.walked current (move_towards does not report where it went).
+// One step along the shortest path to `t`, as the SDK's move_towards takes it, but around the tiles we know are held
+// (S.occ also has hidden units that refused a move) and never onto `t` itself while a unit holds it: walking at an enemy
+// or a camp from the next tile chose the goal's own tile ("Known occupied destination" in the au9 audit).
 bool walk_towards(vec2 t) {
-    if (stale()) return false;
-    auto& me = cambc::self();
-    try {
-        if (!me.can_move() || !me.move_towards(t)) return false;
-        S.me = me.position();
-        S.walked = true;
-        return true;
-    } catch (const cambc::error&) {
-        return false;
+    if (stale() || S.walked || S.me == t || !cm::is_in_bounds(t) || !cambc::self().can_move()) return false;
+    refresh_occ();
+    bitboard blocked = W.terrain | S.occ | cv::camp_tiles();
+    const bool goal_held = blocked.is_set(t);
+    blocked.set(S.me, false);
+    blocked.set(t, false);
+    bitboard roots, mine, visited;
+    roots.set(t);
+    mine.set(S.me);
+    distance_field field;
+    field.compute_to(blocked, roots, mine, visited);
+    vec2 best = S.me;
+    int best_d = field.get(S.me);
+    for (auto d : DIRS) {
+        const vec2 n{S.me.x + d.x, S.me.y + d.y};
+        if (!cm::is_in_bounds(n) || blocked.is_set(n) || (n == t && goal_held)) continue;
+        const int v = field.get(n);
+        if (v < best_d) best_d = v, best = n;
     }
+    return best != S.me && safe_move(best);
 }
 
 // Take the free neighbour with the lowest field value below `here`; hidden blockers are skipped.
@@ -51,6 +134,7 @@ bool descend(const distance_field& field, bitboard occ, int here) {
         }
         if (best == p) return false;
         if (safe_move(best)) return true;
+        occ |= S.occ;  // With what safe_move found: the refused tile, units that came into view since our dash.
         occ.set(best);
     }
     return false;
@@ -59,12 +143,15 @@ bool descend(const distance_field& field, bitboard occ, int here) {
 // Tiles a dash can land on. valid_tiles() is the casting range only (SDK: it "does not filter visibility, occupancy or
 // target categories"), so most picks from it failed: an audit build counted 94 failed landing dashes per game
 // ("Destination is unreachable within movement range"). A dash moves along a path of up to `range` 8-direction steps
-// that may cross holes but not walls, altars or units, and lands on a free walkable tile other than its start.
+// that may cross holes but not walls, altars, enemy spawn tiles or units, and lands on a free walkable tile other than
+// its start (the SDK's own walk avoids enemy spawn tiles too; with them left open, a landing reached only across them
+// was refused: "Destination is unreachable within movement range", once per 80 games in the au14 audit).
 bitboard dash_landings(const cambc::ability& ab) {
     int range = 2;
     if (ab.info())
         if (const auto* d = std::get_if<cambc::ability_dash>(&*ab.info())) range = std::max(1, static_cast<int>(d->range));
-    const bitboard path_block = cm::walls() | cm::altars() | S.occ;
+    refresh_occ();
+    const bitboard path_block = cm::walls() | cm::altars() | W.enemy_spawn | S.occ;
     bitboard land = path_block.reachable_tiles(S.me, static_cast<std::uint16_t>(range));
     land = land & ~W.terrain & ~S.occ;
     land.set(S.me, false);
@@ -87,10 +174,14 @@ bool step_static(const distance_field& field, int here) {
                 const int d = field.get(t);
                 if (d < best_d) best_d = d, best = t;
             }
+            if (stale()) return false;  // The landing search can run the turn out of fuel.
             try {
                 if (best != p && ab.use(best)) {
-                    S.me = best;
-                    if (me.can_move()) descend(field, S.occ, field.get(S.me));
+                    moved_to(best);
+                    if (me.can_move()) {
+                        refresh_occ();
+                        descend(field, S.occ, field.get(S.me));
+                    }
                     return true;
                 }
                 if (best != p) S.occ.set(best);  // A hidden unit holds the landing tile.
@@ -102,6 +193,17 @@ bool step_static(const distance_field& field, int here) {
     return descend(field, S.occ, here);
 }
 
+// A local search (a fresh field around occupants and danger) is not run on a turn that it could run out of fuel: a
+// turn that runs out resumes next round on a stale snapshot. In the au10 audit one cost 4k fuel at the median, 11k at
+// the 95th percentile and 25k at most (longer searches and some maps cost more). A fixed 20k floor skipped about 270
+// searches per 80 games, and those turns stood still: require this map's recent worst cost plus a margin instead.
+int local_cost_max = 12000;
+bool local_search_affordable() { return cambc::fuel_remaining() >= static_cast<std::uint64_t>(local_cost_max) + 5000; }
+void note_local_cost(std::uint64_t before) {
+    const int cost = static_cast<int>(before - cambc::fuel_remaining());
+    local_cost_max = std::max(local_cost_max - local_cost_max / 16, cost);
+}
+
 // Step towards `roots` (field value `stop_at` or less counts as arrived); route around occupants if needed.
 bool step_field(const distance_field& field, const bitboard& roots, int stop_at = 0) {
     auto& me = cambc::self();
@@ -109,9 +211,8 @@ bool step_field(const distance_field& field, const bitboard& roots, int stop_at 
     const int here = field.get(S.me);
     if (here <= stop_at) return false;
     if (step_static(field, here)) return true;
-    // A local search costs up to about 30k fuel on big maps: not on a turn that is nearly out (a turn that runs out
-    // resumes next round on a stale snapshot).
-    if (!me.can_move() || cambc::fuel_remaining() < 20000) return false;
+    if (!me.can_move() || !local_search_affordable()) return false;
+    const auto fuel_before = cambc::fuel_remaining();
     distance_field local;
     bitboard visited, mine;
     mine.clear();
@@ -121,6 +222,7 @@ bool step_field(const distance_field& field, const bitboard& roots, int stop_at 
     // way through them stood still (the bf5 audit traced most of 1,300 stuck walks per 80 games to this).
     const bitboard avoid = S.avoid_danger ? danger_tiles() & ~mine : bitboard{};
     local.compute_to((W.terrain | S.occ | avoid) & ~free_roots & ~mine, free_roots, mine, visited);
+    note_local_cost(fuel_before);
     const int local_here = local.get(S.me);
     if (local_here == UNREACH) return false;
     return descend(local, S.occ, local_here);
@@ -129,15 +231,17 @@ bool step_field(const distance_field& field, const bitboard& roots, int stop_at 
 // Walk to any free tile of `goals` using a fresh field around current occupants (and enemy danger once moves avoid it).
 bool step_to_tiles(const bitboard& goals) {
     auto& me = cambc::self();
-    if (!me.can_move() || goals.is_set(S.me) || cambc::fuel_remaining() < 20000) return false;
+    if (!me.can_move() || goals.is_set(S.me) || !local_search_affordable()) return false;
     bitboard visited, mine;
     mine.clear();
     mine.set(S.me);
     const bitboard avoid = S.avoid_danger ? danger_tiles() & ~mine : bitboard{};
     const auto free_goals = goals & ~S.occ & ~W.terrain & ~avoid;
     if (free_goals.is_empty()) return false;
+    const auto fuel_before = cambc::fuel_remaining();
     distance_field local;
     local.compute_to((W.terrain | S.occ | avoid) & ~free_goals & ~mine, free_goals, mine, visited);
+    note_local_cost(fuel_before);
     const int here = local.get(S.me);
     if (here == UNREACH) return false;
     return step_static(local, here);
@@ -205,7 +309,7 @@ void go_home() {
     bool exposed = S.round - enemy_seen_at <= 3;
     for (const auto& e : S.enemies) if (dist(e.pos, S.me) <= 5) exposed = true;
     if (W.spawn_field.get(S.me) > 5 && !exposed) { cambc::self().recall(); return; }
-    if (!walk_home() && !exposed) cambc::self().recall();
+    if (!walk_home() && !exposed && !stale()) cambc::self().recall();  // The walk's search can run the turn out of fuel.
 }
 
 // Step toward spawn without crossing an awake camp's reach (a monolith beside the path kept hitting us).
@@ -233,7 +337,20 @@ bool walk_home() {
                 if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t) || reach.is_set(t)) continue;
                 if (W.spawn_field.get(t) <= here && (best == S.me || W.spawn_field.get(t) < W.spawn_field.get(best))) best = t;
             }
-            if (best == S.me) return false;
+            if (best == S.me) {
+                // No step down outside the reach: route around it on a fresh field when that way is not much longer,
+                // rather than stand still (the one-step detour above sees only downhill neighbours).
+                if (!local_search_affordable()) return false;
+                const auto fuel_before = cambc::fuel_remaining();
+                distance_field local;
+                bitboard visited, mine;
+                mine.set(S.me);
+                const auto goals = W.ally_spawn & ~S.occ;
+                local.compute_to((W.terrain | S.occ | reach) & ~goals & ~mine, goals, mine, visited);
+                note_local_cost(fuel_before);
+                const int h = local.get(S.me);
+                return h != UNREACH && h <= here + 8 && descend(local, S.occ, h);
+            }
             safe_move(best);
             return true;
         }

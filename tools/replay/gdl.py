@@ -22,8 +22,9 @@ for g in ids:
 open(out+'/index.txt','w').write('\n'.join(' '.join(r) for r in rows))
 def get(r):
     p=f'{out}/{r[0]}.repl26a'
-    for a in range(3):
+    for a in range(8):  # downloads fail now and then while gates use the API (10-25: 17-40% of a run with 3 quick tries)
         if os.path.exists(p): return
         subprocess.run([C,'matches','download',r[0],'-o',p],capture_output=True)
+        if not os.path.exists(p): time.sleep(10*(a+1))
 with ThreadPoolExecutor(2) as ex: list(ex.map(get,rows))
 print(run,len(rows),sum(r[3]=='win' for r in rows),len(os.listdir(out))-1)

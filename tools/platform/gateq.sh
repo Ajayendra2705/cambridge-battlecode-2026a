@@ -16,5 +16,5 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   bash tools/platform/gate.sh "$1" $mode "$2" 2>&1 | tail -3
   # Submit failed (upload limit): put the line back and wait.
   if [ "${PIPESTATUS[0]}" = 3 ]; then { echo "$1 $2"; cat data/gate_queue.txt; } > data/gate_queue.tmp && mv data/gate_queue.tmp data/gate_queue.txt; sleep 90; continue; fi
-  [ "$1" = main ] || until powershell -File tools/cambc.ps1 submit main 2>&1 | tail -1 | tee /dev/stderr | grep -q Submitted; do sleep 60; done
+  [ "$1" = main ] || until powershell -File tools/cambc.ps1 submit main 2>&1 | tail -1 | tee -a /dev/stderr | grep -q Submitted; do sleep 60; done
 done

@@ -28,7 +28,7 @@ Look things up through the "Where is ..." table in `README.md` instead of search
 - Local wins do not prove a fighting, item or draft change. Only the platform does.
 - Gates submit bots. Never run two gate chains at once. After testing, make sure `main` is submitted, especially near a Sprint lock.
 - Never ship logging bots (`*l`) or heavy prints: they cost fuel and change play.
-- Heavy local runs: `--jobs 6` or fewer (RAM).
+- Heavy local runs: the team allowed all cores (10-26). Check free RAM first: `--jobs 11` needs about 0.4 GB, a decode job about 140 MB. With under 2 GB free, use `--jobs 6` or fewer.
 - Keep `bots/main` changes verifiable: a pure refactor must give a byte-identical wasm (`sha256sum bots/main/.cambc/build-release/bot.wasm`).
 
 ## Lessons from the 10-24/25 session (agent)

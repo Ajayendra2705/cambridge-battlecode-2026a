@@ -19,8 +19,8 @@ specs=${GATE_SPECS:-"b6eddc2e-0bba-4bb8-ab8b-0938ba05f6b4:01the_farm,00rows,01ye
 67e6d408-0d7f-4f95-af3d-c2b7bad5e8aa:01starvation,00reverse_spiral,01the_farm,00rows,01yellow_brick_road
 a4247250-fa1e-4d33-811d-d94667bf7a2b:00ambush,00packs,01shortcut,00pilgrimage,01starfish"}
 for spec in $specs; do
-  set -- ${spec/:/ }
-  until out=$(powershell -File tools/cambc.ps1 match-groups create $1 --maps "$2" --json 2>&1 | tail -1) && echo "$out" | grep -q groupId; do
+  set -- ${spec//:/ }  # TEAM:MAP,MAP,MAP,MAP,MAP[:SIDE,SIDE,SIDE,SIDE,SIDE] (our side per game; default a)
+  until out=$(powershell -File tools/cambc.ps1 match-groups create $1 --maps "$2" ${3:+--sides "$3"} --json 2>&1 | tail -1) && echo "$out" | grep -q groupId; do
     echo "$out" | grep -q "eligible bot" && { echo "skip $1: $out" >&2; break; }
     echo "retry $1: $out" >&2; sleep 30
   done

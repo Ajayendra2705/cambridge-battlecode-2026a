@@ -24,6 +24,8 @@ template <class C> std::array<SimSlot, 2> read_slots(const C& c) {
     int i = 0;
     for (const auto& ab : c.abilities()) {
         if (i >= 2) break;
+        // A turn that ran out of fuel resumes next round, when the champion can have left our view (au14 audit).
+        if (stale()) return out;
         auto& s = out[i++];
         try {
             s.cd = ab.cooldown();
@@ -70,7 +72,10 @@ std::array<SimSlot, 2> cached_slots(const cambc::champion& c) {
 struct SimResult { int dead[2] = {0, 0}; float hp_frac[2] = {1, 1}; bool unit0_dead = false; };
 
 // side 0 = us (unit 0 is this champion), side 1 = them; `them_first` makes the enemy act first each round.
-SimResult simulate_fight(std::array<std::vector<SimUnit>, 2> u, int rounds, bool them_first) {
+SimResult simulate_fight(const std::array<std::vector<SimUnit>, 2>& in, int rounds, bool them_first) {
+    // A working copy in buffers kept across calls (a copy by value allocated two vectors per call).
+    static std::array<std::vector<SimUnit>, 2> u;
+    for (int s = 0; s < 2; ++s) u[s].assign(in[s].begin(), in[s].end());
     std::array<float, 2> start{0, 0};
     for (int s = 0; s < 2; ++s) for (const auto& x : u[s]) start[s] += x.hp;
     for (int r = 0; r < rounds; ++r) {

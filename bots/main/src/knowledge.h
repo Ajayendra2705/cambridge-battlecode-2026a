@@ -28,8 +28,10 @@ void init_units() {
     for (const auto& g : W.groups) total += g.spawns.size();
     known_camps.reserve(total);
     for (int gi = 0; gi < static_cast<int>(W.groups.size()); ++gi) {
-        const auto& g = W.groups[gi];
+        auto& g = W.groups[gi];
         const auto camps = g.group.camps();
+        g.first_camp = static_cast<int>(known_camps.size());
+        g.camp_count = static_cast<int>(camps.size());
         for (size_t i = 0; i < camps.size(); ++i) {
             const vec2 pos = g.spawns[i];
             camp_index[pos.y * cm::width() + pos.x] = static_cast<std::int16_t>(known_camps.size());
@@ -81,7 +83,7 @@ void take_snapshot() {
         S.range = info.attack_range;
         S.state = static_cast<std::uint32_t>(info.state);
     }
-    S.walked = S.attacked = false;
+    S.walked = S.attacked = S.view_moved = false;
     S.visible = cv::visible_tiles();
     S.camps.clear();
     // Every champion the engine shows us, in one call: champions read one by one below can miss some, and a move onto
@@ -89,17 +91,42 @@ void take_snapshot() {
     S.occ = cv::teleport_tiles() | cv::champion_tiles();
     S.occ.set(S.me, false);
     // Fuel: each bitboard is_set is a host call, and the group update asked it for every spawn tile and scanned every
-    // visible camp per group (up to 38k fuel a turn on yellow_brick_road, bf6 profile). Read the view once into a
-    // per-tile round stamp, and each visible camp's health into a per-camp array.
+    // visible camp per group (up to 38k fuel a turn on yellow_brick_road, bf6 profile). Read the view once into packed
+    // bits (see in_view), and each visible camp's health into a per-camp array.
     const int w = cm::width();
-    if (view_round.empty()) view_round.assign(static_cast<size_t>(w * cm::height()), -1);
-    for (const auto pos : S.visible.positions()) view_round[pos.y * w + pos.x] = S.round;
+    const std::size_t view_bytes = bitboard::linear_buffer_size();
+    if (view_bits.empty()) view_bits.resize((view_bytes + 7) / 8 * 8);
+    S.visible.export_linear_buffer(std::span<std::uint8_t>(view_bits.data(), view_bytes));
+    {
+        // Rows of the first and last set bit, a word at a time (bit k of word j is tile 64 j + k).
+        const std::size_t words = view_bits.size() / 8;
+        const auto word = [&](std::size_t j) {
+            std::uint64_t v;
+            std::memcpy(&v, view_bits.data() + 8 * j, 8);
+            return v;
+        };
+        std::size_t a = 0, b = words;
+        std::uint64_t x = 0;
+        while (a < words && (x = word(a)) == 0) ++a;
+        if (a == words) {
+            view_row_lo = 0, view_row_hi = -1;
+        } else {
+            view_row_lo = (static_cast<int>(64 * a) + __builtin_ctzll(x)) / w;
+            while ((x = word(b - 1)) == 0) --b;
+            view_row_hi = (static_cast<int>(64 * (b - 1)) + 63 - __builtin_clzll(x)) / w;
+        }
+    }
     camp_hp_now.assign(known_camps.size(), 0.0f);
     group_live_now.assign(W.groups.size(), 0);
-    // Engine 3.0 reports which camps are awake; camps can attack without our damage having woken them.
-    static std::vector<char> awake_at;
-    awake_at.assign(static_cast<size_t>(w * cm::height()), 0);
-    for (const auto pos : cv::awake_camp_tiles().positions()) awake_at[pos.y * w + pos.x] = 1;
+    // Engine 3.0 reports which camps are awake; camps can attack without our damage having woken them. A round stamp per
+    // known camp: clearing a per-tile flag array every turn cost about 12k fuel on big_world (pf9 probe), and filling a
+    // per-tile array once about 50k (40 kB on the first turn, pf12).
+    static std::vector<int> awake_at;
+    if (awake_at.empty()) awake_at.assign(known_camps.size(), -1);
+    for (const auto pos : cv::awake_camp_tiles().positions()) {
+        const int idx = camp_index[pos.y * w + pos.x];
+        if (idx >= 0) awake_at[idx] = S.round;
+    }
     for (const auto pos : cv::camp_tiles().positions()) {
         S.occ.set(pos);
         const int idx = camp_index[pos.y * w + pos.x];
@@ -108,7 +135,7 @@ void take_snapshot() {
         cambc::detail::camp_state cs{};
         if (cambc::detail::sdk_camp(static_cast<std::uint32_t>(static_cast<cambc::handle_camp_t>(k.camp)), &cs) != 0) continue;
         if (cs.health <= 0) continue;
-        S.camps.push_back({k.camp, pos, cs.health, k.max_hp, k.str, k.group, k.range, awake_at[pos.y * w + pos.x] != 0});
+        S.camps.push_back({k.camp, pos, cs.health, k.max_hp, k.str, k.group, k.range, awake_at[idx] == S.round});
         camp_hp_now[idx] = cs.health;
         if (k.group >= 0) group_live_now[k.group] = 1;
         if (S.camps.back().awake && k.group >= 0) W.groups[k.group].awake_round = S.round;
@@ -159,15 +186,19 @@ void broadcast_respawn(int group, int respawn_round);
 
 // Camps never move, so a known camp that is out of sight is still where it was. Its group is treated as awake
 // for a few rounds after a member was last seen awake or an unexplained hit came from its range.
+// Fuel: one pass over every known camp cost 3-6k a turn on maps with 150 camps (pf11 probe). known_camps holds each
+// group's camps together, so groups that are not up or not recently awake are skipped whole (same list, same order).
 void build_phantoms() {
     S.phantoms.clear();
-    for (const auto& k : known_camps) {
-        if (k.group < 0 || k.str <= 0) continue;
-        const auto& g = W.groups[k.group];
+    for (const auto& g : W.groups) {
         if (g.state != 0 || S.round - g.awake_round > 4) continue;
-        const vec2 pos = g.spawns[k.idx];
-        if (in_view(pos) || g.hp[k.idx] <= 0) continue;
-        S.phantoms.push_back({k.camp, pos, g.hp[k.idx], k.max_hp, k.str, k.group, k.range, true});
+        for (int ki = g.first_camp; ki < g.first_camp + g.camp_count; ++ki) {
+            const auto& k = known_camps[ki];
+            if (k.group < 0 || k.str <= 0) continue;
+            const vec2 pos = g.spawns[k.idx];
+            if (in_view(pos) || g.hp[k.idx] <= 0) continue;
+            S.phantoms.push_back({k.camp, pos, g.hp[k.idx], k.max_hp, k.str, k.group, k.range, true});
+        }
     }
 }
 
@@ -177,7 +208,10 @@ void update_knowledge() {
     for (size_t gi = 0; gi < W.groups.size(); ++gi) {
         auto& g = W.groups[gi];
         bool seen = false;
-        for (auto sp : g.spawns) if (in_view(sp)) { seen = true; break; }
+        // Fuel: checking every spawn tile of every group against the view cost 4.5-9k a turn (pf11 probe); a group
+        // whose rows lie outside the view's rows cannot be in view.
+        if (g.row_hi >= view_row_lo && g.row_lo <= view_row_hi)
+            for (auto sp : g.spawns) if (in_view(sp)) { seen = true; break; }
         if (!seen) {
             if (g.state == 2 && round >= g.respawn_round) { g.state = 0; g.reset(); }
             continue;

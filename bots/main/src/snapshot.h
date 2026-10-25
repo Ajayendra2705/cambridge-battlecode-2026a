@@ -81,16 +81,37 @@ struct Snap {
     // spells cannot follow a walk) and whether our basic attack was spent (a reset needs a spent attack).
     std::uint32_t state = 0;
     bool walked = false, attacked = false;
+    bool view_moved = false;  // We moved or dashed since `occ` was read (see refresh_occ).
     vec2 start;  // Our tile at the snapshot.
     // Stunned: the turn starts with no action allowed at all.
     bool can_act() const { return (state & ((1u << 3) | (1u << 4) | (1u << 11))) != 0; }
 };
 
 Snap S;
-// Per tile, the round it was last in our view (take_snapshot fills it from one read of the view): in_view() answers
-// without the host call of bitboard::is_set.
-std::vector<int> view_round;
-bool in_view(vec2 p) { return !view_round.empty() && view_round[p.y * cm::width() + p.x] == S.round; }
+// Our own move or dash changes what we see, and the engine knows every unit that came into view: a later move or
+// landing onto one throws ("Known occupied destination": 56 per 80 games in the au11 audit, each next to a tile just
+// reached, on a tile out of view at the snapshot). Read the occupancy again before the next move or landing.
+void moved_to(vec2 t) {
+    S.me = t;
+    S.view_moved = true;
+}
+void refresh_occ() {
+    if (!S.view_moved) return;
+    S.view_moved = false;
+    S.occ |= cv::teleport_tiles() | cv::champion_tiles() | cv::camp_tiles();
+    S.occ.set(S.me, false);
+}
+// The view at the snapshot as packed row-major bits, least significant first (take_snapshot exports it in one host
+// call): in_view() answers without the host call of bitboard::is_set. Stamping a per-tile round from the view's
+// positions cost about 10k fuel a turn on big_world (pf9 probe); the export costs about 600 and gave the same answer
+// for every visible tile (pf10 check, 378 turns).
+std::vector<std::uint8_t> view_bits;  // Padded to whole 64-bit words; the padding stays zero.
+int view_row_lo = 0, view_row_hi = -1;  // Rows of the first and last tile in view (none: lo > hi).
+bool in_view(vec2 p) {
+    if (view_bits.empty()) return false;
+    const int i = p.y * cm::width() + p.x;
+    return (view_bits[i >> 3] >> (i & 7)) & 1;
+}
 // This turn's visible camp health per known camp (0 when not seen alive) and whether a group has a live camp in view.
 std::vector<float> camp_hp_now;
 std::vector<char> group_live_now;
@@ -118,6 +139,10 @@ bitboard danger_tiles() {
 // the bf5 audit traced every "Known occupied destination" (127 per 80 games) to such a resumed turn moving onto a tile
 // a teammate had stepped on, and its stale attacks ("out of range", "An available attack cannot be reset"). Every
 // action helper refuses to act once the round has changed; the next turn starts with a fresh snapshot.
-bool stale() { return static_cast<int>(cambc::round_number()) != S.round; }
+// A turn that runs out of fuel resumes next round from the same point, on the old snapshot, and an action then was
+// refused (au14 audit: 5 of the 9 caught errors per 80 games came after such a split: a dash onto a tile taken since,
+// a reset of the new round's attack, a read of an enemy that had left our view). Also stale with under 1000 fuel left,
+// so a check right before an action leaves room for the call itself.
+bool stale() { return static_cast<int>(cambc::round_number()) != S.round || cambc::fuel_remaining() < 1000; }
 float cached_dps = 0, cached_spell_dps = 0;
 int cached_dps_round = -100;

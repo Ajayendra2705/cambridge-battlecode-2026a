@@ -76,22 +76,35 @@ void Bot::play_turn() {
 
 static void play_turn_core() {
     if (!W.ready) {
+        const int init_round = static_cast<int>(cambc::round_number());
         init_world();
         splash = cambc::self().passive() == cambc::passive_type::splash_attack;
         const auto type = cambc::self().champion_name();
         fragile = type == cambc::champion_type::cassi || type == cambc::champion_type::issac;
+        // Setup can leave too little for the rest of the turn (big_world: 161k of the first turn's 200k, pf12): that
+        // turn ran out of fuel, resumed next round on its stale snapshot and acted on neither round. End it here; the
+        // next turn starts with a full budget and a fresh snapshot. Setup itself runs into later rounds on 17 of 40 maps
+        // (up to 310k on road_of_riches, pf16 probe); the first pick and route then cost 50-95k, so with 52-75k left the
+        // turn ran out again and champions first acted at round 4 or 5 (pf14 probe, 8 maps): there require 80k.
+        const bool spilled = static_cast<int>(cambc::round_number()) != init_round;
+        if (cambc::fuel_remaining() < (spilled ? 80000u : 50000u)) return;
     }
     auto& me = cambc::self();
     const int round = static_cast<int>(cambc::round_number());
     tracing = false;
     log_rounds = false;
 
-    if (round % 20 == 0 || (!me.is_alive() && was_alive)) {
-        std::cout << "R" << round << " s" << W.slot << " " << cambc::to_string(me.champion_name()) << " hp=" << me.health() << "/"
-                  << me.max_health() << " gems=" << me.gem_count() << " gold=" << me.gold_count() << " tgt=" << current_target
-                  << (me.is_alive() ? " pos=" + cambc::to_string(me.position()) : std::string(" DEAD")) << '\n';
+    // Status lines (tools/replay/acts.py reads the champion types), integers only. Printed every 20 rounds with floats
+    // and strings, this cost about 13k fuel a champion, and 1.6% of those turns ran out of fuel against 0.17% of the
+    // others (au10 audit).
+    if (round % 100 == 0 || (!me.is_alive() && was_alive)) {
+        std::cout << "R" << round << " s" << W.slot << " " << cambc::to_string(me.champion_name()) << " hp="
+                  << static_cast<int>(me.health()) << "/" << static_cast<int>(me.max_health()) << " gems=" << me.gem_count()
+                  << " gold=" << me.gold_count() << " tgt=" << current_target;
+        if (me.is_alive()) std::cout << " pos=" << me.position().x << "," << me.position().y << '\n';
+        else std::cout << " DEAD\n";
     }
-    if (W.slot == 0 && round % 10 == 0)
+    if (W.slot == 0 && round % 100 == 0)
         std::cout << "G " << round << " " << cambc::global_submitted_gems(team::ally) << " "
                   << cambc::global_submitted_gems(team::enemy) << '\n';
     if (log_rounds && round > 1) std::cout << "W " << round - 1 << " " << W.slot << " " << current_target << " " << activity << '\n';
@@ -184,15 +197,8 @@ static void play_turn_core() {
         }
         if (!blamed) enemy_seen_round = enemy_seen_at = round;
     }
-    // Big hits are rare; log the situation so platform replays show how we get caught.
-    if (taken > S.max_hp * 0.25f) {
-        std::cout << "H" << round << " s" << W.slot << " " << cambc::to_string(me.champion_name()) << " at " << cambc::to_string(p)
-                  << " hp=" << S.hp << "/" << S.max_hp << " took=" << taken << " camp=" << incoming << " last=" << last_activity
-                  << " allies=" << S.allies.size() << " enemies:";
-        for (const auto& e : S.enemies)
-            std::cout << " " << cambc::to_string(e.ch.champion_name()) << "@" << dist(p, e.pos) << "(" << e.hp << "/b" << e.burst << ")";
-        std::cout << '\n';
-    }
+    // (A log line of every big hit was printed here: 37.6k fuel a line with its float formatting, about 5 times a game in
+    // fights, so the rest of those turns often ran out of fuel (pf20 probe). Decoded replays show the same.)
 
     // Feature log for the death-hazard model (tools/hazard.py): every 10 rounds per champion.
     if (false) {
@@ -278,9 +284,12 @@ static void play_turn_core() {
     bool winning = false, sim_me_dies = false;
     if (prey) {
         using ct = cambc::champion_type;
-        std::array<std::vector<SimUnit>, 2> side;
-        std::vector<vec2> pos[2];
-        std::vector<ct> types[2];
+        // Buffers kept across turns: six vectors grown one unit at a time cost up to 24 allocations (about 400 fuel each)
+        // per fight turn.
+        static std::array<std::vector<SimUnit>, 2> side;
+        static std::vector<vec2> pos[2];
+        static std::vector<ct> types[2];
+        for (int s = 0; s < 2; ++s) side[s].clear(), pos[s].clear(), types[s].clear();
         auto add = [&](int s, float hp, float str, int range, vec2 at, std::array<SimSlot, 2> slots, ct type) {
             SimUnit x;
             x.hp = hp, x.str = str, x.range = range, x.slots = slots;
@@ -439,6 +448,7 @@ static void play_turn_core() {
                     if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (!t || e.hp < t->hp)) t = &e;
                 if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
             }
+            if (!at_spawn && flee_dash()) ACT("flee_dash");
             if (!at_spawn && !flee_bush()) walk_home();
             for (const auto& e : S.enemies)
                 if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
@@ -677,6 +687,10 @@ static void play_turn_core() {
     if (group_invested.empty()) group_invested.assign(W.groups.size(), 0);
     for (size_t i = 0; i < W.groups.size(); ++i) if (W.groups[i].state != 0) group_invested[i] = 0;
     if (current_target >= 0 && W.groups[current_target].state == 0) ++group_invested[current_target];
+    // A camp fight that starts with little fuel runs out (pf14 probe, rounds 1-40: 28 of 43 that started under 15k,
+    // 15 of 156 at 15-24k, 2 of 11,600 from 25k up): end the turn instead, the next one has the budget (a turn that
+    // runs out loses the next round to its stale rest as well).
+    if (current_target >= 0 && cambc::fuel_remaining() < 15000) return;
     STAGE("camp fight");
     if (current_target < 0) {
         if (gems > 0) bank_gems();

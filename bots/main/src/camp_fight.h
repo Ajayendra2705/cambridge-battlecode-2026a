@@ -13,6 +13,7 @@ void fight_or_approach(int gi) {
         if (g.state == 2) {
             // Respawning: a body on a spawn tile delays it, so wait beside the group.
             if (g.tiles.is_set(S.me)) {
+                if (!me.can_move()) { ACT("resp_wait"); return; }
                 const auto occ = S.occ | g.tiles;
                 for (auto d : DIRS) {
                     vec2 t{S.me.x + d.x, S.me.y + d.y};
@@ -93,8 +94,9 @@ void fight_or_approach(int gi) {
             bitboard any;
             any.clear();
             for (const auto* c : live) any.draw_chebyshev(c->pos, static_cast<float>(range));
-            if (!step_to_tiles(any) && !step_field(group_field(g), g.tiles, 0) && cambc::fuel_remaining() < 20000 && !S.avoid_danger)
-                walk_towards(target->pos);  // Our searches were skipped for fuel: the engine's own path step is one call.
+            // (A last walk_towards here, for turns whose searches were skipped for fuel, ran the same path search
+            // without the fuel check: it costs as much as one of ours.)
+            if (!step_to_tiles(any)) step_field(group_field(g), g.tiles, 0);
         }
     }
     STAGE("cf hit");

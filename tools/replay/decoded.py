@@ -24,6 +24,9 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
             rounds by numbers within 6, once per champion and teammate per 15 rounds (default to round 1000)
   guard     boss_battle only: the first round a guard monolith died, each side's hits on the guards, tributed by a round
             (default 1000) and the result, one line per game
+  shots     per champion type, rounds with an enemy champion in basic reach at round start, by health (80%+, 50-80%,
+            under 50%) and whether an enemy champion hit it the round before: share hitting a champion, moving, staying,
+            and P(death within 10 rounds) (default to round 1000)
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -437,6 +440,40 @@ def cmd_guard(dirs, rounds):
               f"  tributed us {last['sg'][us]} them {last['sg'][1 - us]}")
 
 
+def cmd_shots(dirs, rounds):
+    R = (rounds or [1000])[0]
+    C = collections.Counter(); ng = 0
+    for us, res, mp, meta, rows in games(dirs):
+        ng += 1; n = len(rows[0]['c'])
+        spawn = {t: set((c['x'], c['y']) for c in rows[0]['c'] if c['t'] == t and 'x' in c) for t in (0, 1)}
+        for k in range(1, len(rows) - 1):
+            a, b, z = rows[k], rows[k + 1], rows[k - 1]
+            if a['r'] > R: break
+            hit_on = collections.Counter(x[-1] for e in range(n) for x in enemy_hits(z, e, n))
+            for i, c in enumerate(a['c']):
+                if not c['a'] or 'x' not in c or not b['c'][i]['a'] or 'x' not in b['c'][i]: continue
+                q = (c['x'], c['y'])
+                d = min((dist(q, (o['x'], o['y'])) for o in a['c'] if o['t'] != c['t'] and o['a'] and 'x' in o
+                         and (o['x'], o['y']) not in spawn[o['t']]), default=99)
+                if d > RANGE.get(c['ty'], 1): continue
+                hp = c.get('hp', 0) / max(1, c.get('mhp', 1))
+                key = (c['ty'], who(c['t'], us), '80+' if hp >= 0.8 else '50-80' if hp >= 0.5 else '<50',
+                       'hit' if hit_on[i] else 'not hit')
+                what = 'shot' if enemy_hits(a, i, n) else 'moved' if (b['c'][i]['x'], b['c'][i]['y']) != q else 'stayed'
+                C[key + ('n',)] += 1; C[key + (what,)] += 1
+                C[key + ('dead',)] += any(not rows[t]['c'][i]['a'] for t in range(k + 1, min(len(rows), k + 11)))
+    print(f'rounds with an enemy champion (off its spawn) in basic reach at round start, to r{R}, by health and by whether an enemy '
+          f'champion hit us the round before: rounds per game, share hitting a champion / moving / staying, P(death in 10)')
+    for ty in sorted({k[0] for k in C}, key=lambda t: NAMES[t]):
+        for band in ('80+', '50-80', '<50'):
+            for was in ('not hit', 'hit'):
+                for w in ('us', 'them'):
+                    key = (ty, w, band, was); m = C[key + ('n',)]
+                    if m < 50: continue
+                    print(f'  {NAMES[ty]:9} hp {band:5} {was:7} {w:4} {m / ng:5.1f}/g  hit {C[key + ("shot",)] / m:.2f}'
+                          f'  moved {C[key + ("moved",)] / m:.2f}  stayed {C[key + ("stayed",)] / m:.2f}  P(dead in 10) {C[key + ("dead",)] / m:.3f}')
+
+
 def main():
     args = sys.argv[1:]
     if len(args) < 2 or args[0] not in CMDS: sys.exit(__doc__)
@@ -448,7 +485,7 @@ def main():
 
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
         'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel, 'assist': cmd_assist,
-        'guard': cmd_guard}
+        'guard': cmd_guard, 'shots': cmd_shots}
 
 if __name__ == '__main__':
     main()

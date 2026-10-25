@@ -9,6 +9,8 @@ Opponents change bots over time. A panel result is only comparable with runs mad
 
 | Panel | Built | Teams (ladder ranks then) | Games |
 |---|---|---|---|
+| `b8` | 2026-10-26 01:00, we were 59 (1899) | Nyx, subscribe to caterpillow, Tartarus, conqueror_of_openai, Jupiter, FürFortnite, meow, smurphy, Let's LARP again, the ruliad, ha²t, Nanyang Technological University (every other rank from 18 to 40, ratings 1958-2101: the user asked for a stronger batch than `b7`); `mkpanel.py` seed 8, same layout as `b7` | 120 |
+| `bb8` | 2026-10-26 01:00 | the 12 `b8` teams, one group each: boss_battle (our side a for the 1st, 3rd, ... team, b for the others) plus 4 maps of their first `b8` window | 60 |
 | `b7` | 2026-10-25 22:05, we were 63 (1888.7) | umamusume, BBL, filter, 💩 Super Intelligence 💩, janestreethireusplease, geese geese go, Valenki, SquidProxyLovers, Sneaky Bush Campers, SkuBap, Bamboo Teahouse, error404 (every other rank from 40 to 62, ratings 1890-1956); `mkpanel.py` seed 7: three blocks of 4 teams, each block covers all 40 maps once, our side alternates (5 games on each side per team). The first panel with side b games | 120 |
 | `bb7` | 2026-10-25 22:05 | the 12 `b7` teams, one group each: boss_battle (our side a for 6 teams, b for 6) plus 4 of their `b7` maps. For changes that act only on boss_battle (`gk1`) | 60 |
 | `b6` | 2026-10-24 23:25, we were 77 | 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters (no eligible bot since 10-25 00:00: skipped), HouseOfCoders, The Party of Heroes (ranks 60, 62-65); two 5-map windows per team covering all 40 maps | 40 |
