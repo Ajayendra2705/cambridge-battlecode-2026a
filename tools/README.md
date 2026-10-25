@@ -57,3 +57,6 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `lgold.py MULTIDIR` | Per-champion gold and damage for a local `multi.py --keep` run. |
 | `agg.py RUN` / `compare_teams.py RUN...` / `killers.py RUN` / `deaths.py RUN` | Whole-run tables: per-champion averages, every metric us vs them, who kills whom, death contexts. |
 | `cmp.py MATCH` / `econ.py MATCH` / `timeline.py JSON` / `summ.py JSON` | One match: economy per champion, gem sources, event timeline, metric dump. |
+| `vis_decode.mjs REPLAY [POS]` | Node. Decodes the binary replay by running the official visualiser engine headless (any team, both sides, per-champion fog view). Needs the visualiser assets in `data/vis/` (fetched from a running `cambc view --port 7099`). |
+| `rounds_extract.mjs OUTDIR REPLAY...` | Node. Per-round dataset: every champion's state, which enemies each champion can see, and its moves, attacks and casts with the entity hit. One `.jsonl.gz` per replay. About 5.5 s per replay. |
+| `fetch_ranked.py RANKS [--per-team N]` | Download recent ranked replays of every team in a ladder rank range into `data/replays/ranked/` (needs `cambc login`; untested). |
