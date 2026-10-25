@@ -149,6 +149,7 @@ fd2z = cand1 plus the audit line cand6 (check builds au10-au17, probes pf7-pf18)
 - `bot.cpp` (cand4, cand6: opening): the opening turn ends after a setup that leaves under 50k fuel, or under 80k when the setup ran into a later round; no camp fight starts under 15k fuel (the turn ends instead).
 - `bot.cpp` (fd2): a fleeing champion with a dash ready dashes first, to the landing closer to home that ends farthest from the enemies and outside awake camps' reach, then walks.
 - `bot.cpp`, `sim.h` (fz1): the big-hit `H` log line is gone (37.6k fuel a line); the fight simulator keeps its unit buffers across turns and `simulate_fight` works on a reused copy.
+- `shop.h` (gs1, 10-26 03:15): per-shard growth comes from the engine (`self().base_stats()`, read once) instead of a hard-coded table, so the Sprint 3 growth changes apply by themselves. Same play on engine 1.0.3 (240 identical local games).
 
 Audit result (cand6): 0 caught engine errors and 0 bot errors in 400 local games of its check builds (au15, au16); 0 `botFault` events on the platform in plan8 (700 games). Platform (plan8, b3456, 95 games against opponents that kept their bots): fd2 49 and fz1 41 wins vs cand1's 48 and cand6's 41; paired decoded margin fd2 +18 per game, our deaths -0.8 per game.
 

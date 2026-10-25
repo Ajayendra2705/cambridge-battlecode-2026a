@@ -99,11 +99,11 @@ void shop() {
     //   Durability: 5 health growth, plus -10% incoming damage (about +11% effective health) on the first one.
     // The old fixed plan bought two health emblems (Durability, Jungle) before any damage: b6 at r500 we held 0.07
     // Power and 0.33 Bruiser emblems per champion against the rivals' 0.43 and 0.77, and lost even fights.
+    // Per-shard growth from the engine's champion design, read once (patches change it: the Sprint 3 notes cut Heart of
+    // Ruin's focus growth 12 -> 10 and Marcella's 15 -> 14). Same values as the old table on engine 1.0.3 (probe ps1).
+    static const cambc::champion_stats design = me.base_stats();
     const auto growth = [&](bool health) -> float {
-        using ct = cambc::champion_type;
-        if (health) return t == ct::cassi || t == ct::stellar ? 65.f : t == ct::prism ? 60.f : t == ct::willow ? 50.f : t == ct::tavi ? 75.f : t == ct::issac ? 80.f : 100.f;
-        if (focus) return t == ct::marcella ? 15.f : t == ct::heart_of_ruin ? 12.f : t == ct::cassi ? 13.f : t == ct::prism ? 8.f : t == ct::stellar ? 7.f : t == ct::willow ? 5.f : t == ct::ren ? 9.f : 10.f;
-        return t == ct::vendetta ? 6.f : t == ct::heart_of_ruin || t == ct::stellar ? 3.5f : t == ct::cassi || t == ct::willow || t == ct::issac ? 3.f : t == ct::prism ? 2.5f : 5.f;
+        return health ? design.health_growth : focus ? design.focus_growth : design.strength_growth;
     };
     const it power = focus ? it::power_shard_of_focus : it::power_shard_of_strength;
     const it bruis = focus ? it::bruiser_shard_of_focus : it::bruiser_shard_of_strength;
@@ -125,7 +125,7 @@ void shop() {
                 const auto ed = dur.result();
                 // Heart of Ruin's basic attack scales with strength (30 + 3.5 per shard), which Bruiser-focus also grows; the
                 // rivals build it Bruiser-focus (b56 r400: 0.32 emblems per champion, Power none).
-                const float v_str = me.champion_name() == cambc::champion_type::heart_of_ruin ? 3.5f / std::max(1.0f, S.str) : 0.f;
+                const float v_str = me.champion_name() == cambc::champion_type::heart_of_ruin ? design.strength_growth / std::max(1.0f, S.str) : 0.f;
                 const float v_power = 6.f * gm / main, v_bruis = 5.f * gm / main + gh / hp + v_str;
                 const float v_dur = 5.f * gh / hp + (ed && counts[*ed] == 0 ? 0.11f : 0.f);
                 // Jungle: -30% damage from camps, which deal about half of what we take (0.57 locally, ab2 on four

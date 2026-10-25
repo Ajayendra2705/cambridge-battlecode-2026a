@@ -11,6 +11,43 @@ Every value carries its source:
 
 `docs/reference/GameRules.md` is outdated on numbers: it has no Heart of Ruin, clusters at 500 hp, monolith range 3, wolf 22 gems, kill gold 50, altar lock 3 hits, Vesper +20%, Prism 0.2 focus per gem. Use this file instead.
 
+## 0. Sprint 3 patch (announced, not live yet)
+
+Source: patch notes posted on the competition Discord on 2026-10-26 (pasted by the team) [patch notes]. Not live at 02:51 IST on 10-26: platform matches still ran engine 1.0.3 (build hash `fcb6c3e881c4...`), and PyPI still had `cambc` 3.0.5. `tools/platform/patchwatch.sh` waits for either to change. The tables in sections 6, 10 and 11 below are the live engine until then; once it is live, re-run the probe `exp/ps1` (prints every champion design and item from the engine) and update them with [engine] values.
+
+| Change | Old | New |
+|---|---|---|
+| Ryth strength per shard | 5 | 4.5 |
+| Vesper Vale base strength | 55 | 45 |
+| Marcella strength per shard | 5 | 4.5 |
+| Marcella focus per shard | 15 | 14 |
+| Heart of Ruin strength per shard | 3.5 | 3 |
+| Heart of Ruin focus per shard | 12 | 10 |
+| Cassi base focus | 70 | 100 |
+| Issac base strength | 40 | 45 |
+| Stellar focus per shard | 7 | 8.5 |
+| Prism health per shard | 60 | 65 |
+| Willow base focus | 120 | 140 |
+| Ren stun damage (slot 1) | 0.75 x focus | 1.1 x focus |
+| Varg base strength | 40 | 45 |
+| Tavi stun damage (slot 2) | 1.4 x focus | 1.6 x focus |
+| Treasure emblem bonus gold | 20% | 10% |
+| Monster emblem bonus damage to camps | 10% | 15% |
+
+New item families (each emblem is 5 shards of the chosen stat, like the old families, except Greed):
+
+| Family | Passive |
+|---|---|
+| Tribute | tribute 33% shorter, rounded up, at least one turn |
+| Capture | capture takes 3 turns instead of 5 when the holder is present as the capture starts |
+| Prospector | 25% more gold and gems from your share of cluster rewards, rounded down |
+| Hunter | 100 extra gold per champion kill, before gold bonuses; a linked duo's death grants one reward |
+| Skirmish | 5% more damage to champions |
+| Greed | no passive; combines at 25 shards (750 gold) into an item worth 35 shards of stat points |
+| Collectors | 1% more damage per unique completed emblem family owned, Collectors included; shards and duplicate stat variants do not add families |
+
+Live engine values before the patch, read by the probe `exp/ps1` on 10-26 (engine 1.0.3 locally): base + growth per shard for health / strength / focus: Ryth 1200+100 / 45+5 / 100+10, Vesper 1000+100 / 55+5 / 100+10, Vendetta 1000+100 / 70+6 / 100+10, Cassi 600+65 / 30+3 / 70+13, Issac 900+80 / 40+3 / 100+10, Stellar 650+65 / 30+3.5 / 70+7, Prism 700+60 / 35+2.5 / 80+8, Marcella 1200+100 / 45+5 / 60+15, Willow 700+50 / 55+3 / 120+5, Ren 900+100 / 35+5 / 100+9, Varg 1000+100 / 40+5 / 100+10, Tavi 900+75 / 45+5 / 110+10, Heart of Ruin 1000+100 / 30+3.5 / 100+12; camp damage multiplier 1 for all. 42 item types (7 families x 3 stats, shard then emblem); emblem passive magnitudes Monster 0.1, Durability 0.1, Treasure 0.2, Jungle 0.3, Home 0.5. [engine]
+
 ---
 
 ## 1. Winning
