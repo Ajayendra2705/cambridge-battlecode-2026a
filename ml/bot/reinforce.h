@@ -1,5 +1,6 @@
-// Part of bot.cpp: learned reinforcement prediction (ml/reinforce_*.py). Expected number of enemies that are not
-// visible now but come within 6 tiles in the next 7 rounds, from what this champion sees and remembers.
+// Part of bot.cpp: learned reinforcement prediction (ml/reinforce_*.py). Expected number of enemies (and allies) that
+// are not visible now but come within 6 tiles in the next 7 rounds, from what this champion sees and remembers.
+// rf_remember() runs every turn (cheap); rf_predict() only when a decision needs it.
 // Features must match ml/reinforce_data.py exactly. Unity build: included inside bot.cpp's anonymous namespace.
 
 #include <wasm_simd128.h>
@@ -9,7 +10,6 @@ constexpr int RF_MEMORY = 10, RF_MAX_ALLIES = 5, RF_MAX_ENEMIES = 6, RF_MAX_MEM 
 
 struct RfSeen { std::uint32_t id; int round; vec2 pos; float hp_frac, gems; int type; };
 std::vector<RfSeen> rf_seen;
-float rf_arrivals = 0;
 
 template <class C> std::array<float, 2> rf_cooldowns(const C& c) {
     std::array<float, 2> out{};
@@ -52,8 +52,20 @@ float rf_nearest(vec2 p, const std::vector<vec2>& pts) {
     return static_cast<float>(best);
 }
 
-// Call once per turn after take_snapshot(): updates the sighting memory and rf_arrivals.
-void rf_update() {
+float rf_head(const float* x, const float (*w1)[RF_H], const float* b1, const float* w2, float b2) {
+    v128_t h[RF_HV];
+    for (int v = 0; v < RF_HV; ++v) h[v] = wasm_v128_load(b1 + 4 * v);
+    for (int k = 0; k < 4 * RF_W + RF_GAME; ++k) rf_axpy(h, w1[k], x[k], RF_HV);
+    alignas(16) float hv[RF_H];
+    const v128_t z = wasm_f32x4_splat(0.0f);
+    for (int v = 0; v < RF_HV; ++v) wasm_v128_store(hv + 4 * v, wasm_f32x4_pmax(h[v], z));
+    float out = b2;
+    for (int j = 0; j < RF_H; ++j) out += w2[j] * hv[j];
+    return std::exp(out);
+}
+
+// Expected enemy and ally arrivals; both 0 when nothing is visible or remembered (as in training, no sample).
+void rf_predict(float& enemies_in, float& allies_in) {
     static std::vector<vec2> own_spawn, enemy_spawn;
     if (own_spawn.empty()) {
         for (auto q : W.ally_spawn.positions()) own_spawn.push_back(q);
@@ -61,7 +73,7 @@ void rf_update() {
     }
     auto& me = cambc::self();
     const vec2 p = S.me;
-    rf_arrivals = 0;
+    enemies_in = allies_in = 0;
     std::vector<const RfSeen*> mem;
     for (const auto& s : rf_seen) {
         if (S.round - s.round > RF_MEMORY) continue;
@@ -98,17 +110,27 @@ void rf_update() {
                                      std::log1p(ally_gems), std::log1p(enemy_gems), rf_nearest(p, own_spawn), rf_nearest(p, enemy_spawn),
                                      rf_nearest(p, W.altars)};
         for (int k = 0; k < RF_GAME; ++k) x[4 * RF_W + k] = (game[k] - RF_GAME_MEAN[k]) / RF_GAME_STD[k];
-        v128_t h[RF_HV];
-        for (int v = 0; v < RF_HV; ++v) h[v] = wasm_v128_load(RF_HEAD1_B + 4 * v);
-        for (int k = 0; k < 4 * RF_W + RF_GAME; ++k) rf_axpy(h, RF_HEAD1[k], x[k], RF_HV);
-        alignas(16) float hv[RF_H];
-        const v128_t z = wasm_f32x4_splat(0.0f);
-        for (int v = 0; v < RF_HV; ++v) wasm_v128_store(hv + 4 * v, wasm_f32x4_pmax(h[v], z));
-        float out = RF_HEAD2_B;
-        for (int j = 0; j < RF_H; ++j) out += RF_HEAD2[j] * hv[j];
-        rf_arrivals = std::exp(out);
+        if constexpr (RF_SHARED) {
+            v128_t h[RF_HV];
+            for (int v = 0; v < RF_HV; ++v) h[v] = wasm_v128_load(RF_S1_B + 4 * v);
+            for (int k = 0; k < 4 * RF_W + RF_GAME; ++k) rf_axpy(h, RF_S1[k], x[k], RF_HV);
+            alignas(16) float hv[RF_H];
+            const v128_t z = wasm_f32x4_splat(0.0f);
+            for (int v = 0; v < RF_HV; ++v) wasm_v128_store(hv + 4 * v, wasm_f32x4_pmax(h[v], z));
+            float out[2] = {RF_S2_B[0], RF_S2_B[1]};
+            for (int o = 0; o < 2; ++o)
+                for (int j = 0; j < RF_H; ++j) out[o] += RF_S2[o][j] * hv[j];
+            enemies_in = std::exp(out[0]), allies_in = std::exp(out[1]);
+        } else {
+            enemies_in = rf_head(x, RF_E1, RF_E1_B, RF_E2, RF_E2_B);
+            allies_in = rf_head(x, RF_A1, RF_A1_B, RF_A2, RF_A2_B);
+        }
     }
-    // Remember every enemy seen this turn (after the prediction, as in ml/reinforce_data.py).
+}
+
+// Every turn, after take_snapshot(): remember the enemies seen this turn. rf_predict() ignores entries of enemies
+// visible now, so calling it later in the turn gives the same features as ml/reinforce_data.py.
+void rf_remember() {
     for (const auto& e : S.enemies) {
         const auto id = handle_id(e.ch);
         RfSeen s{id, S.round, e.pos, e.hp / e.max_hp, static_cast<float>(e.gems), static_cast<int>(e.type)};

@@ -149,6 +149,10 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | fq4 | fq2 | gate + commitment | 8/60. 10x fuel: 32 | not gated | R |
 | fq5 | fq1 | FightQ with simulate_fight outputs + hand-rule verdict as features and a team-id embedding (our team's) to adjust for confounding | 16/60 (main 34), deaths 1010 vs 565 | not gated | R |
 | fq0 | fq5 | control: all model plumbing runs, decision always from the hand rules | 35/60, deaths 569 (= main) | - | control: plumbing is clean, losses come from the model's decisions |
+| rf1 | main | learned reinforcement prediction (ml/reinforce_*, expected new enemies within 6 tiles in 7 rounds) added to the flee rule: enemy_count + expected > ally_count | 34/60 (main 34), deaths 538 vs 565, margin +1678 vs +2715; turns at fuel limit 2x main | not gated | N |
+| rf2 | rf1 | count one extra enemy only when P(arrival) > 0.5 (rate > ln 2) | 32/60, deaths 540, margin +4707 | not gated | N |
+| rf3 | main | two-head model (enemy and ally arrivals), rule enemy_count + [enemy rate > ln 2] > ally_count + [ally rate > ln 2], predicted only when threatened and > 50k fuel left | 35/60, deaths 525, margin +5494, gems lost 80/g; turns at fuel limit 116 vs 64 (3 games) | pending | 560-game run next |
+| rfc | rf3 | control: memory and plumbing, prediction off | fuel = main (61 vs 64 turns at limit) | - | control |
 
 ## Engine 2.x era (2026-10-18 to 10-20)
 

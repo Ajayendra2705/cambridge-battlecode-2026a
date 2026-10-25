@@ -34,6 +34,12 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 | `dataset.py` / `model.py` / `train.py` | Standardisation (train stats), FightQ (shared phi, sum pooling, engage and stay heads, masked loss), training with early stopping -> `data/ml/model.pt` |
 | `export_weights.py [BOT]` | Writes `bots/BOT/src/fightq_weights.h` (default `exp/fq1`) |
 | `parity.py BUNDLE EXTRACTED` | Compares the features a logging bot printed (`FQ` lines, team A) with Python's features from the same replay |
+| `reinforce_data.py` | Reinforcement dataset -> `data/ml/rf_dataset.npz`: every 4th round a champion sees or remembers (10 rounds) an enemy; labels = distinct enemies / allies not visible now that come within 6 tiles in the next 7 rounds (true positions); features = self, visible allies and enemies, remembered enemies, game + map distances (own spawn, enemy spawn, altar) |
+| `reinforce_train.py [SEED] [small]` | Two-head Poisson model (enemy and ally arrivals) -> `data/ml/rf_model_s0.pt` / `rf_small_s0.pt`; prints baselines and death AUCs |
+| `rf_export.py BOT [CKPT]` | Writes `bots/BOT/src/rf_weights.h` |
+| `bot/reinforce.h` | C++ side (copy into a variant's `src/`): `rf_remember()` every turn, `rf_predict(enemies, allies)` when needed |
+| `teams.py` | Per-decision team id and ladder ratings (`data/ml/teams.npz`, needs `data/ml/ladder.json`) |
+| `confound_check.py` / `decide_eval.py` | Offline checks of the engage model: predicted engage-stay gap by simulator verdict; seed noise, ensemble agreement, flip rates |
 | `vis_gaps.py` | Histogram of vision gaps per (champion, enemy) pair -> `data/ml/vis_gaps.png` |
 
 Data notes:
@@ -61,6 +67,12 @@ Stop rules:
 
 - Vendetta cooldowns are approximate (see above).
 - Actions are what other teams' bots did. Situations where no bot engages have few "engaged" examples, so Q is least reliable there (selection bias).
+
+## Reinforcement model (current direction)
+
+The engage model (FightQ, fq1-fq5) lost badly: platform logs are confounded (engaging looks better in every situation, even when the simulator says you die). The reinforcement model is a pure prediction instead.
+- Fair window search: enemies arriving in 7 rounds are 2.3x more common before deaths; with perfect knowledge the death AUC rises 0.705 -> 0.757. The model reaches 0.734 (enemy + ally heads).
+- Bot use (rf3): flee rule `enemy_count + [enemy rate > ln 2] > ally_count + [ally rate > ln 2]` (count an arrival when it is more likely than not), predicted only when threatened and > 50k fuel left. A prediction costs ~14k fuel (max 21k).
 
 ## Ideas to try later
 

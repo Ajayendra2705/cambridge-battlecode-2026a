@@ -18,8 +18,8 @@ RF_GAME_FEATURES = ["round", "score_diff", "my_gems_log", "visible_ally_gems_log
 MAP_DUMPS = ROOT / "docs/reference/probe/maps"
 
 
-def arrivals(rounds, idx, champ):
-    seen = set(rounds[idx]["vis"][champ])
+def arrivals(rounds, idx, champ, allies=False):
+    seen = set(rounds[idx]["avis" if allies else "vis"][champ])
     pos = rounds[idx]["c"][champ]
     came = set()
     for rnd in rounds[idx + 1:idx + 1 + W]:
@@ -27,7 +27,7 @@ def arrivals(rounds, idx, champ):
         if alive(c[champ]):
             pos = c[champ]
         for e, ce in enumerate(c):
-            if ce["t"] != pos["t"] and e not in seen and alive(ce) and dist(pos, ce) <= NEAR:
+            if e != champ and (ce["t"] == pos["t"]) == allies and e not in seen and alive(ce) and dist(pos, ce) <= NEAR:
                 came.add(e)
     return len(came)
 
@@ -92,7 +92,7 @@ def game_arrays(args):
                     game_x=[rnd["r"], rnd["sg"][me["t"]] - rnd["sg"][1 - me["t"]], math.log1p(me["g"]),
                             math.log1p(sum(c[j]["g"] for j in allies)), math.log1p(sum(c[j]["g"] for j in enemies)),
                             nearest(me, spawn[me["t"]]), nearest(me, spawn[1 - me["t"]]), nearest(me, alt)],
-                    label=arrivals(rounds, idx, champ), died=died_after(rounds, idx, champ), idx=idx, champ=champ,
+                    label=arrivals(rounds, idx, champ), ally_label=arrivals(rounds, idx, champ, allies=True), team=me["t"], died=died_after(rounds, idx, champ), idx=idx, champ=champ,
                 ))
             for j in visible:
                 last[champ][j] = dict(r=rnd["r"], x=c[j]["x"], y=c[j]["y"], hp_frac=c[j]["hp"] / c[j]["mhp"], g=c[j]["g"])
@@ -123,7 +123,8 @@ def main():
     arrays = dict(
         self_x=np.array([r["self_x"] for r in rows], np.float32), self_t=np.array([r["self_t"] for r in rows], np.int64),
         game_x=np.array([r["game_x"] for r in rows], np.float32),
-        label=np.array([r["label"] for r in rows], np.float32), died=np.array([r["died"] for r in rows]),
+        label=np.array([r["label"] for r in rows], np.float32), ally_label=np.array([r["ally_label"] for r in rows], np.float32),
+        team=np.array([r["team"] for r in rows]), died=np.array([r["died"] for r in rows]),
         idx=np.array([r["idx"] for r in rows]), champ=np.array([r["champ"] for r in rows]),
         game=np.array(gids), split=np.array([split[g] for g in gids]),
     )
