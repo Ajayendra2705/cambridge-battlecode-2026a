@@ -289,6 +289,8 @@ Bonuses add, so Treasure on Vesper gives +53%. [doc] The tiebreak counts gold *e
 
 ## 15. Map pool (40 maps, local `maps/`)
 
+**The platform pool is larger [platform 10-26]:** the match-group quota listing (`cambc match-groups quota --json`, field `maps`) had 55 maps at 03:20 IST on 10-26 and 70 at 03:50: our 40, then 00anvil, 00breadcrumbs, 00crater, 00dunes, 00galaxy, 00oasis, 00quarry, 00ribs, 00the_line, 00vault and adgato_gemcombat1-5 (already played in ranked games before 10-26), then fifteen new `02` maps: arena, crossing, cuts, famine, fields, geodes, gift_wrapping, guardians, harvest, stalactites, tangle, the_pack, the_pond, treasure_box, uncharted_lands. All 70 are in `maps/` since 10-26 (`cambc init` in a scratch folder downloads them); `tools/local/newmaps.txt` lists the 30 added ones, and `tools/local/allmaps.txt` stays the first 40. The tables below cover only the first 40.
+
 Totals are for one full clear of every group (shared by both teams). "Max gems/round" = Σ group gems / group respawn: the most gems per round the whole map can produce if every group is taken the moment it respawns. Generated from `docs/reference/probe/maps/*.txt`.
 
 See `docs/reference/probe/map_table.md` for the full table. Highlights:
