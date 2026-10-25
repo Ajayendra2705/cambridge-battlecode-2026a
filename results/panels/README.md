@@ -9,6 +9,7 @@ Opponents change bots over time. A panel result is only comparable with runs mad
 
 | Panel | Built | Teams (ladder ranks then) | Games |
 |---|---|---|---|
+| `b9` | 2026-10-26 04:15 | the 12 `b8` teams on the platform's 70-map pool (the 15 new `02` maps, 10 more `00` maps and adgato_gemcombat1-5 had never been in a panel; they are 43% of ranked games): `mkpanel.py` seed 9, 65 maps, 52 of the 120 games on the 30 newer maps | 120 |
 | `b8` | 2026-10-26 01:00, we were 59 (1899) | Nyx, subscribe to caterpillow, Tartarus, conqueror_of_openai, Jupiter, FürFortnite, meow, smurphy, Let's LARP again, the ruliad, ha²t, Nanyang Technological University (every other rank from 18 to 40, ratings 1958-2101: the user asked for a stronger batch than `b7`); `mkpanel.py` seed 8, same layout as `b7` | 120 |
 | `bb8` | 2026-10-26 01:00 | the 12 `b8` teams, one group each: boss_battle (our side a for the 1st, 3rd, ... team, b for the others) plus 4 maps of their first `b8` window | 60 |
 | `b7` | 2026-10-25 22:05, we were 63 (1888.7) | umamusume, BBL, filter, 💩 Super Intelligence 💩, janestreethireusplease, geese geese go, Valenki, SquidProxyLovers, Sneaky Bush Campers, SkuBap, Bamboo Teahouse, error404 (every other rank from 40 to 62, ratings 1890-1956); `mkpanel.py` seed 7: three blocks of 4 teams, each block covers all 40 maps once, our side alternates (5 games on each side per team). The first panel with side b games | 120 |
