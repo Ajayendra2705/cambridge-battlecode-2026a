@@ -30,6 +30,7 @@ Measured facts that shaped the bot, and what we know about stronger teams. Exact
 - Ryth and Marcella were starved of gold by slot-order capture sharing. `gb2` fixed it by sharing by fewest owned shards. Overfeeding one champion (gb3) was wasted.
 - Platform opponents punish aggression that local bots reward. Blind no-flee play (nf2, ag*) and looser fight entry (pa1, lf1) lost on the platform. Current fight thresholds look like a local optimum both ways (tighter bpt1/bpt2 is also worse).
 - A learned engage model (FightQ v1: supervised Q(s,a) on 1.4M platform decisions, val MSE 0.73 vs 0.94 baseline) plays far worse than `simulate_fight` + hand rules (local, 10x fuel: 19/60 vs 43/60). Its engage-vs-stay gap is about the size of its seed-to-seed noise; the more decisions it controls, the worse the bot (fq1-fq4 in `docs/experiments.md`).
+- A learned reinforcement predictor (`ml/reinforce_*`: enemies/allies arriving within 7 rounds, death AUC 0.707 -> 0.734) wired into the flee rule or simulate_fight (rf3-rf7) is neutral to slightly negative over 560 local games (374-380 vs main 384), although 60-game samples looked positive. Picking the best of several 60-game runs is selection bias; confirm on 560. The predictor is just as accurate against our local pool bots (enemy AUC 0.785 vs 0.787 on platform games, calibrated per bin), so the neutral local result is not a distribution-shift artefact: knowing reinforcements are coming does not improve these flee/sim decisions.
 - Widening the help call made things worse (hc2: whole map 5/20 vs 10/20).
 
 ## Maps

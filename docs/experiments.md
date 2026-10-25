@@ -153,6 +153,10 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | rf2 | rf1 | count one extra enemy only when P(arrival) > 0.5 (rate > ln 2) | 32/60, deaths 540, margin +4707 | not gated | N |
 | rf3 | main | two-head model (enemy and ally arrivals), rule enemy_count + [enemy rate > ln 2] > ally_count + [ally rate > ln 2], predicted only when threatened and > 50k fuel left | 35/60, deaths 525, margin +5494, gems lost 80/g; turns at fuel limit 116 vs 64 (3 games) | pending | 560-game run next |
 | rfc | rf3 | control: memory and plumbing, prediction off | fuel = main (61 vs 64 turns at limit) | - | control |
+| rf4 | rf3 | symmetric expected counts: enemy_count + rate_e > ally_count + rate_a | 36/60 (main 34), deaths 560, margin +10050; 560: 380 (main 384), deaths 3272 vs 3120 | not gated | N |
+| rf5 | rf3 | engage veto: no new fight when an enemy arrival is likely (rate > ln 2) and an ally arrival is not, finishers excepted | 28/60, deaths 610 | not gated | R |
+| rf6 | rf3 | cheaper model: one shared hidden layer of 8 for both heads (~4x fewer head MACs; death AUC 0.731 vs 0.734) | 38/60, deaths 545, margin +8099; 560: 378 (main 384), deaths 3138 vs 3120 | not gated | N |
+| rf7 | rf3 | likely arrivals join simulate_fight as average champions (1445 hp, 102 str, basic attacks): enemy at the prey, ally at us | 38/60, deaths 475, flee deaths 317 (main 380), margin +5433; 560: 374 (main 384), deaths 3266 vs 3120, margin +77.8k vs +96.6k | not gated | N (60-game lead was noise) |
 
 ## Engine 2.x era (2026-10-18 to 10-20)
 
