@@ -30,14 +30,22 @@ def normalise(d, stats):
     return out
 
 
-def load(device):
+def load(device, variant="base"):
     d = dict(np.load(OUT / "dataset.npz"))
+    keys = list(TENSORS)
+    if variant != "base":
+        t = np.load(OUT / "teams.npz")
+        if variant == "rating":
+            d["game_x"] = np.concatenate([d["game_x"], t["own_rating"][:, None], t["opp_rating"][:, None]], 1)
+        if variant == "team":
+            d["team_id"] = t["team_id"]
+            keys.append("team_id")
     stats = norm_stats(d, d["split"] == "train")
     d = normalise(d, stats)
     splits = {}
     for name in ["train", "val", "test"]:
         m = d["split"] == name
-        splits[name] = {k: torch.as_tensor(d[k][m].astype(np.float32) if d[k].dtype == np.float64 else d[k][m]).to(device) for k in TENSORS}
+        splits[name] = {k: torch.as_tensor(d[k][m].astype(np.float32) if d[k].dtype == np.float64 else d[k][m]).to(device) for k in keys}
     return splits, stats
 
 

@@ -5,11 +5,12 @@ N_TYPES = 13
 
 
 class FightQ(nn.Module):
-    def __init__(self, n_unit, n_game, width=16, hidden=16):
+    def __init__(self, n_unit, n_game, width=16, hidden=16, n_teams=0, team_dim=4):
         super().__init__()
         self.phi_x = nn.Linear(n_unit, width)
         self.phi_t = nn.Embedding(N_TYPES, width)
-        ctx = 3 * width + n_game
+        self.team = nn.Embedding(n_teams, team_dim) if n_teams else None
+        ctx = 3 * width + n_game + (team_dim if n_teams else 0)
         self.engage = nn.Sequential(nn.Linear(width + ctx, hidden), nn.ReLU(), nn.Linear(hidden, 1))
         self.stay = nn.Sequential(nn.Linear(ctx, hidden), nn.ReLU(), nn.Linear(hidden, 1))
 
@@ -20,7 +21,10 @@ class FightQ(nn.Module):
         me = self.phi(b["self_x"], b["self_t"])
         allies = (self.phi(b["ally_x"], b["ally_t"]) * b["ally_m"][..., None]).sum(1)
         enemy_each = self.phi(b["enemy_x"], b["enemy_t"]) * b["enemy_m"][..., None]
-        ctx = torch.cat([me, allies, enemy_each.sum(1), b["game_x"]], -1)
+        parts = [me, allies, enemy_each.sum(1), b["game_x"]]
+        if self.team is not None:
+            parts.append(self.team(b["team_id"]))
+        ctx = torch.cat(parts, -1)
         per_enemy = torch.cat([enemy_each, ctx[:, None].expand(-1, enemy_each.shape[1], -1)], -1)
         return self.engage(per_enemy).squeeze(-1), self.stay(ctx).squeeze(-1)
 

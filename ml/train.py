@@ -2,6 +2,7 @@ import copy
 import sys
 import time
 
+import numpy as np
 import torch
 
 from common import OUT
@@ -41,10 +42,13 @@ def constant_baseline(train, data):
 
 def main():
     seed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+    variant = sys.argv[2] if len(sys.argv) > 2 else "base"
     torch.manual_seed(seed)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    data, stats = load(device)
-    model = FightQ(len(UNIT_FEATURES), len(GAME_FEATURES)).to(device)
+    data, stats = load(device, variant)
+    n_game = data["train"]["game_x"].shape[1]
+    n_teams = int(np.load(OUT / "teams.npz")["n_teams"]) if variant == "team" else 0
+    model = FightQ(len(UNIT_FEATURES), n_game, n_teams=n_teams).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=LR)
     print(f"{sum(p.numel() for p in model.parameters())} parameters, train {len(data['train']['label'])} val {len(data['val']['label'])}")
     print("val baselines (MSE, label in std units):", {k: round(v, 4) for k, v in constant_baseline(data["train"], data["val"]).items()})
@@ -69,8 +73,9 @@ def main():
             if bad >= PATIENCE:
                 break
 
-    torch.save(dict(state=best_state, stats=stats, unit_features=UNIT_FEATURES, game_features=GAME_FEATURES), OUT / f"model_s{seed}.pt")
-    print(f"seed {seed} best val {best:.4f}")
+    name = f"model_s{seed}.pt" if variant == "base" else f"model_{variant}_s{seed}.pt"
+    torch.save(dict(state=best_state, stats=stats, unit_features=UNIT_FEATURES, game_features=GAME_FEATURES, variant=variant, n_game=n_game, n_teams=n_teams), OUT / name)
+    print(f"{variant} seed {seed} best val {best:.4f}")
 
 
 if __name__ == "__main__":

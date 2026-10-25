@@ -7,17 +7,25 @@ import pandas as pd
 from actions import engaged
 from common import OUT, cooldowns, load_game
 from labels import LAM, H, label
-from simfight import CHAMPS, alive, stats
+from simfight import CHAMPS, alive, engage_decision, stats
 
 MAX_ALLIES, MAX_ENEMIES = 5, 6
 UNIT_FEATURES = ["dx", "dy", "dist", "hp", "hp_frac", "log_gems", "str", "focus", "cd0", "cd1", "range"]
-GAME_FEATURES = ["round", "score_diff"]
+GAME_FEATURES = ["round", "score_diff", "sim_dead_us", "sim_dead_them", "sim_hp_us", "sim_hp_them", "sim_me_dies", "rule_engage", "has_prey"]
 
 
 def unit(me, c, cd):
     strength, focus = stats(c)
     dx, dy = c["x"] - me["x"], c["y"] - me["y"]
     return [dx, dy, max(abs(dx), abs(dy)), c["hp"], c["hp"] / c["mhp"], math.log1p(c["g"]), strength, focus, cd[0], cd[1], CHAMPS[c["ty"]]["range"]]
+
+
+def sim_features(rnd, cd, champ):
+    d = engage_decision(rnd, cd, champ)
+    if d["sim"] is None:
+        return [0, 0, 0, 0, 0, 0, 0]
+    sim = d["sim"]
+    return [sim["dead"][0], sim["dead"][1], sim["hp_frac"][0], sim["hp_frac"][1], float(sim["unit0_dead"]), float(d["engage"]), 1]
 
 
 def game_arrays(args):
@@ -40,7 +48,7 @@ def game_arrays(args):
         me = c[champ]
         out["self_x"][k] = unit(me, me, cd[champ])
         out["self_t"][k] = me["ty"]
-        out["game_x"][k] = [rnd["r"], rnd["sg"][me["t"]] - rnd["sg"][1 - me["t"]]]
+        out["game_x"][k] = [rnd["r"], rnd["sg"][me["t"]] - rnd["sg"][1 - me["t"]], *sim_features(rnd, cd, champ)]
         allies = [j for j in rnd["avis"][champ] if alive(c[j])][:MAX_ALLIES]
         for s, j in enumerate(allies):
             out["ally_x"][k, s] = unit(me, c[j], cd[j])

@@ -147,6 +147,8 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | fq2 | fq1 | 5-model ensemble; acts only when all 5 agree on engage vs stay (42% of decisions offline), else hand rules | 15/60 (fuel exhaustion: 301 vs 13 turns in one game). 10x fuel: 33 vs main 43 | not gated | R |
 | fq3 | fq1 | commitment: keep engaging unless Q gap < -0.1 std (flip rate offline 11% -> 5%) | 17/60. 10x fuel: 19 | not gated | R (no effect) |
 | fq4 | fq2 | gate + commitment | 8/60. 10x fuel: 32 | not gated | R |
+| fq5 | fq1 | FightQ with simulate_fight outputs + hand-rule verdict as features and a team-id embedding (our team's) to adjust for confounding | 16/60 (main 34), deaths 1010 vs 565 | not gated | R |
+| fq0 | fq5 | control: all model plumbing runs, decision always from the hand rules | 35/60, deaths 569 (= main) | - | control: plumbing is clean, losses come from the model's decisions |
 
 ## Engine 2.x era (2026-10-18 to 10-20)
 
