@@ -41,17 +41,17 @@ NAMES = ['ryth', 'vesper', 'vendetta', 'cassi', 'issac', 'stellar', 'prism', 'ma
          'heart']
 RANGE = {0: 1, 1: 3, 2: 1, 3: 3, 4: 1, 5: 3, 6: 3, 7: 1, 8: 3, 9: 1, 10: 1, 11: 3, 12: 1}
 CAMPS = {0: 'wolf', 1: 'elk', 2: 'gem', 3: 'gold', 4: 'monolith', 5: 'golem'}
-# Item names per engine (the meta line's `engine`; runs decoded before 10-26 have none and are engine 1.0.3). On 1.0.3
-# item_type i is ITEMS[i // 2]: a shard when i is even, its emblem when odd. A new engine's table comes from the ps1 probe
-# (docs/MECHANICS.md section 0); until it is added here, `items` stops rather than mislabel.
-ITEMS = {'v1_0_3': [f'{fam}_{stat}' for fam in ('monster', 'power', 'durability', 'treasure', 'jungle', 'home', 'bruiser')
-                    for stat in ('str', 'focus', 'hp')]}
+# Item name per item_type index, per engine (the meta line's `engine`; runs decoded before 10-26 have none and are engine
+# 1.0.3). A new engine's list is printed by tools/local/engine_probe.py; until it is added here, `items` stops rather
+# than mislabel.
+ITEMS = {'v1_0_3': [f'{fam}_{stat} {kind}' for fam in ('monster', 'power', 'durability', 'treasure', 'jungle', 'home', 'bruiser')
+                    for stat in ('str', 'focus', 'hp') for kind in ('shard', 'emblem')]}
 
 
 def item_name(meta, i):
     engine = meta.get('engine', 'v1_0_3')
-    if engine not in ITEMS: sys.exit(f'no item table for engine {engine}: read it with the ps1 probe and add it to ITEMS')
-    return ITEMS[engine][i // 2] + (' emblem' if i % 2 else ' shard')
+    if engine not in ITEMS: sys.exit(f'no item table for engine {engine}: print it with tools/local/engine_probe.py and add it to ITEMS')
+    return ITEMS[engine][i]
 
 
 def dist(a, b):

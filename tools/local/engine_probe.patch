@@ -1,0 +1,44 @@
+--- a/src/bot.cpp
++++ b/src/bot.cpp
+@@ -93,6 +93,41 @@
+     const int round = static_cast<int>(cambc::round_number());
+     tracing = false;
+     log_rounds = false;
++    // ps1 probe (never ship): from round 6, slot 0 prints the engine's champion designs (5 a round), the game settings a
++    // patch may change, then the item table (4 a round). Few lines a round and a flush each time: a turn that runs out of
++    // fuel later loses its unflushed output (10-26: one round of designs went missing). A cursor resumes after a skip.
++    static int probe_next = 0;
++    const int designs = static_cast<int>(std::size(cambc::champion_designs));
++    const int n_items = static_cast<int>(cambc::item_type::enum_type::count);
++    if (round >= 6 && W.slot == 0 && probe_next < designs + 1 + n_items) {
++        for (int printed = 0; printed < 5 && probe_next < designs; ++printed, ++probe_next) {
++            const auto& d = cambc::champion_designs[probe_next];
++            const auto b = d.base_stats();
++            std::cout << "PS " << cambc::to_string(d.champion_name()) << " hp " << b.base_health << "+" << b.health_growth
++                      << " str " << b.base_strength << "+" << b.strength_growth << " focus " << b.base_focus << "+"
++                      << b.focus_growth << " campmult " << b.camp_damage_multiplier << '\n';
++        }
++        if (probe_next == designs) {
++            const auto& g = cambc::detail::cached_game_settings;
++            std::cout << "PG capture " << g.capture_time << " recall " << g.recall_time << " respawn " << g.respawn_time
++                      << " submit " << g.submit_gem_duration_multiplier << "x+" << g.submit_gem_base_duration << " min "
++                      << g.submit_gem_minimum_duration << " range " << g.submit_gems_range << " kill_gold " << g.kill_gold
++                      << " lock_hits " << g.altar_lock_hits << " winning " << g.winning_gems << " rounds " << g.max_rounds
++                      << "\nPN " << n_items << '\n';
++            ++probe_next;
++        } else if (probe_next > designs) {
++            for (int printed = 0; printed < 4 && probe_next < designs + 1 + n_items; ++printed, ++probe_next) {
++                const int i = probe_next - designs - 1;
++                const cambc::item_type x{static_cast<cambc::item_type::enum_type>(i)};
++                const auto f = x.info();
++                std::cout << "PI " << i << " " << cambc::to_string(x) << " cost " << f.cost << " n " << f.combine_count
++                          << " hp " << f.health_points << " str " << f.strength_points << " focus " << f.focus_points
++                          << " passive " << (f.passive ? static_cast<int>(*f.passive) : -1) << " mag " << f.passive_magnitude
++                          << " buy " << f.purchasable << '\n';
++            }
++        }
++        std::cout << std::flush;
++    }
+ 
+     // Status lines (tools/replay/acts.py reads the champion types), integers only. Printed every 20 rounds with floats
+     // and strings, this cost about 13k fuel a champion, and 1.6% of those turns ran out of fuel against 0.17% of the
