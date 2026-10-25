@@ -1,6 +1,7 @@
 """Analyses of decoded platform games (datasets from rounds_extract.mjs), us vs the opponents.
 
-usage: python -I tools/replay/decoded.py CMD DIR [DIR ...] [--round R ...]
+usage: python -I tools/replay/decoded.py CMD DIR [DIR ...] [--skip MAP ...] [--round R ...]
+(--skip leaves out games on maps whose name contains MAP; repeat it for more maps)
 
 DIR is a folder of <match>.jsonl.gz files with an index.txt ("match map side result", side a = team 0), as written by
 tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
@@ -40,12 +41,24 @@ NAMES = ['ryth', 'vesper', 'vendetta', 'cassi', 'issac', 'stellar', 'prism', 'ma
          'heart']
 RANGE = {0: 1, 1: 3, 2: 1, 3: 3, 4: 1, 5: 3, 6: 3, 7: 1, 8: 3, 9: 1, 10: 1, 11: 3, 12: 1}
 CAMPS = {0: 'wolf', 1: 'elk', 2: 'gem', 3: 'gold', 4: 'monolith', 5: 'golem'}
-ITEMS = [f'{fam}_{stat}' for fam in ('monster', 'power', 'durability', 'treasure', 'jungle', 'home', 'bruiser')
-         for stat in ('str', 'focus', 'hp')]  # item_type i is ITEMS[i // 2]: a shard when i is even, its emblem when odd
+# Item names per engine (the meta line's `engine`; runs decoded before 10-26 have none and are engine 1.0.3). On 1.0.3
+# item_type i is ITEMS[i // 2]: a shard when i is even, its emblem when odd. A new engine's table comes from the ps1 probe
+# (docs/MECHANICS.md section 0); until it is added here, `items` stops rather than mislabel.
+ITEMS = {'v1_0_3': [f'{fam}_{stat}' for fam in ('monster', 'power', 'durability', 'treasure', 'jungle', 'home', 'bruiser')
+                    for stat in ('str', 'focus', 'hp')]}
+
+
+def item_name(meta, i):
+    engine = meta.get('engine', 'v1_0_3')
+    if engine not in ITEMS: sys.exit(f'no item table for engine {engine}: read it with the ps1 probe and add it to ITEMS')
+    return ITEMS[engine][i // 2] + (' emblem' if i % 2 else ' shard')
 
 
 def dist(a, b):
     return max(abs(a[0] - b[0]), abs(a[1] - b[1]))
+
+
+SKIP = []  # map name parts to leave out (--skip MAP, repeatable)
 
 
 def games(dirs):
@@ -58,7 +71,7 @@ def games(dirs):
             if len(p) >= 4: side[p[0]] = (0 if p[2] == 'a' else 1, p[3], p[1])
         for f in sorted(glob.glob(os.path.join(d, '*.jsonl.gz'))):
             mid = os.path.basename(f).split('.')[0]
-            if mid not in side: continue
+            if mid not in side or any(s in side[mid][2] for s in SKIP): continue
             lines = [json.loads(l) for l in gzip.open(f, 'rt')]
             rows = [r for r in lines[1:] if r.get('c')]
             if not rows: continue
@@ -238,7 +251,7 @@ def cmd_items(dirs, rounds):
         if not row: continue
         for c in row['c']:
             k = (who(c['t'], us), c['ty']); N[k] += 1; HP[k] += c.get('mhp', 0)
-            for it, cnt in c.get('it', []): I[k][ITEMS[it // 2] + (' emblem' if it % 2 else ' shard')] += cnt
+            for it, cnt in c.get('it', []): I[k][item_name(meta, it)] += cnt
     print(f'items per champion at r{R} (emblems and shards):')
     for k in sorted(N, key=lambda k: (NAMES[k[1]], k[0])):
         if N[k] < 10: continue
@@ -483,6 +496,8 @@ def main():
     args = sys.argv[1:]
     if len(args) < 2 or args[0] not in CMDS: sys.exit(__doc__)
     rounds = []
+    while '--skip' in args:
+        j = args.index('--skip'); SKIP.append(args[j + 1]); del args[j:j + 2]
     if '--round' in args:
         j = args.index('--round'); rounds = [int(x) for x in args[j + 1:]]; args = args[:j]
     CMDS[args[0]](args[1:], rounds)

@@ -64,7 +64,7 @@ export function extract(file, out) {
       prev = s;
     }
     if (cur) lines.push(JSON.stringify({ ...cur, act: acts }));
-    const meta = { file: path.basename(file), drafts: prev?.drafts, outcome: prev?.outcome, submittedGems: prev?.submittedGems.map(Number), rounds: prev?.round,
+    const meta = { file: path.basename(file), engine: R.version, drafts: prev?.drafts, outcome: prev?.outcome, submittedGems: prev?.submittedGems.map(Number), rounds: prev?.round,
       camps: Object.fromEntries((prev?.camps ?? []).map((c) => [c.entity.index, c.type])) };
     fs.writeFileSync(out, zlib.gzipSync(JSON.stringify(meta) + '\n' + lines.join('\n') + '\n'));
     R.close();

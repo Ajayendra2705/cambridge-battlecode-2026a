@@ -78,4 +78,4 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `team_features.py ranked FIGHTDIR` / `ours FIGHTDIR INDEX...` | Per-team behaviour features (tributes by r300/r600, tribute count, deaths, kills, grouping, enemy-half time, shared camp hits, bag) for winners vs losers. |
 | `fight_geo.py FIGHTDIR INDEX...` | Team geometry from those datasets, us vs them by phase: distance to nearest teammate, teammates within 5, time on the enemy half, local numbers at deaths. |
 | `fetch_ranked.py RANKS [--per-team N]` | Download recent ranked replays of a ladder rank range into `data/replays/ranked/`. |
-| `vis_assets.py REPLAY` | Fetch the visualiser engine WASM and decoder JS into `data/vis/` (starts and stops `cambc view`). |
+| `vis_assets.py REPLAY` | Fetch the installed cambc's visualiser engine WASM and decoder JS into `data/vis/<newest engine>/` (starts and stops `cambc view`). `vis_decode.mjs` reads each replay with the folder of its engine, else the flat `data/vis/` (cambc 3.0.5, engines up to 1.0.3). |

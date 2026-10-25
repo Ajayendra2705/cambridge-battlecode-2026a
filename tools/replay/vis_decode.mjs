@@ -9,7 +9,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const assets = path.join(root, 'data', 'vis');
-const find = (re) => fs.existsSync(assets) && fs.readdirSync(assets).find((f) => re.test(f));
 
 export function replayBytes(file) {
   const head = fs.readFileSync(file).subarray(0, 2).toString('latin1');
@@ -22,13 +21,17 @@ export const engineVersion = (bytes) => `v${bytes[8]}_${bytes[9]}_${bytes[10]}`;
 const engines = new Map();
 export async function openEngine(version) {
   if (engines.has(version)) return engines.get(version);
+  // A newer cambc's assets sit in data/vis/<its newest engine>/ (vis_assets.py) beside the flat data/vis/ of cambc 3.0.5
+  // (engines up to 1.0.3): each replay is read with the visualiser of its own engine.
+  const dir = fs.existsSync(path.join(assets, version)) ? path.join(assets, version) : assets;
+  const find = (re) => fs.existsSync(dir) && fs.readdirSync(dir).find((f) => re.test(f));
   const wasmFile = find(new RegExp(`^${version}-.*\\.wasm$`));
   const pcFile = find(/^PanelChrome-.*\.js$/);
   if (!wasmFile || !pcFile) throw new Error(`missing visualiser assets for ${version}: run python -I tools/replay/vis_assets.py REPLAY`);
   const { WASI } = await import('node:wasi');
-  const PC = await import(pathToFileURL(path.join(assets, pcFile)).href);
+  const PC = await import(pathToFileURL(path.join(dir, pcFile)).href);
   const wasi = new WASI({ version: 'preview1', args: [], env: {}, returnOnExit: true });
-  const mod = await WebAssembly.compile(fs.readFileSync(path.join(assets, wasmFile)));
+  const mod = await WebAssembly.compile(fs.readFileSync(path.join(dir, wasmFile)));
   const inst = await WebAssembly.instantiate(mod, { wasi_snapshot_preview1: wasi.wasiImport });
   wasi.initialize(inst);
   const X = inst.exports;
@@ -79,6 +82,7 @@ export async function openReplay(file) {
   };
   return {
     size,
+    version: engineVersion(bytes),
     seek(pos) { check(X.Game_Visualiser_Timeline_Seek(handle, main, pos, 0)); },
     state() { return read(spectator.team, spectator.champion); },
     stateAs(team, champion) { return read(team, champion); },
