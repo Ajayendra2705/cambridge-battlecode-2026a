@@ -42,9 +42,18 @@ void write_claim(int group) {
 }
 
 // Help call in the claim word's spare bits 30-39 (slot 5 is unused with five champions): a champion caught by an
-// enemy on our half writes its position at 3-tile resolution ((x / 3) * 22 + y / 3 + 1, 0 = none); teammates
+// enemy on our half writes its position in cells of `help_res` tiles ((x / r) * rows + y / r + 1, 0 = none); teammates
 // nearby come to turn a 2v1 into a 2v2. Platform gb2 vs ranks 40-49: early deaths on our half start as ~1 ally
 // vs 1.1 enemies within 5 and end as 0.7 vs 2.1, half with no ally left within 5.
+// The cell size is the smallest of 3 or more that fits the map into 10 bits. The old fixed 3-tile code with 22 rows
+// assumed maps of at most 66 tiles: on 8 of the 40 maps (100x100, 80x80, 90x30, 30x80, 71x71, 61x71) calls far out
+// were ignored or decoded to the wrong place (from (20, 80) on a 100x100 map to (22, 13)).
+int help_res() {
+    int r = 3;
+    while (((cm::width() + r - 1) / r) * ((cm::height() + r - 1) / r) + 1 > 1023) ++r;
+    return r;
+}
+int help_rows() { return (cm::height() + help_res() - 1) / help_res(); }
 int my_help = 0;
 void write_help(int v) {
     if (W.team_count > 5 || v == my_help) return;
@@ -55,14 +64,15 @@ void write_help(int v) {
     for (int i = 0; i < 5; ++i) shared_cache[i] = static_cast<std::byte>(bits >> (8 * i) & 0xff);
     cambc::shared_memory.write(0, std::span{shared_cache.data(), 5});
 }
-int help_code(vec2 p) { return (p.x / 3) * 22 + p.y / 3 + 1; }
-// The called position, or (-1, -1) when there is no call (or it is our own).
+int help_code(vec2 p) { return (p.x / help_res()) * help_rows() + p.y / help_res() + 1; }
+// The called position (the centre of its cell), or (-1, -1) when there is no call (or it is our own).
 vec2 read_help() {
     if (W.team_count > 5) return {-1, -1};
     const int v = static_cast<int>(claim_bits() >> 30 & 1023);
-    if (v == 0 || v == my_help || v > 22 * 22) return {-1, -1};
+    const int r = help_res(), rows = help_rows(), cols = (cm::width() + r - 1) / r;
+    if (v == 0 || v == my_help || v > cols * rows) return {-1, -1};
     const int q = v - 1;
-    vec2 h{std::min((q / 22) * 3 + 1, cm::width() - 1), std::min((q % 22) * 3 + 1, cm::height() - 1)};
+    vec2 h{std::min((q / rows) * r + r / 2, cm::width() - 1), std::min((q % rows) * r + r / 2, cm::height() - 1)};
     return h;
 }
 // Our half or the middle: walking distance from our spawn at most 4 more than from theirs.
@@ -91,7 +101,7 @@ void read_broadcast() {
     auto& grp = W.groups[g];
     if (r > S.round && (grp.state == 0 || grp.respawn_round != r)) {
         bool seen = false;
-        for (auto sp : grp.spawns) if (S.visible.is_set(sp)) { seen = true; break; }
+        for (auto sp : grp.spawns) if (in_view(sp)) { seen = true; break; }
         if (!seen) {
             grp.state = 2;
             grp.respawn_round = r;

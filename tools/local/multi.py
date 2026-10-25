@@ -15,17 +15,19 @@ ap.add_argument('--pool', default='pool/b_log,pool/dm1,pool/pd1,pool/pgq,pool/pw
 ap.add_argument('--maps', default=open(os.path.join(ROOT, 'tools', 'local', 'allmaps.txt')).read().strip())
 ap.add_argument('--jobs', type=int, default=16)
 ap.add_argument('--keep', action='store_true', help='keep .repl26a replays (deleted by default to save disk)')
+ap.add_argument('--from', dest='src', help='summarise an existing run folder (same CANDS/--pool/--maps) without playing')
 args = ap.parse_args()
 cands, pool, maps = args.cands.split(','), args.pool.split(','), args.maps.split(',')
 
 def build(bot):
     r = subprocess.run([CAMBC, 'build', bot, '--release'], cwd=ROOT, capture_output=True, text=True)
     return bot, r.returncode, r.stdout[-1500:] + r.stderr[-1500:]
-with ThreadPoolExecutor(4) as ex:
-    for bot, rc, log in ex.map(build, sorted(set(cands + pool))):
-        if rc: print('build failed', bot, log); sys.exit(1)
+if not args.src:
+    with ThreadPoolExecutor(4) as ex:
+        for bot, rc, log in ex.map(build, sorted(set(cands + pool))):
+            if rc: print('build failed', bot, log); sys.exit(1)
 
-out = os.path.join(ROOT, 'data', 'runs', 'multi-' + time.strftime('%H%M%S'))
+out = args.src or os.path.join(ROOT, 'data', 'runs', 'multi-' + time.strftime('%H%M%S'))
 os.makedirs(out, exist_ok=True)
 rows, jobs = [], []
 for c in cands:
@@ -35,9 +37,10 @@ for c in cands:
                 name = f'{c}~{opp}~{m}~{us[-1]}'.replace('/', '.')
                 rows.append(f'"../../../bots/{a}" "../../../bots/{b}" "../../../maps/{m}.map26a" "{name}.repl26a" --statistics "{name}.json" --json')
                 jobs.append((c, us, name))
-open(os.path.join(out, 'matches.txt'), 'w').write('\n'.join(rows) + '\n')
-subprocess.run([CAMBC, 'run-batch', os.path.join(out, 'matches.txt'), '--jobs', str(args.jobs), '--release'], cwd=ROOT,
-               capture_output=True, text=True)
+if not args.src:
+    open(os.path.join(out, 'matches.txt'), 'w').write('\n'.join(rows) + '\n')
+    subprocess.run([CAMBC, 'run-batch', os.path.join(out, 'matches.txt'), '--jobs', str(args.jobs), '--release'], cwd=ROOT,
+                   capture_output=True, text=True)
 
 res = collections.defaultdict(collections.Counter)
 for c, us, name in jobs:

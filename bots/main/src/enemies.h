@@ -42,9 +42,10 @@ void record_sightings() {
 }
 
 // ---- Team focus (shared memory byte 7) ----
-// One champion that engages an enemy, or is chased by one, calls it: (enemy index << 5) | (round & 31). Allies that
-// see the called enemy within 8 tiles take it as their prey, so two or three of us hit the same target (top-10
-// teams average 15.8 assists per game to our 5.1). Calls older than 3 rounds expire.
+// One champion that engages an enemy, or is chased by one, calls it: ((enemy index + 1) << 5) | (round & 31). Allies
+// that see the called enemy within 8 tiles take it as their prey, so two or three of us hit the same target (top-10
+// teams average 15.8 assists per game to our 5.1). Calls older than 3 rounds expire. The index is stored + 1: with the
+// plain index a call on enemy 0 in a round divisible by 32 was the byte 0, which reads as no call.
 std::vector<std::uint32_t> enemy_ids;  // Enemy champion handles, sorted: the same order for every bot of our team.
 int enemy_index(const ChampSnap& e) {
     if (enemy_ids.empty()) {
@@ -56,13 +57,13 @@ int enemy_index(const ChampSnap& e) {
 }
 void call_focus(const ChampSnap& e) {
     const int idx = enemy_index(e);
-    if (idx < 0 || idx > 7) return;
-    write_byte(7, (idx << 5) | (S.round & 31));
+    if (idx < 0 || idx > 6) return;
+    write_byte(7, ((idx + 1) << 5) | (S.round & 31));
 }
 const ChampSnap* focus_target() {
     const int b = static_cast<int>(shared_cache[7]);
     if (b == 0 || ((S.round - (b & 31)) & 31) > 3) return nullptr;
-    const int idx = b >> 5;
+    const int idx = (b >> 5) - 1;
     for (const auto& e : S.enemies)
         if (enemy_index(e) == idx) return &e;
     return nullptr;

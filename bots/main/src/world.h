@@ -13,6 +13,7 @@ struct Group {
     int awake_round = -100;      // Last round a member was seen awake (or hit us from fog).
     double bank_cost = 0;         // Rounds to walk the reward to the nearest altar and tribute it.
     std::unique_ptr<distance_field> field;
+    std::uint64_t field_key = 0;  // Which strong camps' reaches `field` avoids (bit per W.strong_camps entry).
 
     // Health and strength still to beat; a group that is not up will come back at full health.
     float hp_left() const {
@@ -45,9 +46,9 @@ struct World {
     std::vector<Group> groups;
     distance_field altar_field, spawn_field;
     distance_field enemy_field;  // Walking distance from the enemy spawn: where attackers come from.
-    std::vector<std::vector<int>> covered_by;
+    std::vector<std::vector<int>> covered_by;  // Per group: other groups whose monolith or golem reaches its tiles.
     struct StrongCamp { vec2 pos; int range, group; };
-    std::vector<StrongCamp> strong_camps;  // Monoliths and golems: their range is deadly to walk through.  // Per group: other groups whose monolith or golem reaches its tiles.
+    std::vector<StrongCamp> strong_camps;  // Monoliths and golems: their range is deadly to walk through.
     std::vector<int> group_side;  // Per group: own-spawn distance minus enemy-spawn distance (positive = their half).
     int slot = 0, team_count = 1;
     std::vector<std::int16_t> camp_owner;  // Group index per tile, -1 elsewhere.
@@ -63,19 +64,30 @@ void compute_field(distance_field& field, const bitboard& roots) {
     field.compute(W.terrain & ~roots, roots, visited);
 }
 
+// Route to a group around the reaches of other live monoliths and golems. The field was built once and kept, so the
+// detour stayed after the strong camp died (and was missing after it came back): rebuild when that set changes.
 distance_field& group_field(Group& g) {
-    if (!g.field) {
-        g.field = std::make_unique<distance_field>();
-        const int gi = static_cast<int>(&g - W.groups.data());
+    const int gi = static_cast<int>(&g - W.groups.data());
+    std::uint64_t key = 0;
+    for (size_t i = 0; i < W.strong_camps.size() && i < 64; ++i) {
+        const auto& c = W.strong_camps[i];
+        if (c.group != gi && W.groups[c.group].state == 0) key |= std::uint64_t{1} << i;
+    }
+    // A rebuild costs up to about 30k fuel: on a turn with less left, the old route serves one more turn.
+    if (!g.field || (key != g.field_key && cambc::fuel_remaining() > 40000)) {
+        if (!g.field) g.field = std::make_unique<distance_field>();
+        g.field_key = key;
         bitboard zone;
         zone.clear();
-        for (const auto& c : W.strong_camps)
-            if (c.group != gi && W.groups[c.group].state == 0) zone.draw_chebyshev(c.pos, static_cast<float>(c.range));
+        for (size_t i = 0; i < W.strong_camps.size() && i < 64; ++i)
+            if (key >> i & 1) zone.draw_chebyshev(W.strong_camps[i].pos, static_cast<float>(W.strong_camps[i].range));
         bitboard visited;
         g.field->compute((W.terrain | zone) & ~g.tiles, g.tiles, visited);
-        // Fall back to the plain route when the detour cuts the group off from home.
+        // Fall back to the plain route when the detour cuts the group off from home (the old check read only the
+        // first spawn tile).
         bool ok = false;
-        for (const auto sp : W.ally_spawn.positions()) { ok = g.field->get(sp) != UNREACH; break; }
+        for (const auto sp : W.ally_spawn.positions())
+            if (g.field->get(sp) != UNREACH) { ok = true; break; }
         if (!ok) compute_field(*g.field, g.tiles);
     }
     return *g.field;
@@ -92,6 +104,16 @@ int group_of_camp(vec2 spawn) {
 
 void init_units();
 
+// Design stats per camp kind. camp::base_stats() is a design query costing about 730 fuel, and it was asked for every
+// camp twice (stats here, attack range in init_units): 230k on boss_battle's 158 camps, more than the 200k first turn,
+// so the opening spread over 8 rounds (pf4 probe). Six kinds need six queries.
+cambc::camp_stats camp_stats_of(const cambc::camp& c) {
+    static std::vector<std::pair<cambc::camp_type, cambc::camp_stats>> cache;
+    for (const auto& [k, s] : cache) if (k == c.kind()) return s;
+    cache.push_back({c.kind(), c.base_stats()});
+    return cache.back().second;
+}
+
 void init_world() {
     auto& me = cambc::self();
     W.ally_spawn = cm::spawn_region(team::ally);
@@ -99,13 +121,19 @@ void init_world() {
     W.terrain = cm::walls() | cm::holes() | cm::altars() | W.enemy_spawn;
     W.altars = cm::altars().positions();
     W.altar_tiles = cm::altars();
-    for (const auto& group : cm::camp_groups()) {
-        Group g{group};
-        g.tiles = group.spawn_tiles();
-        g.gems = static_cast<int>(group.gem_value());
-        g.gold = static_cast<int>(group.gold_value());
-        for (const auto& c : group.camps()) {
-            const auto s = c.base_stats();
+    // Moved, not copied, and stored without regrowing the vector (copies and regrowth cost about 45k on boss_battle).
+    auto all = cm::camp_groups();
+    W.groups.reserve(all.size());
+    for (auto& group : all) {
+        Group g{std::move(group)};
+        g.tiles = g.group.spawn_tiles();
+        g.gems = static_cast<int>(g.group.gem_value());
+        g.gold = static_cast<int>(g.group.gold_value());
+        // A heap allocation costs about 400 fuel: growing three vectors camp by camp cost 66k on boss_battle.
+        const auto nc = g.group.camps().size();
+        g.spawns.reserve(nc), g.max_hp.reserve(nc), g.strength.reserve(nc);
+        for (const auto& c : g.group.camps()) {
+            const auto s = camp_stats_of(c);
             g.spawns.push_back(c.spawn_position());
             g.max_hp.push_back(s.base_health);
             g.strength.push_back(s.base_strength);

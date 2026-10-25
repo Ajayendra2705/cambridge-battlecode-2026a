@@ -18,7 +18,10 @@ for gid in ids:
             print(f'{mp:12} download failed {mid}')
             continue
         z = zipfile.ZipFile(path)
-        name = [n for n in z.namelist() if n.endswith('.stdout')][0]
+        # Our stdout: team A's when we are team A, else team B's (taking the first one read the opponent's half the time).
+        team = 'a' if ta == OUR else 'b'
+        names = [n for n in z.namelist() if n.endswith(f'team-{team}.stdout')] or [n for n in z.namelist() if n.endswith('.stdout')]
+        name = names[0]
         for line in z.read(name).decode('latin1').split('\n'):
             line = line.strip()
             if re.match(r'D\d+ s\d', line):

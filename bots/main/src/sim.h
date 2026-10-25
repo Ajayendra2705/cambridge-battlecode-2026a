@@ -5,7 +5,8 @@
 // A few rounds of focus fire between the champions near a fight, using live cooldowns. Each unit closes on the
 // other side (melee may step and hit, ranged either steps or shoots), casts its best ready spell (stuns first)
 // and hits the weakest living opponent. Cassi and Issac fall together.
-struct SimSlot { float dmg = 0; int cd = 99; bool stun = false, reset = false; };
+// reach: the farthest distance at which the cast lands (a dash travels 2 and hits radius 1 around its landing: 3).
+struct SimSlot { float dmg = 0; int cd = 99; bool stun = false, reset = false; int reach = 4; };
 struct SimUnit {
     float hp = 0, str = 0;
     int range = 1, d = 99;
@@ -16,6 +17,10 @@ struct SimUnit {
 
 template <class C> std::array<SimSlot, 2> read_slots(const C& c) {
     std::array<SimSlot, 2> out{};
+    // Live cooldowns need the champion in view: out of view every read threw (726 per 80 games in the bf2 audit).
+    cambc::detail::champion_info info{};
+    if (cambc::detail::sdk_champion(handle_id(c), &info) != 0 || info.x < 0 || !in_view(vec2{info.x, info.y}))
+        return out;
     int i = 0;
     for (const auto& ab : c.abilities()) {
         if (i >= 2) break;
@@ -25,6 +30,20 @@ template <class C> std::array<SimSlot, 2> read_slots(const C& c) {
             s.stun = ab.is_cc();
             s.reset = ab.is_attack_reset();
             if (ab.is_damage() || ab.is_aoe_damage() || ab.is_cc() || ab.is_dash()) s.dmg = ab.damage_amount();
+            // Reach and stun from the metadata: Heart of Ruin's dash lands within 3 and stuns, but counted as a range-4
+            // spell without stun before.
+            if (ab.info())
+                std::visit([&](const auto& a) {
+                    using T = std::decay_t<decltype(a)>;
+                    if constexpr (std::is_same_v<T, cambc::ability_dash>) {
+                        s.reach = static_cast<int>(a.range) + std::max(1, static_cast<int>(a.radius));
+                        if (a.duration > 0) s.stun = true;
+                    } else if constexpr (requires { a.range; a.radius; }) {
+                        s.reach = static_cast<int>(a.range) + static_cast<int>(a.radius);
+                    } else if constexpr (requires { a.range; }) {
+                        s.reach = static_cast<int>(a.range);
+                    }
+                }, *ab.info());
         } catch (const cambc::error&) {
             s.cd = 99;
         }
@@ -64,18 +83,19 @@ SimResult simulate_fight(std::array<std::vector<SimUnit>, 2> u, int rounds, bool
                 for (auto& y : u[o]) if (y.hp > 0 && (!t || y.hp < t->hp)) t = &y;
                 if (!t) break;
                 bool moved = false;
-                // Close in until the spell (4) or basic range lands.
-                const int want = std::max(x.range, 4);
-                bool spell_ready = false;
-                for (const auto& sl : x.slots) if (sl.cd <= 0 && (sl.dmg > 0 || sl.stun)) spell_ready = true;
-                if (x.d > (spell_ready ? want : x.range)) { --x.d; moved = true; }
+                // Close in until a ready spell or the basic attack lands.
+                int want = x.range;
+                for (const auto& sl : x.slots) if (sl.cd <= 0 && (sl.dmg > 0 || sl.stun)) want = std::max(want, sl.reach);
+                if (x.d > want) { --x.d; moved = true; }
                 float dmg = 0;
                 const bool melee = x.range <= 1;
                 // One cast: a stun if the target is not stunned yet, else the biggest damage spell, else a reset.
                 SimSlot* cast = nullptr;
-                if (!moved && x.d <= 4) {
-                    for (auto& sl : x.slots) if (sl.cd <= 0 && sl.stun && !t->stunned) cast = &sl;
-                    if (!cast) for (auto& sl : x.slots) if (sl.cd <= 0 && sl.dmg > 0 && (!cast || sl.dmg > cast->dmg)) cast = &sl;
+                if (!moved) {
+                    for (auto& sl : x.slots) if (sl.cd <= 0 && sl.stun && x.d <= sl.reach && !t->stunned) cast = &sl;
+                    if (!cast)
+                        for (auto& sl : x.slots)
+                            if (sl.cd <= 0 && sl.dmg > 0 && x.d <= sl.reach && (!cast || sl.dmg > cast->dmg)) cast = &sl;
                 }
                 if (!cast && x.d <= x.range && (melee || !moved))
                     for (auto& sl : x.slots) if (sl.cd <= 0 && sl.reset) cast = &sl;

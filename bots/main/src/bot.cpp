@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -43,7 +44,37 @@ namespace {
 
 }  // namespace
 
+static void play_turn_core();
+
+// The decision pipeline, then a free hit with any attack it left unused, then a step out of enemy reach when the
+// turn ended standing in it: moves avoid danger tiles once we are not engaging, so a champion whose ways forward were
+// all in danger stood still, also on a danger tile itself (410 such stalls per 80 games in the bf4 audit).
 void Bot::play_turn() {
+    play_turn_core();
+    free_hit();
+    if (W.ready && S.round == static_cast<int>(cambc::round_number()) && S.avoid_danger && !S.walked && in_danger(S.me)) {
+        try {
+            auto& me = cambc::self();
+            if (me.is_alive() && !me.is_recalling() && !me.is_submitting_gems() && !me.is_teleporting()) step_out_of_danger();
+        } catch (const cambc::error&) {
+        }
+    }
+    // A walk to the target that stayed put twice while moves avoid enemy danger: the way is held. Leave that group for
+    // 20 rounds and pick again (bf5 audit: champions stood 5 rounds and more beside rewards they could not reach).
+    static int held_turns = 0;
+    const bool walking = !std::strcmp(activity, "to_capture") || !std::strcmp(activity, "approach");
+    if (W.ready && !stale() && walking && S.avoid_danger && S.me == S.start && current_target >= 0) {
+        if (++held_turns >= 2) {
+            if (!blocked_until.empty()) blocked_until[current_target] = S.round + 20;
+            last_pick_round = -100;
+            held_turns = 0;
+        }
+    } else {
+        held_turns = 0;
+    }
+}
+
+static void play_turn_core() {
     if (!W.ready) {
         init_world();
         splash = cambc::self().passive() == cambc::passive_type::splash_attack;
@@ -116,6 +147,14 @@ void Bot::play_turn() {
             if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= 3) caught = true;
         write_help(caught && home_side(S.me) ? help_code(S.me) : 0);
     }
+    // Stunned: no action is allowed this turn. Acting anyway threw "Champion cannot act" (recall, ward placement) and
+    // aborted the turn.
+    if (!S.can_act()) {
+        ACT("stunned");
+        last_hp = S.hp;
+        last_round = round;
+        return;
+    }
     STAGE("enemies");
     place_ward_forward();
     const vec2 p = S.me;
@@ -139,7 +178,7 @@ void Bot::play_turn() {
             if (k.group < 0 || k.str < (taken - incoming) * 0.8f) continue;
             auto& g = W.groups[k.group];
             const vec2 pos = g.spawns[k.idx];
-            if (g.state != 0 || S.visible.is_set(pos) || dist(p, pos) > k.range) continue;
+            if (g.state != 0 || in_view(pos) || dist(p, pos) > k.range) continue;
             g.awake_round = round;
             blamed = true;
         }
@@ -188,10 +227,10 @@ void Bot::play_turn() {
             pred += (basic ? e.str : 0.0f) + spell;
         }
         const float actual = std::max(0.0f, taken - incoming);
-        if (prev_pred >= 0 && (prev_pred > 0 || actual > 0))
+        if (prev_pred >= 0 && (prev_pred > 0 || actual > 0)) {
             cal_pred += prev_pred, cal_act += actual;
             cal_f = static_cast<float>(std::clamp((cal_act + 3000.0 * 0.18) / (cal_pred + 3000.0) / 0.18, 1.0, 2.0));
-            // (calibration log line removed in the lean build)
+        }
         prev_pred = near ? pred : -1.0f;
     }
     // Compare nearby strength with visible enemies.
@@ -219,8 +258,11 @@ void Bot::play_turn() {
             for (const auto& a : S.allies) if (dist(a.pos, e.pos) <= 3) engaged = true;
             if (engaged && (!prey || e.hp < prey->hp)) prey = &e;
         }
-    // Answer a team focus call on a visible enemy close enough to reach.
-    if (const auto* f = focus_target(); f && dist(p, f->pos) <= 8 && !W.enemy_spawn.is_set(f->pos)) prey = f;
+    // Answer a team focus call on a visible enemy close enough to reach, unless our prey is already in attack reach: the
+    // call pulled champions off an enemy they could hit to walk up to 8 tiles towards another.
+    if (const auto* f = focus_target(); f && dist(p, f->pos) <= 8 && !W.enemy_spawn.is_set(f->pos)
+        && !(prey && dist(p, prey->pos) <= S.range && dist(p, f->pos) > S.range))
+        prey = f;
     for (const auto& a : S.allies)
         if (dist(p, a.pos) <= 5) ally_hp += a.hp, ally_dps += a.dps, ++ally_count;
     const float enemy_power = enemy_hp * enemy_dps, ally_power = ally_hp * ally_dps;
@@ -294,6 +336,11 @@ void Bot::play_turn() {
             if (attack_unit(prey->ch)) try_attack_reset_and_hit(prey->ch);
             return;
         }
+        // Melee with a dash reaches a prey 3 tiles away this turn: dash next to it and hit (a walk only gets to 2).
+        if (S.range <= 1 && dist(S.me, prey->pos) == 3 && dash_next_to(*prey)) {
+            attack_unit(prey->ch);
+            return;
+        }
         // Close in through the tile least exposed to enemy bursts; melee strikes after the step.
         if (me.can_move()) {
             vec2 best{-1, -1};
@@ -311,7 +358,7 @@ void Bot::play_turn() {
                     || ((pd <= S.range) == (best_d <= S.range) && (exposure < best_exposure || (exposure == best_exposure && pd < best_d)));
                 if (better) best = t, best_exposure = exposure, best_d = pd;
             }
-            if (best.x >= 0 ? safe_move(best) : (me.move_towards(prey->pos), false)) {
+            if (best.x >= 0 ? safe_move(best) : walk_towards(prey->pos)) {
                 if (dist(S.me, prey->pos) <= S.range && attack_unit(prey->ch)) try_attack_reset_and_hit(prey->ch);
             }
         }
@@ -411,24 +458,13 @@ void Bot::play_turn() {
         if (t) {
             call_focus(*t);
             use_champion_abilities(*t);
-            // Vendetta closes 2 tiles with her dash and hits the same round: with an enemy 2-3 tiles away the rivals'
-            // Vendettas hit a champion in 26% of rounds, ours in 16% (b6 decoded). Only when the fight is not lost
-            // (we are past the flee branch) and the simulation does not say we die.
-            if (me.champion_name() == cambc::champion_type::vendetta && !sim_me_dies && dist(S.me, t->pos) >= 2 && dist(S.me, t->pos) <= 3
-                && me.can_attack() && me.can_cast()) {
-                for (const auto& ab : me.abilities()) {
-                    if (!ab.is_ready() || !ab.is_dash()) continue;
-                    vec2 best{-1, -1};
-                    for (auto land : ab.valid_tiles().positions()) {
-                        if (S.occ.is_set(land) || W.terrain.is_set(land) || dist(land, t->pos) > S.range) continue;
-                        if (best.x < 0 || dist(land, S.me) < dist(best, S.me)) best = land;
-                    }
-                    if (best.x < 0) continue;
-                    try {
-                        if (ab.use(best)) { S.me = best; break; }
-                    } catch (const cambc::error&) {
-                    }
-                }
+            // Vendetta closes in and hits the same round: with an enemy 2-3 tiles away the rivals' Vendettas hit a
+            // champion in 26% of rounds, ours in 16% (b6 decoded). Only when the fight is not lost (we are past the flee
+            // branch) and the simulation does not say we die. At 2 tiles a step does it and keeps the cast for the reset
+            // (two hits); cp3 dashed there too, spending the cast on a one-hit turn. At 3 tiles only the dash reaches.
+            if (me.champion_name() == cambc::champion_type::vendetta && !sim_me_dies && me.can_attack()) {
+                if (dist(S.me, t->pos) == 2) step_next_to(*t);
+                else if (dist(S.me, t->pos) == 3) dash_next_to(*t);
             }
             // Ranged champions also shoot when hurt unless the enemies near can burst them this round: our Vespers hit in
             // 41% of rounds with an enemy in range, the rivals' 53% (b6 decoded).
@@ -451,7 +487,7 @@ void Bot::play_turn() {
     // real path out (stepping away from one camp can keep us inside another's range).
     float strongest = 0;
     int steps_out = 0;
-    bool in_camp_range = false;
+    bool in_camp_range = false, passing = false;
     std::vector<CampSnap> near_camps = S.camps;
     near_camps.insert(near_camps.end(), S.phantoms.begin(), S.phantoms.end());
     bitboard reach;
@@ -462,6 +498,7 @@ void Bot::play_turn() {
         reach.draw_chebyshev(c.pos, static_cast<float>(c.range));
         if (d > c.range) continue;
         in_camp_range = true;
+        if (c.group != current_target) passing = true;
         steps_out = std::max(steps_out, c.range + 1 - d);
         bool someone_closer = false;
         for (const auto& a : S.allies) if (dist(a.pos, c.pos) < d) { someone_closer = true; break; }
@@ -478,7 +515,11 @@ void Bot::play_turn() {
     // Camps land one more hit as we step out of reach, so leaving takes steps_out + 1 hits after this one.
     // With no enemy around, a heal trip home (often 50+ tiles) is the real cost: use more of our health per trip.
     const bool quiet = round - enemy_seen_round > 30;
-    if ((danger > 0 || lethal > 0) && S.hp < danger * (steps_out + 1.0f) + lethal + (quiet ? 15.0f : 40.0f)) retreating = true;
+    // Camps of another group hit us while we walk past them to our target, and this turn's walk can take us one tile
+    // deeper: count one more round of their hits. The bf4 audit traced camp deaths to this (00fragment: at 300 health
+    // in reach of two elks, 120 a round, the walk to a capture went deeper and three retreat steps never left reach).
+    const float extra = passing ? danger : 0.0f;
+    if ((danger > 0 || lethal > 0) && S.hp < danger * (steps_out + 1.0f) + extra + lethal + (quiet ? 15.0f : 40.0f)) retreating = true;
     if (retreating) {
         if (in_camp_range) {
             ACT("retreat");
@@ -598,7 +639,7 @@ void Bot::play_turn() {
             && home_side(h) && me.can_move()) {
             ACT("help");
             write_claim(-1);
-            me.move_towards(h);
+            walk_towards(h);
             return;
         }
     }
@@ -608,12 +649,29 @@ void Bot::play_turn() {
         && !camp_threats(p, 1).empty();
     // Re-plan every few rounds, or at once when the target's state changes.
     const int target_state = current_target >= 0 ? W.groups[current_target].state : -1;
-    if (!in_fight && (S.round - last_pick_round >= 3 || target_state != last_pick_state)) {
+    // A pick costs 35-45k fuel on big maps (bf6 profile: the scoring loop alone 36-41k on big_world and
+    // yellow_brick_road), plus a full search from us until every travel field exists: with less left the turn would
+    // run out and resume next round on a stale snapshot, so keep the target one more turn (a dead or missing target
+    // still needs the pick).
+    // (A guard from the largest measured pick plus a forced pick every 10 rounds was tried: later exhaustions on four
+    // heavy maps rose from 133 to 286, big_world from 1 to 75 per game.)
+    const std::uint64_t pick_cost = 45000 + (travel_ready() ? 0 : field_cost);
+    const bool can_pick = cambc::fuel_remaining() > pick_cost || current_target < 0;
+    // The target changed state (taken, captured, back up) but this turn has no fuel for a pick: drop it for this turn
+    // rather than walk on to it (bf7 audit: 228 walks to a reward whose tiles a teammate already held). A missing
+    // target may always pick, so the next turn picks.
+    if (!in_fight && !can_pick && current_target >= 0 && target_state != last_pick_state) {
+        current_target = -1;
+        last_pick_state = -1;
+    }
+    if (!in_fight && can_pick && (S.round - last_pick_round >= 3 || target_state != last_pick_state)) {
         current_target = pick_group(current_target);
         last_pick_round = S.round;
         last_pick_state = current_target >= 0 ? W.groups[current_target].state : -1;
-    } else if (cambc::fuel_remaining() > 50000) {
-        build_travel_field();  // A big-map field costs about 30k: build only with room left this turn.
+    } else {
+        // Build travel fields while this turn has room for one more at its measured cost (until all exist, picks run
+        // a full search from us instead).
+        while (!travel_ready() && cambc::fuel_remaining() > field_cost + 30000) build_travel_field();
     }
     write_claim(current_target);
     if (group_invested.empty()) group_invested.assign(W.groups.size(), 0);

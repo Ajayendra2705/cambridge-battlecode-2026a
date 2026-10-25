@@ -40,7 +40,7 @@ How much gem income exists matters more than it looks. The whole board yields be
 |---|---|---|---|
 | Move | 1 tile, any of 8 directions | Chebyshev geometry: a diagonal costs 1 | [doc] |
 | Basic attack | 1 | Damage = Strength. Range 1 (melee) or 3 (ranged), Chebyshev | [engine] base_attack_range |
-| Ranged move/attack | either one | Ranged champions cannot move and basic-attack in the same turn. Melee can do both | [doc] |
+| Ranged move/attack | either one | Ranged champions cannot move and basic-attack in the same turn. Melee can do both. A **dash still works after a ranged basic attack** (`can_move()` is false, the dash lands): shoot, then dash away | [doc]; dash [measured 2026-10-25, probe pf19: 40 of 40 Vesper dashes right after her attack succeeded] |
 | Ability cast | **one successful cast per turn across both slots** | Each slot has its own 8-turn-end cooldown | [engine] cooldown=8 |
 | "Excludes walking" spells | cannot share a turn with a walk, before or after | Engine flag `exclusive_with_movement`. See the champion table for which spells have it | [engine] attrs bit 0 |
 | Attack reset | restores the basic-attack allowance | Lets a melee champion step, hit, reset, hit | [doc] |
@@ -50,6 +50,10 @@ How much gem income exists matters more than it looks. The whole board yields be
 | Channels | recall, tribute, teleport crystal | Starting one blocks other actions until it ends or is cancelled. Recall and tribute each allow one start and one cancel per turn | [doc] |
 
 Blocked moves: a move or dash onto a tile occupied by an *unseen* unit returns `false`. That tile is then revealed for the rest of the round (`tile_reveal_rounds` = 1 [engine]), and the move allowance, cooldown and consumable are **not** spent, so you can try another tile. Moving onto a *known* occupied tile throws. [doc]
+
+- "Known" follows the view at the moment of the action, not at the start of the turn: after our own move or dash, units that came into view count as known, and a move or landing onto one throws "Known occupied destination" (error 22 for a move, 32 for a dash). All 56 such errors per 80 games in the au11 audit were next to a tile we had just reached, on a tile out of view at the snapshot. Read `champion_tiles()` and `camp_tiles()` again after a move or dash before the next one. [measured]
+- A ward placed this turn counts the same way: the units its vision shows are known at once, and a later move onto one throws (3 of the 9 caught errors per 80 games in the au14 audit, each on a bush tile out of our view at the snapshot). [measured]
+- A dash landing that can be reached only across enemy spawn tiles was refused with "Destination is unreachable within movement range" (once in 80 games, au14); the SDK's own `move_towards` also treats enemy spawn tiles as blocked. With enemy spawn tiles closed in our dash search, no refusal in the next 320 games (au15). [inferred]
 
 ## 4. Terrain and movement
 
@@ -95,7 +99,7 @@ All champions: vision 8, move 1, both slots on 8-turn cooldown, one cast per tur
 |---|---|---|---|---|---|
 | Ryth | melee 1 | 1200 + 100 | 45 + 5 | 100 + 10 | +Strength equal to 1% of bonus health |
 | Vesper Vale | ranged 3 | 1000 + 100 | 55 + 5 | 100 + 10 | +33% gold from every gold gain |
-| Vendetta | melee 1 | 1000 + 100 | **70 + 6** | 100 + 10 | a credited kill (camps too) resets all her cooldowns |
+| Vendetta | melee 1 | 1000 + 100 | **70 + 6** | 100 + 10 | a credited kill (camps too) resets her **ability** cooldowns (attack reset, dash), not the basic attack: after a killing basic attack `can_attack()` stays false [measured 10-25, vk1 corners pair; SDK `reset_cooldowns_on_kill` "reset ability cooldowns"] |
 | Cassi | ranged 3 | 600 + 65 | 30 + 3 | 70 + 13 | linked with Issac: if either dies, both die; one kill reward |
 | Issac | melee 1 | 900 + 80 | 40 + 3 | 100 + 10 | (linked with Cassi) |
 | Stellar | ranged 3 | 650 + 65 | 30 + 3.5 | 70 + 7 | none |
@@ -224,6 +228,19 @@ Bonuses add, so Treasure on Vesper gives +53%. [doc] The tiebreak counts gold *e
   - Unused fuel does not carry over.
   - Running out suspends the bot; it **resumes from the same point on its next turn**, so a long computation silently spans several turns.
   - Every SDK accessor is a host call costing about 40 fuel. Printing is expensive.
+  - Measured costs differ a lot by call [measured 2026-10-25, probes pf4-pf6 on boss_battle, `cambc::fuel_remaining()` deltas]:
+    - `distance_field::get`: about 46 fuel per call, loop included (pf18: 200 random reads per turn, rounds 50-149, four maps; the earlier estimate of about 70 from 474 reads in init_world included other work). A direct read of the raw buffer costs about 37 with the chunked index below, 18 with a plain row-major index, so reading the buffer directly saves little.
+    - `distance_field` raw storage [measured 2026-10-25, pf18, 0 mismatches in about 550,000 reads on maps 41x30, 90x30, 40x40, 100x100]: uint16 in 8x8 chunks; the value of tile (x, y) is at index `((y >> 3) * chunked_width + (x >> 3)) * 64 + (y & 7) * 8 + (x & 7)` of `ptr()`, with `chunked_width = ceil(width / 8)` from `cambc::detail::layout()` (not `chunk_stride`, which is the bitboard's padded stride). `field_bytes = chunked_width * chunked_height * 128`. A plain row-major or column-major read is wrong for about 95% of tiles.
+    - `camp::base_stats()` and `camp::attack_range()` (a design query): about 730 fuel each. Read them once per camp kind.
+    - A heap allocation (vector growth, a new `bitboard`, which allocates its buffer): about 400 fuel. Growing three vectors camp by camp cost 66k on one map; `reserve` removed it.
+    - `cm::camp_groups()`: about 40k for one call on boss_battle (31 groups).
+    - `cm::width()` and `cm::height()` read a cached struct (free); `bitboard::is_set` and `set` are host calls.
+    - `distance_field::compute_to` from a goal set until it reaches our tile: 4.3k at the median, 11k at the 95th percentile, 25k at most over 1,886 calls in 80 games (au10); about 4k within 10 steps, 10k beyond 40, more on some maps (ambush, starvation).
+    - One status line with two floats, two `to_string` strings and five integers through `std::cout`: about 13k fuel. Every 20 rounds per champion it raised the median turn from 38k to 51k fuel on those rounds and made 1.6% of them run out (0.17% of other rounds; au10).
+  - A plain C++ loop also costs: fuel counts wasm instructions. 9,000 distance checks (strong camps against every spawn) took 430k.
+  - Bulk memory is not free either [measured 2026-10-25, probes pf9-pf10 on big_world, 100x100]: clearing a 10,000-byte array (`vector::assign`) costs about 12.5k fuel (about 1.25 per byte); `bitboard::positions()` on the view plus one store per tile costs about 25 fuel per visible tile (10k a turn); `bitboard::export_linear_buffer` of the whole map (1,250 bytes, packed row-major bits, least significant first) costs about 600.
+  - A full-map `distance_field` on big_world costs about 35k (travel field or the BFS from us); a group route with detours up to 54k [measured, pf7-pf8].
+  - A turn that runs out resumes next round from the same point, with every value read before still from the old round (snapshot, positions of teammates): moves onto tiles a teammate took since then throw "Known occupied destination". Check `cambc::round_number()` against the snapshot round before acting.
   - The platform logs each exhaustion as a `fuelExhausted` event.
 - **Shared memory:** 8 bytes per team, readable and writable all match, invisible to the opponent. [engine]
 - **Draft memory:** 1024 bytes, writable during the draft, read-only afterwards. [engine]

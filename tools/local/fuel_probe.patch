@@ -1,0 +1,184 @@
+diff -ru fz1/src/bot.cpp pf21/src/bot.cpp
+--- fz1/src/bot.cpp	2026-10-25 20:09:41.679910400 +0530
++++ pf21/src/bot.cpp	2026-10-25 20:09:51.682400900 +0530
+@@ -46,11 +46,89 @@
+ 
+ static void play_turn_core();
+ 
++// Probe pf20: fuel per turn and per stage in contact turns (an enemy champion within 6, off its spawn) and in quiet
++// turns, by champions within 8, and the stage that was running when a turn ran out of fuel. Printed every 250 rounds.
++namespace probe {
++struct StageAcc { const char* name = nullptr; std::uint64_t sum = 0, max = 0; int n = 0; };
++struct Acc {
++    int n = 0, spilled = 0, o60 = 0, o80 = 0;
++    std::uint64_t sum = 0, max = 0;
++    std::array<StageAcc, 24> st{}, spill_at{};
++    std::array<std::uint64_t, 4> crowd_sum{}, crowd_max{};
++    std::array<int, 4> crowd_n{};
++};
++Acc contact, quiet;
++StageAcc& slot(std::array<StageAcc, 24>& a, const char* name) {
++    for (auto& s : a) {
++        if (!s.name) { s.name = name; return s; }
++        if (!std::strcmp(s.name, name)) return s;
++    }
++    return a.back();
++}
++void account(int r0, std::uint64_t f0) {
++    if (!W.ready || S.round != r0) return;  // No snapshot this turn: dead, channelling or setup.
++    int crowd = 0;
++    bool hot = false;
++    for (const auto& e : S.enemies) {
++        if (W.enemy_spawn.is_set(e.pos)) continue;
++        const int d = dist(S.me, e.pos);
++        if (d <= 6) hot = true;
++        if (d <= 8) ++crowd;
++    }
++    for (const auto& a : S.allies) if (dist(S.me, a.pos) <= 8) ++crowd;
++    Acc& acc = hot ? contact : quiet;
++    ++acc.n;
++    if (static_cast<int>(cambc::round_number()) != r0) {
++        ++acc.spilled;
++        int last = 0;
++        for (int i = 0; i < prof_n; ++i) if (prof_round[i] == r0) last = i;
++        ++slot(acc.spill_at, prof_names[last]).n;
++        return;
++    }
++    const std::uint64_t used = f0 - cambc::fuel_remaining();
++    acc.sum += used;
++    acc.max = std::max(acc.max, used);
++    if (used > 60000) ++acc.o60;
++    if (used > 80000) ++acc.o80;
++    const int b = crowd <= 2 ? 0 : crowd <= 4 ? 1 : crowd <= 6 ? 2 : 3;
++    acc.crowd_sum[b] += used;
++    ++acc.crowd_n[b];
++    acc.crowd_max[b] = std::max(acc.crowd_max[b], used);
++    for (int i = 0; i + 1 < prof_n; ++i) {
++        const std::uint64_t c = prof_fuel[i] - prof_fuel[i + 1];
++        auto& s = slot(acc.st, prof_names[i]);
++        s.sum += c;
++        ++s.n;
++        s.max = std::max(s.max, c);
++    }
++}
++void print(int round) {
++    for (int k = 0; k < 2; ++k) {
++        const Acc& a = k ? quiet : contact;
++        const int full = a.n - a.spilled;
++        std::cout << "PF s" << W.slot << " r" << round << (k ? " quiet" : " contact") << " n=" << a.n << " spill=" << a.spilled
++                  << " mean=" << (full > 0 ? a.sum / full : 0) << " max=" << a.max << " o60=" << a.o60 << " o80=" << a.o80 << " crowd";
++        for (int b = 0; b < 4; ++b)
++            std::cout << " " << b << ":" << a.crowd_n[b] << "/" << (a.crowd_n[b] ? a.crowd_sum[b] / a.crowd_n[b] : 0) << "/" << a.crowd_max[b];
++        std::cout << " |";
++        for (const auto& s : a.st) if (s.name && s.n) std::cout << " " << s.name << "=" << s.sum / s.n << "/" << s.max << "/" << s.n;
++        std::cout << " | spill_at";
++        for (const auto& s : a.spill_at) if (s.name) std::cout << " " << s.name << "=" << s.n;
++        std::cout << '\n';
++    }
++}
++}  // namespace probe
++
+ // The decision pipeline, then a free hit with any attack it left unused, then a step out of enemy reach when the
+ // turn ended standing in it: moves avoid danger tiles once we are not engaging, so a champion whose ways forward were
+ // all in danger stood still, also on a danger tile itself (410 such stalls per 80 games in the bf4 audit).
+ void Bot::play_turn() {
++    const int pr0 = static_cast<int>(cambc::round_number());
++    const std::uint64_t pf0 = cambc::fuel_remaining();
++    prof_n = 0;
++    STAGE("start");
+     play_turn_core();
++    STAGE("post");
+     free_hit();
+     if (W.ready && S.round == static_cast<int>(cambc::round_number()) && S.avoid_danger && !S.walked && in_danger(S.me)) {
+         try {
+@@ -72,6 +150,9 @@
+     } else {
+         held_turns = 0;
+     }
++    STAGE("done");
++    probe::account(pr0, pf0);
++    if (pr0 % 250 == 0 && static_cast<int>(cambc::round_number()) == pr0) probe::print(pr0);
+ }
+ 
+ static void play_turn_core() {
+@@ -144,7 +225,6 @@
+         ++alive_rounds;
+     }
+ 
+-    prof_n = 0;
+     STAGE("snapshot");
+     take_snapshot();
+     STAGE("knowledge");
+@@ -170,6 +250,7 @@
+     }
+     STAGE("enemies");
+     place_ward_forward();
++    STAGE("assess");
+     const vec2 p = S.me;
+     const bool at_spawn = W.ally_spawn.is_set(p);
+     if (at_spawn) {
+@@ -281,6 +362,7 @@
+     // Fight when stronger and not outnumbered, when the target is nearly dead, or from the safety of spawn.
+     // Cassi and Issac die together, so they only join fights with a clear edge.
+     // Play the fight out a few rounds with live cooldowns instead of comparing raw totals.
++    STAGE("sim");
+     bool winning = false, sim_me_dies = false;
+     if (prey) {
+         using ct = cambc::champion_type;
+@@ -323,6 +405,7 @@
+             && (res.dead[1] > res.dead[0] || (res.dead[1] == res.dead[0] && res.hp_frac[0] > res.hp_frac[1] + 0.2f))
+             && !(sim_me_dies && res.dead[1] == 0);
+     }
++    STAGE("decide");
+     // First strike in a lone 1v1 with a close kill race: being caught later means fleeing with free hits taken.
+     if (prey && !winning && enemy_count == 1 && S.hp >= S.max_hp * 0.5f) {
+         auto& self = cambc::self();
+@@ -388,6 +471,7 @@
+         if (healthy && !in_danger(S.me)) {
+             // Already out of reach: keep working, staying out of it.
+         } else if (healthy && [&] {
++                       STAGE("kite");
+                        // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target
+                        // that cannot reach us cannot answer (b5 ge4: with an enemy within 3 the rivals hit a champion in
+                        // 50% of rounds, we in 35%, and stand idle 12% vs 6%).
+@@ -425,11 +509,13 @@
+             }
+             if (chaser && near_enemies == 1 && W.spawn_field.get(p) > 4 && (we_kill_first || turn_and_fight)) {
+                 ACT("duel");
++                STAGE("duel");
+                 use_champion_abilities(*chaser);
+                 if (dist(S.me, chaser->pos) <= S.range && attack_unit(chaser->ch)) try_attack_reset_and_hit(chaser->ch);
+                 return;
+             }
+             ACT("flee");
++            STAGE("flee");
+             // Call for help on the closest chaser.
+             {
+                 const ChampSnap* c = nullptr;
+@@ -456,6 +542,7 @@
+         }
+     }
+ 
++    STAGE("aos");
+     // Attack on sight, as every top team does: hit the weakest enemy in reach (spells within 4) before the plan.
+     // Melee keeps its move after attacking; ranged attacks cost the move, so only when healthy.
+     {
+diff -ru fz1/src/core.h pf21/src/core.h
+--- fz1/src/core.h	2026-10-25 20:09:10.925706600 +0530
++++ pf21/src/core.h	2026-10-25 20:09:51.694313600 +0530
+@@ -9,10 +9,12 @@
+ 
+ bool tracing = false;
+ bool log_rounds = false;
+-std::array<const char*, 16> prof_names{};
+-std::array<std::uint64_t, 16> prof_fuel{};
++std::array<const char*, 24> prof_names{};
++std::array<std::uint64_t, 24> prof_fuel{};
++std::array<int, 24> prof_round{};
+ int prof_n = 0;
+-#define STAGE(name) do { bot_stage = name; if (tracing && prof_n < 16) { prof_names[prof_n] = name; prof_fuel[prof_n++] = cambc::fuel_remaining(); } } while (0)
++// Probe pf20: every stage records its fuel and round (not only when tracing).
++#define STAGE(name) do { bot_stage = name; if (prof_n < 24) { prof_names[prof_n] = name; prof_round[prof_n] = static_cast<int>(cambc::round_number()); prof_fuel[prof_n++] = cambc::fuel_remaining(); } } while (0)
+ // Rounds spent per activity, for tuning; printed every 250 rounds.
+ const char* activity = "idle";
+ const char* last_activity = "idle";

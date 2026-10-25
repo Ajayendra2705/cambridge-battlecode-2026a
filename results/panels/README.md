@@ -12,6 +12,7 @@ Opponents change bots over time. A panel result is only comparable with runs mad
 | `b6` | 2026-10-24 23:25, we were 77 | 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters (no eligible bot since 10-25 00:00: skipped), HouseOfCoders, The Party of Heroes (ranks 60, 62-65); two 5-map windows per team covering all 40 maps | 40 |
 | `b5` | 2026-10-24 18:00, we were 88 | Sydney's Realist, HouseOfCoders, ha²t, :3, umamusume (ranks 72-77 without 75); two windows each | 50 |
 | `b56` | | `b5` then `b6` in one gate (90 games, one upload). `rcmp.py "A@b5+B@b6" C@b56` compares it with separate runs | 90 |
+| `b3456` | 2026-10-25 | `b34` then `b56` in one gate (about 140 games, one upload) | 140 |
 | `b4` | 2026-10-24 16:25, we were 94 | Sydney's Realist, 67 Lions, The Mania, DOOMSDAY, :3 (ranks 79-83) | 25 |
 | `b3`, `b3x` | 2026-10-24 09:20, we were 77 | The Mania, cronjohn, Zkey Farming, DOOMSDAY, will think later (ranks 62-66); `b3x` = second map set | 25 + 25 |
 | `b34`, `b3c` | | `b3` + `b4` in one gate; `b3` + `b3x` in one gate | 50 |

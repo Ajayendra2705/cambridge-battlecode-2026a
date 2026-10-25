@@ -1,0 +1,628 @@
+diff -ruN fd2/src/abilities.h au17/src/abilities.h
+--- fd2/src/abilities.h	2026-10-25 18:30:50.037780700 +0530
++++ au17/src/abilities.h	2026-10-25 18:39:08.430886900 +0530
+@@ -51,7 +51,8 @@
+         try {
+             if (ab.use(best)) { moved_to(best); return true; }
+             S.occ.set(best);  // A hidden unit holds the landing tile.
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
++            audit_dash(best, ab);
+             S.occ.set(best);
+         }
+     }
+@@ -98,7 +99,8 @@
+         try {
+             if (ab.use(best)) { moved_to(best); return true; }
+             S.occ.set(best);
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
++            audit_dash(best, ab);
+             S.occ.set(best);
+         }
+     }
+@@ -125,8 +127,8 @@
+         }
+         // The new ward shows units that were out of view at the snapshot, and a move onto one threw "Known occupied
+         // destination" (3 of the 9 caught errors per 80 games in the au14 audit): read the occupancy again before it.
+-        if (best.x >= 0 && !stale()) me.place_ward(best), S.view_moved = true;
+-    } catch (const cambc::error&) {
++        if (best.x >= 0 && !stale()) me.place_ward(best), S.view_moved = true, audit_ward_round = S.round;
++    } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+     }
+ }
+ 
+@@ -143,7 +145,7 @@
+             if (!best || c->str > best->str) {
+                 try {
+                     if (c->camp.buffs().has_stun()) continue;
+-                } catch (const cambc::error&) {
++                } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+                     continue;
+                 }
+                 best = c;
+@@ -153,7 +155,7 @@
+         if (stale()) return false;
+         try {
+             if (ab.can_target_ground() ? ab.use(best->pos) : ab.use(best->camp)) { ++n_cc; return true; }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     if (awake) {
+@@ -179,7 +181,7 @@
+         if (stale()) return false;
+         try {
+             if (ab.use(best_tile)) { ++n_aoe; return true; }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     for (const auto& ab : me.abilities()) {
+@@ -195,7 +197,7 @@
+         if (stale()) return false;
+         try {
+             if (ab.use(t->camp)) { ++n_dmg; return true; }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     return false;
+@@ -211,7 +213,7 @@
+         if (!castable_now(ab) || !ab.is_cc() || ab.can_target_ground()) continue;
+         try {
+             if (ab.damage_amount() > 0 && ab.valid_tiles().is_set(focus.pos) && !stale() && ab.use(focus.camp)) { ++n_dmg; return true; }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     return false;
+@@ -253,7 +255,8 @@
+                 return true;
+             }
+             S.occ.set(best);
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
++            audit_dash(best, ab);
+             S.occ.set(best);
+         }
+     }
+@@ -289,7 +292,7 @@
+             if (best->ch.buffs().has_stun()) continue;
+             if (stale()) return false;
+             if (ab.can_target_ground() ? ab.use(best->pos) : ab.use(best->ch)) return true;
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     if (strike_dash({target.pos}, false)) return true;
+@@ -308,7 +311,7 @@
+             } else if (ab.is_aoe_damage()) {
+                 if (ab.valid_tiles().is_set(target.pos) && !stale() && ab.use(target.pos)) return true;
+             }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     return false;
+@@ -323,7 +326,7 @@
+     if (unit_alive(target)) {
+         try {
+             if (dist(S.me, target.position()) <= S.range) return &target;
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     const ChampSnap* champ = nullptr;
+@@ -355,7 +358,10 @@
+                 me.attack(*hit);
+                 return true;
+             }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
++            std::cout << "Z" << S.round << " s" << W.slot << " " << cambc::to_string(me.champion_name()) << " walked=" << S.walked
++                      << " attacked=" << S.attacked << " can_attack=" << me.can_attack() << " act=" << activity << " stage=" << bot_stage
++                      << " what=" << audit_e.what() << '\n';
+         }
+     }
+     return false;
+@@ -381,7 +387,7 @@
+             if (ab.is_shield() && in_combat) {
+                 if (!stale() && ab.use()) return;
+             }
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+ }
+@@ -399,7 +405,7 @@
+         ++n_attack;
+         S.attacked = true;
+         return true;
+-    } catch (const cambc::error&) {
++    } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         return false;
+     }
+ }
+@@ -416,7 +422,7 @@
+         if (!me.is_alive() || me.is_recalling() || me.is_submitting_gems() || me.is_teleporting() || !me.can_attack()) return;
+         // move_towards does not update S.me (bf2 audit: 356 "Attack target is out of range" from the old tile).
+         S.me = me.position();
+-    } catch (const cambc::error&) {
++    } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         return;
+     }
+     const ChampSnap* champ = nullptr;
+diff -ruN fd2/src/bot.cpp au17/src/bot.cpp
+--- fd2/src/bot.cpp	2026-10-25 18:30:50.585197000 +0530
++++ au17/src/bot.cpp	2026-10-25 18:39:07.490595300 +0530
+@@ -44,19 +44,127 @@
+ 
+ }  // namespace
+ 
++// Audit: what a turn left unused, by the activity that ended it. Only turns that took a snapshot count.
++void audit_end_turn() {
++    auto& me = cambc::self();
++    if (!W.ready || audit_round != static_cast<int>(cambc::round_number())) return;
++    try {
++        if (!me.is_alive() || me.is_recalling() || me.is_submitting_gems() || me.is_teleporting()) return;
++        const vec2 at = me.position();
++        const bool moved = at != audit_start;
++        bool champ_in_range = false, camp_in_range = false, champ_in_4 = false;
++        int nearest_enemy = 99, camps_hitting = 0;
++        for (const auto& e : S.enemies) {
++            if (W.enemy_spawn.is_set(e.pos) || !unit_alive(e.ch)) continue;
++            nearest_enemy = std::min(nearest_enemy, dist(at, e.pos));
++            if (dist(at, e.pos) <= S.range) champ_in_range = true;
++            if (dist(at, e.pos) <= 4) champ_in_4 = true;
++        }
++        for (const auto& c : S.camps) {
++            if (!c.awake || !unit_alive(c.camp)) continue;
++            if (dist(at, c.pos) <= S.range) camp_in_range = true;
++            if (dist(at, c.pos) <= c.range) ++camps_hitting;
++        }
++        if (me.can_attack() && champ_in_range) audit_note("miss_attack_champ", activity);
++        else if (me.can_attack() && camp_in_range) audit_note("miss_attack_camp", activity);
++        static int traced_miss = 0;
++        if (me.can_attack() && (champ_in_range || camp_in_range) && traced_miss < 6) {
++            ++traced_miss;
++            std::cout << "MA" << S.round << " s" << W.slot << " " << cambc::to_string(me.champion_name()) << " act=" << activity
++                      << " champ=" << champ_in_range << " camp=" << camp_in_range << " moved=" << moved << " walked=" << S.walked
++                      << " attacked=" << S.attacked << " range=" << S.range << " fuel=" << cambc::fuel_remaining() << " stale=" << stale() << '\n';
++        }
++        if (me.can_cast() && champ_in_4) {
++            for (const auto& ab : me.abilities()) {
++                if (!castable_now(ab)) continue;
++                if (!(ab.is_damage() || ab.is_aoe_damage() || ab.is_cc())) continue;
++                bool target = false;
++                const auto tiles = ab.valid_tiles();
++                for (const auto& e : S.enemies)
++                    if (!W.enemy_spawn.is_set(e.pos) && tiles.is_set(e.pos) && unit_alive(e.ch)) target = true;
++                if (target) audit_note(moved ? "miss_cast_champ_moved" : "miss_cast_champ_still", activity);
++            }
++        }
++        const char* a = activity;
++        const bool wants_move = !std::strcmp(a, "to_capture") || !std::strcmp(a, "approach") || !std::strcmp(a, "bank")
++            || !std::strcmp(a, "home_heal") || !std::strcmp(a, "shop_trip") || !std::strcmp(a, "help") || !std::strcmp(a, "retreat")
++            || !std::strcmp(a, "flee");
++        if (wants_move && !moved && me.can_move()) {
++            // Why: every free neighbour inside enemy danger (moves avoid it on purpose), or none free at all.
++            bool free_tile = false;
++            for (auto d : DIRS) {
++                const vec2 t{at.x + d.x, at.y + d.y};
++                if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t)) continue;
++                free_tile = true;
++            }
++            bool danger_near = false;
++            for (auto d : DIRS) if (in_danger(vec2{at.x + d.x, at.y + d.y})) danger_near = true;
++            const char* why = !free_tile ? "stuck_boxed" : S.avoid_danger && danger_near ? "stuck_danger" : "stuck_other";
++            if (!std::strcmp(why, "stuck_other") && !std::strcmp(a, "to_capture") && current_target >= 0) {
++                const auto& g = W.groups[current_target];
++                const bool on_tile = g.tiles.is_set(at);
++                bool tile_free = false;
++                for (auto sp : g.spawns) if (!S.occ.is_set(sp)) tile_free = true;
++                why = on_tile ? "stuck_cap_on_tile" : !tile_free ? "stuck_cap_tiles_taken"
++                    : g.state == 0 ? "stuck_cap_state0" : g.state == 1 ? "stuck_cap_state1" : "stuck_cap_state2";
++            }
++            audit_note(why, a);
++            // Trace the first stuck turns of each champion: neighbours as '#' terrain, 'o' occupied, 'd' enemy danger,
++            // 'r' camp reach, else the route's field value (capped at 9), with the field value here. The route is read
++            // as last built (no rebuild here, so the audit does not change play).
++            static int traced = 0;
++            const bool homeward = !std::strcmp(a, "flee") || !std::strcmp(a, "home_heal") || !std::strcmp(a, "retreat");
++            const distance_field* f = homeward || current_target < 0 ? &W.spawn_field : W.groups[current_target].field.get();
++            if (traced < 8 && f && std::strcmp(why, "stuck_danger") != 0) {
++                ++traced;
++                bitboard reach;
++                for (const auto& c : S.camps) if (c.awake) reach.draw_chebyshev(c.pos, static_cast<float>(c.range));
++                for (const auto& c : S.phantoms) reach.draw_chebyshev(c.pos, static_cast<float>(c.range));
++                std::cout << "S" << S.round << " s" << W.slot << " " << why << "." << a << " at=" << cambc::to_string(at)
++                          << " tgt=" << current_target << " st=" << (current_target >= 0 ? W.groups[current_target].state : -1)
++                          << " here=" << f->get(at) << " fuel=" << cambc::fuel_remaining() << " inreach=" << reach.is_set(at)
++                          << " av=" << S.avoid_danger << " nb=";
++                for (auto d : DIRS) {
++                    const vec2 t{at.x + d.x, at.y + d.y};
++                    if (!cm::is_in_bounds(t) || W.terrain.is_set(t)) std::cout << '#';
++                    else if (S.occ.is_set(t)) std::cout << 'o';
++                    else if (in_danger(t)) std::cout << 'd';
++                    else if (reach.is_set(t)) std::cout << 'r';
++                    else std::cout << std::min<int>(9, f->get(t));
++                }
++                int nearest = 99;
++                for (const auto& c : S.camps) if (c.group == current_target) nearest = std::min(nearest, dist(at, c.pos));
++                std::cout << " live_in_view=" << nearest << " range=" << S.range << '\n';
++            }
++        }
++        audit_note("turns", a);
++        // Low health: one line per turn, to read the last turns before a camp death.
++        if (S.hp < S.max_hp * 0.35f)
++            std::cout << "L" << S.round << " s" << W.slot << " hp=" << static_cast<int>(me.health()) << " act=" << a
++                      << " inc=" << static_cast<int>(camp_incoming(at)) << " camps=" << camps_hitting << " en=" << nearest_enemy
++                      << " retr=" << retreating << " moved=" << moved << " gems=" << me.gem_count() << '\n';
++    } catch (const cambc::error& audit_e) {
++        AUDIT(audit_e);
++    }
++}
++
+ static void play_turn_core();
+ 
+ // The decision pipeline, then a free hit with any attack it left unused, then a step out of enemy reach when the
+ // turn ended standing in it: moves avoid danger tiles once we are not engaging, so a champion whose ways forward were
+ // all in danger stood still, also on a danger tile itself (410 such stalls per 80 games in the bf4 audit).
+ void Bot::play_turn() {
++    audit_turn_round = static_cast<int>(cambc::round_number());
++    audit_turn_start = audit_turn_round;
++    audit_round = -1;
++    audit_prev_stage = "start";
+     play_turn_core();
+     free_hit();
+     if (W.ready && S.round == static_cast<int>(cambc::round_number()) && S.avoid_danger && !S.walked && in_danger(S.me)) {
+         try {
+             auto& me = cambc::self();
+             if (me.is_alive() && !me.is_recalling() && !me.is_submitting_gems() && !me.is_teleporting()) step_out_of_danger();
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         }
+     }
+     // A walk to the target that stayed put twice while moves avoid enemy danger: the way is held. Leave that group for
+@@ -109,6 +217,7 @@
+                   << cambc::global_submitted_gems(team::enemy) << '\n';
+     if (log_rounds && round > 1) std::cout << "W " << round - 1 << " " << W.slot << " " << current_target << " " << activity << '\n';
+     count_activity();
++    if (round % 500 == 0 || round == 1999) audit_print();
+     last_activity = activity;
+     activity = "other";
+     if (round % 250 == 0 || round == 30) {
+@@ -147,6 +256,8 @@
+     prof_n = 0;
+     STAGE("snapshot");
+     take_snapshot();
++    audit_start = S.me;
++    audit_round = S.round;
+     STAGE("knowledge");
+     refresh_claims();
+     update_knowledge();
+@@ -694,7 +805,7 @@
+     // A camp fight that starts with little fuel runs out (pf14 probe, rounds 1-40: 28 of 43 that started under 15k,
+     // 15 of 156 at 15-24k, 2 of 11,600 from 25k up): end the turn instead, the next one has the budget (a turn that
+     // runs out loses the next round to its stale rest as well).
+-    if (current_target >= 0 && cambc::fuel_remaining() < 15000) return;
++    if (current_target >= 0 && cambc::fuel_remaining() < 15000) { audit_note("cf_guard", activity); return; }
+     STAGE("camp fight");
+     if (current_target < 0) {
+         if (gems > 0) bank_gems();
+diff -ruN fd2/src/bot.h au17/src/bot.h
+--- fd2/src/bot.h	2026-10-25 15:53:47.034496200 +0530
++++ au17/src/bot.h	2026-10-25 17:29:49.908278900 +0530
+@@ -4,6 +4,8 @@
+ inline const char* bot_stage = "";
+ 
+ // Per-champion bot. State persists between turns; the team coordinates through shared memory claims.
++void audit_end_turn();
++
+ class Bot {
+ public:
+     void play_turn();
+diff -ruN fd2/src/core.h au17/src/core.h
+--- fd2/src/core.h	2026-10-25 15:53:47.039047000 +0530
++++ au17/src/core.h	2026-10-25 17:40:06.070531700 +0530
+@@ -12,7 +12,7 @@
+ std::array<const char*, 16> prof_names{};
+ std::array<std::uint64_t, 16> prof_fuel{};
+ int prof_n = 0;
+-#define STAGE(name) do { bot_stage = name; if (tracing && prof_n < 16) { prof_names[prof_n] = name; prof_fuel[prof_n++] = cambc::fuel_remaining(); } } while (0)
++#define STAGE(name) do { bot_stage = name; audit_stage(name); if (tracing && prof_n < 16) { prof_names[prof_n] = name; prof_fuel[prof_n++] = cambc::fuel_remaining(); } } while (0)
+ // Rounds spent per activity, for tuning; printed every 250 rounds.
+ const char* activity = "idle";
+ const char* last_activity = "idle";
+@@ -26,3 +26,42 @@
+     }
+ }
+ #define TRACE(x) do { if (tracing) std::cout << "T" << cambc::round_number() << " " << x << '\n'; } while (0)
++
++// Audit build. Every caught engine error prints one "E" line when it happens (games end at any round, so totals
++// printed every 500 rounds missed the last part of each game), with whether the turn ran out of fuel and resumed
++// since its snapshot (split), whether this turn placed a ward, the stage and the activity.
++vec2 audit_start{-1, -1};  // Our tile when this turn's snapshot was taken.
++int audit_round = -1;      // Round of that snapshot this turn, -1 before it (turns that return before it are not audited).
++int audit_ward_round = -1; // Round of the snapshot of the turn that last placed a ward.
++int audit_turn_start = -1; // Round this turn began.
++int audit_print_round = -1;  // Round of the last audit_print (its prints can run the turn out of fuel).
++void audit_fail(const char* file, int line, const cambc::error& e) {
++    const int r = static_cast<int>(cambc::round_number());
++    std::cout << "E r" << r << " " << file << ":" << line << " split=" << (audit_round >= 0 && r != audit_round)
++              << " ward=" << (audit_round >= 0 && audit_ward_round == audit_round) << " stage=" << bot_stage << " act=" << activity
++              << " what=" << e.what() << '\n';
++}
++#define AUDIT(e) audit_fail(__FILE__, __LINE__, e)
++// Logic checks: (kind, activity that ended the turn) counters. Both are string literals, so pointers compare.
++struct AuditNote { const char* kind; const char* act; int n; };
++std::vector<AuditNote> audit_notes;
++void audit_note(const char* kind, const char* act) {
++    for (auto& s : audit_notes)
++        if (s.kind == kind && s.act == act) { ++s.n; return; }
++    audit_notes.push_back({kind, act, 1});
++}
++void audit_print() {
++    audit_print_round = static_cast<int>(cambc::round_number());
++    for (const auto& s : audit_notes) std::cout << "X r" << cambc::round_number() << " " << s.kind << "." << s.act << ":0 n=" << s.n << " -\n";
++}
++// Fuel: a turn that runs out resumes next round from the same point, so a stage that sees a new round ran on after
++// a suspension during the stage before it. Turns that printed the audit totals are left out.
++int audit_turn_round = -1;
++const char* audit_prev_stage = "start";
++void audit_stage(const char* name) {
++    const int r = static_cast<int>(cambc::round_number());
++    if (audit_turn_round >= 0 && r != audit_turn_round && audit_print_round != audit_turn_start)
++        audit_note(r < 30 ? "fuel_split_early" : "fuel_split_late", audit_prev_stage);
++    audit_turn_round = r;
++    audit_prev_stage = name;
++}
+diff -ruN fd2/src/knowledge.h au17/src/knowledge.h
+--- fd2/src/knowledge.h	2026-10-25 17:03:31.911015100 +0530
++++ au17/src/knowledge.h	2026-10-25 17:30:11.173332200 +0530
+@@ -9,7 +9,7 @@
+ int camp_kind_range(const cambc::camp& c) {
+     try {
+         return camp_stats_of(c).base_attack_range;
+-    } catch (const cambc::error&) {
++    } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+     }
+     switch (c.kind()) {
+         case cambc::camp_type::monolith: return 5;
+@@ -154,13 +154,13 @@
+         if (!k.ally) {
+             try {
+                 snap.gems = k.ch.gem_count();
+-            } catch (const cambc::error&) {
++            } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+             }
+         }
+         if (!k.coef.ready) {
+             try {
+                 k.coef = read_coef(k.ch);
+-            } catch (const cambc::error&) {
++            } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+             }
+         }
+         const float scale = damage_scale(k.type, info.health, info.max_health);
+diff -ruN fd2/src/main.cpp au17/src/main.cpp
+--- fd2/src/main.cpp	2026-10-25 15:53:47.023465400 +0530
++++ au17/src/main.cpp	2026-10-25 17:29:49.768952800 +0530
+@@ -11,7 +11,7 @@
+             if (cambc::is_draft())
+                 play_draft();
+             else
+-                bot.play_turn();
++                bot.play_turn(), audit_end_turn();
+         } catch (const std::exception& error) {
+             std::cout << "bot error: " << error.what() << " at " << bot_stage << std::endl;
+         } catch (...) {
+diff -ruN fd2/src/move.h au17/src/move.h
+--- fd2/src/move.h	2026-10-25 18:04:24.507306500 +0530
++++ au17/src/move.h	2026-10-25 18:05:41.285157900 +0530
+@@ -38,8 +38,9 @@
+         for (const auto sp : W.ally_spawn.positions())
+             if (g.field->get(sp) != UNREACH) { ok = true; break; }
+         if (ok) return;
++        audit_note("gf_detour_cut", activity);
+         if (affordable()) build(W.terrain);
+-        else g.field_key = ~key;
++        else g.field_key = ~key, audit_note("gf_detour_later", activity);
+     };
+     if (!g.field || (key != g.field_key && affordable())) {
+         if (!g.field) g.field = std::make_unique<distance_field>();
+@@ -51,6 +52,7 @@
+         // Out of the reach the route was opened for: close it again, or a shorter way could lead back through it.
+         g.open_reach.reset();
+         build_detour();
++        audit_note("gf_close", activity);
+     }
+     // Standing in a reach the route avoids (a fight or a flight put us there), or behind one, the route read
+     // unreachable here and walks to the group stood still: 66 of 80 traced stuck walks to a capture in the au9 audit.
+@@ -64,10 +66,14 @@
+             build(W.terrain | (zone & ~inside));
+             g.open_reach = std::make_unique<bitboard>(inside);
+         }
++        audit_note(zone.is_set(S.me) ? "gf_open_inside" : "gf_open_behind", activity);
+         if (g.field->get(S.me) == UNREACH && affordable()) {
+             build(W.terrain);
+             g.open_reach.reset();
++            audit_note(g.field->get(S.me) == UNREACH ? "gf_plain_unreach" : "gf_plain_ok", activity);
+         }
++    } else if (g.field->get(S.me) == UNREACH) {
++        audit_note(S.round - g.opened_round < 5 ? "gf_unreach_wait" : "gf_unreach_lowfuel", activity);
+     }
+     return *g.field;
+ }
+@@ -75,9 +81,12 @@
+ bool safe_move(vec2 t) {
+     // One move per turn. Loops that try each neighbour in turn hit "Movement already used" once the move was spent
+     // (55 per 80 games in the au9 audit) and marked every tile they tried as occupied for the rest of the turn.
+-    if (stale() || S.walked || !cambc::self().can_move()) return false;
++    if (stale()) return false;
++    if (S.walked) { audit_note("move_twice", activity); return false; }
++    if (!cambc::self().can_move()) { audit_note("move_cannot", activity); return false; }
+     refresh_occ();
+-    if (S.occ.is_set(t) || stale()) return false;
++    if (S.occ.is_set(t)) { audit_note("move_seen_after", activity); return false; }
++    if (stale()) return false;
+     try {
+         if (cambc::self().move_absolute(t)) {
+             moved_to(t);
+@@ -87,8 +96,18 @@
+         // False means a hidden unit stands there. The tile is now known occupied, and a second try at it throws
+         // ("Known occupied destination": 423 per 80 games in the audit build, when a later step chose the same tile).
+         S.occ.set(t);
+-    } catch (const cambc::error&) {
++        audit_note("move_hidden", activity);
++    } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+         S.occ.set(t);  // Refused: do not pick it again this turn.
++        static int traced_bad = 0;
++        if (traced_bad < 6) {
++            ++traced_bad;
++            std::cout << "B" << S.round << " s" << W.slot << " act=" << activity << " stage=" << bot_stage << " d=" << dist(S.me, t)
++                      << " champ=" << cv::champion_tiles().is_set(t) << " camp=" << cv::camp_tiles().is_set(t)
++                      << " tele=" << cv::teleport_tiles().is_set(t) << " vis=" << S.visible.is_set(t)
++                      << " bush=" << cm::bushes().is_set(t) << " terr=" << W.terrain.is_set(t) << " stale=" << stale()
++                      << " what=" << audit_e.what() << '\n';
++        }
+     }
+     return false;
+ }
+@@ -158,6 +177,41 @@
+     return land;
+ }
+ 
++// Audit: a refused dash, with the 5x5 tiles around the snapshot tile: '@' us, 'L' the landing, '#' wall or off the map,
++// 'h' hole, 'a' altar, 'e' enemy spawn, 'c' champion now, 'k' camp now, 'o' other occupied, 'b' bush, '.' free.
++void audit_dash(vec2 best, const cambc::ability& ab) {
++    static int traced = 0;
++    if (traced >= 6) return;
++    ++traced;
++    int range = -1;
++    if (ab.info())
++        if (const auto* d = std::get_if<cambc::ability_dash>(&*ab.info())) range = static_cast<int>(d->range);
++    const auto champs = cv::champion_tiles();
++    const auto camps = cv::camp_tiles();
++    std::cout << "D" << cambc::round_number() << " s" << W.slot << " me=" << cambc::to_string(S.me)
++              << " at=" << cambc::to_string(cambc::self().position()) << " land=" << cambc::to_string(best) << " range=" << range
++              << " map=";
++    for (int dy = -2; dy <= 2; ++dy) {
++        for (int dx = -2; dx <= 2; ++dx) {
++            const vec2 t{S.me.x + dx, S.me.y + dy};
++            char ch = '.';
++            if (t == S.me) ch = '@';
++            else if (t == best) ch = 'L';
++            else if (!cm::is_in_bounds(t) || cm::walls().is_set(t)) ch = '#';
++            else if (cm::holes().is_set(t)) ch = 'h';
++            else if (cm::altars().is_set(t)) ch = 'a';
++            else if (W.enemy_spawn.is_set(t)) ch = 'e';
++            else if (champs.is_set(t)) ch = 'c';
++            else if (camps.is_set(t)) ch = 'k';
++            else if (S.occ.is_set(t)) ch = 'o';
++            else if (cm::bushes().is_set(t)) ch = 'b';
++            std::cout << ch;
++        }
++        std::cout << '/';
++    }
++    std::cout << '\n';
++}
++
+ // Dash along the field when it skips ahead, then walk.
+ bool step_static(const distance_field& field, int here) {
+     if (stale()) return false;
+@@ -185,7 +239,8 @@
+                     return true;
+                 }
+                 if (best != p) S.occ.set(best);  // A hidden unit holds the landing tile.
+-            } catch (const cambc::error&) {
++            } catch (const cambc::error& audit_e) { AUDIT(audit_e);
++                audit_dash(best, ab);
+                 S.occ.set(best);
+             }
+         }
+@@ -210,8 +265,10 @@
+     if (!me.can_move()) return false;
+     const int here = field.get(S.me);
+     if (here <= stop_at) return false;
+-    if (step_static(field, here)) return true;
+-    if (!me.can_move() || !local_search_affordable()) return false;
++    if (here == UNREACH) audit_note("sf_unreach", activity);
++    if (step_static(field, here)) { audit_note("sf_static_ok", activity); return true; }
++    if (!me.can_move()) { audit_note("sf_no_move", activity); return false; }
++    if (!local_search_affordable()) { audit_note("sf_lowfuel", activity); return false; }
+     const auto fuel_before = cambc::fuel_remaining();
+     distance_field local;
+     bitboard visited, mine;
+@@ -224,8 +281,28 @@
+     local.compute_to((W.terrain | S.occ | avoid) & ~free_roots & ~mine, free_roots, mine, visited);
+     note_local_cost(fuel_before);
+     const int local_here = local.get(S.me);
+-    if (local_here == UNREACH) return false;
+-    return descend(local, S.occ, local_here);
++    if (local_here == UNREACH) { audit_note(S.avoid_danger ? "sf_local_unreach_av" : "sf_local_unreach", activity); return false; }
++    const auto occ_before = S.occ;
++    const bool ok = descend(local, S.occ, local_here);
++    audit_note(ok ? "sf_local_ok" : "sf_local_fail", activity);
++    static int traced_fail = 0;
++    if (!ok && traced_fail < 6) {
++        // Neighbours: '#' terrain, 'o' occupied before, 'x' refused during descend, 'd' danger, else local value - here.
++        ++traced_fail;
++        std::cout << "F" << S.round << " s" << W.slot << " act=" << activity << " here=" << here << " local=" << local_here
++                  << " av=" << S.avoid_danger << " walked=" << S.walked << " nb=";
++        for (auto d : DIRS) {
++            const vec2 t{S.me.x + d.x, S.me.y + d.y};
++            if (!cm::is_in_bounds(t) || W.terrain.is_set(t)) std::cout << '#';
++            else if (occ_before.is_set(t)) std::cout << 'o';
++            else if (S.occ.is_set(t)) std::cout << 'x';
++            else if (S.avoid_danger && in_danger(t)) std::cout << 'd';
++            else { const int v = local.get(t); std::cout << (v == UNREACH ? std::string("U") : std::to_string(v - local_here)); }
++            std::cout << ',';
++        }
++        std::cout << " root=" << free_roots.is_set(S.me) << '\n';
++    }
++    return ok;
+ }
+ 
+ // Walk to any free tile of `goals` using a fresh field around current occupants (and enemy danger once moves avoid it).
+diff -ruN fd2/src/sim.h au17/src/sim.h
+--- fd2/src/sim.h	2026-10-25 18:03:59.216438800 +0530
++++ au17/src/sim.h	2026-10-25 18:05:21.418022900 +0530
+@@ -46,7 +46,7 @@
+                         s.reach = static_cast<int>(a.range);
+                     }
+                 }, *ab.info());
+-        } catch (const cambc::error&) {
++        } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+             s.cd = 99;
+         }
+     }
+@@ -134,7 +134,7 @@
+         if (ab.is_damage() || ab.is_aoe_damage() || ab.is_cc()) {
+             try {
+                 spell += ab.damage_amount() / 8.0f;
+-            } catch (const cambc::error&) {
++            } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+             }
+         }
+         if (ab.is_attack_reset()) d += S.str / 8.0f;
+diff -ruN fd2/src/targets.h au17/src/targets.h
+--- fd2/src/targets.h	2026-10-25 18:04:24.400457400 +0530
++++ au17/src/targets.h	2026-10-25 18:05:22.432712000 +0530
+@@ -250,13 +250,13 @@
+                         return true;
+                     }
+                 }
+-            } catch (const cambc::error&) {
++            } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+             }
+             if (stale()) return true;
+             try {
+                 me.submit_gems(altar);
+                 return true;
+-            } catch (const cambc::error&) {
++            } catch (const cambc::error& audit_e) { AUDIT(audit_e);
+             }
+         }
+     }

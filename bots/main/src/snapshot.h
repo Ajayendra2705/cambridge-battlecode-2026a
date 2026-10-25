@@ -77,9 +77,23 @@ struct Snap {
     // Tiles where a visible enemy could hit us hard on its next turn, and whether moves should avoid them.
     std::vector<std::pair<vec2, int>> danger;
     bool avoid_danger = false;
+    // This turn so far: the engine's action flags at the snapshot (champion_state bits), whether we walked (rooting
+    // spells cannot follow a walk) and whether our basic attack was spent (a reset needs a spent attack).
+    std::uint32_t state = 0;
+    bool walked = false, attacked = false;
+    vec2 start;  // Our tile at the snapshot.
+    // Stunned: the turn starts with no action allowed at all.
+    bool can_act() const { return (state & ((1u << 3) | (1u << 4) | (1u << 11))) != 0; }
 };
 
 Snap S;
+// Per tile, the round it was last in our view (take_snapshot fills it from one read of the view): in_view() answers
+// without the host call of bitboard::is_set.
+std::vector<int> view_round;
+bool in_view(vec2 p) { return !view_round.empty() && view_round[p.y * cm::width() + p.x] == S.round; }
+// This turn's visible camp health per known camp (0 when not seen alive) and whether a group has a live camp in view.
+std::vector<float> camp_hp_now;
+std::vector<char> group_live_now;
 // Online combat calibration: actual / predicted champion damage taken this game, relative to the 0.18 seen in
 // local play (Bayesian prior worth 3000.0 predicted damage). Above 1 the opponent hits harder than usual.
 double cal_pred = 0, cal_act = 0;
@@ -92,5 +106,18 @@ bool in_danger(vec2 t) {
         if (static_cast<int>(t.chebyshev_distance(src)) <= radius) return true;
     return false;
 }
+// The danger tiles as one board, for routing around them.
+bitboard danger_tiles() {
+    bitboard b;
+    b.clear();
+    for (const auto& [src, radius] : S.danger) b.draw_chebyshev(src, static_cast<float>(radius));
+    return b;
+}
+
+// A turn that runs out of fuel resumes next round from the same point, with this snapshot. Teammates have moved since:
+// the bf5 audit traced every "Known occupied destination" (127 per 80 games) to such a resumed turn moving onto a tile
+// a teammate had stepped on, and its stale attacks ("out of range", "An available attack cannot be reset"). Every
+// action helper refuses to act once the round has changed; the next turn starts with a fresh snapshot.
+bool stale() { return static_cast<int>(cambc::round_number()) != S.round; }
 float cached_dps = 0, cached_spell_dps = 0;
 int cached_dps_round = -100;

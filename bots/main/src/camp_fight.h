@@ -87,7 +87,15 @@ void fight_or_approach(int gi) {
         bitboard goals;
         goals.clear();
         goals.draw_chebyshev(target->pos, static_cast<float>(range));
-        if (!step_to_tiles(goals)) step_field(group_field(g), g.tiles, 0);
+        if (!step_to_tiles(goals)) {
+            // Every free tile in reach of the chosen camp can be taken (teammates, other camps): 678 stuck approach
+            // turns per 80 games in the bf2 audit. Then take a tile in reach of any live camp of the group.
+            bitboard any;
+            any.clear();
+            for (const auto* c : live) any.draw_chebyshev(c->pos, static_cast<float>(range));
+            if (!step_to_tiles(any) && !step_field(group_field(g), g.tiles, 0) && cambc::fuel_remaining() < 20000 && !S.avoid_danger)
+                walk_towards(target->pos);  // Our searches were skipped for fuel: the engine's own path step is one call.
+        }
     }
     STAGE("cf hit");
     // Hit the chosen camp if in range, otherwise the weakest one in range.

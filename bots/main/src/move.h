@@ -6,14 +6,34 @@ constexpr std::array<vec2, 8> DIRS{vec2{1, 0}, vec2{-1, 0}, vec2{0, 1}, vec2{0, 
     vec2{-1, 1}, vec2{-1, -1}};
 
 bool safe_move(vec2 t) {
+    if (stale()) return false;
     try {
         if (cambc::self().move_absolute(t)) {
             S.me = t;
+            S.walked = true;
             return true;
         }
+        // False means a hidden unit stands there. The tile is now known occupied, and a second try at it throws
+        // ("Known occupied destination": 423 per 80 games in the audit build, when a later step chose the same tile).
+        S.occ.set(t);
     } catch (const cambc::error&) {
+        S.occ.set(t);  // Refused: do not pick it again this turn.
     }
     return false;
+}
+
+// The engine's own path step towards `t`; keeps S.me and S.walked current (move_towards does not report where it went).
+bool walk_towards(vec2 t) {
+    if (stale()) return false;
+    auto& me = cambc::self();
+    try {
+        if (!me.can_move() || !me.move_towards(t)) return false;
+        S.me = me.position();
+        S.walked = true;
+        return true;
+    } catch (const cambc::error&) {
+        return false;
+    }
 }
 
 // Take the free neighbour with the lowest field value below `here`; hidden blockers are skipped.
@@ -36,8 +56,24 @@ bool descend(const distance_field& field, bitboard occ, int here) {
     return false;
 }
 
+// Tiles a dash can land on. valid_tiles() is the casting range only (SDK: it "does not filter visibility, occupancy or
+// target categories"), so most picks from it failed: an audit build counted 94 failed landing dashes per game
+// ("Destination is unreachable within movement range"). A dash moves along a path of up to `range` 8-direction steps
+// that may cross holes but not walls, altars or units, and lands on a free walkable tile other than its start.
+bitboard dash_landings(const cambc::ability& ab) {
+    int range = 2;
+    if (ab.info())
+        if (const auto* d = std::get_if<cambc::ability_dash>(&*ab.info())) range = std::max(1, static_cast<int>(d->range));
+    const bitboard path_block = cm::walls() | cm::altars() | S.occ;
+    bitboard land = path_block.reachable_tiles(S.me, static_cast<std::uint16_t>(range));
+    land = land & ~W.terrain & ~S.occ;
+    land.set(S.me, false);
+    return land;
+}
+
 // Dash along the field when it skips ahead, then walk.
 bool step_static(const distance_field& field, int here) {
+    if (stale()) return false;
     auto& me = cambc::self();
     const vec2 p = S.me;
     if (here >= 4 && me.can_cast()) {
@@ -45,7 +81,7 @@ bool step_static(const distance_field& field, int here) {
             if (!ab.is_dash() || !ab.is_ready()) continue;
             vec2 best = p;
             int best_d = here - 1;
-            for (auto t : ab.valid_tiles().positions()) {
+            for (auto t : dash_landings(ab).positions()) {
                 if (S.occ.is_set(t) || W.terrain.is_set(t)) continue;
                 if (S.avoid_danger && in_danger(t)) continue;
                 const int d = field.get(t);
@@ -57,7 +93,9 @@ bool step_static(const distance_field& field, int here) {
                     if (me.can_move()) descend(field, S.occ, field.get(S.me));
                     return true;
                 }
+                if (best != p) S.occ.set(best);  // A hidden unit holds the landing tile.
             } catch (const cambc::error&) {
+                S.occ.set(best);
             }
         }
     }
@@ -71,29 +109,35 @@ bool step_field(const distance_field& field, const bitboard& roots, int stop_at 
     const int here = field.get(S.me);
     if (here <= stop_at) return false;
     if (step_static(field, here)) return true;
-    if (!me.can_move()) return false;
+    // A local search costs up to about 30k fuel on big maps: not on a turn that is nearly out (a turn that runs out
+    // resumes next round on a stale snapshot).
+    if (!me.can_move() || cambc::fuel_remaining() < 20000) return false;
     distance_field local;
     bitboard visited, mine;
     mine.clear();
     mine.set(S.me);
     const auto free_roots = roots & ~S.occ;
-    local.compute_to((W.terrain | S.occ) & ~free_roots & ~mine, free_roots, mine, visited);
+    // Route around occupants, and around enemy danger once moves avoid it: descend skips danger tiles, so a straight
+    // way through them stood still (the bf5 audit traced most of 1,300 stuck walks per 80 games to this).
+    const bitboard avoid = S.avoid_danger ? danger_tiles() & ~mine : bitboard{};
+    local.compute_to((W.terrain | S.occ | avoid) & ~free_roots & ~mine, free_roots, mine, visited);
     const int local_here = local.get(S.me);
     if (local_here == UNREACH) return false;
     return descend(local, S.occ, local_here);
 }
 
-// Walk to any free tile of `goals` using a fresh field around current occupants.
+// Walk to any free tile of `goals` using a fresh field around current occupants (and enemy danger once moves avoid it).
 bool step_to_tiles(const bitboard& goals) {
     auto& me = cambc::self();
-    if (!me.can_move() || goals.is_set(S.me)) return false;
+    if (!me.can_move() || goals.is_set(S.me) || cambc::fuel_remaining() < 20000) return false;
     bitboard visited, mine;
     mine.clear();
     mine.set(S.me);
-    const auto free_goals = goals & ~S.occ & ~W.terrain;
+    const bitboard avoid = S.avoid_danger ? danger_tiles() & ~mine : bitboard{};
+    const auto free_goals = goals & ~S.occ & ~W.terrain & ~avoid;
     if (free_goals.is_empty()) return false;
     distance_field local;
-    local.compute_to((W.terrain | S.occ) & ~free_goals & ~mine, free_goals, mine, visited);
+    local.compute_to((W.terrain | S.occ | avoid) & ~free_goals & ~mine, free_goals, mine, visited);
     const int here = local.get(S.me);
     if (here == UNREACH) return false;
     return step_static(local, here);
@@ -157,6 +201,7 @@ int enemy_seen_at = -100;  // Mirrors enemy_seen_round, which is declared later.
 // Recall is cancelled by damage, so never start it with an enemy close by: walk instead (top teams do this).
 bool walk_home();
 void go_home() {
+    if (stale()) return;
     bool exposed = S.round - enemy_seen_at <= 3;
     for (const auto& e : S.enemies) if (dist(e.pos, S.me) <= 5) exposed = true;
     if (W.spawn_field.get(S.me) > 5 && !exposed) { cambc::self().recall(); return; }

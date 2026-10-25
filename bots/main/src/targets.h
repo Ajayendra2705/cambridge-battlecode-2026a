@@ -37,9 +37,14 @@ bool solo_phase() {
 // each. The fields are built once, one per turn without a pick (build_travel_field); until all exist we use the BFS.
 std::vector<std::unique_ptr<distance_field>> travel_fields;
 int travel_built = 0;
+// Fuel one full-map field takes on this map, measured on each build (a 100x100 field can take over 50k: building one
+// with less left ran the turn out of fuel, bf7 first try on big_world).
+std::uint64_t field_cost = 30000;
+bool travel_ready() { return travel_built >= static_cast<int>(W.groups.size()) && travel_built > 0; }
 void build_travel_field() {
     if (travel_fields.empty()) travel_fields.resize(W.groups.size());
     if (travel_built >= static_cast<int>(W.groups.size())) return;
+    const auto f0 = cambc::fuel_remaining();
     bitboard roots;
     roots.clear();
     for (auto s : W.groups[travel_built].spawns) roots.set(s);
@@ -47,11 +52,16 @@ void build_travel_field() {
     bitboard visited;
     f->compute(W.terrain & ~roots, roots, visited);
     travel_fields[travel_built++] = std::move(f);
+    const auto f1 = cambc::fuel_remaining();
+    if (f1 < f0) field_cost = std::max(field_cost, f0 - f1);
 }
 
 std::vector<int> group_invested;  // Per group: rounds we targeted it since it was last seen defeated.
+// Per group: round until which the way there counts as blocked by enemy danger (set after two turns stuck on it).
+std::vector<int> blocked_until;
 int pick_group(int current) {
     const int round = S.round;
+    if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
     std::uint64_t gd_fuel = 0;
     const auto pf0 = cambc::fuel_remaining();
     const bool fields_ready = travel_built >= static_cast<int>(W.groups.size()) && travel_built > 0;
@@ -71,6 +81,7 @@ int pick_group(int current) {
     std::vector<Cand> cands;
     for (int i = 0; i < static_cast<int>(W.groups.size()); ++i) {
         const auto& g = W.groups[i];
+        if (blocked_until[i] > round) continue;
         const int travel = fields_ready ? travel_fields[i]->get(S.me) : travel_to(f, g);
         if (travel == UNREACH) continue;
         // Before the first emblem gold is worth a gem: it buys the stats that win the next fights (top-10 teams take
@@ -120,11 +131,18 @@ int pick_group(int current) {
             // Fixed: 'mine' was the constant 16 * 16, which no claimant reaches, so this rule never ran. The claimant whose
             // passive adds most to the reward captures: Vesper +33% of the gold, Marcella +2 gold per gem she tributes;
             // then the champion whose damage grows most from shards.
+            // The passive bonus is weighed against what the gold still adds: a shard's relative gain is about
+            // growth / stat = 1 / (base/growth + shards), and base/growth is about 10 shards for most stats. Without this
+            // the passive always won and every solo capture went to Vesper (cp3 on b56 at r400: Vesper 4.7 emblems, Heart
+            // of Ruin and Vendetta 0.9 each; the rivals 2.5 and 1.6). A teammate out of view counts as wealthy as us.
+            const int claim_mine_w = slot_wealth_now(W.slot);
             const auto claim_value = [&](int s) {
                 using ct = cambc::champion_type;
                 const auto t = W.slot_types[s];
                 const double bonus = t == ct::vesper_vale ? 0.33 * g.gold : t == ct::marcella ? 2.0 * g.gems : 0.0;
-                return bonus * 1000.0 + capture_priority(t) * 16 + s;
+                const int w = s == W.slot ? claim_mine_w : slot_wealth_now(s);
+                const double gold = g.gold + bonus + 1.0;
+                return gold / ((w >= 0 ? w : claim_mine_w) + 10.0) * (1.0 + 0.01 * capture_priority(t)) + s * 1e-6;
             };
             const double mine = W.slot < static_cast<int>(W.slot_types.size()) ? claim_value(W.slot) : 0.0;
             bool better_claim = false;
@@ -201,6 +219,7 @@ int pick_group(int current) {
 
 // A defeated group nearby that nobody is capturing yet: one champion stays to capture it.
 bool bank_gems() {
+    if (stale()) return true;  // Stale turn: act no more.
     // While the altar guard lives, every tile in tribute range is blocked: a trip there only wastes rounds.
     // Unless the enemy is tributing: then a tile is free (b5 boss_battle: the enemy tributed 919 gems from round 800
     // while we, believing the unseen guard alive, carried 1072 and tributed none, and lost).
@@ -230,7 +249,7 @@ bool bank_gems() {
                             me.attack(lock);
                             return true;
                         }
-                        if (me.can_move() && dist(S.me, lock.position()) > S.range) me.move_towards(lock.position());
+                        if (me.can_move() && dist(S.me, lock.position()) > S.range) walk_towards(lock.position());
                         return true;
                     }
                 }

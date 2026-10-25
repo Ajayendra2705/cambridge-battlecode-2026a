@@ -1,6 +1,6 @@
 # Bot architecture (`bots/main`)
 
-`bots/main` is the current best bot, ladder bot `cp3` (2026-10-25, Sprint 2 entry): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`) and "Changes in cp3". Read this page before you open the code.
+`bots/main` is the current best bot, ladder bot `cand1` (2026-10-25 17:05 IST, version 704): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`) and "Changes in cand1". Read this page before you open the code.
 
 ## Game in one paragraph
 
@@ -118,6 +118,24 @@ cp3 = dr3 plus these layers, each with its experiments row (batches b5 and b6):
 - `shop.h` (sp1, sp3): after the Treasure emblem each emblem is chosen by its fight-power gain: Power 6 gm / main, Bruiser 5 gm / main + gh / hp, Durability 5 gh / hp (+0.11 for the first), Jungle 5 gh / hp (+0.15 for the first). An emblem is finished once started (its bonus comes on completion).
 - `targets.h` capture (cp1): the `capture_priority` rule now runs (it compared against the constant `16 * 16` before). The claimant whose passive adds most captures: Vesper +33% of the gold, Marcella +2 gold per gem; then damage growth, then slot.
 - `bot.cpp` attack on sight (cp2, cp3): hurt ranged champions shoot unless the enemies near can burst them this round; Vendetta dashes next to an enemy 2-3 tiles away and hits, when past the flee branch and the simulation does not say she dies.
+
+## Changes in cand1 (ladder bot from 2026-10-25 17:05 IST)
+
+cand1 = cp3 plus the bug-fix line bf1-bf7 (found by the check builds au1-au9) and two accepted layers, each with its experiments row:
+
+- `abilities.h` (bf1, bf4, bf5): dash landings come from `reachable_tiles` (walls, altars and units block the path, holes do not); an attack reset is cast only after a spent basic attack and retargets to the weakest enemy champion, else the weakest awake camp, when the target died; spells check that their target is alive and in reach; rooting spells are not cast after a walk; Marcella's damage spell takes the weakest enemy in range when the prey is out of range; Vendetta steps in at 2 tiles (step, hit, reset) and dashes only at 3.
+- `bot.cpp` (bf2, bf3): a free hit at the end of the turn with any attack left unused (the weakest enemy champion in reach, else the weakest awake camp that no enemy is nearer to), from our real tile.
+- `bot.cpp` (bf4, bf5, bf6): stunned turns return early; a turn that ends on an enemy danger tile without having walked steps out; every action helper refuses once the round changed since the snapshot (a turn that ran out of fuel resumes next round on a stale snapshot).
+- `snapshot.h`, `knowledge.h` (bf2, bf4, bf7): champion occupancy from `champion_tiles()`, refused tiles marked occupied; alive checks from raw state structs; the view read once per turn into a per-tile round stamp and visible camp health into a per-camp array.
+- `move.h` (bf6): local paths route around enemy danger tiles; local searches are skipped below 20k fuel. `targets.h` (bf6): a target whose way stayed blocked two turns is skipped for 20 rounds.
+- `world.h` (bf4): the group route field is rebuilt when the set of live monoliths and golems changes (it was built once).
+- `comms.h` (bf2, bf4): the help-call cell size is fitted to the map; the focus byte stores index + 1.
+- `sim.h` (bf4): spell reads of champions out of view are skipped; each spell's real reach is used.
+- `world.h`, `knowledge.h`, `targets.h`, `bot.cpp` (bf7, fuel): camp design stats read once per kind; group vectors reserved; covered-by pairs pre-checked by bounding box; a pick waits a turn below 45k fuel (plus a field's cost until the travel fields exist), and a target that changed state on such a turn is dropped for that turn; travel fields built several per turn at their measured cost.
+- `targets.h` capture claim (wc1): the solo capture goes to the claimant for whom the gold adds most, (gold + passive bonus) / (wealth in shards + 10); cp3 gave every solo capture to Vesper.
+- `shop.h` (hr1): Heart of Ruin values Bruiser-focus's strength growth (its basic attack scales with strength).
+
+Decoded on b56 (78 games, by r1000, against base1025c = cp3 in the same session): champion damage per game Heart of Ruin 4090 (3172), Vendetta 3676 (2657), Varg 2637 (2030); Vesper deaths 1.60 (1.21) and gems 162 (240).
 
 ## Known leftovers (harmless)
 

@@ -22,17 +22,35 @@ int wealth_of(const cambc::champion& c) {
     return w;
 }
 // Wealth of the champion in a slot, or -1 when that teammate is out of view (and so not at this capture).
+// Read once per slot per round: capture claims ask it for every claimant of every reward in a pick, and each read is a
+// host call (picks ran out of fuel 116 times per 80 games in the au8 audit once the gold-spread claim used it).
 int slot_wealth_now(int s) {
-    if (s == W.slot) return wealth_of(cambc::self());
-    for (const auto& a : S.allies) {
-        if (handle_id(a.ch) != W.slot_ids[s]) continue;
-        try {
-            return wealth_of(a.ch);
-        } catch (const cambc::error&) {
-            return -1;
+    static std::array<int, MAX_SLOTS> cached{};
+    static std::array<int, MAX_SLOTS> cached_round{-1, -1, -1, -1, -1, -1};
+    if (s < 0 || s >= MAX_SLOTS) return -1;
+    if (cached_round[s] == S.round) return cached[s];
+    int w = -1;
+    if (s == W.slot) {
+        w = wealth_of(cambc::self());
+    } else {
+        for (const auto& a : S.allies) {
+            if (handle_id(a.ch) != W.slot_ids[s]) continue;
+            // A teammate can be known while its items are not in our view (117 "Unit is not in vision" per 80 games in
+            // the au8 audit, with the tile in view): read them raw and take a refusal as out of view, without a throw.
+            cambc::enum_map<cambc::item_type> counts;
+            if (cambc::detail::sdk_champion_items(handle_id(a.ch), counts.ptr()) == 0) {
+                w = 0;
+                for (int i = 0; i < static_cast<int>(cambc::item_type::enum_type::count); ++i) {
+                    const auto x = cambc::item_type{static_cast<cambc::item_type::enum_type>(i)};
+                    w += static_cast<int>(counts[x]) * (x.result() ? 1 : 5);
+                }
+            }
+            break;
         }
     }
-    return -1;
+    cached[s] = w;
+    cached_round[s] = S.round;
+    return w;
 }
 
 // Who should take capture rewards (and so the gold): champions whose damage grows most from shards.
@@ -105,7 +123,10 @@ void shop() {
                 const float hp = std::max(1.0f, me.max_health()), main = std::max(1.0f, focus ? me.focus() : S.str);
                 const float gh = growth(true), gm = growth(false);
                 const auto ed = dur.result();
-                const float v_power = 6.f * gm / main, v_bruis = 5.f * gm / main + gh / hp;
+                // Heart of Ruin's basic attack scales with strength (30 + 3.5 per shard), which Bruiser-focus also grows; the
+                // rivals build it Bruiser-focus (b56 r400: 0.32 emblems per champion, Power none).
+                const float v_str = me.champion_name() == cambc::champion_type::heart_of_ruin ? 3.5f / std::max(1.0f, S.str) : 0.f;
+                const float v_power = 6.f * gm / main, v_bruis = 5.f * gm / main + gh / hp + v_str;
                 const float v_dur = 5.f * gh / hp + (ed && counts[*ed] == 0 ? 0.11f : 0.f);
                 // Jungle: -30% damage from camps, which deal about half of what we take (0.57 locally, ab2 on four
                 // maps): about +15% effective health on the first one. sp1 without it died more mid-game where dr3 won

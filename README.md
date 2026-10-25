@@ -59,6 +59,8 @@ bash tools/platform/adopt.sh try1 old_main_name                                #
 | Why the bot does X | `docs/ARCHITECTURE.md` (turn pipeline), then the file named there |
 | An exact rule or number | `docs/MECHANICS.md` |
 | How we compare with the rivals | `docs/findings.md`, then `tools/replay/decoded.py` on a fresh run |
+| Where a turn's fuel goes | locally `tools/local/fuel_probe.patch` + `fuel_probe.py`; on the platform `decoded.py fuel` |
+| Engine errors the bot catches, unused attacks | `tools/local/audit_layer.patch` + `audit_errors.py` (check builds, never submitted) |
 | Whether an idea was tried | `docs/experiments.md` (names are reused across eras: read a row within its batch), then `docs/journal/status_log.md` |
 | Platform results of a run | `results/gate.log` + `tools/platform/rcmp.py` |
 | The teams and maps of a panel | `results/panels/README.md` |

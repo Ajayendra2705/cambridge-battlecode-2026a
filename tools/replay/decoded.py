@@ -11,8 +11,13 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
   types     per champion type: deaths, champion damage, gems, share of alive rounds hitting a champion, and the hit
             rate by distance to the nearest enemy
   items     emblems and shards per champion type at a round (default 600)
-  risk      P(death within 10 rounds) by enemies / allies within 6 and health above or below half
+  risk      P(death within 10 rounds) and rounds per game by enemies / allies within 6 and health above or below half,
+            us and them (default to round 1000)
   sources   gems collected by camp type by a round (default 600), credited to the camp type last hit
+  starts    fight starts (first hit between a pair after 15 quiet rounds): each side's champions within 6 of the target,
+            outnumbered / even / outnumbering shares; deaths by which side started that fight (default to round 1000)
+  fuel      deaths within 5 rounds after the champion's own fuel exhaustion, and exhaustions per game in rounds 1-3, with
+            an enemy within 6 and without; needs data/summaries/<match>.json (tools/replay/fuel_events.py fetches them)
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -139,6 +144,8 @@ def cmd_channels(dirs, rounds):
                 c = b['c'][i]; g = c.get('g', 0)
                 if not tr or g <= 0: continue
                 turns = max(1, -(-g // 10)); j = min(len(rows) - 1, k + turns + 2)
+                # A channel that would end the game (the game stops first, or the score is capped at 1000) is not a break.
+                if k + turns + 2 >= len(rows) or b['sg'][c['t']] + g >= 1000: continue
                 ok = rows[j]['sg'][c['t']] - b['sg'][c['t']] >= g * 0.9
                 w = who(c['t'], us); size = '<=20' if g <= 20 else '21-50' if g <= 50 else '51-100' if g <= 100 else '>100'
                 C[(w, size, 'n')] += 1; C[(w, size, 'ok')] += ok; C[(w, size, 'g')] += g; C[(w, size, 'banked')] += g * ok
@@ -211,22 +218,112 @@ def cmd_items(dirs, rounds):
 
 
 def cmd_risk(dirs, rounds):
-    C = collections.Counter()
+    R = (rounds or [1000])[0]
+    C = collections.Counter(); ng = 0
     for us, res, mp, meta, rows in games(dirs):
+        ng += 1
         for k in range(0, len(rows) - 11, 2):
             a = rows[k]
+            if a['r'] > R: break
             for i, c in enumerate(a['c']):
-                if c['t'] != us or not c['a'] or 'x' not in c: continue
-                pos = (c['x'], c['y'])
-                ne = sum(1 for o in a['c'] if o['t'] != us and o['a'] and 'x' in o and dist(pos, (o['x'], o['y'])) <= 6)
-                na = sum(1 for j, o in enumerate(a['c']) if j != i and o['t'] == us and o['a'] and 'x' in o and dist(pos, (o['x'], o['y'])) <= 6)
-                dies = any(not rows[k + t]['c'][i]['a'] for t in range(1, 11))
-                key = (min(ne, 3), min(na, 2), 'below half' if c.get('hp', 0) < 0.5 * max(1, c.get('mhp', 1)) else 'above half')
+                if not c['a'] or 'x' not in c: continue
+                pos = (c['x'], c['y']); t = c['t']
+                ne = sum(1 for o in a['c'] if o['t'] != t and o['a'] and 'x' in o and dist(pos, (o['x'], o['y'])) <= 6)
+                na = sum(1 for j, o in enumerate(a['c']) if j != i and o['t'] == t and o['a'] and 'x' in o and dist(pos, (o['x'], o['y'])) <= 6)
+                dies = any(not rows[k + s]['c'][i]['a'] for s in range(1, 11))
+                key = (who(t, us), min(ne, 3), min(na, 2), 'lo' if c.get('hp', 0) < 0.5 * max(1, c.get('mhp', 1)) else 'hi')
                 C[key + ('n',)] += 1; C[key + ('d',)] += dies
-    print('our champions: P(death within 10 rounds) by enemies within 6, allies within 6, health')
-    for key in sorted({k[:3] for k in C}):
-        n = C[key + ('n',)]
-        print(f'  enemies {key[0]} allies {key[1]} {key[2]:10}: {C[key + ("d",)] / n:.3f}  (n {n})')
+    # Rounds are sampled every 2, so twice the samples is rounds per game in that state.
+    print(f'{ng} games to r{R}: P(death within 10 rounds) and rounds per game, by enemies / allies within 6 and health half')
+    print(f'  {"state":10} {"us P":>6} {"us rounds":>9} {"them P":>7} {"them rounds":>11}')
+    for key in sorted({k[1:4] for k in C}):
+        nu, nt = C[('us',) + key + ('n',)], C[('them',) + key + ('n',)]
+        print(f'  e{key[0]} a{key[1]} {key[2]:4} {C[("us",) + key + ("d",)] / max(1, nu):6.3f} {2 * nu / max(1, ng):9.1f}'
+              f' {C[("them",) + key + ("d",)] / max(1, nt):7.3f} {2 * nt / max(1, ng):11.1f}')
+
+
+def cmd_starts(dirs, rounds):
+    R = (rounds or [1000])[0]
+    S = collections.Counter(); F = collections.Counter(); ng = 0
+    for us, res, mp, meta, rows in games(dirs):
+        ng += 1
+        n = len(rows[0]['c']); last_hit = {}
+        for k, a in enumerate(rows):
+            if a['r'] > R or k + 1 >= len(rows): break
+            # Fight starts: the first hit between two champions after 15 quiet rounds; each side's champions within 6 of the target.
+            for i in range(n):
+                for x in enemy_hits(a, i, n):
+                    key = frozenset((i, x[-1]))
+                    tc = a['c'][x[-1]]
+                    if k - last_hit.get(key, -99) > 15 and 'x' in tc:
+                        att = a['c'][i]['t']; tp = (tc['x'], tc['y']); w = who(att, us)
+                        na = sum(1 for o in a['c'] if o['t'] == att and o['a'] and 'x' in o and dist(tp, (o['x'], o['y'])) <= 6)
+                        nd = sum(1 for o in a['c'] if o['t'] != att and o['a'] and 'x' in o and dist(tp, (o['x'], o['y'])) <= 6)
+                        S[(w, 'n')] += 1; S[(w, 'att')] += na; S[(w, 'def')] += nd
+                        S[(w, 'down' if na < nd else 'even' if na == nd else 'up')] += 1
+                    last_hit[key] = k
+            # Fatal fights: walk back from each death through champion hits within 8 of the victim until 15 quiet rounds.
+            b = rows[k + 1]
+            for i in range(n):
+                if not (a['c'][i]['a'] and not b['c'][i]['a']): continue
+                vt = a['c'][i]['t']; w = who(vt, us); s = k; quiet = 0; starter = None
+                while s >= 0 and quiet <= 15:
+                    r = rows[s]; v = r['c'][i]
+                    if not v['a'] or 'x' not in v: break
+                    sides = {r['c'][j]['t'] for j in range(n) for x in enemy_hits(r, j, n)
+                             if 'x' in r['c'][x[-1]] and dist((v['x'], v['y']), (r['c'][x[-1]]['x'], r['c'][x[-1]]['y'])) <= 8}
+                    if sides:
+                        quiet = 0; starter = 'both' if len(sides) == 2 else 'victim side' if vt in sides else 'killer side'
+                    else: quiet += 1
+                    s -= 1
+                F[(w, starter or 'no champion fight')] += 1
+    print(f'{ng} games to r{R}')
+    for w in ('us', 'them'):
+        m = max(1, S[(w, 'n')])
+        print(f'  {w:4} start {S[(w, "n")] / ng:4.1f} fights per game: own champions within 6 of the target {S[(w, "att")] / m:.2f} vs'
+              f' {S[(w, "def")] / m:.2f}; outnumbered {100 * S[(w, "down")] / m:.0f}%, even {100 * S[(w, "even")] / m:.0f}%,'
+              f' outnumbering {100 * S[(w, "up")] / m:.0f}%')
+    for w in ('us', 'them'):
+        print(f'  {w:4} deaths per game by who started that fight: ' + ', '.join(
+            f'{s} {F[(w, s)] / ng:.2f}' for s in ('victim side', 'killer side', 'both', 'no champion fight')))
+
+
+def cmd_fuel(dirs, rounds):
+    """Needs the platform match summaries in data/summaries/<match>.json (tools/replay/fuel_events.py fetches them)."""
+    R = (rounds or [1000])[0]
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    C = collections.Counter(); M = collections.Counter(); MG = collections.Counter(); ng = missing = 0
+    for us, res, mp, meta, rows in games(dirs):
+        p = os.path.join(root, 'data', 'summaries', meta['file'].split('.')[0] + '.json')
+        if not os.path.exists(p): missing += 1; continue
+        ng += 1; MG[mp] += 1
+        ev = collections.defaultdict(set)
+        for e in json.load(open(p, encoding='utf-8'))['events']:
+            if e['kind'] == 'fuelExhausted' and e['owner'].get('kind') == 'champion':
+                for x in e['entries']: ev[e['owner']['id']].add(x['timestamp']['round'])
+        byround = {r['r']: r for r in rows}
+        for cid, rs in ev.items():
+            w = who(0 if cid < 5 else 1, us)  # Summary champion ids 0-4 are team A, 5-9 team B, in the decoded order.
+            for r in rs:
+                row = byround.get(r)
+                if r <= 3 or r > R: C[(w, 'r1-3' if r <= 3 else 'late')] += 1; continue
+                if not row or cid >= len(row['c']) or 'x' not in row['c'][cid]: C[(w, 'unknown')] += 1; continue
+                me = row['c'][cid]
+                hot = any(o['a'] and 'x' in o and o['t'] != me['t'] and dist((me['x'], me['y']), (o['x'], o['y'])) <= 6 for o in row['c'])
+                C[(w, 'contact' if hot else 'quiet')] += 1
+                if w == 'us' and hot: M[mp] += 1
+        for a, b in zip(rows, rows[1:]):
+            if b['r'] > R: break
+            for i, c in enumerate(b['c']):
+                if a['c'][i]['a'] and not c['a']:
+                    w = who(c['t'], us); C[(w, 'deaths')] += 1
+                    if any(r in ev.get(i, ()) for r in range(b['r'] - 5, b['r'] + 1)): C[(w, 'after fuel')] += 1
+    print(f'{ng} games to r{R} ({missing} without a summary)')
+    for w in ('us', 'them'):
+        print(f'  {w:4} deaths {C[(w, "deaths")] / max(1, ng):.2f}, of them within 5 rounds after their own fuel exhaustion'
+              f' {C[(w, "after fuel")] / max(1, ng):.2f}; exhaustions per game: rounds 1-3 {C[(w, "r1-3")] / max(1, ng):.1f},'
+              f' with an enemy within 6 {C[(w, "contact")] / max(1, ng):.1f}, without {C[(w, "quiet")] / max(1, ng):.1f}')
+    print('  ours with an enemy within 6, per game on that map: ' + ', '.join(f'{m} {v / MG[m]:.1f}' for m, v in M.most_common(8)))
 
 
 def cmd_sources(dirs, rounds):
@@ -257,7 +354,7 @@ def main():
 
 
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
-        'risk': cmd_risk, 'sources': cmd_sources}
+        'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel}
 
 if __name__ == '__main__':
     main()

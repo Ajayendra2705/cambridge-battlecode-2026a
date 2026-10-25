@@ -3,9 +3,30 @@
 
 // ---- Abilities ----
 int n_cc = 0, n_aoe = 0, n_dmg = 0, n_attack = 0, n_reset = 0;
+
+// A rooting spell ("excludes walking") cannot follow a walk in the same turn: the engine refuses it ("This spell
+// cannot be cast after normal movement": 57 per 80 games in the bf2 audit).
+bool roots(const cambc::ability& ab) {
+    return ab.info() && std::visit([](const auto& a) { return a.exclusive_with_movement; }, *ab.info());
+}
+bool castable_now(const cambc::ability& ab) { return ab.is_ready() && !(S.walked && roots(ab)); }
+
+// Alive and in view, read from the raw state structs without exceptions: the old check called health() and caught
+// the throw for every dead target (about 250 exceptions per game), and an exception costs far more fuel than a call.
+bool unit_alive(const cambc::champion& c) {
+    cambc::detail::champion_info info{};
+    return cambc::detail::sdk_champion(handle_id(c), &info) == 0 && info.x >= 0 && info.health > 0
+        && in_view(vec2{info.x, info.y});
+}
+bool unit_alive(const cambc::camp& c) {
+    cambc::detail::camp_state cs{};
+    return cambc::detail::sdk_camp(static_cast<std::uint32_t>(static_cast<cambc::handle_camp_t>(c)), &cs) == 0 && cs.health > 0;
+}
+
 // Spend one cast on camps: stun the strongest unstunned attacker, else the best area hit, else burst `focus`.
 // Dashes that hit on landing (Heart of Ruin): land where the most targets sit within the landing radius.
 bool strike_dash(const std::vector<vec2>& targets, bool skip_danger) {
+    if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_cast() || targets.empty()) return false;
     for (const auto& ab : me.abilities()) {
@@ -15,8 +36,7 @@ bool strike_dash(const std::vector<vec2>& targets, bool skip_danger) {
         const int radius = std::max(1, static_cast<int>(d->radius));
         vec2 best{-1, -1};
         int best_hits = 0, best_d = 99;
-        for (auto t : ab.valid_tiles().positions()) {
-            if (S.occ.is_set(t) || W.terrain.is_set(t)) continue;
+        for (auto t : dash_landings(ab).positions()) {
             if (skip_danger && in_danger(t)) continue;
             int hits = 0, nearest = 99;
             for (auto x : targets) {
@@ -29,7 +49,55 @@ bool strike_dash(const std::vector<vec2>& targets, bool skip_danger) {
         if (best_hits == 0) continue;
         try {
             if (ab.use(best)) { S.me = best; return true; }
+            S.occ.set(best);  // A hidden unit holds the landing tile.
         } catch (const cambc::error&) {
+            S.occ.set(best);
+        }
+    }
+    return false;
+}
+
+// Burst of the visible enemies that can reach a tile next turn.
+float exposure_at(vec2 t) {
+    float e = 0;
+    for (const auto& x : S.enemies)
+        if (!W.enemy_spawn.is_set(x.pos) && dist(t, x.pos) <= x.reach) e += x.burst;
+    return e;
+}
+
+// Melee closing moves onto a tile in attack reach of `target`, the least exposed one: a step, or a dash (any dash;
+// Heart of Ruin's striking dash goes through strike_dash).
+bool step_next_to(const ChampSnap& target) {
+    if (!cambc::self().can_move()) return false;
+    vec2 best{-1, -1};
+    float best_e = 0;
+    for (auto d : DIRS) {
+        const vec2 t{S.me.x + d.x, S.me.y + d.y};
+        if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t) || dist(t, target.pos) > S.range) continue;
+        const float e = exposure_at(t);
+        if (best.x < 0 || e < best_e) best = t, best_e = e;
+    }
+    return best.x >= 0 && safe_move(best);
+}
+bool dash_next_to(const ChampSnap& target) {
+    if (stale()) return false;
+    auto& me = cambc::self();
+    if (!me.can_cast()) return false;
+    for (const auto& ab : me.abilities()) {
+        if (!ab.is_dash() || !castable_now(ab)) continue;
+        vec2 best{-1, -1};
+        float best_e = 0;
+        for (auto t : dash_landings(ab).positions()) {
+            if (dist(t, target.pos) > S.range) continue;
+            const float e = exposure_at(t);
+            if (best.x < 0 || e < best_e) best = t, best_e = e;
+        }
+        if (best.x < 0) continue;
+        try {
+            if (ab.use(best)) { S.me = best; return true; }
+            S.occ.set(best);
+        } catch (const cambc::error&) {
+            S.occ.set(best);
         }
     }
     return false;
@@ -37,15 +105,19 @@ bool strike_dash(const std::vector<vec2>& targets, bool skip_danger) {
 
 // Keep the free ward a couple of tiles towards the enemy approach so attackers show up before they reach us.
 void place_ward_forward() {
+    if (stale()) return;
     auto& me = cambc::self();
-    if (W.ally_spawn.is_set(S.me)) return;
+    if (W.ally_spawn.is_set(S.me) || !S.can_act()) return;
     try {
         if (me.ward_cooldown() > 0) return;
         for (auto w : me.ward_positions()) if (dist(w, S.me) <= 5) return;
         vec2 best{-1, -1};
         int best_v = UNREACH;
+        // A tile that already holds a ward is refused ("An allied ward already occupies this tile": 26 failed
+        // placements per game in the audit build), so the ward never moved forward there.
+        const bitboard warded = cv::ward_tiles();
         for (auto t : me.ward_placement_tiles().positions()) {
-            if (W.terrain.is_set(t)) continue;
+            if (W.terrain.is_set(t) || warded.is_set(t)) continue;
             const int v = W.enemy_field.get(t);
             if (v < best_v) best_v = v, best = t;
         }
@@ -55,10 +127,11 @@ void place_ward_forward() {
 }
 
 bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap& focus, bool awake) {
+    if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_cast()) return false;
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready() || !ab.is_cc() || !awake) continue;
+        if (!castable_now(ab) || !ab.is_cc() || !awake) continue;
         const auto tiles = ab.valid_tiles();
         const CampSnap* best = nullptr;
         for (const auto* c : live) {
@@ -84,7 +157,7 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
         if (strike_dash(pts, false)) { ++n_cc; return true; }
     }
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready() || !ab.is_aoe_damage()) continue;
+        if (!castable_now(ab) || !ab.is_aoe_damage()) continue;
         const auto tiles = ab.valid_tiles();
         vec2 best_tile{-1, -1};
         int best_hits = 0;
@@ -104,10 +177,17 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
         }
     }
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready() || !ab.is_damage()) continue;
-        if (!ab.valid_tiles().is_set(focus.pos)) continue;
+        if (!castable_now(ab) || !ab.is_damage()) continue;
+        // The focus camp can have died to this turn's basic attack ("Target must be a visible unit": 55 per 80 games in
+        // the bf4 audit): then the weakest other live camp in range.
+        const auto tiles = ab.valid_tiles();
+        const CampSnap* t = tiles.is_set(focus.pos) && unit_alive(focus.camp) ? &focus : nullptr;
+        if (!t)
+            for (const auto* c : live)
+                if (c != &focus && tiles.is_set(c->pos) && (!t || c->hp < t->hp) && unit_alive(c->camp)) t = c;
+        if (!t) continue;
         try {
-            if (ab.use(focus.camp)) { ++n_dmg; return true; }
+            if (ab.use(t->camp)) { ++n_dmg; return true; }
         } catch (const cambc::error&) {
         }
     }
@@ -116,11 +196,12 @@ bool use_camp_abilities(const std::vector<const CampSnap*>& live, const CampSnap
 
 // From spell range: the best area hit, else any damaging spell (stuns included) on the focus target.
 bool cast_from_range(const std::vector<const CampSnap*>& live, const CampSnap& focus) {
+    if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_cast()) return false;
     if (use_camp_abilities(live, focus, false)) return true;
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready() || !ab.is_cc() || ab.can_target_ground()) continue;
+        if (!castable_now(ab) || !ab.is_cc() || ab.can_target_ground()) continue;
         try {
             if (ab.damage_amount() > 0 && ab.valid_tiles().is_set(focus.pos) && ab.use(focus.camp)) { ++n_dmg; return true; }
         } catch (const cambc::error&) {
@@ -147,10 +228,11 @@ bool flee_bush() {
 }
 // Stun the most dangerous enemy in reach first, then burst the focus target.
 bool use_champion_abilities(const ChampSnap& target) {
+    if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_cast()) return false;
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready() || !ab.is_cc()) continue;
+        if (!castable_now(ab) || !ab.is_cc()) continue;
         const auto tiles = ab.valid_tiles();
         const ChampSnap* best = nullptr;
         for (const auto& e : S.enemies) {
@@ -167,10 +249,17 @@ bool use_champion_abilities(const ChampSnap& target) {
     }
     if (strike_dash({target.pos}, false)) return true;
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready()) continue;
+        if (!castable_now(ab)) continue;
         try {
             if (ab.is_damage()) {
-                if (ab.valid_tiles().is_set(target.pos) && ab.use(target.ch)) return true;
+                // The focus target out of range: the weakest enemy in range instead. Marcella's spell was left unused in
+                // 461 enemy-fight turns per 80 games (bf2 audit) while another enemy stood in its range.
+                const auto tiles = ab.valid_tiles();
+                const ChampSnap* t = tiles.is_set(target.pos) && unit_alive(target.ch) ? &target : nullptr;
+                if (!t)
+                    for (const auto& e : S.enemies)
+                        if (tiles.is_set(e.pos) && !W.enemy_spawn.is_set(e.pos) && (!t || e.hp < t->hp) && unit_alive(e.ch)) t = &e;
+                if (t && ab.use(t->ch)) return true;
             } else if (ab.is_aoe_damage()) {
                 if (ab.valid_tiles().is_set(target.pos) && ab.use(target.pos)) return true;
             }
@@ -180,15 +269,43 @@ bool use_champion_abilities(const ChampSnap& target) {
     return false;
 }
 
-bool try_attack_reset_and_hit(const cambc::unit& target) {
+// The unit the reset hit goes to. When the basic attack killed the target, the reset used to be cast and its attack
+// then threw ("Target must be a visible enemy or neutral camp"): 40 reset casts per game wasted in the audit build,
+// each costing the turn's cast and an 8-turn cooldown. Then hit the weakest enemy champion in reach, else the weakest
+// awake camp in reach (a sleeping one would wake), else keep the spell.
+template <class U> const cambc::unit* reset_target(const U& target) {
+    // Alive and in reach from where we stand now ("Attack target is out of range": 8 per 80 games in the bf4 audit).
+    if (unit_alive(target)) {
+        try {
+            if (dist(S.me, target.position()) <= S.range) return &target;
+        } catch (const cambc::error&) {
+        }
+    }
+    const ChampSnap* champ = nullptr;
+    for (const auto& e : S.enemies)
+        if (dist(S.me, e.pos) <= S.range && !W.enemy_spawn.is_set(e.pos) && unit_alive(e.ch) && (!champ || e.hp < champ->hp))
+            champ = &e;
+    if (champ) return &champ->ch;
+    const CampSnap* camp = nullptr;
+    for (const auto& c : S.camps)
+        if (c.awake && dist(S.me, c.pos) <= S.range && unit_alive(c.camp) && (!camp || c.hp < camp->hp)) camp = &c;
+    return camp ? &camp->camp : nullptr;
+}
+
+// A reset restores a spent basic attack, so only after our attack this turn: an attack that is merely blocked (a ranged
+// champion that walked) cannot be reset ("An available attack cannot be reset").
+template <class U> bool try_attack_reset_and_hit(const U& target) {
+    if (stale()) return false;
     auto& me = cambc::self();
-    if (me.can_attack() || !me.can_cast()) return false;
+    if (!S.attacked || me.can_attack() || !me.can_cast()) return false;
     for (const auto& ab : me.abilities()) {
         if (!ab.is_attack_reset() || !ab.is_ready()) continue;
+        const cambc::unit* hit = reset_target(target);
+        if (!hit) return false;
         try {
             if (ab.use() && me.can_attack()) {
                 ++n_reset;
-                me.attack(target);
+                me.attack(*hit);
                 return true;
             }
         } catch (const cambc::error&) {
@@ -198,10 +315,11 @@ bool try_attack_reset_and_hit(const cambc::unit& target) {
 }
 
 void use_support_abilities(bool in_combat) {
+    if (stale()) return;
     auto& me = cambc::self();
     if (!me.can_cast()) return;
     for (const auto& ab : me.abilities()) {
-        if (!ab.is_ready()) continue;
+        if (!castable_now(ab)) continue;
         try {
             if (ab.is_heal()) {
                 const ChampSnap* best = nullptr;
@@ -221,14 +339,55 @@ void use_support_abilities(bool in_combat) {
     }
 }
 
-bool attack_unit(const cambc::unit& target) {
+template <class U> bool attack_unit(const U& target) {
+    if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_attack()) return false;
+    // This turn's own spell can have killed the target already (131 attacks on dead targets per 80 games in the audit
+    // build): the basic attack then goes to the next unit in reach, as the reset does.
+    const cambc::unit* hit = reset_target(target);
+    if (!hit) return false;
     try {
-        me.attack(target);
+        me.attack(*hit);
         ++n_attack;
+        S.attacked = true;
         return true;
     } catch (const cambc::error&) {
         return false;
     }
+}
+
+// Every branch of the turn returns early, so an attack can be left unused with something in reach: the audit build
+// counted about 2,900 such turns per 80 games (840 in enemy fights with an awake camp in reach, 262 with an enemy
+// champion in reach, the rest while walking, capturing or leaving camps). Spend it at the end of the turn: the weakest
+// enemy champion in reach, else the weakest awake camp (a sleeping one would wake) that is not fighting an enemy: a
+// camp hits its nearest champion, and damage on a camp an enemy is clearing only speeds their capture.
+void free_hit() {
+    auto& me = cambc::self();
+    if (!W.ready || S.round != static_cast<int>(cambc::round_number())) return;  // No snapshot this turn.
+    try {
+        if (!me.is_alive() || me.is_recalling() || me.is_submitting_gems() || me.is_teleporting() || !me.can_attack()) return;
+        // move_towards does not update S.me (bf2 audit: 356 "Attack target is out of range" from the old tile).
+        S.me = me.position();
+    } catch (const cambc::error&) {
+        return;
+    }
+    const ChampSnap* champ = nullptr;
+    for (const auto& e : S.enemies)
+        if (dist(S.me, e.pos) <= S.range && !W.enemy_spawn.is_set(e.pos) && unit_alive(e.ch) && (!champ || e.hp < champ->hp))
+            champ = &e;
+    if (champ) {
+        if (attack_unit(champ->ch)) try_attack_reset_and_hit(champ->ch);
+        return;
+    }
+    const CampSnap* camp = nullptr;
+    for (const auto& c : S.camps) {
+        if (!c.awake || dist(S.me, c.pos) > S.range || (camp && c.hp >= camp->hp)) continue;
+        int ours = dist(S.me, c.pos);
+        for (const auto& a : S.allies) ours = std::min(ours, dist(a.pos, c.pos));
+        bool enemy_closer = false;
+        for (const auto& e : S.enemies) if (dist(e.pos, c.pos) < ours) enemy_closer = true;
+        if (!enemy_closer && unit_alive(c.camp)) camp = &c;
+    }
+    if (camp) attack_unit(camp->camp);
 }
