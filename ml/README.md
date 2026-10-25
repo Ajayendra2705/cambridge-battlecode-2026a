@@ -60,3 +60,7 @@ Stop rules:
 
 - Hybrid label: add the deciding champion's own carried-gem change on top of the team swing (extra weight for its own bag). Compare against the pure team label in the offline eval.
 - Carried weight 0.38 (all-maps fit) vs 0.71, compared in the offline eval.
+- Recently seen enemies: a self feature counting enemies seen in the last ~10 rounds but not visible now (their reinforcements decide our fatal fights, `docs/findings.md`). Needs matching memory code in the bot.
+- Shields and stuns: buffs of visible champions are readable in-game but not extracted yet (needs a `rounds_extract.mjs` re-run).
+- Durability emblems: -10% damage taken is invisible to the strength/focus features.
+- Drop `range` from the unit features (it is a fixed function of type).
