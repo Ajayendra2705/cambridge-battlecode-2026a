@@ -1,4 +1,4 @@
-# Status (updated 2026-10-26 02:20 IST)
+# Status (updated 2026-10-26 04:30 IST)
 
 ## Now
 
@@ -7,6 +7,7 @@
 - **Panel b8 (built 10-26 01:00 from the ladder; we were 59 at 1899):** 12 teams from ranks 18-40 (ratings 1958-2101), 120 games, and bb8, the same teams on boss_battle + 4 maps (60 games): `results/panels/README.md`.
 - **plan9 (running since 02:06; `data/plan9.txt`, chain log `data/chain9.log`, decodes `data/decode9.log`):** on b8 main1026a, vi1 (Vesper items), bh1 (bank with the hazard of the moment), ro1 (retreat when outnumbered), as1 (assist an ally's fight), main1026b, dq2 (draft order), ba2 (bag-aware prey reach), main1026c; on bb8 main1026a and gk1 (altar guard as a target). 240 groups at 50 per hour: about 5 hours. Each variant is main + one change, rebuilt on fd2z; its target metric and decision rule are in its `docs/experiments.md` row. Judge with `sandwich.py` over the main runs, `paired.py --drop` and the row's decoded metric.
 - **plan10 (queued to start when plan9 ends, unless the patch is live: `data/plan10.txt`, `data/chain10.log`, decodes `data/decode10.log`):** on b9 (the b8 teams on all 70 platform maps, `results/panels/README.md`) main1026d, vh1 (ranged champions keep kiting after a hit), kd1fz (rt1 + kd1 on main), bz1 (shop adds Bruiser health and Jungle of the main stat), main1026e. b8 covered only the first 40 maps; 30 newer ones are 43% of ranked games (`docs/findings.md`, "The 30 maps we never tested"). Rules in the experiments rows. To stop it starting after the patch, create `data/patch_live`.
+- **Waiting for the chains:** `exp/ag4` (altar guards as a set of groups, so 02guardians stops walking bags to an altar that two live monoliths block) passed its quick-pool rule (356 vs 354 of 420, 0 faults). Apply it to main after plan10 (with `adopt.sh`), then submit main: changing main now would break the same-session base runs.
 - **Sprint 3 patch (announced on Discord 10-26, not live at 03:20 IST):** stat nerfs and buffs, Treasure 20% -> 10% gold, Monster 10% -> 15% camp damage, seven new item families (`docs/MECHANICS.md` section 0). `bots/main` reads per-shard growth from the engine since 03:15 (gs1, same play now). `tools/platform/patchwatch.sh` runs in the background; patch-day steps are step 00 below.
 - **Sprint 2 entry:** `cp3` (`bots/pool/cp3`), version 691 at 03:30 IST on 10-25, before that lock.
 - **Next deadline:** Sprint 3 locks Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST). The bot submitted at that moment is the tournament bot. Season ends 18 Nov.
