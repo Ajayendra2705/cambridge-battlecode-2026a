@@ -28,6 +28,12 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 | `events.py` | Decision points -> `data/ml/events.parquet` (`game, idx, r, champ, enemy, team, dist, split`; `idx` indexes `rounds`). 1.88M (champion, enemy) rows, 1.42M decisions. |
 | `actions.py` | `engaged(rounds, idx, champ)` -> set of enemies engaged this round |
 | `coverage.py` | Action counts per `simulate_fight` outcome group -> `data/ml/coverage.parquet` |
+| `labels.py` | `label(rounds, idx, champ, H, lam)`: team gem swing (carried x 0.71) + lam x death difference over H rounds |
+| `snapshots.py` | Team differences every 50 rounds + game result -> `data/ml/snapshots.parquet` (fit of the label constants) |
+| `features.py` | Per decision: self, ally and enemy unit vectors, game features, actions, label -> `data/ml/dataset.npz` |
+| `dataset.py` / `model.py` / `train.py` | Standardisation (train stats), FightQ (shared phi, sum pooling, engage and stay heads, masked loss), training with early stopping -> `data/ml/model.pt` |
+| `export_weights.py [BOT]` | Writes `bots/BOT/src/fightq_weights.h` (default `exp/fq1`) |
+| `parity.py BUNDLE EXTRACTED` | Compares the features a logging bot printed (`FQ` lines, team A) with Python's features from the same replay |
 | `vis_gaps.py` | Histogram of vision gaps per (champion, enemy) pair -> `data/ml/vis_gaps.png` |
 
 Data notes:
