@@ -10,7 +10,8 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 |---|---|---|
 | Learning setup | Supervised Q(s, a), one-step (contextual bandit), Monte Carlo label | Too few games for RL; the engage call is one decision with a delayed outcome |
 | Data | 1,328 ranked platform games on engine 1.0.3 (ranks 40-90 and their opponents), extracted by `tools/replay/rounds_extract.mjs` into `data/fights/ranked/` | Same distribution the bot will face |
-| Event trigger | A (champion, enemy) pair seen for the first time, or again after a gap > 3 rounds | Vision gap histogram (`vis_gaps.py`); the bot must use the same rule at test time |
+| Decision point | Every round a champion sees an enemy within `max(its range, 4)` (the bot's own `prey` condition) | First-sight events (gap > 3) were tried: engagement after first sight is spread over 20+ rounds with no drop-off, because champions walk in from up to 8 tiles. Re-deciding every round matches the bot |
+| Action | Per enemy in reach: engage = this round it attacked or cast on that enemy, or moved closer to it; else don't engage | Matches the bot's engage branch (hit the prey or step toward it) |
 | Model family | Set encoder (phi 6->16, pool, head 32->16->1), about 3k fuel with SIMD | Measured in `bots/exp/fuelm` (`docs/findings.md`) |
 | Split | By game: 930 train / 199 val / 199 test (`data/ml/games.parquet`, seed 0) | Rows from one game are correlated |
 | Inputs | Only what the champion can see in-game (its `vis` list, plus its own team) | Feature parity with the bot |
@@ -20,11 +21,17 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 | File | Use |
 |---|---|
 | `common.py` | `load_game(id)` -> `(meta, rounds)` without draft rounds. `load_games()` -> games table (`game, map, team_a, team_b, rank_a, rank_b, winner, split`; `winner` 0 = A, 1 = B). Run it to rebuild `data/ml/games.parquet`. `cooldowns(rounds)` -> `cd[round_idx][champ][slot]`, rounds until ready at round start. |
+| `simfight.py` | Python port of the bot's engage rule: `engage_decision(rnd, cds, i)` -> prey, engage, winning/finisher/rich, sim result. Baseline for offline eval. Stat table checked: max hp from items matches the replay on all 18,399 champion-rounds of one game. Differences from the bot: no spawn-tile rules, no team focus calls, calibration factor fixed at 1. |
+| `events.py` | Decision points -> `data/ml/events.parquet` (`game, idx, r, champ, enemy, team, dist, split`; `idx` indexes `rounds`). 1.88M (champion, enemy) rows, 1.42M decisions. |
+| `actions.py` | `engaged(rounds, idx, champ)` -> set of enemies engaged this round |
+| `coverage.py` | Action counts per `simulate_fight` outcome group -> `data/ml/coverage.parquet` |
 | `vis_gaps.py` | Histogram of vision gaps per (champion, enemy) pair -> `data/ml/vis_gaps.png` |
 
 Data notes:
 - `meta["outcome"]` in the extracted files is always 0 (extractor bug). Use `winner` from `load_games()`.
 - Cooldowns are derived from cast history: exact for 12 champions (0 errors in 24k casts), an overestimate on 17% of Vendetta's casts (camp kills reset her and are not in the data). The bot reads enemy cooldowns live (`docs/MECHANICS.md`), so they are a legal feature.
+- Each round has `vis[i]` (enemies champion i sees) and `avis[i]` (allies it sees). Vision is not shared, and 7% of allies within 8 tiles are hidden, so use `avis`, not distance.
+- Item counts of visible champions (allies and enemies) are readable in-game (`docs/MECHANICS.md` section 8), so items are a legal feature.
 - Champion `ty` ids follow `champion_type` in `sdk/cpp/cambc.h` (0 Ryth ... 12 Heart of Ruin).
 
 ## Pipeline
@@ -45,4 +52,3 @@ Stop rules:
 
 - Vendetta cooldowns are approximate (see above).
 - Actions are what other teams' bots did. Situations where no bot engages have few "engaged" examples, so Q is least reliable there (selection bias).
-- Whether the bot can read enemy items in fog is unchecked (`item_count()` in `cambc.h` does not say).

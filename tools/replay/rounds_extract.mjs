@@ -27,14 +27,20 @@ function snapshot(R, s) {
     if (items.length) row.it = items;
     return row;
   });
-  const vis = s.champions.map((me) => {
-    if (!me.alive || !me.position) return [];
-    const v = R.stateAs(me.team, me.entity.index);
-    const seen = [];
-    v.champions.forEach((c, i) => { if (c.team !== me.team && c.position) seen.push(i); });
-    return seen;
+  const vis = [], avis = [];
+  s.champions.forEach((me) => {
+    const seen = [], allies = [];
+    if (me.alive && me.position) {
+      const v = R.stateAs(me.team, me.entity.index);
+      v.champions.forEach((c, i) => {
+        if (!c.position || i === me.entity.index) return;
+        (c.team !== me.team ? seen : allies).push(i);
+      });
+    }
+    vis.push(seen);
+    avis.push(allies);
   });
-  return { r: s.round, sg: s.submittedGems.map(Number), c: champs, vis };
+  return { r: s.round, sg: s.submittedGems.map(Number), c: champs, vis, avis };
 }
 
 export function extract(file, out) {
