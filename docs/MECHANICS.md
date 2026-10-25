@@ -11,9 +11,11 @@ Every value carries its source:
 
 `docs/reference/GameRules.md` is outdated on numbers: it has no Heart of Ruin, clusters at 500 hp, monolith range 3, wolf 22 gems, kill gold 50, altar lock 3 hits, Vesper +20%, Prism 0.2 focus per gem. Use this file instead.
 
-## 0. Sprint 3 patch (announced, not live yet)
+## 0. Sprint 3 patch (live on the platform since 10-26 04:2x IST; no local engine yet)
 
 Source: patch notes posted on the competition Discord on 2026-10-26 (pasted by the team) [patch notes]. Not live at 02:51 IST on 10-26: platform matches still ran engine 1.0.3 (build hash `fcb6c3e881c4...`), and PyPI still had `cambc` 3.0.5. `tools/platform/patchwatch.sh` waits for either to change. The tables in sections 6, 10 and 11 below are the live engine until then; once it is live, re-run the probe `exp/ps1` (prints every champion design and item from the engine) and update them with [engine] values.
+
+**Live:** ranked matches finished at 04:22 IST on 10-26 ran engine **2.0.0** (build hash `85aa7167b44d...`); the last 1.0.3 games finished at 04:10 (`tools/platform/patchwatch.sh`, 04:29 check). PyPI still had `cambc` 3.0.5 at 04:40, and `cambc init` still writes the 3.0.5 SDK, so local runs keep engine 1.0.3 and only the platform plays 2.0.0. cambc 3.0.5 converts 2.0.0 match summaries with placeholder names ("Unknown champion (3)", "Unknown item (8)") and a misaligned roster; the draft list and the match listing (`cambc matches list --json`, team `characters` and `engineVersion`) are intact. [platform]
 
 | Change | Old | New |
 |---|---|---|
