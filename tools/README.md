@@ -27,7 +27,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `rcmp.py BASE NEW...` | Paired comparison of runs on shared (opponent, map) games: flips, margin, sign test. Caches in `data/cache/`; give every run a unique name. Join runs with `+` to match a combined panel: `rcmp.py "A@b5+B@b6" C@b56`. |
 | `sandwich.py BASE1 BASE2 NEW...` | Verdict for candidates gated between two runs of the same base (plan5 style): drops opponents whose games differ between the two base runs (they changed bots), then compares each NEW with BASE1 and with every earlier NEW on the kept games. Reads rcmp.py's cache, so run `rcmp.py BASE1 BASE2 NEW...` first. |
 | `gatechain.sh PLAN [CUTOFF]` | Run gates one after another from a plan of `BOT RUN PANEL` lines (panels in `results/panels/`), through `gateq.sh`. Refuses to start while another gate runs; starts no gate after `CUTOFF` (HHMM). Run it in the background. |
-| `procs.sh [kill]` | List (or stop) running gates, chains and local runs. Git Bash `ps` hides command lines; this reads `/proc/PID/cmdline`. |
+| `procs.sh [kill]` | List (or stop) running gates, chains, local runs and replay decodes (also those a previous session left running). Git Bash `ps` hides command lines; this reads `/proc/PID/cmdline`. |
 | `adopt.sh NEW OLD_NAME` | Make `bots/exp/NEW` the ladder bot: old main to `bots/pool/OLD_NAME`, copy, one-game build check, submit main until "Submitted". Refuses while a gate runs. |
 | `group.py GROUP...` | Results of match groups. Saves summaries to `data/summaries/`. |
 | `panel_result.py GROUP...` | Totals (wins, gems, deaths) for a set of groups. |
