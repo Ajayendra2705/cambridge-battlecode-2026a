@@ -1,4 +1,5 @@
 import copy
+import sys
 import time
 
 import torch
@@ -39,7 +40,8 @@ def constant_baseline(train, data):
 
 
 def main():
-    torch.manual_seed(0)
+    seed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+    torch.manual_seed(seed)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     data, stats = load(device)
     model = FightQ(len(UNIT_FEATURES), len(GAME_FEATURES)).to(device)
@@ -67,8 +69,8 @@ def main():
             if bad >= PATIENCE:
                 break
 
-    torch.save(dict(state=best_state, stats=stats, unit_features=UNIT_FEATURES, game_features=GAME_FEATURES), OUT / "model.pt")
-    print(f"best val {best:.4f}, saved {OUT / 'model.pt'}")
+    torch.save(dict(state=best_state, stats=stats, unit_features=UNIT_FEATURES, game_features=GAME_FEATURES), OUT / f"model_s{seed}.pt")
+    print(f"seed {seed} best val {best:.4f}")
 
 
 if __name__ == "__main__":

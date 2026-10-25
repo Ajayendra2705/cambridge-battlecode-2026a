@@ -143,7 +143,10 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | n_brs / n_sd / n_sd2 / n_ks / n_sg / n_sf / n_dz / n_rb / n_qr | n_q | bruisers fight back / sim duels / kill secure / monolith siege / Stellar funnel / danger zones / respawn banking / Ryth draft | all worse or flat | n_qr 34/90, n_sf 38/90 | R |
 | n_phantom / n_sb / n_hor / n_path2 / n_ward / n_pl / n_pg / n_pr / n_stell / n_bank | j_standht | early 3.0 feature variants | - | 19-26/90 | N |
 | opt_e1 / opt_g1t / opt_best | j_standht | evolution strategy on economy constants vs starter | race 523-549 | 15-20/90 | R (overfits, kills survival) |
-| fq1 | main | learned engage decision (ml/ FightQ v1, 2.3k params): replaces the hand rules whenever an enemy is within max(range,4) | 1 game vs hb4 on gemfight: 0 kills 21 deaths (main: 2 kills 7 deaths); feature parity with Python checked (`ml/parity.py`) | not gated | R (v1 model; Q(engage)-Q(stay) gap looks like noise, no offline eval yet) |
+| fq1 | main | learned engage decision (ml/ FightQ v1, 1 model, 2.3k params) replaces the hand rules whenever an enemy is within max(range,4) | 60 games (3 pool bots x 10 maps x 2 sides): 19 wins vs main 34, deaths 1153 vs 565. 10x fuel: 19 vs 43 | not gated | R |
+| fq2 | fq1 | 5-model ensemble; acts only when all 5 agree on engage vs stay (42% of decisions offline), else hand rules | 15/60 (fuel exhaustion: 301 vs 13 turns in one game). 10x fuel: 33 vs main 43 | not gated | R |
+| fq3 | fq1 | commitment: keep engaging unless Q gap < -0.1 std (flip rate offline 11% -> 5%) | 17/60. 10x fuel: 19 | not gated | R (no effect) |
+| fq4 | fq2 | gate + commitment | 8/60. 10x fuel: 32 | not gated | R |
 
 ## Engine 2.x era (2026-10-18 to 10-20)
 

@@ -12,6 +12,8 @@ Measured facts that shaped the bot, and what we know about stronger teams. Exact
 - Fight-turn fuel (probe `exp/fuelm`, hb4 code, 32 local games vs hb4/tf3 on 8 maps, 2026-10-24): turns with a prey use 41.7k on average (p50 41k, p90 56k, p99 70k, max 88k). Building the sim inputs costs 10k (max 44k) and `simulate_fight` 4.5k (max 11k), with 3.7 units on average. `fuel_remaining()` costs 6 fuel.
 - Small dense nets cost about 7 fuel per multiply-add as written (scalar loops, no vectorisation): a set encoder with phi 6->16 and head 32->16->1 cost 6.8k on average (max 9.3k), and a 2-layer phi 6->16->16 cost 13.9k (max 47k incl. first-call weight init). Clang `-O3 -msimd128` only half-vectorises dot-product loops (`a += W[j][k] * x[k]`), because it may not reorder float adds. Transposed weights with explicit `wasm_simd128.h` axpy loops (`acc[j] += W[k][j] * x[k]`) cut this to 2.9k (max 3.7k) and 7.0k (max 16k), with outputs equal to the scalar nets within 6e-8.
 
+- Learned fight model (`ml/`, 2026-10-26): one FightQ forward pass (12 units, 2.3k params, SIMD) is affordable, but a 5-model ensemble plus the existing `simulate_fight` exhausted fuel on 301 turns in one local game (main: 13).
+
 ## Camps and economy
 
 - Camps never regenerate or chase. A whole group wakes when one member is hit. A woken camp hits the nearest champion, not the one that woke it. Sleeping camps never attack, even adjacent. Camps fall asleep 2 rounds after no champion is in range.
@@ -27,6 +29,7 @@ Measured facts that shaped the bot, and what we know about stronger teams. Exact
 - Per-turn 1v1 damage is equal to rivals. Total champion damage is lower only because we die and flee more.
 - Ryth and Marcella were starved of gold by slot-order capture sharing. `gb2` fixed it by sharing by fewest owned shards. Overfeeding one champion (gb3) was wasted.
 - Platform opponents punish aggression that local bots reward. Blind no-flee play (nf2, ag*) and looser fight entry (pa1, lf1) lost on the platform. Current fight thresholds look like a local optimum both ways (tighter bpt1/bpt2 is also worse).
+- A learned engage model (FightQ v1: supervised Q(s,a) on 1.4M platform decisions, val MSE 0.73 vs 0.94 baseline) plays far worse than `simulate_fight` + hand rules (local, 10x fuel: 19/60 vs 43/60). Its engage-vs-stay gap is about the size of its seed-to-seed noise; the more decisions it controls, the worse the bot (fq1-fq4 in `docs/experiments.md`).
 - Widening the help call made things worse (hc2: whole map 5/20 vs 10/20).
 
 ## Maps
