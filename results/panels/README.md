@@ -9,6 +9,8 @@ Opponents change bots over time. A panel result is only comparable with runs mad
 
 | Panel | Built | Teams (ladder ranks then) | Games |
 |---|---|---|---|
+| `b7` | 2026-10-25 22:05, we were 63 (1888.7) | umamusume, BBL, filter, 💩 Super Intelligence 💩, janestreethireusplease, geese geese go, Valenki, SquidProxyLovers, Sneaky Bush Campers, SkuBap, Bamboo Teahouse, error404 (every other rank from 40 to 62, ratings 1890-1956); `mkpanel.py` seed 7: three blocks of 4 teams, each block covers all 40 maps once, our side alternates (5 games on each side per team). The first panel with side b games | 120 |
+| `bb7` | 2026-10-25 22:05 | the 12 `b7` teams, one group each: boss_battle (our side a for 6 teams, b for 6) plus 4 of their `b7` maps. For changes that act only on boss_battle (`gk1`) | 60 |
 | `b6` | 2026-10-24 23:25, we were 77 | 剑桥夜爬者, AlphaSlop, Stubborn Gold Clusters (no eligible bot since 10-25 00:00: skipped), HouseOfCoders, The Party of Heroes (ranks 60, 62-65); two 5-map windows per team covering all 40 maps | 40 |
 | `b5` | 2026-10-24 18:00, we were 88 | Sydney's Realist, HouseOfCoders, ha²t, :3, umamusume (ranks 72-77 without 75); two windows each | 50 |
 | `b56` | | `b5` then `b6` in one gate (90 games, one upload). `rcmp.py "A@b5+B@b6" C@b56` compares it with separate runs | 90 |
@@ -20,8 +22,13 @@ Opponents change bots over time. A panel result is only comparable with runs mad
 | `b1`, `b1x` | 2026-10-24 03:00, we were 96 | Ninja Turtles, DOOMSDAY, Sic Mundus Creatus Est, error404, Shawn (ranks 81-85) | 25 + 25 |
 | `r70` | 2026-10-23 | ranks 70-80 | 55 |
 | `r30` | 2026-10-23 | AlphaSlop (then rank 30) on all 40 maps | 40 |
+| `bb` | 2026-10-25 | the 15 `b3456` teams, one group each: boss_battle plus 4 of the maps they play in `b3456` (a group needs 5 different maps). For changes that act only on boss_battle (`gk1`) | 75 |
 | `lost1` | 2026-10-25 | umamusume on 5 maps every variant lost (boss_battle, contest, gemfight, packs, concentrated_wealth) | 5 |
 
-A new batch panel: read the ladder (`cambc ladder --page N --json`), check eligibility
-(`python -I tools/platform/eligible.py LADDER_JSONL RANKS`), and pick maps so that each team's two windows together cover
-the pool (seeded shuffle, see `docs/WORKFLOW.md`).
+A new batch panel: read the ladder (`cambc ladder --page N --limit 25 --json`, one line per page, into
+`data/ladder_NAME.jsonl`), check eligibility (`python -I tools/platform/eligible.py LADDER_JSONL RANKS`), then
+`python -I tools/platform/mkpanel.py SEED TEAM_ID... > results/panels/specs_NAME.txt`.
+
+Until `b7`, every panel game had us on side a (the default of `match-groups create`). A game's result depends on the
+side too, so those panels sampled half of the possible games. Our ranked games 10-25 (57 with summaries): side a 14/25,
+side b 20/32.

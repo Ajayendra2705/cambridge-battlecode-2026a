@@ -7,7 +7,8 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
 
   gems      collected, tributed, lost on death, carried bag and deaths per game by round (default 300 600 1000)
   fights    by round 800: hits on enemy champions, champion damage dealt, deaths; outcome of fight starts
-  channels  tribute channels by bag size (share completed) and the per-turn break rate by enemies near the altar
+  channels  tribute channels by bag size (share completed), the per-turn break rate by enemies near the altar, and bags
+            over 30 by whether an enemy came within 4 of the channeler (completed, cast on)
   types     per champion type: deaths, champion damage, gems, share of alive rounds hitting a champion, and the hit
             rate by distance to the nearest enemy
   items     emblems and shards per champion type at a round (default 600)
@@ -18,6 +19,11 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
             outnumbered / even / outnumbering shares; deaths by which side started that fight (default to round 1000)
   fuel      deaths within 5 rounds after the champion's own fuel exhaustion, and exhaustions per game in rounds 1-3, with
             an enemy within 6 and without; needs data/summaries/<match>.json (tools/replay/fuel_events.py fetches them)
+  assist    a healthy (60%+) champion whose teammate within 6 is hit by an enemy champion: its action by distance to the
+            nearest enemy, and, with an enemy within 4, how joining (hit or step closer) and holding went over the next 10
+            rounds by numbers within 6, once per champion and teammate per 15 rounds (default to round 1000)
+  guard     boss_battle only: the first round a guard monolith died, each side's hits on the guards, tributed by a round
+            (default 1000) and the result, one line per game
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -152,6 +158,15 @@ def cmd_channels(dirs, rounds):
                 altar = (tr[0][1], tr[0][2])
                 near = sum(1 for o in b['c'] if o['t'] != c['t'] and o['a'] and 'x' in o and dist(altar, (o['x'], o['y'])) <= 10)
                 L[(w, min(near, 2))][0] += turns; L[(w, min(near, 2))][1] += 1; L[(w, min(near, 2))][2] += not ok
+                if g <= 30: continue
+                # Bags over 30: was an enemy champion within 4 of the channeler (stun reach) on any channel turn, did one cast on it.
+                close = cast = False
+                for r in rows[k:k + turns + 1]:
+                    me = r['c'][i]
+                    if not me['a'] or 'x' not in me: break
+                    close |= any(o['t'] != c['t'] and o['a'] and 'x' in o and dist((me['x'], me['y']), (o['x'], o['y'])) <= 4 for o in r['c'])
+                    cast |= any(x[0] == 'cast' and x[-1] == i for e in range(n) for x in enemy_hits(r, e, n))
+                q = (w, close); C[q + ('n',)] += 1; C[q + ('ok',)] += ok; C[q + ('cast',)] += cast
     print(f'{ng} games; tribute channels per game by bag size:')
     for w in ('us', 'them'):
         for size in ('<=20', '21-50', '51-100', '>100'):
@@ -161,6 +176,12 @@ def cmd_channels(dirs, rounds):
     for k in sorted(L):
         turns, n, fails = L[k]
         print(f'  {k[0]:4} {k[1]} enemies: {n} channels, break rate {fails / max(1, turns):.4f}')
+    print('bags over 30 by whether an enemy champion came within 4 of the channeler during the channel:')
+    for w in ('us', 'them'):
+        for close in (True, False):
+            m = C[(w, close, 'n')]
+            if m: print(f'  {w:4} {"enemy within 4" if close else "no enemy near"}  {m / ng:4.2f} per game  completed'
+                        f' {100 * C[(w, close, "ok")] / m:3.0f}%  an enemy cast on the channeler {100 * C[(w, close, "cast")] / m:3.0f}%')
 
 
 def cmd_types(dirs, rounds):
@@ -344,6 +365,78 @@ def cmd_sources(dirs, rounds):
         print(f'{w} gems by r{R} per game: ' + ', '.join(f'{k} {v / ng:.0f}' for k, v in sorted(H[w].items(), key=lambda x: -x[1])))
 
 
+def cmd_assist(dirs, rounds):
+    R = (rounds or [1000])[0]
+    A = collections.Counter(); O = collections.Counter(); ng = 0
+    for us, res, mp, meta, rows in games(dirs):
+        ng += 1
+        n = len(rows[0]['c']); last = {}
+        for k in range(len(rows) - 11):
+            a, b = rows[k], rows[k + 1]
+            if a['r'] > R: break
+            hit_by = collections.defaultdict(list)  # champion index -> enemy champions hitting it this round
+            for i in range(n):
+                for x in enemy_hits(a, i, n): hit_by[x[-1]].append(i)
+            for i, c in enumerate(a['c']):
+                if not c['a'] or 'x' not in c or not b['c'][i]['a'] or 'x' not in b['c'][i]: continue
+                if c.get('hp', 0) < 0.6 * max(1, c.get('mhp', 1)): continue
+                p = (c['x'], c['y'])
+                mates = [j for j in hit_by if j != i and a['c'][j]['t'] == c['t'] and 'x' in a['c'][j]
+                         and dist(p, (a['c'][j]['x'], a['c'][j]['y'])) <= 6]
+                foes = [o for o in a['c'] if o['t'] != c['t'] and o['a'] and 'x' in o]
+                if not mates or not foes: continue
+                w = who(c['t'], us); hits = bool(enemy_hits(a, i, n))
+                dn0 = min(dist(p, (o['x'], o['y'])) for o in foes)
+                dn1 = min(dist((b['c'][i]['x'], b['c'][i]['y']), (o['x'], o['y'])) for o in foes)
+                act = 'hit' if hits else 'camp' if camp_hits(a, i) else 'closer' if dn1 < dn0 else 'away' if dn1 > dn0 else 'still'
+                band = '1-2' if dn0 <= 2 else '3-4' if dn0 <= 4 else '5+'
+                A[(w, band, 'n')] += 1; A[(w, band, act)] += 1
+                if dn0 > 4: continue
+                al6 = sum(1 for o in a['c'] if o['t'] == c['t'] and o['a'] and 'x' in o and dist(p, (o['x'], o['y'])) <= 6)
+                en6 = sum(1 for o in foes if dist(p, (o['x'], o['y'])) <= 6)
+                key = (w, 'even' if al6 == en6 else 'ahead' if al6 > en6 else 'behind', 'join' if hits or dn1 < dn0 else 'hold')
+                for j in mates:
+                    fresh = k - last.get((i, j), -99) > 15; last[(i, j)] = k
+                    if not fresh: continue
+                    jp = (a['c'][j]['x'], a['c'][j]['y'])
+                    O[key + ('n',)] += 1
+                    O[key + ('mate',)] += any(not rows[k + t]['c'][j]['a'] for t in range(1, 11))
+                    O[key + ('self',)] += any(not rows[k + t]['c'][i]['a'] for t in range(1, 11))
+                    O[key + ('kills',)] += sum(1 for e in range(n) if a['c'][e]['t'] != c['t'] and a['c'][e]['a'] and 'x' in a['c'][e]
+                                               and dist(jp, (a['c'][e]['x'], a['c'][e]['y'])) <= 8
+                                               and any(not rows[k + t]['c'][e]['a'] for t in range(1, 11)))
+    print(f'{ng} games to r{R}; healthy (60%+) champion, teammate within 6 hit by an enemy champion this round')
+    print('  its action by distance to the nearest enemy (share of those rounds):')
+    for w in ('us', 'them'):
+        for band in ('1-2', '3-4', '5+'):
+            m = max(1, A[(w, band, 'n')])
+            print(f'    {w:4} enemy {band:3} {A[(w, band, "n")] / ng:5.1f}/game  '
+                  + '  '.join(f'{x} {100 * A[(w, band, x)] / m:4.1f}%' for x in ('hit', 'camp', 'closer', 'still', 'away')))
+    print('  enemy within 4, joined or held, by numbers within 6; within the next 10 rounds:')
+    for w in ('us', 'them'):
+        for odds in ('ahead', 'even', 'behind'):
+            for way in ('join', 'hold'):
+                m = O[(w, odds, way, 'n')]
+                if m: print(f'    {w:4} {odds:6} {way} {m / ng:5.2f}/game: teammate dies {O[(w, odds, way, "mate")] / m:.2f},'
+                            f' self {O[(w, odds, way, "self")] / m:.2f}, enemies within 8 of the teammate die {O[(w, odds, way, "kills")] / m:.2f}')
+
+
+def cmd_guard(dirs, rounds):
+    R = (rounds or [1000])[0]
+    print(f'boss_battle games: first round a guard monolith died, hits on the guards, tributed by r{R}')
+    for us, res, mp, meta, rows in games(dirs):
+        if 'boss' not in mp: continue
+        mono = [int(k) for k, v in meta['camps'].items() if v == 4]  # boss_battle's only monoliths are the two guards
+        n = len(rows[0]['c']); hits = collections.Counter(); first = None
+        for r in rows:
+            for i in range(n):
+                hits[who(r['c'][i]['t'], us)] += sum(1 for x in camp_hits(r, i) if x[-1] in mono)
+            if first is None and any(r['mh'][m] <= 0 for m in mono if m < len(r['mh'])): first = r['r']
+        last = [r for r in rows if r['r'] <= R][-1]
+        print(f"  {meta['file'][:8]} {res:4} guard first dead r{first}  hits us {hits['us']} them {hits['them']}"
+              f"  tributed us {last['sg'][us]} them {last['sg'][1 - us]}")
+
+
 def main():
     args = sys.argv[1:]
     if len(args) < 2 or args[0] not in CMDS: sys.exit(__doc__)
@@ -354,7 +447,8 @@ def main():
 
 
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
-        'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel}
+        'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel, 'assist': cmd_assist,
+        'guard': cmd_guard}
 
 if __name__ == '__main__':
     main()
