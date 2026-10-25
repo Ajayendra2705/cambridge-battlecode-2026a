@@ -541,7 +541,7 @@ def cmd_captures(dirs, rounds):
                     pending[g] = (b['r'], first_hit.pop(g, b['r']), by.most_common(1)[0][0] if by else 'none')
             for i, c in enumerate(b['c']):
                 pc = a['c'][i]
-                if not (c['a'] and pc['a'] and 'x' in c) or c.get('g', 0) <= pc.get('g', 0) or c.get('k', 0) > pc.get('k', 0): continue
+                if not (c['a'] and pc['a'] and 'x' in c) or (c.get('g', 0) <= pc.get('g', 0) and c.get('au', 0) <= pc.get('au', 0)) or c.get('k', 0) > pc.get('k', 0): continue
                 p = (c['x'], c['y'])
                 g = next((g for g in pending if p in gtiles[g]), None)
                 if g is None: continue
@@ -556,7 +556,7 @@ def cmd_captures(dirs, rounds):
                     V[(w, 'cycle')].append(b['r'] - last_cap[i][0]); V[(w, 'moves')].append(moves[i])
                     V[(w, 'hop')].append(dist(p, last_cap[i][1]))
                 last_cap[i] = (b['r'], p); moves[i] = 0
-    print(f'{ng} games to r{R}: group captures per game (a capture is a bag increase without a kill on a tile of a group whose '
+    print(f'{ng} games to r{R}: group captures per game (a capture is a gem or gold gain without a kill on a tile of a group whose '
           f'camps all died), region by distance to each side\'s start tiles')
     for w in ('us', 'them'):
         tot = sum(N[(w, r)] for r in ('own', 'middle', 'enemy'))
