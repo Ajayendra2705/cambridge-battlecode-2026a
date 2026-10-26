@@ -215,6 +215,7 @@ Health, strength and range are [engine] designs. Rewards and respawn come from s
   - Place it on an altar within 2 tiles. Placing it cancels existing enemy tribute channels there. It blocks enemy tributes; its owner's team can still tribute.
   - Removing it takes **5 basic attacks** (`altar_lock_hits` = 5 [engine]; the handbook's 3 is outdated).
   - An enemy's tribute attempt at a locked altar is converted into a basic attack on the lock. [doc] [measured]
+  - A lock goes on an altar that already holds the other team's lock, and it still cancels that team's channel there: our own lock does not protect a tribute. Both locks then stay; our tribute attempts there turn into hits on theirs. Placing a lock and starting a tribute in the same turn works. [measured 2026-10-26, probe sl1d vs lkc, 20 games: `LK place ... locked 1 theirs 1 ok 1`, our 21-gem channel cancelled and restarted 5 times before it completed]
 
 ## 10. Gold
 
@@ -258,7 +259,7 @@ Bonuses add, so Treasure on Vesper gives +43% (+53% before 2.0.0). [doc] The tie
 - Buying Health on spawn also heals that amount; Tavi's purchases away from spawn do not heal. [doc]
 - **Consumables** (10 gold each, bought on spawn or while dead) [engine]:
   - Teleport crystal: carry limit 1.
-  - Altar lock: carry limit **1** (the engine table says 0, but a second buy throws "error 58: Consumable carrying limit reached"). Placed with `consumables()[altar_lock].use(altar)` from within 2 tiles; works on any unlocked altar. [measured 2026-10-23, probe bot lkp, deleted]
+  - Altar lock: carry limit **1** (the engine table says 0, but a second buy throws "error 58: Consumable carrying limit reached"). Placed with `consumables()[altar_lock].use(altar)` from within 2 tiles; works on an unlocked altar and also on one that holds an enemy lock (section 9). [measured 2026-10-23, probe bot lkp, deleted]
   - Platform rivals (panel 8, ranks 60-69) buy **6.6 altar locks per game** (up to 18); we bought none before lk1. [measured]
 - Example: one Durability-health shard on Ryth adds 100 max health, and through her passive +1 Strength. One strength shard on Vendetta adds 6 Strength.
 

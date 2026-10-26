@@ -22,6 +22,9 @@ v0=$(pypi); d0=$(dist); e0=$(engine)
 echo "start $(date '+%m-%d %H:%M'): pypi cambc $v0, distribution $d0, engine $e0"
 while sleep $(( ${1:-10} * 60 )); do
   v=$(pypi); d=$(dist); e=$(engine)
+  # A failed first read is no baseline: take the first value that comes back (10-26: an empty engine at 16:33 read
+  # as "2.0.0" at 18:35 and woke the session for nothing).
+  [ -z "$v0" ] && v0=$v; [ -z "$d0" ] && d0=$d; [ -z "$e0" ] && e0=$e
   [ -n "$v" ] && [ "$v" != "$v0" ] && { echo "$(date '+%m-%d %H:%M') new cambc on PyPI: $v0 -> $v (engine $e)"; exit 0; }
   [ -n "$d" ] && [ "$d" != "$d0" ] && { echo "$(date '+%m-%d %H:%M') new cambc on the platform: $d0 -> $d (engine $e)"; exit 0; }
   [ -n "$e" ] && [ "$e" != "$e0" ] && { echo "$(date '+%m-%d %H:%M') platform engine changed: $e0 -> $e (pypi $v)"; exit 0; }

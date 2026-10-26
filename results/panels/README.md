@@ -15,6 +15,7 @@ bots matter more than a stable comparison, at least once a day.
 
 | Panel | Built | Teams (ladder ranks then) | Games |
 |---|---|---|---|
+| `b10` | 2026-10-26 18:10, we were 70 | all 21 eligible teams of ladder ranks 20-40 (ratings 1977-2079): Oldenkamp, conqueror_of_openai, ひななー, Zarzorki, Nyx, meow, FürFortnite, Nameless, DICTATOR Sahur, test4, BattleCats, subscribe to caterpillow, 𓎼𓃭𓅱𓂋𓇌 𓏏𓅱 𓂋𓄿, Sheeesh---, dromedaries, SSSA, Jupiter, 💩 Super Intelligence 💩, smurphy, Let's LARP again, jazz; `mkpanel.py` seed 10, first 5-map window of each team only, our sides a,b,a,b,a for every other team and b,a,b,a,b for the rest. For the detailed study of the 20-40 band; pin it (`b10p`) from main's first run | 105 |
 | `b9p` | 2026-10-26 12:00 | `b9` pinned to the opponents' bots of `main1026h_b9@b9` (10:30-11:05 IST), whose games are its base | 120 |
 | `b9` | 2026-10-26 04:15 | the 12 `b8` teams on the platform's 70-map pool (the 15 new `02` maps, 10 more `00` maps and adgato_gemcombat1-5 had never been in a panel; they are 43% of ranked games): `mkpanel.py` seed 9, 65 maps, 52 of the 120 games on the 30 newer maps | 120 |
 | `b8` | 2026-10-26 01:00, we were 59 (1899) | Nyx, subscribe to caterpillow, Tartarus, conqueror_of_openai, Jupiter, FürFortnite, meow, smurphy, Let's LARP again, the ruliad, ha²t, Nanyang Technological University (every other rank from 18 to 40, ratings 1958-2101: the user asked for a stronger batch than `b7`); `mkpanel.py` seed 8, same layout as `b7` | 120 |
