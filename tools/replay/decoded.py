@@ -33,6 +33,8 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
             captures and the straight distance (default to round 1000)
   defend    fights started on a champion at half health or more, per champion type: share of the next 6 rounds hitting a
             champion, moving, moving away, standing still; P(it dies) and P(an enemy of it dies) within 10 rounds
+  gold      team gold (unspent plus 30 per shard owned) per game by round (default 300 600 1000) and team size, and camp
+            kills by type to the first round (credited to the side that hit the camp last) with their gold and gems
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -627,9 +629,68 @@ def cmd_defend(dirs, rounds):
         print(line)
 
 
+def gold_held(meta, c):
+    """Gold a champion holds: unspent plus 30 per shard it owns (an emblem is 5 shards, a Greed emblem 25)."""
+    sh = 0
+    for it, cnt in c.get('it', []):
+        name = item_name(meta, it)
+        sh += cnt * ((25 if name.startswith('greed') else 5) if name.endswith('emblem') else 1)
+    return c.get('au', 0) + 30 * sh
+
+
+def cmd_gold(dirs, rounds):
+    rounds = rounds or [300, 600, 1000]
+    # Camp rewards (docs/MECHANICS.md section 7): gold and gems per camp type.
+    reward = {0: (40, 4), 1: (90, 15), 2: (0, 7), 3: (20, 0), 4: (300, 200), 5: (160, 36)}
+    A, K, N = collections.Counter(), collections.Counter(), collections.Counter()
+    for us, res, mp, meta, rows in games(dirs):
+        n = len(rows[0]['c'])
+        size = str(n // 2)
+        byr = {r['r']: r for r in rows}
+        for R in rounds:
+            r = byr.get(R)
+            if not r: continue
+            for s in (size, 'all'):
+                N[(R, s)] += 1
+                for c in r['c']: A[(R, s, who(c['t'], us))] += gold_held(meta, c)
+        # Camp kills to the first round, credited to the side that hit the camp last.
+        types = {int(k): v for k, v in meta.get('camps', {}).items()}
+        last, prev = {}, None
+        for r in rows:
+            if r['r'] > rounds[0]: break
+            for i in range(n):
+                for x in camp_hits(r, i): last[x[-1]] = who(r['c'][i]['t'], us)
+            if prev is not None:
+                for ci, hp in enumerate(r['mh']):
+                    if prev['mh'][ci] > 0 and hp == 0 and ci in last and types.get(ci) in reward:
+                        for s in (size, 'all'):
+                            K[(s, last[ci], CAMPS[types[ci]])] += 1
+                            K[(s, last[ci], 'total gold')] += reward[types[ci]][0]
+                            K[(s, last[ci], 'total gems')] += reward[types[ci]][1]
+            prev = r
+    print('team gold (unspent + 30 per shard owned) per game, us / them (ratio), by team size')
+    for R in rounds:
+        line = f'  r{R:<5}'
+        for s in ('all', '3', '4', '5'):
+            ng = N[(R, s)]
+            if not ng: continue
+            u, t = A[(R, s, 'us')] / ng, A[(R, s, 'them')] / ng
+            line += f'  {s} ({ng}): {u:.0f} / {t:.0f} ({u / max(1, t):.2f})'
+        print(line)
+    print(f'camp kills per game to r{rounds[0]} (side that hit last), with their gold and gems')
+    for s in ('all', '3', '4', '5'):
+        ng = N[(rounds[0], s)]
+        if not ng: continue
+        line = f'  size {s:3}'
+        for k in ('wolf', 'elk', 'gem', 'gold', 'golem', 'monolith'):
+            line += f'  {k} {K[(s, "us", k)] / ng:.1f}/{K[(s, "them", k)] / ng:.1f}'
+        line += f'  | gold {K[(s, "us", "total gold")] / ng:.0f}/{K[(s, "them", "total gold")] / ng:.0f} gems {K[(s, "us", "total gems")] / ng:.0f}/{K[(s, "them", "total gems")] / ng:.0f}'
+        print(line)
+
+
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
         'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel, 'assist': cmd_assist,
-        'guard': cmd_guard, 'shots': cmd_shots, 'captures': cmd_captures, 'defend': cmd_defend}
+        'guard': cmd_guard, 'shots': cmd_shots, 'captures': cmd_captures, 'defend': cmd_defend, 'gold': cmd_gold}
 
 if __name__ == '__main__':
     main()
