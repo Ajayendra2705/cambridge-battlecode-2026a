@@ -41,6 +41,9 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
             captured, or left, by rounds held and by what was near when the last holder stepped off (an enemy on a tile,
             within 4, the holder dead, under half health, an enemy within 8 of it), else where it went next (tribute,
             home, a teammate near the group, other camps) (default to round 1000)
+  lives     captured group lives by region (own half, middle, enemy half): which side hit the group first after it came
+            up and how soon, which side captured it, and steals (captured by the side that did not hit first)
+            (default to round 1000)
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -813,10 +816,58 @@ def cmd_holds(dirs, rounds):
               f'3-4 {f("held 3-4"):.1f}, 5+ {f("held 5+"):.1f}); ' + ', '.join(f'{w} {f(w):.2f}' for w in WHY))
 
 
+def cmd_lives(dirs, rounds):
+    R = (rounds or [1000])[0]
+    A = collections.Counter(); V = collections.defaultdict(list); ng = 0
+    for us, res, mp, meta, rows in games(dirs):
+        ng += 1
+        n = len(rows[0]['c'])
+        grp, members, gtiles = camp_groups(rows, n)
+        start = {t: [(o['x'], o['y']) for o in rows[0]['c'] if 'x' in o and o['t'] == t] for t in (0, 1)}
+        if not start[0] or not start[1]: continue
+        region = {}
+        for g, ts in gtiles.items():
+            do = min(dist(p, q) for p in ts for q in start[us]); de = min(dist(p, q) for p in ts for q in start[1 - us])
+            region[g] = 'own' if do < de - 3 else 'enemy' if de < do - 3 else 'middle'
+        life = {g: [rows[0]['r'], None, None] for g in members}  # round it came up, first hitter, round of that hit
+        dead, claimed = set(), set()
+        for a, b in zip(rows, rows[1:]):
+            if b['r'] > R: break
+            for i in range(n):
+                for x in camp_hits(a, i):
+                    g = grp.get(x[-1])
+                    if g is not None and life[g][1] is None and g not in dead and g not in claimed:
+                        life[g][1] = who(a['c'][i]['t'], us); life[g][2] = a['r']
+            for g, js in members.items():
+                if g not in dead and g not in claimed and any(a['mh'][j] > 0 for j in js) and all(b['mh'][j] == 0 for j in js): dead.add(g)
+                if (g in dead or g in claimed) and all(b['mh'][j] > 0 for j in js) and any(a['mh'][j] == 0 for j in js):
+                    dead.discard(g); claimed.discard(g); life[g] = [b['r'], None, None]
+            for i, c in enumerate(b['c']):
+                pc = a['c'][i]
+                if not (c['a'] and pc['a'] and 'x' in c) or (c.get('g', 0) <= pc.get('g', 0) and c.get('au', 0) <= pc.get('au', 0)) or c.get('k', 0) > pc.get('k', 0): continue
+                g = next((g for g in dead if (c['x'], c['y']) in gtiles[g]), None)
+                if g is None: continue
+                up, first, fr = life[g]
+                w, rg = who(c['t'], us), region[g]
+                A[(rg, 'lives')] += 1; A[(rg, 'cap', w)] += 1
+                if first: A[(rg, 'first', first)] += 1; V[(rg, first)].append(fr - up)
+                if first and first != w: A[(rg, 'steal by', w)] += 1
+                dead.discard(g); claimed.add(g)  # until its respawn starts a new life
+    print(f'{ng} games to r{R}: captured group lives per game by region (our side\'s view): the side that hit it first '
+          f'(median rounds from the group coming up to that hit), the side that captured it, and steals (captured by the side '
+          f'that did not hit first)')
+    for rg in ('own', 'middle', 'enemy'):
+        f = lambda *k: A[(rg,) + k] / max(1, ng)
+        med = lambda s: sorted(V[(rg, s)])[len(V[(rg, s)]) // 2] if V[(rg, s)] else 0
+        print(f'  {rg:6} lives {f("lives"):5.1f}  first hit us {f("first", "us"):4.1f} ({med("us")}) them {f("first", "them"):4.1f} '
+              f'({med("them")})  captured us {f("cap", "us"):4.1f} them {f("cap", "them"):4.1f}  steals by us {f("steal by", "us"):.2f} '
+              f'by them {f("steal by", "them"):.2f}')
+
+
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
         'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel, 'assist': cmd_assist,
         'guard': cmd_guard, 'shots': cmd_shots, 'captures': cmd_captures, 'defend': cmd_defend, 'gold': cmd_gold,
-        'champs': cmd_champs, 'holds': cmd_holds}
+        'champs': cmd_champs, 'holds': cmd_holds, 'lives': cmd_lives}
 
 if __name__ == '__main__':
     main()
