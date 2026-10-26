@@ -17,7 +17,7 @@ Source: patch notes posted on the competition Discord on 2026-10-26 (pasted by t
 
 **Live:** ranked matches finished at 04:22 IST on 10-26 ran engine **2.0.0** (build hash `85aa7167b44d...`); the last 1.0.3 games finished at 04:10 (`tools/platform/patchwatch.sh`, 04:29 check). PyPI still had `cambc` 3.0.5 at 04:40, and `cambc init` still writes the 3.0.5 SDK, so local runs keep engine 1.0.3 and only the platform plays 2.0.0. cambc 3.0.5 converts 2.0.0 match summaries with placeholder names ("Unknown champion (3)", "Unknown item (8)") and a misaligned roster; the draft list and the match listing (`cambc matches list --json`, team `characters` and `engineVersion`) are intact. [platform]
 
-**Engine check** (probe `exp/ps1` on cambc 4.0.0, local engine 2.0.0, 10-26 06:40): every champion and item number in the two tables below is what the engine reports [engine], with one exception: the Hunter passive magnitude is **50**, not the 100 gold per kill of the notes (unmeasured). Settings did not change (capture 5, recall 5, respawn 60, tribute 0.1 rounds per gem, kill gold 100, lock hits 5, 1000 gems to win, 2000 rounds). The seven new families take item indices 42-83 after the old 42, in the order of the second table (Tribute 42-47 ... Collectors 78-83), each as shard then emblem of strength, focus, health; passive ids and magnitudes: tribute 6 (0.33), capture 7 (3 = capture turns), prospector 8 (0.25), hunter 9 (50), skirmish 10 (0.05), collectors 11 (0.01); Greed has none, its shards combine at 25 into a 750-gold emblem worth 35 stat points. SDK 4.0.0 also adds `item_family`, `item_stat` and `get_item_enum(family, stat, shard)`, `camp_group::capture_state()` (timer, and no_capture_available / ally_capturing / contested / enemy_capturing / capture_available), caches `item_type::info()` and our own champion and team handles (fewer host calls), and gives the first draft turn 100x fuel (was 10x). Ren and Tavi stun damage come from the notes [patch notes]: the probe does not print ability coefficients. **Prospector, measured** (probe `exp/pp0`, 13 local games): "cluster rewards" means the gem-cluster and gold-cluster camps of a group only, not the whole group reward; the emblem adds 25% of the holder's share of them, rounded down on the total (sections 10 and 11) [measured].
+**Engine check** (probe `exp/ps1` on cambc 4.0.0, local engine 2.0.0, 10-26 06:40): every champion and item number in the two tables below is what the engine reports [engine], with one exception: the Hunter passive magnitude is **50**, not the 100 gold per kill of the notes (unmeasured). The organisers then settled on 50 on Discord (10-26 04:07 IST: 100 was "way too much", 25 was proposed, 50 was decided after community feedback), so engine 2.0.0 already plays the final value [discord]. Settings did not change (capture 5, recall 5, respawn 60, tribute 0.1 rounds per gem, kill gold 100, lock hits 5, 1000 gems to win, 2000 rounds). The seven new families take item indices 42-83 after the old 42, in the order of the second table (Tribute 42-47 ... Collectors 78-83), each as shard then emblem of strength, focus, health; passive ids and magnitudes: tribute 6 (0.33), capture 7 (3 = capture turns), prospector 8 (0.25), hunter 9 (50), skirmish 10 (0.05), collectors 11 (0.01); Greed has none, its shards combine at 25 into a 750-gold emblem worth 35 stat points. SDK 4.0.0 also adds `item_family`, `item_stat` and `get_item_enum(family, stat, shard)`, `camp_group::capture_state()` (timer, and no_capture_available / ally_capturing / contested / enemy_capturing / capture_available), caches `item_type::info()` and our own champion and team handles (fewer host calls), and gives the first draft turn 100x fuel (was 10x). Ren and Tavi stun damage come from the notes [patch notes]: the probe does not print ability coefficients. **Prospector, measured** (probe `exp/pp0`, 13 local games): "cluster rewards" means the gem-cluster and gold-cluster camps of a group only, not the whole group reward; the emblem adds 25% of the holder's share of them, rounded down on the total (sections 10 and 11) [measured].
 
 | Change | Old | New |
 |---|---|---|
@@ -45,7 +45,7 @@ New item families (each emblem is 5 shards of the chosen stat, like the old fami
 | Tribute | tribute 33% shorter, rounded up, at least one turn |
 | Capture | capture takes 3 turns instead of 5 when the holder is present as the capture starts |
 | Prospector | 25% more gold and gems from your share of cluster rewards, rounded down (measured: the gem and gold cluster camps of the group only) |
-| Hunter | 100 extra gold per champion kill, before gold bonuses; a linked duo's death grants one reward |
+| Hunter | **50** extra gold per champion kill, before gold bonuses (the notes said 100; Discord 10-26 settled on 50, as the engine has it); a linked duo's death grants one reward |
 | Skirmish | 5% more damage to champions |
 | Greed | no passive; combines at 25 shards (750 gold) into an item worth 35 shards of stat points |
 | Collectors | 1% more damage per unique completed emblem family owned, Collectors included; shards and duplicate stat variants do not add families |
@@ -226,7 +226,7 @@ Health, strength and range are [engine] designs. Rewards and respawn come from s
 | Passive income | **0** per round | [engine] passive_gold |
 | Treasure emblem | +10% of gold gained (20% before engine 2.0.0) | [engine] magnitude 0.1 |
 | Prospector emblem | +25% of your share of the group's gold-cluster gold (20 per gold cluster, so +5 each); other camps' gold gets nothing. Added before Vesper's bonus: (290 + 20) x 1.33 = 412 | [measured] probe pp0, engine 2.0.0 |
-| Hunter emblem | extra gold per champion kill: magnitude 50 in the engine, 100 in the notes (unmeasured) | [engine] [patch notes] |
+| Hunter emblem | **50** extra gold per champion kill (150 a kill with the emblem): magnitude 50 in the engine; the notes' 100 was replaced by 50 on Discord, 10-26 04:07 IST (unmeasured) | [engine] [discord] |
 | Vesper Vale | +33% of base gold | [engine] |
 | Marcella | +2 gold per gem she tributes | [engine] |
 
@@ -249,7 +249,7 @@ Bonuses add, so Treasure on Vesper gives +43% (+53% before 2.0.0). [doc] The tie
 | Tribute | 5 | tribute 33% shorter, rounded up, at least 1 turn | [engine] 0.33 |
 | Capture | 5 | capture in 3 turns instead of 5 when present as it starts | [engine] 3 |
 | Prospector | 5 | +25% of your share of the group's cluster rewards only: gem-cluster gems (7 per gem cluster) and gold-cluster gold (20 per gold cluster), rounded down on the total; elk, wolf and monolith rewards get nothing (group of 33 gems with 2 gem clusters: 36) | [engine] 0.25, [measured] pp0 |
-| Hunter | 5 | extra gold per champion kill (engine magnitude 50) | [engine] 50 |
+| Hunter | 5 | 50 extra gold per champion kill (engine magnitude 50, confirmed on Discord 10-26) | [engine] 50 [discord] |
 | Skirmish | 5 | +5% damage to champions | [engine] 0.05 |
 | Greed | **35** (25 shards, 750 gold) | none | [engine] |
 | Collectors | 5 | +1% damage per unique completed emblem family | [engine] 0.01 |

@@ -28,7 +28,7 @@ docs/
   experiments.md every variant tried and its result
   lineage.md     history of ladder bots
   findings.md    measured facts: us vs the rivals, platform noise, what top teams do
-  reference/     handbook export (outdated numbers), C++ API, engine table dumps, map table
+  reference/     handbook export (outdated numbers), C++ API, engine table dumps, map table, patch notes 2.0.0
   journal/       raw dated work logs up to 10-23 (frozen)
 data/            replays, decoded datasets, summaries, local runs, caches (gitignored, data/README.md)
 maps/            the 40 map files of the current pool

@@ -11,16 +11,16 @@ if [ "$2" != "nosubmit" ]; then
   echo "$out" | grep -q "Submitted" || { echo "submit failed, gate aborted" >&2; exit 3; }
 fi
 ids=""
-# 20-game panel (user 2026-10-23: keep tests ~20 games). Groups must have exactly 5 maps, so: 4 panel-8 opponents x their
-# first @20 map window, chosen as the 4 groups whose outcomes varied most across hb4l, hb4l2, fp1l, th2l, bt8l @p8@20
-# (most sensitive games). Same (opponent, map) games as gate8 @20, so rcmp can compare with full-panel runs.
+# Default: the 20-game p8s panel, 4 groups of 5 maps (the most sensitive p8 games; user 2026-10-23: tests ~20 games).
+# A pinned panel (specs_b9p.txt) ends each line with a match group id taken from one base run.
 specs=${GATE_SPECS:-"b6eddc2e-0bba-4bb8-ab8b-0938ba05f6b4:01the_farm,00rows,01yellow_brick_road,00rushbait_v2,00split
 38a622d3-32ed-490d-b78a-cf93ab734a6a:00split,00stampede,00swirl,00gem_fields,00gemfight
 67e6d408-0d7f-4f95-af3d-c2b7bad5e8aa:01starvation,00reverse_spiral,01the_farm,00rows,01yellow_brick_road
 a4247250-fa1e-4d33-811d-d94667bf7a2b:00ambush,00packs,01shortcut,00pilgrimage,01starfish"}
 for spec in $specs; do
-  set -- ${spec//:/ }  # TEAM:MAP,MAP,MAP,MAP,MAP[:SIDE,SIDE,SIDE,SIDE,SIDE] (our side per game; default a)
-  until out=$(powershell -File tools/cambc.ps1 match-groups create $1 --maps "$2" ${3:+--sides "$3"} --json 2>&1 | tail -1) && echo "$out" | grep -q groupId; do
+  set -- ${spec//:/ }  # TEAM:MAP,MAP,MAP,MAP,MAP[:SIDE,SIDE,SIDE,SIDE,SIDE[:GROUP]] (our side per game, default a;
+  # GROUP: play the opponent's bot from that earlier match group, so every run meets the same versions)
+  until out=$(powershell -File tools/cambc.ps1 match-groups create $1 --maps "$2" ${3:+--sides "$3"} ${4:+--source-group $4} --json 2>&1 | tail -1) && echo "$out" | grep -q groupId; do
     echo "$out" | grep -q "eligible bot" && { echo "skip $1: $out" >&2; break; }
     echo "retry $1: $out" >&2; sleep 30
   done
