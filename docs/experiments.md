@@ -157,6 +157,18 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | rf5 | rf3 | engage veto: no new fight when an enemy arrival is likely (rate > ln 2) and an ally arrival is not, finishers excepted | 28/60, deaths 610 | not gated | R |
 | rf6 | rf3 | cheaper model: one shared hidden layer of 8 for both heads (~4x fewer head MACs; death AUC 0.731 vs 0.734) | 38/60, deaths 545, margin +8099; 560: 378 (main 384), deaths 3138 vs 3120 | not gated | N |
 | rf7 | rf3 | likely arrivals join simulate_fight as average champions (1445 hp, 102 str, basic attacks): enemy at the prey, ally at us | 38/60, deaths 475, flee deaths 317 (main 380), margin +5433; 560: 374 (main 384), deaths 3266 vs 3120, margin +77.8k vs +96.6k | not gated | N (60-game lead was noise) |
+| op1 | main | opening (solo_phase): skip groups another champion claimed, score clears for 1 champion | 28/60 (main 34), deaths 665 vs 565; opening solo/shared captures 2.5/1.5 (main 1.6/3.0) but gems at r200 30 vs 43 | not gated | R: solo farming is slower and riskier for our bot |
+| op2 | main | remove the 'middle first x2' score bonus before round 400 | 33/60, deaths 539; opening unchanged (1.7/2.7, 46 gems at r200) | not gated | N |
+| op3 | main | op1 + op2 | 23/60, deaths 668, 30 gems at r200 | not gated | R |
+| op4 | op1 | solo openers only take groups with no camp over 1500 hp | 21/60 (main 34), 12 gems at r200 (43) | not gated | R |
+| bk4 | main | first altar trip of the game at batch <= 20 gems | 60: 33/60, deaths 616, first tribute r172 (321), banked at r300 47 (0), gems at r200 55 (43) ; 560: 380 (main 384), deaths 3023 (3120) | not gated | N |
+| bk5 | main | banking batch x0.5 all game | 60: 34/60, deaths 547, gems lost dying 51/g (70), first tribute r188, banked at r300 59 ; 560: 389 (main 384), deaths 2971 (3120), gems lost dying 51/g (66), margin +103k (+97k) | not gated | candidate, but the similar bk3 (cap 30) lost 3 vs 10/20 on the platform |
+| fpr1 | main | farm prediction model (fpr) A (ml/fpr_*: P(team captures) and total rounds per group, MLP on group + champion features) rescores pick_group's top 8 live-camp groups | style bench 20/140 (main 76/140), gems collected 273 vs 815 | not gated | R: the model saw only decisions 8-12 tiles from the group and extrapolated to 40 (P=1, T < travel), sending everyone to one far group |
+| fpr2 | fpr1 | model predicts only after-arrival clear time and P (no distance input); travel from the bot's path distance; score = value x P / (travel + T + bank cost) | style bench 61/140 (main 76), captures 35.5 vs 41.2 | not gated | R: replacing the formula's time and team-size logic loses |
+| fpr3 | fpr2 | keep the formula score, multiply by the learned P(team captures) for the top 8 live-camp groups | bench 91/140 (main 76), deaths -15%, captures +20%; 560: 386 (main 384), deaths 2492 vs 3120 (-20%), captures 60.8 vs 54.1, margin +110k vs +97k; fuel-limit turns 196 vs 64 (3 games) | not gated | superseded by fpr5 |
+| fpr4 | fpr3 | SIMD per-group layer, host calls hoisted | fuel-limit turns 161 | - | step |
+| fprc | fpr4 | control: predictions computed, not used | fuel-limit turns 164 = fpr4: the cost is the computation, not behaviour | - | control |
+| fpr5 | fpr4 | static group part and per-champion inputs precomputed (identical outputs, parity 0.997) | fuel-limit turns 92 (main 64); bench 94/140 (main 76); 560: 391 (main 384), deaths 2375 vs 3120 (-24%), captures 61.3 vs 54.1, gems lost dying 58 vs 66, margin +117k vs +97k ; held-out opponents (9 unused pool bots + 3 unused style bots, 10 maps, 240 games): 163 vs main 154, deaths 1290 vs 1475, captures 60.4 vs 54.9 | not gated | best local variant: platform gate next |
 
 ## Engine 2.x era (2026-10-18 to 10-20)
 

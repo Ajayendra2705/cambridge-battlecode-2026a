@@ -40,6 +40,15 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 | `bot/reinforce.h` | C++ side (copy into a variant's `src/`): `rf_remember()` every turn, `rf_predict(enemies, allies)` when needed |
 | `teams.py` | Per-decision team id and ladder ratings (`data/ml/teams.npz`, needs `data/ml/ladder.json`) |
 | `confound_check.py` / `decide_eval.py` | Offline checks of the engage model: predicted engage-stay gap by simulator verdict; seed noise, ensemble agreement, flip rates |
+| `fpr_data.py` | Farm prediction (fpr) dataset -> `data/ml/fpr_dataset.npz`: 261k platform capture attempts (a champion's first hit on a camp group after 15 quiet rounds). Features at decision time (the last round the champion was >= 8 tiles from the group): group (camp kinds, hp, gems, gold, allies/enemies near it), champion, units in view, memory, map distances. Labels: team captured it within 60 rounds, rounds from first hit to capture |
+| `fpr_train.py [full / group_only / mlp]` | Trains the fpr model; `mlp` is the one in the bot (group + champion features, P(capture) and log clear time) -> `data/ml/fpr_mlp.pt` |
+| `fpr_baseline.py` | Ports the bot's `clear_time()` estimate and compares it with the model |
+| `fpr_export.py BOT` | Writes `bots/BOT/src/fpr_weights.h` |
+| `bot/fpr.h` | C++ side (copy into a variant's `src/`): `pick_group` rescores its top 8 live-camp groups as formula score x P(capture) (fpr5) |
+| `bot/make_style_bots.py` | Builds the style-bot grid `bots/exp/sty_a{AGG}_b{BANK}` (aggression -2..+3, banking batch x0.5/1/1.8) from the current main |
+| `style_calibration.py RUN_DIR` | Projects each bot's realised style in a local run onto the platform teams' PCA style axes |
+| `opening_metrics.py RUN_DIR` | Opening metrics from a kept local run: solo/shared captures before r300, gems at r200, banked at r300, first tribute |
+| `death_trace.py` / `death_analysis.py` / `side_stats.py` | Ranked-replay diagnosis (our deaths, deaths and flee survival by team group, per-side style stats); see `results/analysis/diagnosis_2026-10-27.md` |
 | `vis_gaps.py` | Histogram of vision gaps per (champion, enemy) pair -> `data/ml/vis_gaps.png` |
 
 Data notes:
