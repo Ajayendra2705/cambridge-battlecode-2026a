@@ -1,6 +1,6 @@
 # Bot architecture (`bots/main`)
 
-`bots/main` is the current best bot, ladder bot `fd2z` (2026-10-26 02:14 IST, version 723): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`), "Changes in cand1" (now `bots/pool/cand1`) and "Changes in fd2z". Read this page before you open the code.
+`bots/main` is the current best bot, ladder bot `m4` (2026-10-26 07:50 IST, version 734): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`), "Changes in cand1" (now `bots/pool/cand1`), "Changes in fd2z" (now `bots/pool/fd2z`) and "Changes in m4". Read this page before you open the code.
 
 ## Game in one paragraph
 
@@ -152,6 +152,15 @@ fd2z = cand1 plus the audit line cand6 (check builds au10-au17, probes pf7-pf18)
 - `shop.h` (gs1, 10-26 03:15): per-shard growth comes from the engine (`self().base_stats()`, read once) instead of a hard-coded table, so the Sprint 3 growth changes apply by themselves. Same play on engine 1.0.3 (240 identical local games).
 
 Audit result (cand6): 0 caught engine errors and 0 bot errors in 400 local games of its check builds (au15, au16); 0 `botFault` events on the platform in plan8 (700 games). Platform (plan8, b3456, 95 games against opponents that kept their bots): fd2 49 and fz1 41 wins vs cand1's 48 and cand6's 41; paired decoded margin fd2 +18 per game, our deaths -0.8 per game.
+
+## Changes in m4 (ladder bot from 2026-10-26 07:50 IST, version 734)
+
+m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plus two changes:
+
+- `shop.h`, `targets.h` (wf1, exact fuel): `shard_weights()` holds each item type's weight in shards (1 for a shard, 5 for an emblem), read once; `wealth_of`, the per-round teammate wealth cache (`slot_wealth_now`) and `solo_phase` sum item counts against it. SDK 4.0.0 has 84 item types, and asking each for its result on every call had doubled `wealth_of` to 4.0k fuel.
+- `world.h`, `targets.h` (ag4): `W.altar_guards` is the set of groups whose camps fill every standable tile in tribute range of every altar (01boss-battle: one group; 02guardians: two monoliths, one group each), and banking is blocked while each guard camp beside an altar lives. It replaces the single `altar_guard`.
+
+70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
 ## Known leftovers (harmless)
 

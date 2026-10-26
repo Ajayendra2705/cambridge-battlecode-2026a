@@ -11,16 +11,27 @@ bool uses_focus(cambc::champion_type t) {
         || t == ct::marcella;
 }
 
-// Items a champion owns, in shards (an emblem was five shards): item counts are public for every visible champion.
-int wealth_of(const cambc::champion& c) {
-    const auto counts = c.item_count();
-    int w = 0;
-    for (int i = 0; i < static_cast<int>(cambc::item_type::enum_type::count); ++i) {
-        const auto x = cambc::item_type{static_cast<cambc::item_type::enum_type>(i)};
-        w += static_cast<int>(counts[x]) * (x.result() ? 1 : 5);
-    }
+// Per item type, in shards: 1 for a shard (it combines into a result), 5 for an emblem. Read once: SDK 4.0.0 has 84 types,
+// and asking each for its result on every call doubled wealth_of from 2.1k to 4.0k fuel (fb1 probe, engine 2.0.0).
+constexpr int ITEM_TYPES = static_cast<int>(cambc::item_type::enum_type::count);
+const std::array<int, ITEM_TYPES>& shard_weights() {
+    static const auto weights = [] {
+        std::array<int, ITEM_TYPES> w{};
+        for (int i = 0; i < ITEM_TYPES; ++i)
+            w[i] = cambc::item_type{static_cast<cambc::item_type::enum_type>(i)}.result() ? 1 : 5;
+        return w;
+    }();
+    return weights;
+}
+int shards_in(const cambc::enum_map<cambc::item_type>& counts) {
+    const auto& weights = shard_weights();
+    int w = 0, i = 0;
+    for (const auto n : counts) w += static_cast<int>(n) * weights[i++];
     return w;
 }
+
+// Items a champion owns, in shards (an emblem was five shards): item counts are public for every visible champion.
+int wealth_of(const cambc::champion& c) { return shards_in(c.item_count()); }
 // Wealth of the champion in a slot, or -1 when that teammate is out of view (and so not at this capture).
 // Read once per slot per round: capture claims ask it for every claimant of every reward in a pick, and each read is a
 // host call (picks ran out of fuel 116 times per 80 games in the au8 audit once the gold-spread claim used it).
@@ -38,13 +49,7 @@ int slot_wealth_now(int s) {
             // A teammate can be known while its items are not in our view (117 "Unit is not in vision" per 80 games in
             // the au8 audit, with the tile in view): read them raw and take a refusal as out of view, without a throw.
             cambc::enum_map<cambc::item_type> counts;
-            if (cambc::detail::sdk_champion_items(handle_id(a.ch), counts.ptr()) == 0) {
-                w = 0;
-                for (int i = 0; i < static_cast<int>(cambc::item_type::enum_type::count); ++i) {
-                    const auto x = cambc::item_type{static_cast<cambc::item_type::enum_type>(i)};
-                    w += static_cast<int>(counts[x]) * (x.result() ? 1 : 5);
-                }
-            }
+            if (cambc::detail::sdk_champion_items(handle_id(a.ch), counts.ptr()) == 0) w = shards_in(counts);
             break;
         }
     }

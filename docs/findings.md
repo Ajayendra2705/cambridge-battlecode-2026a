@@ -294,7 +294,7 @@ Panel b8 (12 teams, ranks 18-40, ratings 1958-2101): 29 wins of 120, our score 5
 
 ## The Sprint 3 items against our b8 economy (main1026a, 120 decoded games to r1000, before the patch, 2026-10-26 night)
 
-The patch notes leave one question open: whether Prospector's "cluster rewards" means every camp group's reward or only the gem and gold cluster camps in it. Both readings are estimated below as upper bounds (the item held by every capturing champion from round 1, before rounding effects on split rewards).
+The patch notes leave one question open: whether Prospector's "cluster rewards" means every camp group's reward or only the gem and gold cluster camps in it. Both readings are estimated below as upper bounds (the item held by every capturing champion from round 1, before rounding effects on split rewards). **Measured since (probe pp0, engine 2.0.0, 13 local games): only the cluster camps.** The emblem adds 25% of the holder's share of the group's gem-cluster gems and gold-cluster gold, rounded down on the total (`docs/MECHANICS.md` sections 10 and 11), so the "cluster camps only" line below is the one that applies.
 
 - **Captures are taken alone:** 99% of our group captures and 93% of the rivals' have one capturing champion, so "your share" is nearly always the whole reward.
 - **Where our gems come from:** 597 captured gems per game (rivals 788). Mixed groups bring most of them: elk + gem (+ gold) groups 249 per game (rivals 323), gem + wolf groups 46 (70), single gem groups 37 (70). Gold-only groups are 15 captures per game for 856 gold.
@@ -303,7 +303,8 @@ The patch notes leave one question open: whether Prospector's "cluster rewards" 
 - **Treasure at 10%:** about +540 gold per game if every champion held it from round 1 (captures 4788 gold, kills about 630), and no gems. Prospector beats it on either reading, because it also adds gems, and gems decide the game.
 - **Hunter:** about 6.3 kills per game for us, so +630 gold per game spread over the killers. That is less than Prospector, and the gold goes to champions who already earn it.
 - **Capture** (3 turns instead of 5): the median claim (last camp dead to capture) is 6 rounds for both sides, so the item saves about 2 of them on each of 42 captures per game. That is about 2% more capture time per champion, plus a shorter window for steals.
-- **Patch-day order:** first Prospector instead of Treasure as the first emblem (on either reading). Then Capture or Tribute as a second passive. Then Greed against Power for champions with 750 gold to spend: 35 against 30 stat shards, with nothing extra until the 25th shard.
+- **Patch-day order (written before the measurement):** first Prospector instead of Treasure as the first emblem (on either reading). Then Capture or Tribute as a second passive. Then Greed against Power for champions with 750 gold to spend: 35 against 30 stat shards, with nothing extra until the 25th shard.
+- **After the measurement:** Prospector against Treasure is about +40 gems and -212 gold per game for us, a small and uncertain trade (the local quick pool of `exp/pr1` gave 356 of 420 against main's 359, which does not judge items). The top 12 teams do not buy any of the new items: in 66 of their ranked games on engine 2.0.0 (05:00-07:30 IST on 10-26, both sides decoded), no champion holds a Tribute, Capture, Prospector, Hunter, Skirmish, Greed or Collectors item at the end, and they still open with Treasure and then build Bruiser.
 
 ## The 30 maps we never tested (main vs pool b_log, pd1, tf3, 180 local games, 2026-10-26 night)
 

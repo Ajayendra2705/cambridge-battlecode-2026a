@@ -54,6 +54,7 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | Tool | Use |
 |---|---|
 | `gdl.py RUN` | Download every match of a run (8 tries per replay; run it again to fetch only the missing ones). |
+| `teamdl.py NAME PER_TEAM ENGINE TEAM_ID...` | Scouting: the newest PER_TEAM ranked matches of each team on engine ENGINE (e.g. `2.0.0`) into `data/replays/platform/NAME/`, with an `index.txt` whose side and result are the listed team's (a match between two listed teams is kept once). Decode like `decode_run.sh` does (`rounds_extract.mjs`), then `decoded.py items DIR` shows that team side as "us". Team ids from `cambc ladder --json`. |
 | `cgold.py DIR...` | Gold (also at r500), spending, gems collected, deaths per champion. |
 | `cdmg.py DIR...` | Champion damage and K/D per champion. |
 | `build.py "Champ,Champ" DIR...` | Item purchases per champion. |

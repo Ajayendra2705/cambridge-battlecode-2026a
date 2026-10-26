@@ -56,7 +56,9 @@ struct World {
     std::vector<int> group_side;  // Per group: own-spawn distance minus enemy-spawn distance (positive = their half).
     int slot = 0, team_count = 1;
     std::vector<std::int16_t> camp_owner;  // Group index per tile, -1 elsewhere.
-    int altar_guard = -1;  // Group whose camps fill every free tile next to every altar (boss_battle): nobody banks until it dies.
+    // Groups whose camps fill every free tile next to every altar: nobody banks while each of those tiles holds a living
+    // camp. boss_battle: one group; 02guardians: two monoliths, each its own group, one on each side of the altar.
+    std::vector<int> altar_guards;
     std::vector<cambc::champion_type> slot_types;
     std::vector<std::uint32_t> slot_ids;
 };
@@ -129,7 +131,8 @@ void init_world() {
     for (int i = 0; i < static_cast<int>(W.groups.size()); ++i)
         for (auto s : W.groups[i].spawns) W.camp_owner[s.y * cm::width() + s.x] = static_cast<std::int16_t>(i);
     {
-        int guard = -2;
+        std::vector<int> guards;
+        bool open = false;
         const auto blocked = cm::walls() | cm::holes() | cm::altars();
         for (auto a : W.altars)
             for (int dx = -1; dx <= 1; ++dx)
@@ -137,10 +140,10 @@ void init_world() {
                     const vec2 t{a.x + dx, a.y + dy};
                     if (!cm::is_in_bounds(t) || blocked.is_set(t)) continue;
                     const int o = W.camp_owner[t.y * cm::width() + t.x];
-                    if (o < 0 || (guard >= 0 && o != guard)) guard = -1;
-                    else if (guard == -2) guard = o;
+                    if (o < 0) open = true;
+                    else if (std::find(guards.begin(), guards.end(), o) == guards.end()) guards.push_back(o);
                 }
-        W.altar_guard = guard >= 0 ? guard : -1;
+        if (!open) W.altar_guards = guards;
     }
     compute_field(W.altar_field, cm::altars());
     compute_field(W.spawn_field, W.ally_spawn);

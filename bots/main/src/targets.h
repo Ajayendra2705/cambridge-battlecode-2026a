@@ -25,10 +25,10 @@ bool solo_phase() {
     static bool done = false;
     if (done) return false;
     const auto counts = cambc::self().item_count();
-    for (int i = 0; i < static_cast<int>(cambc::item_type::enum_type::count); ++i) {
-        const auto x = cambc::item_type{static_cast<cambc::item_type::enum_type>(i)};
-        if (!x.result() && counts[x] > 0) { done = true; return false; }  // An emblem has no further result.
-    }
+    const auto& weights = shard_weights();
+    int i = 0;
+    for (const auto n : counts)  // An emblem (weight 5) has no further result.
+        if (weights[i++] == 5 && n > 0) { done = true; return false; }
     return true;
 }
 
@@ -225,12 +225,13 @@ bool bank_gems() {
     if (e_now > enemy_sub) enemy_sub = e_now, enemy_rise = S.round;
     // Only the guard camps next to an altar block it: on boss_battle one of the two monoliths stands beside the altar,
     // and b6 dr3 carried 4295 gems to round 1953 with that one dead since r1350 (the other alive) and tributed none.
-    bool guard_blocks = false;
-    if (W.altar_guard >= 0 && W.groups[W.altar_guard].state == 0) {
-        const auto& g = W.groups[W.altar_guard];
+    // Blocked while every guard camp next to an altar lives (02guardians: one dead monolith opens its tile).
+    bool guard_blocks = !W.altar_guards.empty();
+    for (int gi : W.altar_guards) {
+        const auto& g = W.groups[gi];
         for (size_t i = 0; i < g.spawns.size() && i < g.hp.size(); ++i)
-            if (g.hp[i] > 0)
-                for (auto a : W.altars) if (dist(g.spawns[i], a) <= 1) guard_blocks = true;
+            for (auto a : W.altars)
+                if (dist(g.spawns[i], a) <= 1 && (g.state != 0 || g.hp[i] <= 0)) guard_blocks = false;
     }
     if (guard_blocks && S.round - enemy_rise > 100) return false;
     auto& me = cambc::self();
