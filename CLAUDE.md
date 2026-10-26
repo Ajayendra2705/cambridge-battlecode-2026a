@@ -27,6 +27,7 @@ Look things up through the "Where is ..." table in `README.md` instead of search
 - One factor at a time: compare us with the teams above us, pick the largest gap, name a target metric, and stay on it until matched.
 - Platform tests are about 20 games (`tools/platform/gate.sh`). Run the base at the same time, with a unique run name.
 - Local wins do not prove a fighting, item or draft change. Only the platform does.
+- Decision rules judge the targeted factor, not wins (user, 10-26 22:50: "Opponents are changing their bots rapidly. Don't set the bar on the number of wins"). Name the factor's metric, a bar for it, and guards that the other metrics hold; record wins without judging them.
 - Gates submit bots. Never run two gate chains at once. After testing, make sure `main` is submitted, especially near a Sprint lock.
 - Never ship logging bots (`*l`) or heavy prints: they cost fuel and change play.
 - Heavy local runs: the team allowed all cores (10-26). Check free RAM first: `--jobs 11` needs about 0.4 GB, a decode job about 140 MB. With under 2 GB free, use `--jobs 6` or fewer.

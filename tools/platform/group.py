@@ -32,8 +32,17 @@ for gid in sys.argv[1:]:
             print(f'{mapname:12} {status} vs {opp}')
             continue
         path = os.path.join(ROOT, 'data', 'summaries', f'{mid}.json')
-        if not os.path.exists(path):
+        # A rate-limited download leaves no file: retry, then report the match as pending instead of crashing (a crash
+        # here stopped the gate and judge polls from ever counting the group's other finished matches).
+        for attempt in range(3):
+            if os.path.exists(path):
+                break
             run('matches', 'summary', mid, '--json', '-o', path)
+            if not os.path.exists(path):
+                time.sleep(5)
+        if not os.path.exists(path):
+            print(f'{mapname:12} no summary yet vs {opp}')
+            continue
         d = json.load(open(path, encoding='utf-8'))
         gems = {t['team']: int(t['submittedGems']) for t in d['teams']}
         other = 'teamB' if side == 'teamA' else 'teamA'

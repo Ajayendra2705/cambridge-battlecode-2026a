@@ -26,5 +26,5 @@ def get(r):
         if os.path.exists(p): return
         subprocess.run([C,'matches','download',r[0],'-o',p],capture_output=True)
         if not os.path.exists(p): time.sleep(10*(a+1))
-with ThreadPoolExecutor(2) as ex: list(ex.map(get,rows))
+with ThreadPoolExecutor(6) as ex: list(ex.map(get,rows))
 print(run,len(rows),sum(r[3]=='win' for r in rows),len(os.listdir(out))-1)

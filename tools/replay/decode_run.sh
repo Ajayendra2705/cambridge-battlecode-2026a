@@ -13,5 +13,6 @@ src="data/replays/platform/$name"
 out="data/fights/$name"
 mkdir -p "$out"
 tr -d '\r' < "$src/index.txt" > "$out/index.txt"
-ls "$src"/*.repl26a | xargs -P "$jobs" -n 4 node tools/replay/rounds_extract.mjs "$out" 2>&1 | grep -c '^ok' || true
-echo "decoded into $out ($(ls "$out"/*.jsonl.gz | wc -l) games)"
+# Native processes (pextract.py), not xargs: Git Bash failed to start them under load and decodes came back empty.
+python -I tools/replay/pextract.py "$out" "$jobs" "$src"/*.repl26a | tail -3
+echo "decoded into $out ($(find "$out" -name '*.jsonl.gz' | wc -l) games)"

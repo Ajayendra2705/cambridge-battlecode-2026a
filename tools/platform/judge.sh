@@ -12,7 +12,7 @@ games=$(( $(echo $ids | wc -w) * 5 ))
 until [ "$(python -I tools/platform/group.py $ids 2>/dev/null | grep -cE 'WIN|loss')" -ge $games ]; do sleep 20; done
 sleep 20
 python -I tools/platform/rcmp.py "$base" "$run" 2>&1 | tail -4
-bash tools/replay/decode_run.sh "$run" 11 2>&1 | tail -1
+bash tools/replay/decode_run.sh "$run" 12 2>&1 | tail -1
 for d in "${base/@/_}" "${run/@/_}"; do
   echo "== $d"
   python -I tools/replay/decoded.py holds "data/fights/$d" | tail -2
