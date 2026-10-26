@@ -38,3 +38,4 @@ Look things up through the "Where is ..." table in `README.md` instead of search
 - Run gates only through `tools/platform/gatechain.sh` (it refuses to start beside another gate). Find or stop processes with `tools/platform/procs.sh`: Git Bash `ps` does not show command lines.
 - Never delete `data/runs/` while a local run writes there. Edit bot code with the editor, not through shell or Python string escapes.
 - `docs/experiments.md` has CRLF line endings: edit it with the editor, or in Python open it with `newline=''` for reading as well as writing (a plain read turns every line into a diff).
+- The other docs have LF endings. Python on Windows writes CRLF in text mode, so write them with `newline=''` too (a plain write turns every line into a diff).
