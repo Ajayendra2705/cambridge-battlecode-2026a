@@ -349,8 +349,13 @@ static void play_turn_core() {
     const bool finisher = prey && prey->hp <= ally_dps * 2.5f && S.hp > S.max_hp * 0.3f && !sim_me_dies;
     // A carrier with a full bag is worth a risky fight: the kill takes all of it.
     const bool rich = prey && prey->gems >= 30 && ally_power >= enemy_power * 0.5f && S.hp > S.max_hp * 0.5f && !sim_me_dies;
-    // A big bag is worth more banked than any fight: its carrier never engages (boss_battle: 1446-3289 gem bags lost in fights).
-    const bool big_bag = me.gem_count() >= 150;
+    // A big bag is worth more banked than any fight: its carrier never engages, and a threat counts as a lost fight (it
+    // kites or flees). The killer takes the whole bag. Rivals keep their carriers out of fights: per 1000 rounds alive
+    // their champions with 60+ gems die 0.63 times and those with none 1.38 (b11p base, to r1000; b10 0.82 vs 1.35, the
+    // top 12 0.79 vs 1.83); ours die 3.70 times with 60+ and 2.26 with none (b10 2.05 vs 1.92), with an enemy within 8
+    // in 38% of those rounds against 26%. We lose 141 gems per game on death by r1000, they 33 (was 150: boss_battle
+    // bags of 1446-3289 lost in fights).
+    const bool big_bag = me.gem_count() >= 30;
     if (!big_bag && prey && (winning || finisher || rich || (at_spawn && dist(p, prey->pos) <= S.range))) {
         STAGE("fight enemy");
         ACT("pvp");
@@ -399,7 +404,7 @@ static void play_turn_core() {
             threatened = true;
     const bool hit_by_enemy = taken > incoming + 1.0f;
     const bool losing = (sim_me_dies && !winning) || enemy_count > ally_count || enemy_power > ally_power * 0.9f || S.hp < S.max_hp * 0.4f
-        || in_kill_range;
+        || in_kill_range || big_bag;
     // Not engaging: from here on, moves keep out of enemy reach.
     S.avoid_danger = !S.danger.empty();
     if ((threatened && losing) || (hit_by_enemy && !prey)) {

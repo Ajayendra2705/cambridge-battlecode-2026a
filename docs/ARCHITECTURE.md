@@ -162,6 +162,10 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
+## Changes in cc2 (ladder bot from 2026-10-27 00:30 IST, version 796)
+
+cc2 = mw1 (now `bots/pool/mw1`) plus carrier caution in the fight step of `bot.cpp`: `big_bag` is a bag of 30+ gems (was 150). Such a carrier never takes the engage branch, and `losing` counts it as losing whenever it is threatened, so it kites or flees instead of trading blows. Cause: our carriers died 2-6 times as often per round alive as the rivals' (`docs/findings.md`, "Gems lost on death: carriers"); on b11p cc2 cut our gems lost on death by r1000 from 141 to 80 per game. cc1 (the same rule at 50 gems) cut them to 109.
+
 ## Changes in mw1 (ladder bot from 2026-10-26 17:20 IST, version 766)
 
 mw1 = hc2 (now `bots/pool/hc2`) plus one change in `pick_group` (`targets.h`): `wait_w`, the weight of the rounds a champion would wait at a respawning group after arriving, is 1.0 for groups with side -6..6 (the middle) and stays 4.0 on our side and 2.0 on contested groups elsewhere. The middle bonus (`mid_push`) stays off: restoring it (mb1, mb2) raised deaths.
