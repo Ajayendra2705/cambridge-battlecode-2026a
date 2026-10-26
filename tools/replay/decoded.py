@@ -35,6 +35,8 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
             champion, moving, moving away, standing still; P(it dies) and P(an enemy of it dies) within 10 rounds
   gold      team gold (unspent plus 30 per shard owned) per game by round (default 300 600 1000) and team size, and camp
             kills by type to the first round (credited to the side that hit the camp last) with their gold and gems
+  champs    per champion type to a round (default 600): camp gold, kill gold, capture events with their base gold and
+            gems, and camp hits by camp type
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -688,9 +690,56 @@ def cmd_gold(dirs, rounds):
         print(line)
 
 
+def cmd_champs(dirs, rounds):
+    R = (rounds or [600])[0]
+    # A rise in gold held of 100 or more (133 for Vesper's +33%) in a round where an enemy died is one kill; the rest of
+    # a rise is camp gold (Marcella's includes her +2 gold per gem tributed). A capture event is a round where gold or
+    # gems rose with no death that round; its base gold divides Vesper's bonus out.
+    C = collections.Counter()
+    for us, res, mp, meta, rows in games(dirs):
+        n = len(rows[0]['c'])
+        types = {int(k): v for k, v in meta.get('camps', {}).items()}
+        for c in rows[0]['c']: C[(who(c['t'], us), NAMES[c['ty']], 'n')] += 1
+        prev = None
+        for r in rows:
+            if r['r'] > R: break
+            for i in range(min(n, len(r.get('act', [])))):
+                key = (who(r['c'][i]['t'], us), NAMES[r['c'][i]['ty']])
+                for x in camp_hits(r, i): C[key + ('hit ' + CAMPS.get(types.get(x[-1]), '?'),)] += 1
+            if prev is not None:
+                died = {prev['c'][j]['t'] for j in range(n) if prev['c'][j]['a'] and not r['c'][j]['a']}
+                for i, c in enumerate(r['c']):
+                    p = prev['c'][i]
+                    if not (c['a'] and p['a']): continue
+                    key = (who(c['t'], us), NAMES[c['ty']])
+                    d = gold_held(meta, c) - gold_held(meta, p)
+                    dg = c.get('g', 0) - p.get('g', 0)
+                    kg = 133 if key[1] == 'vesper' else 100
+                    if d >= kg and any(t != c['t'] for t in died):
+                        C[key + ('kill gold',)] += kg; C[key + ('kills',)] += 1; d -= kg
+                    if d > 0: C[key + ('camp gold',)] += d
+                    if not died and (d > 0 or dg > 0):
+                        C[key + ('events',)] += 1
+                        C[key + ('event gold',)] += max(0, d) / (1.33 if key[1] == 'vesper' else 1.0)
+                        C[key + ('event gems',)] += max(0, dg)
+            prev = r
+    print(f'per champion-game to r{R}: camp gold, kill gold (kills), capture events (base gold and gems each), camp hits '
+          f'wolf / elk / gem / gold cluster')
+    for t in sorted({k[1] for k in C}):
+        for side in ('us', 'them'):
+            g = C[(side, t, 'n')]
+            if g < 10: continue
+            e = max(1, C[(side, t, 'events')])
+            print(f'  {t:9} {side:4} n={g:3}  camp {C[(side, t, "camp gold")] / g:5.0f}  kill {C[(side, t, "kill gold")] / g:4.0f} '
+                  f'({C[(side, t, "kills")] / g:.2f})  events {C[(side, t, "events")] / g:4.1f} ({C[(side, t, "event gold")] / e:3.0f} gold, '
+                  f'{C[(side, t, "event gems")] / e:4.1f} gems)  hits ' +
+                  ' / '.join(f'{C[(side, t, "hit " + k)] / g:.0f}' for k in ('wolf', 'elk', 'gem', 'gold')))
+
+
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
         'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel, 'assist': cmd_assist,
-        'guard': cmd_guard, 'shots': cmd_shots, 'captures': cmd_captures, 'defend': cmd_defend, 'gold': cmd_gold}
+        'guard': cmd_guard, 'shots': cmd_shots, 'captures': cmd_captures, 'defend': cmd_defend, 'gold': cmd_gold,
+        'champs': cmd_champs}
 
 if __name__ == '__main__':
     main()
