@@ -13,10 +13,14 @@ others=$(bash tools/platform/procs.sh | grep -E "gateq\.sh|gate\.sh|gate_full\.s
 [ -n "$others" ] && { echo "another gate is running:"; echo "$others"; exit 1; }
 # The plan is read on fd 3: powershell (the uploads) reads stdin and would eat the remaining lines.
 while read -r bot run panel <&3; do
+  # A plan written by PowerShell ends its lines in CRLF: the panel would read as "b11p\r", find no specs, and gate.sh
+  # would play its old default panel instead (rk2 on 10-27).
+  panel="${panel%$'\r'}"
   [ -z "$bot" ] || [ "${bot:0:1}" = "#" ] && continue
   [ "$(date +%H%M)" -lt "$cutoff" ] || { echo "cutoff $cutoff reached, not starting $run"; break; }
   specs="results/panels/specs_$panel.txt"
   [ -f "$specs" ] || specs="data/specs_$panel.txt"
+  [ -f "$specs" ] || { echo "no specs for panel $panel, skipping $run"; continue; }
   echo "$bot $run" > data/gate_queue.txt
   GATE_SPECS="$(cat "$specs")" GATE_PANEL="$panel" bash tools/platform/gateq.sh
 done 3< "$plan"
