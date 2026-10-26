@@ -292,7 +292,7 @@ bool use_champion_abilities(const ChampSnap& target) {
         } catch (const cambc::error&) {
         }
     }
-    if (strike_dash({target.pos}, false)) return true;
+    if (!S.holding && strike_dash({target.pos}, false)) return true;  // A capturer keeps its tile.
     for (const auto& ab : me.abilities()) {
         if (!castable_now(ab)) continue;
         try {

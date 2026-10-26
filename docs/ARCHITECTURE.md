@@ -162,6 +162,16 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
+## Changes in hc2 (ladder bot from 2026-10-26 16:17 IST, version 761)
+
+hc2 = m4 (now `bots/pool/m4`) plus the draft by team size (dq3) and holding a capture (hc1, hc2), each with its experiments row:
+
+- `draft.cpp` (dq3): on 4- and 5-pick maps the team drafts Heart of Ruin, Vesper, Marcella, Vendetta, Varg in that order (`big_pref`, dq2m's order), so a 4-pick team fields Marcella instead of Varg; 3-pick maps keep Heart of Ruin, Vendetta, Vesper (`small_pref`). A pick already taken is skipped as before; maps with more than 5 picks use `preference`.
+- `bot.cpp`, `snapshot.h`, `knowledge.h`, `state.h` (hc1): `S.holding` is set each turn after the knowledge update: our target's camps are dead (`state == 1`), we stand on one of its spawn tiles, no teammate stands on its tiles, and we first stood there less than 8 rounds ago (`hold_since`, `hold_group`). A holding champion keeps its target: no re-pick, no target drop for want of pick fuel, no bank trip (the endgame rule still banks) and no shop trip.
+- `bot.cpp`, `abilities.h` (hc2): a holding champion also holds against enemies while it is healthy (50%+ health, not hit this turn): the threat branch keeps working instead of the kite step, the pvp branch hits only what is in reach (no chase, no melee dash at 3 tiles), no Vendetta close-in, no striking dash (Heart of Ruin) and no end-of-turn step out of danger. Inside kill range (the burst of the enemies near is 90% of our health or more) `S.holding` is cleared and the usual threat rules apply.
+
+Platform (pinned panel b9p, the same 120 games as main1026h): dq3 won 44 against main1026h's 33 (4-pick maps 11 of 26 against 6, our deaths per game by r1000 7.08 against 9.69; 5-pick 23 of 73 against 17; 3-pick identical). hc2 on dq3: 43 wins; holds of a defeated group left before the capture 5.8 per game (dq3 12.1, the rivals 8.0), captures 41.0 (39.4), gems collected by r1000 673 (634), tributed 532 (505), our deaths 5.6 (5.7).
+
 ## Known leftovers (harmless)
 
 - `bot.cpp`: an `if (false)` feature-log block and comments naming deleted tools (`hazard.py`, `calib.py`; source in tag `archive/pre-cleanup`).

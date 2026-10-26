@@ -22,6 +22,7 @@ int current_target = -1;
 bool was_alive = true;
 std::vector<int> death_rounds;  // Rounds this champion died: repeated deaths mean the enemy controls the middle.
 bool retreating = false;
+int hold_since = -1, hold_group = -1;  // First round on a tile of the capture we hold, and its group.
 float last_hp = 0;
 int last_round = -10, enemy_seen_round = -100;
 int last_pick_round = -100, last_pick_state = -2;

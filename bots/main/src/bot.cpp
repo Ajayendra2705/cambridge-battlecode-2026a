@@ -52,7 +52,8 @@ static void play_turn_core();
 void Bot::play_turn() {
     play_turn_core();
     free_hit();
-    if (W.ready && S.round == static_cast<int>(cambc::round_number()) && S.avoid_danger && !S.walked && in_danger(S.me)) {
+    if (W.ready && S.round == static_cast<int>(cambc::round_number()) && S.avoid_danger && !S.walked && in_danger(S.me)
+        && !(S.holding && S.hp >= S.max_hp * 0.5f)) {
         try {
             auto& me = cambc::self();
             if (me.is_alive() && !me.is_recalling() && !me.is_submitting_gems() && !me.is_teleporting()) step_out_of_danger();
@@ -171,6 +172,20 @@ static void play_turn_core() {
     STAGE("enemies");
     place_ward_forward();
     const vec2 p = S.me;
+    // Holding a capture: our target's camps are dead and we stand on one of its spawn tiles. The capture takes 5 rounds
+    // and resets the round none of us stands there. On b9p (dq3, decoded) we stepped off before the capture 12.1 times
+    // per game, the rivals 8.2 and the top 12 about 6; in the local probe cl0, re-picks and bank trips caused 3.4 of
+    // those per game. Only the last of us on the tiles holds: with a teammate on one the capture goes on without us.
+    // Hold for at most 8 rounds, in case the capture never comes.
+    {
+        const bool on = current_target >= 0 && W.groups[current_target].state == 1 && W.groups[current_target].tiles.is_set(p);
+        bool shared = false;
+        if (on)
+            for (const auto& a : S.allies) if (W.groups[current_target].tiles.is_set(a.pos)) shared = true;
+        if (!on) hold_since = -1;
+        else if (hold_since < 0 || hold_group != current_target) hold_since = round, hold_group = current_target;
+        S.holding = on && !shared && round - hold_since < 8;
+    }
     const bool at_spawn = W.ally_spawn.is_set(p);
     if (at_spawn) {
         shop();
@@ -278,6 +293,8 @@ static void play_turn_core() {
     for (const auto& e : S.enemies)
         if (!W.enemy_spawn.is_set(e.pos) && dist(p, e.pos) <= e.reach + 1) lethal += e.burst;
     const bool in_kill_range = lethal >= S.hp * 0.9f;
+    // A capture is not worth the champion: inside kill range the hold ends and the usual threat rules apply.
+    if (in_kill_range) S.holding = false;
     // Fight when stronger and not outnumbered, when the target is nearly dead, or from the safety of spawn.
     // Cassi and Issac die together, so they only join fights with a clear edge.
     // Play the fight out a few rounds with live cooldowns instead of comparing raw totals.
@@ -345,6 +362,9 @@ static void play_turn_core() {
             if (attack_unit(prey->ch)) try_attack_reset_and_hit(prey->ch);
             return;
         }
+        // A capturer does not chase off its tile: the prey comes into reach or the capture completes (local probe cl0:
+        // 2.6 chases per game left a capture).
+        if (S.holding) return;
         // Melee with a dash reaches a prey 3 tiles away this turn: dash next to it and hit (a walk only gets to 2).
         if (S.range <= 1 && dist(S.me, prey->pos) == 3 && dash_next_to(*prey)) {
             attack_unit(prey->ch);
@@ -385,7 +405,9 @@ static void play_turn_core() {
     if ((threatened && losing) || (hit_by_enemy && !prey)) {
         if (prey) use_champion_abilities(*prey);
         const bool healthy = S.hp >= S.max_hp * 0.5f && !hit_by_enemy;
-        if (healthy && !in_danger(S.me)) {
+        // A healthy capturer holds its tile too, until a hit lands: stepping away resets the capture, and the enemy
+        // then takes the group (b9p, dq3 decoded: 2.6 holds per game left with an enemy 5-8 tiles away, the rivals 1.2).
+        if (healthy && (S.holding || !in_danger(S.me))) {
             // Already out of reach: keep working, staying out of it.
         } else if (healthy && [&] {
                        // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target
@@ -472,7 +494,7 @@ static void play_turn_core() {
             // champion in 26% of rounds, ours in 16% (b6 decoded). Only when the fight is not lost (we are past the flee
             // branch) and the simulation does not say we die. At 2 tiles a step does it and keeps the cast for the reset
             // (two hits); cp3 dashed there too, spending the cast on a one-hit turn. At 3 tiles only the dash reaches.
-            if (me.champion_name() == cambc::champion_type::vendetta && !sim_me_dies && me.can_attack()) {
+            if (me.champion_name() == cambc::champion_type::vendetta && !sim_me_dies && me.can_attack() && !S.holding) {
                 if (dist(S.me, t->pos) == 2) step_next_to(*t);
                 else if (dist(S.me, t->pos) == 3) dash_next_to(*t);
             }
@@ -611,7 +633,7 @@ static void play_turn_core() {
         // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
         // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
         const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
-        if ((gems >= batch && S.round >= bank_blocked_until) || endgame) {
+        if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
             // Give up for a while if the way to the altar makes no progress (blocked or contested).
             if (altar_d < bank_best) bank_best = altar_d, bank_stall = 0;
             else if (++bank_stall > 6) bank_blocked_until = S.round + 40, bank_best = UNREACH, bank_stall = 0;
@@ -629,7 +651,7 @@ static void play_turn_core() {
     const bool remote_shop = me.passive() == cambc::passive_type::remote_shop;
     if (remote_shop) shop();
     const int gold = static_cast<int>(me.gold_count());
-    if (!at_spawn && incoming == 0 && round < 1850 && !remote_shop) {
+    if (!at_spawn && incoming == 0 && round < 1850 && !remote_shop && !S.holding) {
         const int home = W.spawn_field.get(p);
         if (gold >= 150 || (gold >= 90 && home <= 8)) {
             ACT("shop_trip");
@@ -670,11 +692,13 @@ static void play_turn_core() {
     // The target changed state (taken, captured, back up) but this turn has no fuel for a pick: drop it for this turn
     // rather than walk on to it (bf7 audit: 228 walks to a reward whose tiles a teammate already held). A missing
     // target may always pick, so the next turn picks.
-    if (!in_fight && !can_pick && current_target >= 0 && target_state != last_pick_state) {
+    // A held capture keeps its target: it ends within 5 rounds, and every re-pick scored it against the next target as if
+    // one excluded the other.
+    if (!in_fight && !can_pick && !S.holding && current_target >= 0 && target_state != last_pick_state) {
         current_target = -1;
         last_pick_state = -1;
     }
-    if (!in_fight && can_pick && (S.round - last_pick_round >= 3 || target_state != last_pick_state)) {
+    if (!in_fight && can_pick && !S.holding && (S.round - last_pick_round >= 3 || target_state != last_pick_state)) {
         current_target = pick_group(current_target);
         last_pick_round = S.round;
         last_pick_state = current_target >= 0 ? W.groups[current_target].state : -1;

@@ -1,16 +1,16 @@
 # Cambridge Battlecode 2026a bot
 
-Our C++ bot for [Cambridge Battlecode 2026a](https://2026a.battlecode.co.uk) (engine `cambc` 3.0.5). Two teams of champions farm neutral camps for gems and gold and tribute gems at altars. The first team to tribute 1000 gems wins.
+Our C++ bot for [Cambridge Battlecode 2026a](https://2026a.battlecode.co.uk) (`cambc` 4.0.0, engine 2.0.0 since the Sprint 3 patch of 10-26). Two teams of champions farm neutral camps for gems and gold and tribute gems at altars. The first team to tribute 1000 gems wins.
 
 **Start here:** `docs/status.md` (where we are and what to do next), then `docs/ARCHITECTURE.md` (how the bot works), then `docs/WORKFLOW.md` (how to test a change).
 
-The ladder bot is `cp3` (`bots/main`, Sprint 2 entry, version 691). The next lock is Sprint 3, Sat 31 Oct 23:59 GMT.
+The ladder bot is `hc2` (`bots/main`, version 761 on 10-26); the Sprint 2 entry was `cp3` (`bots/pool/cp3`, version 691). The next lock is Sprint 3, Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST).
 
 ## Layout
 
 ```
 bots/
-  main/          current best bot = ladder bot (cp3). The only bot edited in place.
+  main/          current best bot = ladder bot (hc2). The only bot edited in place.
   pool/          frozen past ladder bots (dr3, fx1, fe1, hb4, ...) and candidates, used as local opponents (docs/lineage.md)
   probe/         rule-probing bots (engine tables, mechanics tests)
   starter/       engine starter bots (cpp, rust)

@@ -83,7 +83,7 @@ void take_snapshot() {
         S.range = info.attack_range;
         S.state = static_cast<std::uint32_t>(info.state);
     }
-    S.walked = S.attacked = S.view_moved = false;
+    S.walked = S.attacked = S.view_moved = S.holding = false;
     S.visible = cv::visible_tiles();
     S.camps.clear();
     // Every champion the engine shows us, in one call: champions read one by one below can miss some, and a move onto
