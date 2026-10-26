@@ -44,8 +44,11 @@ CAMPS = {0: 'wolf', 1: 'elk', 2: 'gem', 3: 'gold', 4: 'monolith', 5: 'golem'}
 # Item name per item_type index, per engine (the meta line's `engine`; runs decoded before 10-26 have none and are engine
 # 1.0.3). A new engine's list is printed by tools/local/engine_probe.py; until it is added here, `items` stops rather
 # than mislabel.
-ITEMS = {'v1_0_3': [f'{fam}_{stat} {kind}' for fam in ('monster', 'power', 'durability', 'treasure', 'jungle', 'home', 'bruiser')
-                    for stat in ('str', 'focus', 'hp') for kind in ('shard', 'emblem')]}
+FAMILIES = ('monster', 'power', 'durability', 'treasure', 'jungle', 'home', 'bruiser')
+# Engine 2.0.0 (Sprint 3) appended seven families after the old 42 types (engine probe, 10-26).
+FAMILIES2 = FAMILIES + ('tribute', 'capture', 'prospector', 'hunter', 'skirmish', 'greed', 'collectors')
+ITEMS = {'v1_0_3': [f'{fam}_{stat} {kind}' for fam in FAMILIES for stat in ('str', 'focus', 'hp') for kind in ('shard', 'emblem')],
+         'v2_0_0': [f'{fam}_{stat} {kind}' for fam in FAMILIES2 for stat in ('str', 'focus', 'hp') for kind in ('shard', 'emblem')]}
 
 
 def item_name(meta, i):

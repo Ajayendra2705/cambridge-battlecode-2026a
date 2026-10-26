@@ -11,11 +11,13 @@ Every value carries its source:
 
 `docs/reference/GameRules.md` is outdated on numbers: it has no Heart of Ruin, clusters at 500 hp, monolith range 3, wolf 22 gems, kill gold 50, altar lock 3 hits, Vesper +20%, Prism 0.2 focus per gem. Use this file instead.
 
-## 0. Sprint 3 patch (live on the platform since 10-26 04:2x IST; no local engine yet)
+## 0. Sprint 3 patch (engine 2.0.0: platform since about 04:20 IST on 10-26, cambc 4.0.0 on PyPI since 06:05)
 
 Source: patch notes posted on the competition Discord on 2026-10-26 (pasted by the team) [patch notes]. Not live at 02:51 IST on 10-26: platform matches still ran engine 1.0.3 (build hash `fcb6c3e881c4...`), and PyPI still had `cambc` 3.0.5. `tools/platform/patchwatch.sh` waits for either to change. The tables in sections 6, 10 and 11 below are the live engine until then; once it is live, re-run the probe `exp/ps1` (prints every champion design and item from the engine) and update them with [engine] values.
 
 **Live:** ranked matches finished at 04:22 IST on 10-26 ran engine **2.0.0** (build hash `85aa7167b44d...`); the last 1.0.3 games finished at 04:10 (`tools/platform/patchwatch.sh`, 04:29 check). PyPI still had `cambc` 3.0.5 at 04:40, and `cambc init` still writes the 3.0.5 SDK, so local runs keep engine 1.0.3 and only the platform plays 2.0.0. cambc 3.0.5 converts 2.0.0 match summaries with placeholder names ("Unknown champion (3)", "Unknown item (8)") and a misaligned roster; the draft list and the match listing (`cambc matches list --json`, team `characters` and `engineVersion`) are intact. [platform]
+
+**Engine check** (probe `exp/ps1` on cambc 4.0.0, local engine 2.0.0, 10-26 06:40): every champion and item number in the two tables below is what the engine reports [engine], with one exception: the Hunter passive magnitude is **50**, not the 100 gold per kill of the notes (unmeasured). Settings did not change (capture 5, recall 5, respawn 60, tribute 0.1 rounds per gem, kill gold 100, lock hits 5, 1000 gems to win, 2000 rounds). The seven new families take item indices 42-83 after the old 42, in the order of the second table (Tribute 42-47 ... Collectors 78-83), each as shard then emblem of strength, focus, health; passive ids and magnitudes: tribute 6 (0.33), capture 7 (3 = capture turns), prospector 8 (0.25), hunter 9 (50), skirmish 10 (0.05), collectors 11 (0.01); Greed has none, its shards combine at 25 into a 750-gold emblem worth 35 stat points. SDK 4.0.0 also adds `item_family`, `item_stat` and `get_item_enum(family, stat, shard)`, `camp_group::capture_state()` (timer, and no_capture_available / ally_capturing / contested / enemy_capturing / capture_available), caches `item_type::info()` and our own champion and team handles (fewer host calls), and gives the first draft turn 100x fuel (was 10x). Ren and Tavi stun damage come from the notes [patch notes]: the probe does not print ability coefficients.
 
 | Change | Old | New |
 |---|---|---|
@@ -132,23 +134,23 @@ Stacking: whether reductions multiply or add is [unverified].
 
 ## 6. Champions (13; Cassi & Issac are one draft pick)
 
-All champions: vision 8, move 1, both slots on 8-turn cooldown, one cast per turn [engine]. Stat columns show **base + growth per matching shard** [engine]. "Roots" means the spell excludes walking.
+All champions: vision 8, move 1, both slots on 8-turn cooldown, one cast per turn [engine]. Stat columns show **base + growth per matching shard** [engine], engine 2.0.0 (bold: changed by the Sprint 3 patch; old values in section 0). "Roots" means the spell excludes walking.
 
 | Champion | Type | Health | Strength | Focus | Passive |
 |---|---|---|---|---|---|
-| Ryth | melee 1 | 1200 + 100 | 45 + 5 | 100 + 10 | +Strength equal to 1% of bonus health |
-| Vesper Vale | ranged 3 | 1000 + 100 | 55 + 5 | 100 + 10 | +33% gold from every gold gain |
+| Ryth | melee 1 | 1200 + 100 | 45 + **4.5** | 100 + 10 | +Strength equal to 1% of bonus health |
+| Vesper Vale | ranged 3 | 1000 + 100 | **45** + 5 | 100 + 10 | +33% gold from every gold gain |
 | Vendetta | melee 1 | 1000 + 100 | **70 + 6** | 100 + 10 | a credited kill (camps too) resets her **ability** cooldowns (attack reset, dash), not the basic attack: after a killing basic attack `can_attack()` stays false [measured 10-25, vk1 corners pair; SDK `reset_cooldowns_on_kill` "reset ability cooldowns"] |
-| Cassi | ranged 3 | 600 + 65 | 30 + 3 | 70 + 13 | linked with Issac: if either dies, both die; one kill reward |
-| Issac | melee 1 | 900 + 80 | 40 + 3 | 100 + 10 | (linked with Cassi) |
-| Stellar | ranged 3 | 650 + 65 | 30 + 3.5 | 70 + 7 | none |
-| Prism | ranged 3 | 700 + 60 | 35 + 2.5 | 80 + 8 | +1.5 Focus per carried gem |
-| Marcella | melee 1 | 1200 + 100 | 45 + 5 | 60 + **15** | stun-immune; **+2 gold per gem she tributes** |
-| Willow | ranged 3 | 700 + 50 | 55 + 3 | 120 + 5 | none |
+| Cassi | ranged 3 | 600 + 65 | 30 + 3 | **100** + 13 | linked with Issac: if either dies, both die; one kill reward |
+| Issac | melee 1 | 900 + 80 | **45** + 3 | 100 + 10 | (linked with Cassi) |
+| Stellar | ranged 3 | 650 + 65 | 30 + 3.5 | 70 + **8.5** | none |
+| Prism | ranged 3 | 700 + **65** | 35 + 2.5 | 80 + 8 | +1.5 Focus per carried gem |
+| Marcella | melee 1 | 1200 + 100 | 45 + **4.5** | 60 + **14** | stun-immune; **+2 gold per gem she tributes** |
+| Willow | ranged 3 | 700 + 50 | 55 + 3 | **140** + 5 | none |
 | Ren | melee 1 | 900 + 100 | 35 + 5 | 100 + 9 | retaliation 0.2 × Focus |
-| Varg | melee 1 | 1000 + 100 | 40 + 5 | 100 + 10 | splash radius 1 |
+| Varg | melee 1 | 1000 + 100 | **45** + 5 | 100 + 10 | splash radius 1 |
 | Tavi | ranged 3 | 900 + 75 | 45 + 5 | 110 + 10 | buys shards anywhere; sells at spawn for full price |
-| Heart of Ruin | melee 1 | 1000 + 100 | 30 + 3.5 | 100 + **12** | up to +50% damage at full missing health |
+| Heart of Ruin | melee 1 | 1000 + 100 | 30 + **3** | 100 + **10** | up to +50% damage at full missing health |
 
 Abilities [engine]:
 
@@ -163,9 +165,9 @@ Abilities [engine]:
 | Prism | damage 1.5 × Focus + stun 1, range 4, **roots** | area 1.0 × Focus radius 1, range 4, **roots** |
 | Marcella | enhanced attack reset: next basic attack stuns 1 | damage 2.0 × Focus, range 4, **roots** |
 | Willow | heal ally 3.0 × Focus, range 4 | attack reset |
-| Ren | damage 0.75 × Focus + stun 1, range 4, **roots** | dash 2 |
+| Ren | damage **1.1** × Focus + stun 1, range 4, **roots** [patch notes] | dash 2 |
 | Varg | attack reset | self shield 2.5 × Focus for 5 turns |
-| Tavi | attack reset | damage 1.4 × Focus + stun 1, range 4, **roots** |
+| Tavi | attack reset | damage **1.6** × Focus + stun 1, range 4, **roots** [patch notes] |
 | Heart of Ruin | self shield 1.5 × Focus for 5 turns | dash 2 landing 1.5 × Focus in radius 1 + stun 1 |
 
 Targeting [engine]: target masks are camps 1, enemies 2, allies 4, self 8, ground 16. Damage spells (mask 3) hit enemies *or* camps. Area spells (mask 19) target ground. Stuns from Ren, Tavi and Prism report kind `cc` and carry damage; Cassi's stun has none.
@@ -222,11 +224,13 @@ Health, strength and range are [engine] designs. Rewards and respawn come from s
 | Champion kill | **100** to the credited killer | [engine] kill_gold |
 | Assist | **0** | [engine] assist_gold |
 | Passive income | **0** per round | [engine] passive_gold |
-| Treasure emblem | +20% of gold gained | [engine] magnitude 0.2 |
+| Treasure emblem | +10% of gold gained (20% before engine 2.0.0) | [engine] magnitude 0.1 |
+| Prospector emblem | +25% of your share of cluster rewards (gold and gems), rounded down | [engine] magnitude 0.25, [patch notes] |
+| Hunter emblem | extra gold per champion kill: magnitude 50 in the engine, 100 in the notes (unmeasured) | [engine] [patch notes] |
 | Vesper Vale | +33% of base gold | [engine] |
 | Marcella | +2 gold per gem she tributes | [engine] |
 
-Bonuses add, so Treasure on Vesper gives +53%. [doc] The tiebreak counts gold *earned*, so refunds do not count. [doc]
+Bonuses add, so Treasure on Vesper gives +43% (+53% before 2.0.0). [doc] The tiebreak counts gold *earned*, so refunds do not count. [doc]
 
 ## 11. Items
 
@@ -235,13 +239,20 @@ Bonuses add, so Treasure on Vesper gives +53%. [doc] The tiebreak counts gold *e
 
 | Family | Emblem stats (in growth units) | Passive | Source |
 |---|---|---|---|
-| Monster | 5 of the stat | +10% damage to camps | [engine] |
+| Monster | 5 of the stat | +15% damage to camps (10% before 2.0.0) | [engine] |
 | Power | **6** of the stat | none | [engine] |
 | Durability | 5 | −10% incoming damage | [engine] |
-| Treasure | 5 | +20% gold | [engine] |
+| Treasure | 5 | +10% gold (20% before 2.0.0) | [engine] |
 | Jungle | 5 | −30% damage from camps | [engine] |
 | Home | 5 | recall 50% shorter (5 turn ends become 3) | [engine] 0.5 |
 | Bruiser | 5 of the stat **+1 of each other stat** | none | [engine] |
+| Tribute | 5 | tribute 33% shorter, rounded up, at least 1 turn | [engine] 0.33 |
+| Capture | 5 | capture in 3 turns instead of 5 when present as it starts | [engine] 3 |
+| Prospector | 5 | +25% gold and gems from your share of cluster rewards | [engine] 0.25 |
+| Hunter | 5 | extra gold per champion kill (engine magnitude 50) | [engine] 50 |
+| Skirmish | 5 | +5% damage to champions | [engine] 0.05 |
+| Greed | **35** (25 shards, 750 gold) | none | [engine] |
+| Collectors | 5 | +1% damage per unique completed emblem family | [engine] 0.01 |
 
 - Stats from duplicate emblems stack; a second emblem's passive does not. [doc]
 - Buying Health on spawn also heals that amount; Tavi's purchases away from spawn do not heal. [doc]
