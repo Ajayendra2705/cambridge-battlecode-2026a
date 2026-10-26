@@ -162,6 +162,10 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
+## Changes in mw1 (ladder bot from 2026-10-26 17:20 IST, version 766)
+
+mw1 = hc2 (now `bots/pool/hc2`) plus one change in `pick_group` (`targets.h`): `wait_w`, the weight of the rounds a champion would wait at a respawning group after arriving, is 1.0 for groups with side -6..6 (the middle) and stays 4.0 on our side and 2.0 on contested groups elsewhere. The middle bonus (`mid_push`) stays off: restoring it (mb1, mb2) raised deaths.
+
 ## Changes in hc2 (ladder bot from 2026-10-26 16:17 IST, version 761)
 
 hc2 = m4 (now `bots/pool/m4`) plus the draft by team size (dq3) and holding a capture (hc1, hc2), each with its experiments row:

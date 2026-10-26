@@ -3,12 +3,12 @@
 # Usage: bash tools/platform/judge.sh RUN BASE   (both without @b9p, e.g. hc1_b9p dq3_b9p); output to a file
 cd "$(dirname "$0")/../.."
 run="$1"; base="$2"
-until grep -q "^$run@b9p " results/gate.log; do sleep 60; done
+until grep -q "^$run@b9p " results/gate.log; do sleep 20; done
 ids=$(grep "^$run@b9p " results/gate.log | tail -1 | cut -d' ' -f2-)
-until [ "$(python -I tools/platform/group.py $ids 2>/dev/null | grep -cE 'WIN|loss')" -ge 120 ]; do sleep 60; done
+until [ "$(python -I tools/platform/group.py $ids 2>/dev/null | grep -cE 'WIN|loss')" -ge 120 ]; do sleep 20; done
 sleep 20
 python -I tools/platform/rcmp.py "$base@b9p" "$run@b9p" 2>&1 | tail -4
-bash tools/replay/decode_run.sh "$run@b9p" 8 2>&1 | tail -1
+bash tools/replay/decode_run.sh "$run@b9p" 11 2>&1 | tail -1
 for d in "${base}_b9p" "${run}_b9p"; do
   echo "== $d"
   python -I tools/replay/decoded.py holds "data/fights/$d" | tail -2

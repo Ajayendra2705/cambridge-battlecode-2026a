@@ -106,6 +106,9 @@ int pick_group(int current) {
         // for respawns (farm race vs starter: -4% rounds). Contested groups keep the careful weights: there the faster
         // picks walked into enemies (concentrated_wealth, corridors: flee deaths +21%).
         const bool safe_speed = W.group_side[i] <= 0 || round - enemy_seen_round > 30;
+        // Middle groups (side -6..6): a respawn wait counts once per round, so a champion with nothing better near
+        // waits at a middle group about to come up (b9p: 1.21 of ours within 10 tiles when one comes up, rivals 1.37).
+        const double wait_w = W.group_side[i] >= -6 && W.group_side[i] <= 6 ? 1.0 : safe_speed ? 4.0 : 2.0;
         bool covered = false;
         // A sleeping monolith or golem attacks nobody: only an awake one (seen within 10 rounds) makes its neighbours
         // unfarmable. Contest: the enemy farmed the four centre gold clusters next to sleeping monoliths all game.
@@ -164,7 +167,7 @@ int pick_group(int current) {
             if (spell <= 0) continue;
             const int n = others + 1;
             double time = travel + g.hp_left() / (spell * n);
-            if (g.state == 2) time += (safe_speed ? 4.0 : 2.0) * std::max(0, g.respawn_round - round - travel);
+            if (g.state == 2) time += wait_w * std::max(0, g.respawn_round - round - travel);
             score = value / (time * n + 5 + g.bank_cost * 0.5 * bank_share(g));
             score_n = n;
         } else {
@@ -174,7 +177,7 @@ int pick_group(int current) {
                                            std::max(others + 1, team_alive)};
             for (int n : sizes) {
                 double time = travel * (safe_speed ? 1.0 : 0.7) + clear_time(cs, n, dps, S.max_hp, home == UNREACH ? 30 : home);
-                if (g.state == 2) time += (safe_speed ? 4.0 : 2.0) * std::max(0, g.respawn_round - round - travel);
+                if (g.state == 2) time += wait_w * std::max(0, g.respawn_round - round - travel);
                 time += (n - others - 1) * 4;  // Waiting for extra teammates.
                 // One champion then captures (5 rounds), walks to an altar and tributes.
                 const double sc = value / (time * n + 5 + g.bank_cost * 0.5 * bank_share(g));
