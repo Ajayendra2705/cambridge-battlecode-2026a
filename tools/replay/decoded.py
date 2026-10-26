@@ -707,6 +707,16 @@ def cmd_champs(dirs, rounds):
                 key = (who(r['c'][i]['t'], us), NAMES[r['c'][i]['ty']])
                 for x in camp_hits(r, i): C[key + ('hit ' + CAMPS.get(types.get(x[-1]), '?'),)] += 1
             if prev is not None:
+                # Clearing speed: health a camp lost in a round where one champion alone hit it.
+                by = collections.defaultdict(set)
+                for i in range(min(n, len(prev.get('act', [])))):
+                    for x in camp_hits(prev, i): by[x[-1]].add(i)
+                for j, hs in by.items():
+                    if len(hs) == 1 and j < len(r['mh']):
+                        i = next(iter(hs))
+                        key = (who(prev['c'][i]['t'], us), NAMES[prev['c'][i]['ty']])
+                        C[key + ('camp dmg',)] += max(0, prev['mh'][j] - r['mh'][j]); C[key + ('dmg rounds',)] += 1
+            if prev is not None:
                 died = {prev['c'][j]['t'] for j in range(n) if prev['c'][j]['a'] and not r['c'][j]['a']}
                 for i, c in enumerate(r['c']):
                     p = prev['c'][i]
@@ -724,7 +734,7 @@ def cmd_champs(dirs, rounds):
                         C[key + ('event gems',)] += max(0, dg)
             prev = r
     print(f'per champion-game to r{R}: camp gold, kill gold (kills), capture events (base gold and gems each), camp hits '
-          f'wolf / elk / gem / gold cluster')
+          f'wolf / elk / gem / gold cluster, camp damage per round of hitting a camp alone')
     for t in sorted({k[1] for k in C}):
         for side in ('us', 'them'):
             g = C[(side, t, 'n')]
@@ -733,7 +743,8 @@ def cmd_champs(dirs, rounds):
             print(f'  {t:9} {side:4} n={g:3}  camp {C[(side, t, "camp gold")] / g:5.0f}  kill {C[(side, t, "kill gold")] / g:4.0f} '
                   f'({C[(side, t, "kills")] / g:.2f})  events {C[(side, t, "events")] / g:4.1f} ({C[(side, t, "event gold")] / e:3.0f} gold, '
                   f'{C[(side, t, "event gems")] / e:4.1f} gems)  hits ' +
-                  ' / '.join(f'{C[(side, t, "hit " + k)] / g:.0f}' for k in ('wolf', 'elk', 'gem', 'gold')))
+                  ' / '.join(f'{C[(side, t, "hit " + k)] / g:.0f}' for k in ('wolf', 'elk', 'gem', 'gold')) +
+                  f'  dmg {C[(side, t, "camp dmg")] / max(1, C[(side, t, "dmg rounds")]):.0f}')
 
 
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
