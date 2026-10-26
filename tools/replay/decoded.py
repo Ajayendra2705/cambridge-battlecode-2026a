@@ -37,6 +37,10 @@ tools/replay/decode_run.sh. Several DIRs are pooled. Commands:
             kills by type to the first round (credited to the side that hit the camp last) with their gold and gems
   champs    per champion type to a round (default 600): camp gold, kill gold, capture events with their base gold and
             gems, and camp hits by camp type
+  holds     holds of a defeated group's tiles (a side's champions on them after its camps died) and how they ended:
+            captured, or left, by rounds held and by what was near when the last holder stepped off (an enemy on a tile,
+            within 4, the holder dead, under half health, an enemy within 8 of it), else where it went next (tribute,
+            home, a teammate near the group, other camps) (default to round 1000)
 """
 import collections, glob, gzip, json, math, os, sys
 
@@ -747,10 +751,72 @@ def cmd_champs(dirs, rounds):
                   f'  dmg {C[(side, t, "camp dmg")] / max(1, C[(side, t, "dmg rounds")]):.0f}')
 
 
+def cmd_holds(dirs, rounds):
+    R = (rounds or [1000])[0]
+    A = collections.Counter(); ng = 0
+    WHY = ('enemy on a tile', 'enemy within 4', 'died', 'under half health', 'enemy 5-8', 'tribute', 'home',
+           'teammate near', 'hit camps', 'other')
+    for us, res, mp, meta, rows in games(dirs):
+        ng += 1
+        n = len(rows[0]['c'])
+        grp, members, gtiles = camp_groups(rows, n)
+        start = {t: [(o['x'], o['y']) for o in rows[0]['c'] if 'x' in o and o['t'] == t] for t in (0, 1)}
+        pending, hold = set(), {}  # hold: (group, side) -> [first round on a tile, champions on the tiles]
+        for k, (a, b) in enumerate(zip(rows, rows[1:])):
+            if b['r'] > R: break
+            for g, js in members.items():
+                if any(a['mh'][j] > 0 for j in js) and all(b['mh'][j] == 0 for j in js): pending.add(g)
+            captured = set()
+            for i, c in enumerate(b['c']):
+                pc = a['c'][i]
+                if not (c['a'] and pc['a'] and 'x' in c): continue
+                g = next((g for g in pending if (c['x'], c['y']) in gtiles[g]), None)
+                if g is not None and (c.get('g', 0) > pc.get('g', 0) or c.get('au', 0) > pc.get('au', 0)) and c.get('k', 0) <= pc.get('k', 0):
+                    captured.add((g, who(c['t'], us)))
+            for g in list(pending):
+                on = {s: [i for i, c in enumerate(b['c']) if c['a'] and 'x' in c and who(c['t'], us) == s and (c['x'], c['y']) in gtiles[g]]
+                      for s in ('us', 'them')}
+                for s in ('us', 'them'):
+                    key, o = (g, s), 'them' if s == 'us' else 'us'
+                    if key in captured:
+                        if hold.pop(key, None) is not None: A[(s, 'holds')] += 1; A[(s, 'captured')] += 1
+                        continue
+                    if on[s]:
+                        hold.setdefault(key, [b['r'], on[s]])[1] = on[s]
+                        continue
+                    if key not in hold: continue
+                    first, last = hold.pop(key)
+                    A[(s, 'holds')] += 1; A[(s, 'left')] += 1
+                    A[(s, 'held ' + ('1-2' if b['r'] - first <= 2 else '3-4' if b['r'] - first <= 4 else '5+'))] += 1
+                    i = last[0]; c = b['c'][i]
+                    fut = rows[k + 1:k + 16]
+                    if on[o]: why = WHY[0]
+                    elif any(e['a'] and 'x' in e and who(e['t'], us) == o and min(dist((e['x'], e['y']), q) for q in gtiles[g]) <= 4 for e in b['c']):
+                        why = WHY[1]
+                    elif not c['a'] or 'x' not in c: why = WHY[2]
+                    elif c['hp'] < 0.5 * c['mhp']: why = WHY[3]
+                    elif any(e['a'] and 'x' in e and e['t'] != c['t'] and dist((e['x'], e['y']), (c['x'], c['y'])) <= 8 for e in b['c']): why = WHY[4]
+                    elif any(any(x[0] == 'tribute' for x in (r['act'][i] if i < len(r['act']) else [])) for r in fut): why = WHY[5]
+                    elif any(r['c'][i]['a'] and 'x' in r['c'][i] and min(dist((r['c'][i]['x'], r['c'][i]['y']), q) for q in start[c['t']]) <= 3
+                             for r in fut): why = WHY[6]
+                    elif any(j != i and m['a'] and 'x' in m and m['t'] == c['t'] and min(dist((m['x'], m['y']), q) for q in gtiles[g]) <= 2
+                             for j, m in enumerate(b['c'])): why = WHY[7]
+                    elif any(camp_hits(r, i) for r in rows[k + 1:k + 11]): why = WHY[8]
+                    else: why = WHY[9]
+                    A[(s, why)] += 1
+            pending -= {g for g, s in captured}
+    print(f'{ng} games to r{R}, per game: holds of a defeated group\'s tiles (a side\'s champions on them after its camps died) '
+          f'and how they ended; a left hold by what was near when the last holder stepped off (first match), or where it went')
+    for s in ('us', 'them'):
+        f = lambda k: A[(s, k)] / max(1, ng)
+        print(f'  {s:4} holds {f("holds"):.1f}: captured {f("captured"):.1f}, left {f("left"):.1f} (held 1-2 rounds {f("held 1-2"):.1f}, '
+              f'3-4 {f("held 3-4"):.1f}, 5+ {f("held 5+"):.1f}); ' + ', '.join(f'{w} {f(w):.2f}' for w in WHY))
+
+
 CMDS = {'gems': cmd_gems, 'fights': cmd_fights, 'channels': cmd_channels, 'types': cmd_types, 'items': cmd_items,
         'risk': cmd_risk, 'sources': cmd_sources, 'starts': cmd_starts, 'fuel': cmd_fuel, 'assist': cmd_assist,
         'guard': cmd_guard, 'shots': cmd_shots, 'captures': cmd_captures, 'defend': cmd_defend, 'gold': cmd_gold,
-        'champs': cmd_champs}
+        'champs': cmd_champs, 'holds': cmd_holds}
 
 if __name__ == '__main__':
     main()
