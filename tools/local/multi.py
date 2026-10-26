@@ -3,12 +3,14 @@
 usage: python -I tools/local/multi.py CAND1,CAND2,... [--pool a,b] [--maps m1,m2] [--jobs 12]
 One run-batch over the whole grid; prints one row per candidate (wins, kills, deaths, gem margin, flee deaths).
 """
-import argparse, collections, json, os, re, subprocess, sys, time, zipfile
+import argparse, collections, json, os, re, shutil, subprocess, sys, time, zipfile
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 CAMBC = os.path.expandvars(r'%LOCALAPPDATA%\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0'
                            r'\LocalCache\local-packages\Python311\Scripts\cambc.exe')
+if not os.path.exists(CAMBC):
+    CAMBC = shutil.which('cambc') or CAMBC  # Linux / macOS: cambc on PATH
 ap = argparse.ArgumentParser()
 ap.add_argument('cands')
 ap.add_argument('--pool', default='pool/b_log,pool/dm1,pool/pd1,pool/pgq,pool/pw3,pool/tf1,pool/tf3')
