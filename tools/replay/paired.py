@@ -1,7 +1,9 @@
 """Pair the decoded games of two platform runs on (opponent, map, repeat) and compare them game by game.
 
-usage: python -I tools/replay/paired.py BASE_RUN NEW_RUN [ROUND] [--drop OPP1,OPP2]   (runs as in results/gate.log, e.g.
-       cand6_b3456@b3456; --drop skips opponents whose names start so, e.g. the ones sandwich.py found changed)
+usage: python -I tools/replay/paired.py BASE_RUN NEW_RUN [ROUND] [--drop OPP1,OPP2] [--type NAME]   (runs as in
+       results/gate.log, e.g. cand6_b3456@b3456; --drop skips opponents whose names start so, e.g. the ones sandwich.py
+       found changed; --type counts only champions of that type, as named in decoded.py NAMES, in games where we have
+       one in both runs, and adds each side's max health of that type at r600)
 
 Both runs must be decoded first (tools/replay/decode_run.sh RUN). The opponent of each match comes from
 `cambc match-groups show` (cached in data/cache/mm_<run>.json). Platform games are deterministic, so on opponents that
@@ -50,7 +52,7 @@ def match_map(run):
     return out
 
 
-def stats(run, R):
+def stats(run, R, ty=None):
     d = os.path.join(ROOT, 'data', 'fights', run.replace('@', '_'))
     side = {}
     for line in open(os.path.join(d, 'index.txt'), encoding='utf-8'):
@@ -65,17 +67,21 @@ def stats(run, R):
         n = max(len(r['c']) for r in rows)
         rows = [r for r in rows if len(r['c']) == n]
         us, res = side[mid]
+        keep = [ty is None or c['ty'] == ty for c in rows[0]['c']]
+        if not any(k and c['t'] == us for k, c in zip(keep, rows[0]['c'])): continue
         C = collections.Counter()
         last = rows[0]
         for a, b in zip(rows, rows[1:]):
             if b['r'] > R: break
             last = b
             for i, c in enumerate(b['c']):
+                if not keep[i]: continue
                 pc = a['c'][i]; w = 'us' if c['t'] == us else 'them'
                 if pc['a'] and not c['a']: C[w + ' deaths'] += 1; C[w + ' lost'] += pc.get('g', 0)
                 if c['a'] and pc['a'] and c.get('g', 0) > pc.get('g', 0): C[w + ' coll'] += c['g'] - pc['g']
+                if a['r'] < 600 <= b['r']: C[w + ' mhp600'] += c.get('mhp', 0)
             for i in range(n):
-                if D.enemy_hits(a, i, n): C[('us' if a['c'][i]['t'] == us else 'them') + ' hitrounds'] += 1
+                if keep[i] and D.enemy_hits(a, i, n): C[('us' if a['c'][i]['t'] == us else 'them') + ' hitrounds'] += 1
         for t in (0, 1): C[('us' if t == us else 'them') + ' trib'] += last['sg'][t]
         C['win'] = res == 'win'
         out[(opp, mp, k)] = C
@@ -87,9 +93,13 @@ if __name__ == '__main__':
     drop = []
     if '--drop' in args:  # opponents that changed bots between the runs (sandwich.py names them): name prefixes
         j = args.index('--drop'); drop = args[j + 1].split(','); args = args[:j] + args[j + 2:]
+    ty = None
+    if '--type' in args:
+        j = args.index('--type'); ty = D.NAMES.index(args[j + 1]); args = args[:j] + args[j + 2:]
+        FIELDS += ['us mhp600', 'them mhp600']
     base, new = args[0], args[1]
     R = int(args[2]) if len(args) > 2 else 1000
-    A, B = stats(base, R), stats(new, R)
+    A, B = stats(base, R, ty), stats(new, R, ty)
     keys = [k for k in A if k in B and not any(k[0].startswith(d) for d in drop)]
     print(f'{len(keys)} paired decoded games (to r{R}); base -> new')
     cls = collections.defaultdict(list)

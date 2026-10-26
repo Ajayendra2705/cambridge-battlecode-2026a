@@ -13,6 +13,8 @@ until [ "$(python -I tools/platform/group.py $ids 2>/dev/null | grep -cE 'WIN|lo
 sleep 20
 python -I tools/platform/rcmp.py "$base" "$run" 2>&1 | tail -4
 bash tools/replay/decode_run.sh "$run" 12 2>&1 | tail -1
+# A base that no judge decoded yet (the first base on a new panel) is decoded here too.
+[ -f "data/fights/${base/@/_}/index.txt" ] || bash tools/replay/decode_run.sh "$base" 12 2>&1 | tail -1
 for d in "${base/@/_}" "${run/@/_}"; do
   echo "== $d"
   python -I tools/replay/decoded.py holds "data/fights/$d" | tail -2

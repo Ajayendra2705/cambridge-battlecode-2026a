@@ -162,7 +162,7 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
-## Changes in cc2 (ladder bot from 2026-10-27 00:30 IST, version 796)
+## Changes in cc2 (ladder bot from 2026-10-27 00:05 IST, version 796)
 
 cc2 = mw1 (now `bots/pool/mw1`) plus carrier caution in the fight step of `bot.cpp`: `big_bag` is a bag of 30+ gems (was 150). Such a carrier never takes the engage branch, and `losing` counts it as losing whenever it is threatened, so it kites or flees instead of trading blows. Cause: our carriers died 2-6 times as often per round alive as the rivals' (`docs/findings.md`, "Gems lost on death: carriers"); on b11p cc2 cut our gems lost on death by r1000 from 141 to 80 per game. cc1 (the same rule at 50 gems) cut them to 109.
 
