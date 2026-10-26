@@ -31,14 +31,14 @@ distance_field& group_field(Group& g) {
         if (f1 < f0) field_cost = std::max(field_cost, f0 - f1);
     };
     const auto build_detour = [&] {
-        build(W.terrain | zone_of());
+        build(W.route_terrain | zone_of());
         // Fall back to the plain route when the detour cuts the group off from home (the old check read only the
         // first spawn tile); with no fuel left for it, finish on a later turn.
         bool ok = false;
         for (const auto sp : W.ally_spawn.positions())
             if (g.field->get(sp) != UNREACH) { ok = true; break; }
         if (ok) return;
-        if (affordable()) build(W.terrain);
+        if (affordable()) build(W.route_terrain);
         else g.field_key = ~key;
     };
     if (!g.field || (key != g.field_key && affordable())) {
@@ -61,11 +61,11 @@ distance_field& group_field(Group& g) {
         if (zone.is_set(S.me)) {
             bitboard inside = (~zone | W.terrain).reachable_tiles(S.me, 255);
             inside.set(S.me);
-            build(W.terrain | (zone & ~inside));
+            build(W.route_terrain | (zone & ~inside));
             g.open_reach = std::make_unique<bitboard>(inside);
         }
         if (g.field->get(S.me) == UNREACH && affordable()) {
-            build(W.terrain);
+            build(W.route_terrain);
             g.open_reach.reset();
         }
     }
@@ -158,12 +158,22 @@ bitboard dash_landings(const cambc::ability& ab) {
     return land;
 }
 
+// The field leads on across a hole next to us (a route over thin holes, dh1): only a dash takes that step.
+bool hole_ahead(const distance_field& field, int here) {
+    if (!W.has_dash) return false;
+    for (auto d : DIRS) {
+        const vec2 t{S.me.x + d.x, S.me.y + d.y};
+        if (cm::is_in_bounds(t) && W.thin_holes.is_set(t) && field.get(t) < here) return true;
+    }
+    return false;
+}
+
 // Dash along the field when it skips ahead, then walk.
 bool step_static(const distance_field& field, int here) {
     if (stale()) return false;
     auto& me = cambc::self();
     const vec2 p = S.me;
-    if (here >= 4 && me.can_cast()) {
+    if ((here >= 4 || hole_ahead(field, here)) && me.can_cast()) {
         for (const auto& ab : me.abilities()) {
             if (!ab.is_dash() || !ab.is_ready()) continue;
             vec2 best = p;
@@ -211,6 +221,18 @@ bool step_field(const distance_field& field, const bitboard& roots, int stop_at 
     const int here = field.get(S.me);
     if (here <= stop_at) return false;
     if (step_static(field, here)) return true;
+    // The way on crosses a hole and the dash is not back yet: wait at the edge (its cooldown is 8 turns) rather than set
+    // off on the walk round, which the next turn's route would turn back from. After 10 turns of waiting (no free
+    // landing, or danger on it) walk instead.
+    static int wait_from = -100, wait_last = -100;
+    if (hole_ahead(field, here)) {
+        if (wait_last < S.round - 1) wait_from = S.round;
+        wait_last = S.round;
+        if (S.round - wait_from < 10) {
+            S.dash_wait = true;
+            return false;
+        }
+    }
     if (!me.can_move() || !local_search_affordable()) return false;
     const auto fuel_before = cambc::fuel_remaining();
     distance_field local;

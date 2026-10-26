@@ -64,7 +64,7 @@ void Bot::play_turn() {
     // 20 rounds and pick again (bf5 audit: champions stood 5 rounds and more beside rewards they could not reach).
     static int held_turns = 0;
     const bool walking = !std::strcmp(activity, "to_capture") || !std::strcmp(activity, "approach");
-    if (W.ready && !stale() && walking && S.avoid_danger && S.me == S.start && current_target >= 0) {
+    if (W.ready && !stale() && walking && S.avoid_danger && S.me == S.start && current_target >= 0 && !S.dash_wait) {
         if (++held_turns >= 2) {
             if (!blocked_until.empty()) blocked_until[current_target] = S.round + 20;
             last_pick_round = -100;
@@ -640,8 +640,10 @@ static void play_turn_core() {
         const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
             // Give up for a while if the way to the altar makes no progress (blocked or contested).
+            // Waiting at a hole edge for the dash is not a blocked way (dh1).
             if (altar_d < bank_best) bank_best = altar_d, bank_stall = 0;
-            else if (++bank_stall > 6) bank_blocked_until = S.round + 40, bank_best = UNREACH, bank_stall = 0;
+            else if (!hole_ahead(W.altar_field, altar_d) && ++bank_stall > 6)
+                bank_blocked_until = S.round + 40, bank_best = UNREACH, bank_stall = 0;
             write_claim(-1);
             ACT("bank");
             if (bank_gems()) return;

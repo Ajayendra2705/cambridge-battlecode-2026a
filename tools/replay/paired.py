@@ -93,6 +93,14 @@ if __name__ == '__main__':
     drop = []
     if '--drop' in args:  # opponents that changed bots between the runs (sandwich.py names them): name prefixes
         j = args.index('--drop'); drop = args[j + 1].split(','); args = args[:j] + args[j + 2:]
+    # Keep only games on maps whose names contain one of these substrings (--maps), or leave those out (--skipmaps).
+    maps, skipmaps = [], []
+    if '--maps' in args:
+        j = args.index('--maps'); maps = args[j + 1].split(','); args = args[:j] + args[j + 2:]
+    if '--skipmaps' in args:
+        j = args.index('--skipmaps'); skipmaps = args[j + 1].split(','); args = args[:j] + args[j + 2:]
+    games = '--games' in args  # also one line per paired game
+    args = [x for x in args if x != '--games']
     ty = None
     if '--type' in args:
         j = args.index('--type'); ty = D.NAMES.index(args[j + 1]); args = args[:j] + args[j + 2:]
@@ -100,7 +108,8 @@ if __name__ == '__main__':
     base, new = args[0], args[1]
     R = int(args[2]) if len(args) > 2 else 1000
     A, B = stats(base, R, ty), stats(new, R, ty)
-    keys = [k for k in A if k in B and not any(k[0].startswith(d) for d in drop)]
+    keys = [k for k in A if k in B and not any(k[0].startswith(d) for d in drop)
+            and (not maps or any(m in k[1] for m in maps)) and not any(m in k[1] for m in skipmaps)]
     print(f'{len(keys)} paired decoded games (to r{R}); base -> new')
     cls = collections.defaultdict(list)
     for k in keys:
@@ -110,6 +119,10 @@ if __name__ == '__main__':
         ks = keys if c == 'all' else cls[c]
         if ks: print(f'{c:7} {len(ks):3} games  ' + '  '.join(
             f'{f} {sum(A[k][f] for k in ks) / len(ks):.1f}->{sum(B[k][f] for k in ks) / len(ks):.1f}' for f in FIELDS))
+    if games:
+        for k in sorted(keys, key=lambda k: k[1]):
+            print(f'  {k[0][:10]:10} {k[1][2:]:22} ' + 'WL'[not A[k]['win']] + '->' + 'WL'[not B[k]['win']] + '  ' + '  '.join(
+                f"{f.replace('us ', '')} {A[k][f]:.0f}->{B[k][f]:.0f}" for f in ('us deaths', 'us coll', 'us trib', 'them trib')))
     for c in ('W->L', 'L->W'):
         print(c, ', '.join(f'{k[0][:10]}/{k[1][2:]}' for k in sorted(cls[c], key=lambda k: k[1])))
     print('paired mean difference (new - base) +- standard error:')

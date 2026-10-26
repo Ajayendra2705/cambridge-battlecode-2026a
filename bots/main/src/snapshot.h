@@ -83,6 +83,7 @@ struct Snap {
     bool walked = false, attacked = false;
     bool view_moved = false;  // We moved or dashed since `occ` was read (see refresh_occ).
     bool holding = false;     // Holding a capture this turn (set in bot.cpp after the knowledge update).
+    bool dash_wait = false;   // Waiting at a hole edge on our route for the dash to come back (dh1).
     vec2 start;  // Our tile at the snapshot.
     // Stunned: the turn starts with no action allowed at all.
     bool can_act() const { return (state & ((1u << 3) | (1u << 4) | (1u << 11))) != 0; }

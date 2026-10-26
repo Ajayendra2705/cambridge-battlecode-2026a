@@ -45,6 +45,10 @@ struct Group {
 struct World {
     bool ready = false;
     bitboard terrain;             // Never walkable for us.
+    // Terrain for the routes to groups and altars: a champion with a dash may cross a hole tile that has walkable tiles on
+    // two opposite sides (a one-tile hole line), so those holes are open on its routes; everyone else walks round.
+    bitboard route_terrain, thin_holes;
+    bool has_dash = false;
     bitboard ally_spawn, enemy_spawn, altar_tiles;
     std::vector<vec2> altars;
     std::vector<Group> groups;
@@ -65,9 +69,9 @@ struct World {
 
 World W;
 
-void compute_field(distance_field& field, const bitboard& roots) {
+void compute_field(distance_field& field, const bitboard& roots, const bitboard& terrain = W.terrain) {
     bitboard visited;
-    field.compute(W.terrain & ~roots, roots, visited);
+    field.compute(terrain & ~roots, roots, visited);
 }
 
 // Fuel one full-map field takes on this map, measured on each build (a 100x100 field can take over 50k: building one
@@ -98,11 +102,79 @@ cambc::camp_stats camp_stats_of(const cambc::camp& c) {
     return cache.back().second;
 }
 
+// Holes a dash (2 steps, may cross holes) jumps on a champion's routes to groups and altars (dh1, dh2). On road_of_riches
+// the altar is 120 steps from our spawn walking and 20 with one dash; the rivals' dashers farmed the centre and tributed
+// there while we never did (ladder 0-996 and 0-1005). A hole is opened only between two walkable tiles that we can walk
+// to from our spawn, so every tile such a route reaches can still walk home (dh1 also hopped to islands only a dash
+// reaches, 01islands 0 of 4 locally), and only where walking round it is 20 steps or more: the two sides' walking
+// distances to our spawn or to an altar differ by 20+, and the walk round is at least that gap (triangle inequality).
+// Smaller detours cost more than they save: a crossing spends the dash (Heart of Ruin's stun, everyone's escape) and can
+// wait up to its 8-turn cooldown. Run after the walking altar and spawn fields; re-roots the altar field when it opens any.
+// dh3: the holes stay shut unless they shorten the walk from our spawn to the altar by 40 steps or more (road_of_riches
+// 121 to 22, shortcut 110 to 45, concentrated_wealth 86 to 26, fracture 76 to 35). Where they save less, crossing led
+// into the rivals' fights: dh1 on the platform, gemfight (32 to 14) our deaths 4 to 22 and 1 to 8, gold_rush (12 to 5)
+// 3 to 25, while concentrated_wealth went from 208 gems collected to 887 and shortcut from 504 to 930.
+void open_thin_holes() {
+    const auto spawns = W.ally_spawn.positions();
+    if (spawns.empty()) return;
+    // Most maps stop here for a few hundred fuel: no route is shorter than the straight line. This runs in the first
+    // turn's init, so maps the switch leaves shut should spend next to nothing (a full field cost 49k on ambush).
+    const int walk = W.altar_field.get(spawns[0]);
+    int line = UNREACH;
+    for (const auto a : W.altars) line = std::min(line, dist(a, spawns[0]));
+    if (walk - line < 40) return;
+    const bitboard reach = W.terrain.reachable_tiles(spawns[0], 4000);
+    // Holes with reachable tiles on both sides along some axis (either shift convention: both pairs of each axis).
+    const bitboard r = reach.shift_right(1), l = reach.shift_right(-1);
+    const bitboard cand = cm::holes() & ((r & l) | (reach.shift_up(1) & reach.shift_up(-1))
+        | (r.shift_up(1) & l.shift_up(-1)) | (r.shift_up(-1) & l.shift_up(1)));
+    if (cand.is_empty()) return;
+    // With every candidate open the walk must still shrink by 40: a field searched only that deep settles the rest.
+    {
+        distance_field probe;
+        bitboard visited;
+        probe.compute((W.terrain & ~cand) & ~cm::altars(), cm::altars(), visited, static_cast<std::uint16_t>(walk - 40));
+        if (!visited.is_set(spawns[0])) return;
+    }
+    // Fields and reach read row-major in one call each: a get or is_set is a host call of about 40-50 fuel.
+    const int w = cm::width();
+    const auto sf = W.spawn_field.export_linear_buffer(), af = W.altar_field.export_linear_buffer();
+    const auto rb = reach.export_linear_buffer();  // bits, least significant first
+    const auto at = [w](const std::vector<std::uint16_t>& f, vec2 p) { return static_cast<int>(f[p.y * w + p.x]); };
+    const auto reached = [w, &rb](vec2 p) {
+        const int i = p.y * w + p.x;
+        return cm::is_in_bounds(p) && (rb[i >> 3] >> (i & 7) & 1);
+    };
+    constexpr std::array<vec2, 4> axes{vec2{1, 0}, vec2{0, 1}, vec2{1, 1}, vec2{1, -1}};
+    bitboard open;
+    for (const auto h : cand.positions()) {
+        for (const auto d : axes) {
+            const vec2 a{h.x - d.x, h.y - d.y}, b{h.x + d.x, h.y + d.y};
+            if (!reached(a) || !reached(b)) continue;
+            const int gap = std::max(std::abs(at(sf, a) - at(sf, b)), std::abs(at(af, a) - at(af, b)));
+            if (gap >= 20) {
+                open.set(h);
+                break;
+            }
+        }
+    }
+    if (open.is_empty()) return;
+    const bitboard route = W.terrain & ~open;
+    distance_field opened;
+    compute_field(opened, cm::altars(), route);
+    if (walk - static_cast<int>(opened.get(spawns[0])) < 40) return;
+    W.thin_holes = open;
+    W.route_terrain = route;
+    W.altar_field = std::move(opened);
+}
+
 void init_world() {
     auto& me = cambc::self();
     W.ally_spawn = cm::spawn_region(team::ally);
     W.enemy_spawn = cm::spawn_region(team::enemy);
     W.terrain = cm::walls() | cm::holes() | cm::altars() | W.enemy_spawn;
+    for (const auto& ab : me.abilities()) if (ab.is_dash()) W.has_dash = true;
+    W.route_terrain = W.terrain;  // open_thin_holes() opens holes on it once the walking fields exist
     W.altars = cm::altars().positions();
     W.altar_tiles = cm::altars();
     // Moved, not copied, and stored without regrowing the vector (copies and regrowth cost about 45k on boss_battle).
@@ -147,6 +219,7 @@ void init_world() {
     }
     compute_field(W.altar_field, cm::altars());
     compute_field(W.spawn_field, W.ally_spawn);
+    if (W.has_dash) open_thin_holes();
     for (auto& g : W.groups) {
         int d = UNREACH;
         for (auto sp : g.spawns) d = std::min<int>(d, W.altar_field.get(sp));

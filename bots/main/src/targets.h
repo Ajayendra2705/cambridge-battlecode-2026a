@@ -7,7 +7,7 @@ distance_field from_me_field() {
     bitboard roots, visited;
     roots.clear();
     roots.set(S.me);
-    f.compute(W.terrain & ~roots, roots, visited);
+    f.compute(W.route_terrain & ~roots, roots, visited);
     return f;
 }
 
@@ -47,7 +47,7 @@ void build_travel_field() {
     for (auto s : W.groups[travel_built].spawns) roots.set(s);
     auto f = std::make_unique<distance_field>();
     bitboard visited;
-    f->compute(W.terrain & ~roots, roots, visited);
+    f->compute(W.route_terrain & ~roots, roots, visited);
     travel_fields[travel_built++] = std::move(f);
     const auto f1 = cambc::fuel_remaining();
     if (f1 < f0) field_cost = std::max(field_cost, f0 - f1);
