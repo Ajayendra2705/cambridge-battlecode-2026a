@@ -22,6 +22,7 @@ Look things up through the "Where is ..." table in `README.md` instead of search
 ## Working rules (from the team)
 
 - Chat replies: caveman ultra style (terse, no filler). Files, docs and commits use normal prose.
+- Never push to GitHub (user, 10-26): commits stay local. To read the teammate's work, `git fetch origin` and merge `origin/master` into the local branch.
 - Before each step ask: is it needed, and how can this idea be better?
 - One factor at a time: compare us with the teams above us, pick the largest gap, name a target metric, and stay on it until matched.
 - Platform tests are about 20 games (`tools/platform/gate.sh`). Run the base at the same time, with a unique run name.
