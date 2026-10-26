@@ -22,6 +22,7 @@
 - Elk_arena: regroup and do not contest the centre early.
 - Boss_battle: team monolith assault plus an altar lock after the kill.
 - Lineage round robin (`docs/lineage.md`).
+- `fpr`: farm prediction model in target choice (Michael, `ml/`). `pick_group`'s best live-camp groups are weighted by a learned P(our team captures the group). Local only so far: style bench 94/140 vs main 76; 560-game run 391 vs 384 with deaths -24%, captures +13%, margin +21%; held-out opponents 163/240 vs 154. Build on any base with `python -I ml/bot/make_fpr_variant.py BASE exp/NAME` (works on main; on another bot it stops if a patch point differs). Target metric: captures per game and deaths per game. Details: `ml/README.md`, `results/analysis/diagnosis_2026-10-27.md`.
 
 ## Main loss shape (gb2l and hb4l logs)
 

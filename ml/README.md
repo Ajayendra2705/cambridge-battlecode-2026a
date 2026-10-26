@@ -44,7 +44,8 @@ Python project managed with uv: `cd ml && uv sync`, then `uv run python common.p
 | `fpr_train.py [full / group_only / mlp]` | Trains the fpr model; `mlp` is the one in the bot (group + champion features, P(capture) and log clear time) -> `data/ml/fpr_mlp.pt` |
 | `fpr_baseline.py` | Ports the bot's `clear_time()` estimate and compares it with the model |
 | `fpr_export.py BOT` | Writes `bots/BOT/src/fpr_weights.h` |
-| `bot/fpr.h` | C++ side (copy into a variant's `src/`): `pick_group` rescores its top 8 live-camp groups as formula score x P(capture) (fpr5) |
+| `bot/fpr.h`, `bot/fpr_weights.h` | C++ side and committed weights, copied into a bot by `bot/make_fpr_variant.py` |
+| `bot/make_fpr_variant.py BASE NAME` | Builds `bots/NAME` = BASE + fpr (verified: rebuilds fpr5 from main with byte-identical replays) |
 | `bot/make_style_bots.py` | Builds the style-bot grid `bots/exp/sty_a{AGG}_b{BANK}` (aggression -2..+3, banking batch x0.5/1/1.8) from the current main |
 | `style_calibration.py RUN_DIR` | Projects each bot's realised style in a local run onto the platform teams' PCA style axes |
 | `opening_metrics.py RUN_DIR` | Opening metrics from a kept local run: solo/shared captures before r300, gems at r200, banked at r300, first tribute |
@@ -82,6 +83,16 @@ Stop rules:
 The engage model (FightQ, fq1-fq5) lost badly: platform logs are confounded (engaging looks better in every situation, even when the simulator says you die). The reinforcement model is a pure prediction instead.
 - Fair window search: enemies arriving in 7 rounds are 2.3x more common before deaths; with perfect knowledge the death AUC rises 0.705 -> 0.757. The model reaches 0.734 (enemy + ally heads).
 - Bot use (rf3): flee rule `enemy_count + [enemy rate > ln 2] > ally_count + [ally rate > ln 2]` (count an arrival when it is more likely than not), predicted only when threatened and > 50k fuel left. A prediction costs ~14k fuel (max 21k).
+
+## Using fpr in a bot (for the team)
+
+The farm prediction model (fpr) is the one ML result that helps locally (see `docs/experiments.md`, rows fpr1-fpr5 and fprc). It changes only target choice in `pick_group`; fighting is untouched.
+
+- Build a variant: `python -I ml/bot/make_fpr_variant.py main exp/fpr` (or any other base bot), then `cambc build exp/fpr --release`. The trained weights are committed (`ml/bot/fpr_weights.h`), so no data or training is needed.
+- If the base bot's `targets.h`, `bot.cpp`, `snapshot.h` or `knowledge.h` differ from main at the patch points, the script stops and names the failing patch: port that part by hand.
+- Fuel: about 8-10k per `pick_group` call (top 8 groups); it skips itself when under 30k fuel remains. Fuel-limit turns 92 vs main's 64 over 3 local games.
+- Not tested on the platform yet. Gate it against a same-time base run as usual (`tools/platform/gate.sh`), and resubmit main afterwards.
+- Retraining (needs the ranked replays in `data/`): `fpr_data.py` -> `fpr_train.py mlp` -> `fpr_export.py BOT` (writes the weights into that bot; copy to `ml/bot/fpr_weights.h` to update the committed ones).
 
 ## Ideas to try later
 
