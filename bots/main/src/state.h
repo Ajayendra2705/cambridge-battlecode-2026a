@@ -27,6 +27,7 @@ float last_hp = 0;
 int last_round = -10, enemy_seen_round = -100;
 int last_pick_round = -100, last_pick_state = -2;
 int big_wait = 0;
+int big_wait_group = -1;  // The group big_wait counts for: the wait runs once per group life.
 int bank_best = UNREACH, bank_stall = 0, bank_blocked_until = 0;
 int planned_team = 1;
 int alive_cache = 1, alive_round = -10;

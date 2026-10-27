@@ -66,7 +66,10 @@ void fight_or_approach(int gi) {
         return;
     }
 
-    // Big groups (many elks) shred champions who arrive one by one: wait for most of the team.
+    // Big groups (many elks) shred champions who arrive one by one: wait for most of the team, at most 25 rounds per
+    // group life. The count used to restart after every approach step, so a champion waited 25 rounds per step
+    // (platform 00monolith: 10 idle rounds per 100 alive off camps and enemies, the rivals 3.6).
+    if (gi != big_wait_group || g.damaged()) big_wait = 0, big_wait_group = gi;
     if (!g.damaged() && g.strength_left() >= 200) {
         int present = 1;
         for (const auto& a : S.allies)
@@ -79,7 +82,6 @@ void fight_or_approach(int gi) {
             return;
         }
     }
-    big_wait = 0;
     STAGE("cf choose");
     const CampSnap* target = choose_camp(live);
     // Spells reach further than camps: cast before closing in.
