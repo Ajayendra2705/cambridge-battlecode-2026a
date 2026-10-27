@@ -8,12 +8,10 @@ lines = s.split('\r\n')
 hits = [k for k, l in enumerate(lines) if l.startswith('| ' + name + ' |')]
 assert len(hits) == 1, hits
 k = hits[0]
-cells = lines[k].split(' | ')
+cells = [c.strip() for c in lines[k][1:-1].split('|')]  # empty cells ("| |") count too
 assert len(cells) == 6, len(cells)
 if plat: cells[4] = plat
-if verdict:
-    last = cells[5][:-2] if cells[5].endswith(' |') else cells[5]
-    cells[5] = (last + ' ' + verdict[1:] if verdict.startswith('+') else verdict) + ' |'
-lines[k] = ' | '.join(cells)
+if verdict: cells[5] = (cells[5] + ' ' + verdict[1:]).strip() if verdict.startswith('+') else verdict
+lines[k] = '| ' + ' | '.join(cells) + ' |'
 with open(p, 'w', encoding='utf-8', newline='') as f: f.write('\r\n'.join(lines))
 print(lines[k][:300])
