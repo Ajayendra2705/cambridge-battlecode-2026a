@@ -38,6 +38,7 @@ Look things up through the "Where is ..." table in `README.md` instead of search
 - A 50-game platform result moves by about 3 wins between near-identical bots. The team agreed batch panels of 40-90 games (`results/panels/`, one gate over a combined panel such as `b56`); judge with decoded metrics (`tools/replay/decode_run.sh`, `tools/replay/decoded.py`), and write the decision rule down before the result arrives.
 - Opponents change bots during the day: run the base in the same session (`main` line in the `gatechain.sh` plan), never against a base from hours earlier.
 - Run gates only through `tools/platform/gatechain.sh` (it refuses to start beside another gate). Find or stop processes with `tools/platform/procs.sh`: Git Bash `ps` does not show command lines.
+- A running chain reads its plan through an open file: skip a line by writing `#` over its first character in place. `sed -i` replaces the file, and the chain plays the old lines (10-27).
 - Never delete `data/runs/` while a local run writes there. Edit bot code with the editor, not through shell or Python string escapes.
 - `docs/experiments.md` has CRLF line endings: edit it with the editor, or in Python open it with `newline=''` for reading as well as writing (a plain read turns every line into a diff).
 - The other docs have LF endings. Python on Windows writes CRLF in text mode, so write them with `newline=''` too (a plain write turns every line into a diff).
