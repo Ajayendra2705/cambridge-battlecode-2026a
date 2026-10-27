@@ -1,0 +1,196 @@
+diff -ru bots/main/src/bot.cpp bots/exp/ce5/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-28 00:38:56.278791500 +0530
++++ bots/exp/ce5/src/bot.cpp	2026-10-28 02:19:36.754813600 +0530
+@@ -263,6 +263,9 @@
+         }
+         prev_pred = near ? pred : -1.0f;
+     }
++    for (const auto& e : S.enemies)
++        if (!W.enemy_spawn.is_set(e.pos))
++            if (const int i = enemy_index(e); i >= 0 && i < 8) seen_pos[i] = e.pos, seen_round[i] = round;
+     // Compare nearby strength with visible enemies.
+     // Lanchester-style strength: total health times total damage per round on each side.
+     float enemy_hp = 0, enemy_dps = 0, ally_hp = S.hp, ally_dps = my_dps();
+diff -ru bots/main/src/camp_fight.h bots/exp/ce5/src/camp_fight.h
+--- bots/main/src/camp_fight.h	2026-10-28 00:38:56.283872600 +0530
++++ bots/exp/ce5/src/camp_fight.h	2026-10-28 02:19:37.286719600 +0530
+@@ -9,6 +9,40 @@
+     for (const auto& c : S.camps)
+         if (c.group == gi) live.push_back(&c);
+ 
++    // On a map with paired middle strong groups (targets.h, paired_map), do not walk alone into a middle group the enemy
++    // holds (two or more of their champions seen within 10 of its camps in the last 20 rounds): wait out of their sight
++    // (9+ tiles) until three of us and at least as many as them are here, at most 40 rounds per trip. A champion already
++    // on the group's tiles or within 5 of its camps is in the fight and keeps to the threat rules. 00ribs on brkp (ce3):
++    // our deaths r131-1000 8.4 per game (flee 121 and stunned 28 of 168), with 2.4 enemies and 0.7 allies within 6;
++    // hg1 (this hold on every map, local) cut 00ribs deaths from 12.8 to 9.5 per game but raised 00crater's 11.3 to 16.3.
++    if (paired_map() && W.group_side[gi] >= -6 && W.group_side[gi] <= 6) {
++        int in_fight = 99;
++        for (auto s : g.spawns) in_fight = std::min(in_fight, dist(S.me, s));
++        int held = 0, nearest = 99;
++        for (int i = 0; i < 8; ++i) {
++            if (S.round - seen_round[i] > 20) continue;
++            int d = 99;
++            for (auto s : g.spawns) d = std::min(d, dist(seen_pos[i], s));
++            if (d > 10) continue;
++            ++held;
++            nearest = std::min(nearest, dist(S.me, seen_pos[i]));
++        }
++        int ours = 1;
++        for (const auto& a : S.allies) {
++            bool here = dist(a.pos, S.me) <= 5;
++            for (auto s : g.spawns) if (dist(a.pos, s) <= 4) here = true;
++            if (here) ++ours;
++        }
++        if (gi != held_group || S.round - held_last > 30) held_wait = 0, held_group = gi;
++        if (held >= 2 && (ours < 3 || ours < held) && in_fight > 5 && !g.tiles.is_set(S.me) && held_wait < 40) {
++            ++held_wait;
++            held_last = S.round;
++            ACT("hold");
++            if (nearest < 9) walk_home();
++            return;
++        }
++    }
++
+     if (live.empty()) {
+         if (g.state == 2) {
+             // Respawning: a body on a spawn tile delays it, so wait beside the group.
+@@ -69,13 +103,19 @@
+     // Big groups (many elks) shred champions who arrive one by one: wait for most of the team, at most 25 rounds per
+     // group life. The count used to restart after every approach step, so a champion waited 25 rounds per step
+     // (platform 00monolith: 10 idle rounds per 100 alive off camps and enemies, the rivals 3.6).
++    // Paired middle strong groups (targets.h, paired_strong) wait the same way for four of us within 6 that claim the
++    // group, three after 25 rounds, at most 50.
+     if (gi != big_wait_group || g.damaged()) big_wait = 0, big_wait_group = gi;
+-    if (!g.damaged() && g.strength_left() >= 200) {
++    const bool big = g.strength_left() >= 200;
++    if (!g.damaged() && (big || paired_strong(gi))) {
+         int present = 1;
+-        for (const auto& a : S.allies)
++        for (const auto& a : S.allies) {
++            if (!big && claim_of(a.ch) != gi) continue;
+             for (const auto* c : live)
+                 if (dist(a.pos, c->pos) <= 6) { ++present; break; }
+-        if (present < std::min(4, alive_allies()) && big_wait < 25) {
++        }
++        const int need = std::min(big || big_wait < 25 ? 4 : 3, alive_allies());
++        if (present < need && big_wait < (big ? 25 : 50)) {
+             ++big_wait;
+             if (group_field(g).get(S.me) > 5) step_field(group_field(g), g.tiles, 5);
+             ACT("gather");
+diff -ru bots/main/src/comms.h bots/exp/ce5/src/comms.h
+--- bots/main/src/comms.h	2026-10-28 00:38:56.261417700 +0530
++++ bots/exp/ce5/src/comms.h	2026-10-28 02:19:12.452506300 +0530
+@@ -115,3 +115,10 @@
+         if (claim_cache[s] == group) ++n;
+     return n;
+ }
++// The group a visible teammate claims (-1 for none or unknown).
++int claim_of(const cambc::champion& c) {
++    const auto id = handle_id(c);
++    for (int s = 0; s < W.team_count && s < MAX_SLOTS; ++s)
++        if (W.slot_ids[s] == id) return claim_cache[s];
++    return -1;
++}
+diff -ru bots/main/src/state.h bots/exp/ce5/src/state.h
+--- bots/main/src/state.h	2026-10-28 00:38:56.276796000 +0530
++++ bots/exp/ce5/src/state.h	2026-10-28 02:19:36.671063300 +0530
+@@ -28,6 +28,11 @@
+ int last_pick_round = -100, last_pick_state = -2;
+ int big_wait = 0;
+ int big_wait_group = -1;  // The group big_wait counts for: the wait runs once per group life.
++// Where and when each enemy champion (by enemy_index) was last seen off its spawn, and the hold before a contested group
++// they stand at (camp_fight.h): rounds held on this trip, its group, and the last round held.
++std::array<vec2, 8> seen_pos{};
++std::array<int, 8> seen_round = {-100, -100, -100, -100, -100, -100, -100, -100};
++int held_wait = 0, held_group = -1, held_last = -100;
+ int bank_best = UNREACH, bank_stall = 0, bank_blocked_until = 0;
+ int planned_team = 1;
+ int alive_cache = 1, alive_round = -10;
+diff -ru bots/main/src/targets.h bots/exp/ce5/src/targets.h
+--- bots/main/src/targets.h	2026-10-28 00:38:56.271242200 +0530
++++ bots/exp/ce5/src/targets.h	2026-10-28 02:19:37.077121300 +0530
+@@ -101,6 +101,64 @@
+     return w;
+ }
+ 
++// Middle strong groups (an elk or stronger, side -6..6) on teams of four or more, with another live one within 12 tiles:
++// the team takes them one at a time and wakes each only with four of us there (camp_fight.h). On 00ribs (brk, cw1) our
++// arrivals woke the two elks one at a time and tanked them alone (60 a round each) while teammates farmed beside them:
++// three of ours recalled and two died by r100, and the enemy's five arrived at full health (docs/findings.md, "00ribs
++// opening, meetings and tank assist"). A lone middle strong group keeps the old play: waiting before the elk and the
++// golem of 00crater (22 tiles apart) let the enemy wake and take them, and our deaths doubled (local ce2).
++bool mid_strong(int gi) {
++    const auto& g = W.groups[gi];
++    return W.team_count >= 4 && W.group_side[gi] >= -6 && W.group_side[gi] <= 6 && g.hardest() >= 60.0f;
++}
++bool strong_pair(int i, int j) {
++    if (j == i || !mid_strong(j)) return false;
++    for (auto a : W.groups[i].spawns)
++        for (auto b : W.groups[j].spawns)
++            if (dist(a, b) <= 12) return true;
++    return false;
++}
++// By the map, whatever the partner's state: the respawns of 00ribs's two elks alternate, and a lone one waited for nobody
++// (local, live partners only: wakes with under three of us within 6 4.7 per game, 1.0 with any partner).
++bool paired_strong(int gi) {
++    if (!mid_strong(gi)) return false;
++    for (int j = 0; j < static_cast<int>(W.groups.size()); ++j)
++        if (strong_pair(gi, j)) return true;
++    return false;
++}
++// A map with such a pair (00ribs): its middle is held as a team (camp_fight.h, the hold before a held middle group).
++bool paired_map() {
++    static int v = -1;
++    if (v < 0) {
++        v = 0;
++        for (int i = 0; i < static_cast<int>(W.groups.size()) && !v; ++i) v = paired_strong(i);
++    }
++    return v == 1;
++}
++// Of the paired middle strong groups near an asleep one we picked, the team takes first one that is awake and claimed by
++// one of us, else the asleep one with the most claims (ours included; the lower index on a tie), so arrivals converge on
++// it. Only the final pick is redirected: skipping the others while scoring sent three of five to gold clusters near home
++// before the hill (local ce1: arrivals r45-77, main r45-57). A pick that waits at a respawning one goes to a live partner
++// instead, claimed or not: on brkp (ce3) the capturer of the first 00ribs elk stood alone beside its respawn (60 rounds)
++// while four of us fought the second, and the enemy's five took it first (619fd4aa, r80-98).
++int strong_lead(int i, int current) {
++    const bool waiting = W.groups[i].state == 2;
++    int lead = i, lead_claims = waiting ? -1 : claimants(i) + (current == i);
++    bool lead_awake = false;
++    for (int j = 0; j < static_cast<int>(W.groups.size()); ++j) {
++        const auto& h = W.groups[j];
++        if (h.state != 0 || !strong_pair(i, j)) continue;
++        const int claims = claimants(j) + (current == j);
++        if (claims == 0 && (!waiting || h.damaged())) continue;
++        if (h.damaged()) {
++            if (!lead_awake) lead = j, lead_awake = true;
++        } else if (!lead_awake && (claims > lead_claims || (claims == lead_claims && j < lead))) {
++            lead = j, lead_claims = claims;
++        }
++    }
++    return lead;
++}
++
+ int pick_group(int current) {
+     const int round = S.round;
+     if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
+@@ -255,12 +313,12 @@
+         if (score > best) best = score, best_i = i, best_n = score_n;
+     }
+     TRACE("pick bfs=" << (pf0 - pf1) << " loop=" << (pf1 - cambc::fuel_remaining()) << " danger=" << gd_fuel);
+-    if (current >= 0 && current_score > 0 && current_score * 1.05 >= best) {
+-        planned_team = current_n;
+-        return current;
+-    }
+-    planned_team = best_n;
+-    return best_i;
++    const bool keep = current >= 0 && current_score > 0 && current_score * 1.05 >= best;
++    planned_team = keep ? current_n : best_n;
++    const int pick = keep ? current : best_i;
++    if (pick >= 0 && ((W.groups[pick].state == 0 && !W.groups[pick].damaged()) || W.groups[pick].state == 2) && paired_strong(pick))
++        return strong_lead(pick, current);
++    return pick;
+ }
+ 
+ // A defeated group nearby that nobody is capturing yet: one champion stays to capture it.
