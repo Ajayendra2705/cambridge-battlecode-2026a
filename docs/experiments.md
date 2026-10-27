@@ -181,8 +181,8 @@ Local = 336 games (24 maps = every 3rd of allmaps.txt, x 7 pool bots fd2z/cand1/
 | eg2 | main | same, threshold 20 | 254, kills 2936, deaths 1590, margin +104k | not gated | R |
 | eg4 | main | rich replaced by the eg trigger (T=45) | 254, kills 2853, deaths 1444, margin +102k | not gated | R |
 | simlog | main | logging only (fight decisions), for simcal | 252, deaths 1621 (logging cost / noise; never ship) | - | data only |
-
-Not yet tested: eg5 = EV formula, engage if P(win)*(prey bag + eg(prey)) > (1-P(win))*(my bag + eg(me)), P(win) from simcal.
+| eg5 | main | rich replaced by EV rule: P(win)*(prey bag + eg(prey)) > (1-P(win))*my bag, P(win) = simcal logistic (label prey dies and I survive); eg(me) left out (eg features are enemy-relative) | 193, kills 2231, deaths 3644, margin +14k | not gated | R |
+| eg6 | main | eg5 with label prey dies | 191, kills 2239, deaths 3643, margin +9k | not gated | R |
 
 ## Engine 2.x era (2026-10-18 to 10-20)
 
