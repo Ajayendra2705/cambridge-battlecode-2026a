@@ -170,6 +170,20 @@ One row per tested variant. Source of every deleted bot: `git checkout archive/p
 | fprc | fpr4 | control: predictions computed, not used | fuel-limit turns 164 = fpr4: the cost is the computation, not behaviour | - | control |
 | fpr5 | fpr4 | static group part and per-champion inputs precomputed (identical outputs, parity 0.997) | fuel-limit turns 92 (main 64); bench 94/140 (main 76); 560: 391 (main 384), deaths 2375 vs 3120 (-24%), captures 61.3 vs 54.1, gems lost dying 58 vs 66, margin +117k vs +97k ; held-out opponents (9 unused pool bots + 3 unused style bots, 10 maps, 240 games): 163 vs main 154, deaths 1290 vs 1475, captures 60.4 vs 54.9 | not gated | best local variant: platform gate next |
 
+## Engine 2.0.0 era (cambc 4.0.0, base = teammate main m4): eg model (enemy future gems), 2026-10-28
+
+Local = 336 games (24 maps = every 3rd of allmaps.txt, x 7 pool bots fd2z/cand1/cp3/b_log/dm1/pd1/tf3, x 2 sides), run in worktree cb-2_0_0. Base main: 269 wins, kills 2942, deaths 1455, margin +115k. Offline model: ml/eg_* (Poisson MLP, deviance 30.7 vs best rule 36.6 on decision rows, AUC(gain>=50) 0.76). Fight-outcome calibration: ml/simcal.py on simlog replays, logistic P(prey dies and I survive) val AUC 0.84, calibrated.
+
+| Bot | Parent | Change | Local | Platform | Verdict |
+|---|---|---|---|---|---|
+| fprm | main | fpr model on 2.0.0 | 301 vs 299 of 336; strong pool 95 vs 99 of 144 | not gated | N |
+| eg1 | main | extra fight trigger: prey bag + eg_predict >= 45 under rich's safety gates | 258, kills 2885, deaths 1459, margin +108k | not gated | R |
+| eg2 | main | same, threshold 20 | 254, kills 2936, deaths 1590, margin +104k | not gated | R |
+| eg4 | main | rich replaced by the eg trigger (T=45) | 254, kills 2853, deaths 1444, margin +102k | not gated | R |
+| simlog | main | logging only (fight decisions), for simcal | 252, deaths 1621 (logging cost / noise; never ship) | - | data only |
+
+Not yet tested: eg5 = EV formula, engage if P(win)*(prey bag + eg(prey)) > (1-P(win))*(my bag + eg(me)), P(win) from simcal.
+
 ## Engine 2.x era (2026-10-18 to 10-20)
 
 Variants c1-c37, e_* (e_bank20, e_fuel, e_power, e_flee, e_jung, e_jung1, e_hp, e_stand, e_prism, e_pf, e_sp), j_* (j_end, j_end2, j_goldmap, j_prism, j_standh), k_danger0/1/25, k_stall12, jc_*. Accepted: c36, c37, e_jung, j_standht. Lessons are in `docs/findings.md`. Results are in `docs/journal/findings_log.md`.
