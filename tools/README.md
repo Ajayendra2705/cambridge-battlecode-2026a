@@ -17,6 +17,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `coll_at.py RUNDIR [ROUND...]` | Gems collected by our team and the opponent by each round (default 300, 600), per candidate, from a `multi.py` run's replay timelines. The early-gem metric; matches the platform direction (gm1/ge1: +24 locally, +15 on b5). |
 | `rr.py BOTS [--jobs 6]` | Round robin among the given bots: win matrix and new-vs-previous rows. |
 | `log.py [bundle] [regex]` | Print a team's stdout from the newest local replay bundle. |
+| `probe_lines.py RUNDIR PREFIX TAG` | Mechanism probes: prints our side's stdout lines that start with TAG from every replay of PREFIX (e.g. `exp.fw2l`) in a `multi.py --keep` run, each prefixed with map and side. A probe is a copy of a variant (never shipped) that prints one tagged line per turn where its mechanism should act; read the lines to check the change does what it was meant to before its gate. |
 | `allmaps.txt` | All 70 platform map names (default `--maps` of `multi.py` and `rr.py`; 40 until 10-26). `maps40.txt` is the first 40 (quick-pool numbers before 10-26), `newmaps.txt` the 30 added later. |
 
 ## platform/ (unranked games on the website; quota 50 match groups an hour, see `docs/WORKFLOW.md`, "Platform quirks")

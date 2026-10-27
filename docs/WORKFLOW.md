@@ -58,5 +58,6 @@ All commands run from the repo root. Python scripts run with `python -I`. On Win
 - Before each step, ask whether it is needed and how the idea could be better.
 - Prefer measured or learned formulations over hand-tuned constants (fit the constant on decoded platform games, write the fit next to the code).
 - Judge fight, item and banking changes with decoded platform metrics, not local runs or 50-game win counts alone.
+- Check the mechanism before the gate (user, 10-27): copy the variant to `bots/exp/<name>l`, print one tagged line per turn where the change should act (what it chose, and what happened: distances before and after, whether the cast or call went out), run 40 local games with `--keep`, and read them with `tools/local/probe_lines.py`. Give main's copy the same print for the comparison. The 10-27 probes (pb1, fw2, hw1, mr1) are in `docs/findings.md`, "Mechanism probes". Delete the probe folders afterwards.
 - Platform tests: batch panels of 40-90 games since 10-24 (a 20-game small gate is within noise; use it only as a quick check).
 - Ladder rating does not matter during testing. Bot quality does. Submit `main` again after tests if the deadline is near.
