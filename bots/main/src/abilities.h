@@ -270,13 +270,14 @@ bool flee_bush() {
     }
     return false;
 }
-// Stun the most dangerous enemy in reach first, then burst the focus target.
-bool use_champion_abilities(const ChampSnap& target) {
+// Stun the most dangerous enemy in reach first, then burst the focus target. Without may_root, spells that root the
+// caster are skipped: the turn still has to walk.
+bool use_champion_abilities(const ChampSnap& target, bool may_root = true) {
     if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_cast()) return false;
     for (const auto& ab : me.abilities()) {
-        if (!castable_now(ab) || !ab.is_cc()) continue;
+        if (!castable_now(ab) || !ab.is_cc() || (!may_root && roots(ab))) continue;
         const auto tiles = ab.valid_tiles();
         const ChampSnap* best = nullptr;
         for (const auto& e : S.enemies) {
@@ -294,7 +295,7 @@ bool use_champion_abilities(const ChampSnap& target) {
     }
     if (!S.holding && strike_dash({target.pos}, false)) return true;  // A capturer keeps its tile.
     for (const auto& ab : me.abilities()) {
-        if (!castable_now(ab)) continue;
+        if (!castable_now(ab) || (!may_root && roots(ab))) continue;
         try {
             if (ab.is_damage()) {
                 // The focus target out of range: the weakest enemy in range instead. Marcella's spell was left unused in

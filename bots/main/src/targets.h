@@ -56,6 +56,51 @@ void build_travel_field() {
 std::vector<int> group_invested;  // Per group: rounds we targeted it since it was last seen defeated.
 // Per group: round until which the way there counts as blocked by enemy danger (set after two turns stuck on it).
 std::vector<int> blocked_until;
+
+// Death marks: where one of us was killed lately; the enemies that did it are likely still there. Repeat deaths (within
+// 6 tiles and 150 rounds of an earlier death of ours) are 3.2 per game against the rivals' 1.9, and 1.35 of them die
+// outnumbered by two or more (rivals 0.32): a teammate walks alone into the pack that just killed one of us (cw1 on
+// bvp + bhp, tools/replay/repeat.py). Vision is not shared, but a teammate's death is: its handle's is_alive needs no
+// vision. Its place is the group it last claimed (within 30 rounds); our own is where we stood.
+struct DeathMark { vec2 pos; int round; };
+std::vector<DeathMark> death_marks;
+constexpr int DEATH_MARK_ROUNDS = 120;
+void add_death_mark(vec2 pos) {
+    std::erase_if(death_marks, [](const DeathMark& m) { return S.round - m.round >= DEATH_MARK_ROUNDS; });
+    if (death_marks.size() >= 8) death_marks.erase(death_marks.begin());
+    death_marks.push_back({pos, S.round});
+}
+std::array<int, MAX_SLOTS> mate_claim{}, mate_claim_round{};
+std::array<bool, MAX_SLOTS> mate_alive{};
+void track_mate_deaths() {
+    static bool init = false;
+    if (!init) mate_claim.fill(-1), mate_claim_round.fill(-1000), mate_alive.fill(true), init = true;
+    const int groups = static_cast<int>(W.groups.size());
+    for (int s = 0; s < W.team_count && s < MAX_SLOTS; ++s)
+        if (s != W.slot && claim_cache[s] >= 0 && claim_cache[s] < groups) mate_claim[s] = claim_cache[s], mate_claim_round[s] = S.round;
+    for (const auto& a : cambc::champions(team::ally)) {
+        const auto id = handle_id(a);
+        int s = 0;
+        while (s < W.team_count && W.slot_ids[s] != id) ++s;
+        if (s >= W.team_count || s >= MAX_SLOTS || s == W.slot) continue;
+        const bool alive = a.is_alive();
+        if (mate_alive[s] && !alive && mate_claim[s] >= 0 && S.round - mate_claim_round[s] <= 30)
+            add_death_mark(W.groups[mate_claim[s]].spawns.front());
+        mate_alive[s] = alive;
+    }
+}
+// Fresh marks within 6 tiles of the group's spawns, each weighted 1 at the death down to 0 after DEATH_MARK_ROUNDS.
+double death_mark_weight(const Group& g) {
+    double w = 0;
+    for (const auto& m : death_marks) {
+        const int age = S.round - m.round;
+        if (age >= DEATH_MARK_ROUNDS) continue;
+        for (auto sp : g.spawns)
+            if (dist(sp, m.pos) <= 6) { w += 1.0 - static_cast<double>(age) / DEATH_MARK_ROUNDS; break; }
+    }
+    return w;
+}
+
 int pick_group(int current) {
     const int round = S.round;
     if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
@@ -201,6 +246,7 @@ int pick_group(int current) {
         const double danger = sightings.empty() ? 0.0 : group_danger(g);
         gd_fuel += gd0 - cambc::fuel_remaining();
         if (danger > 0) score /= 1.0 + danger * 0.25;
+        if (!death_marks.empty()) score /= 1.0 + 2.0 * death_mark_weight(g);
         // Futility: rounds this champion already spent on the group since it last went down. Platform starvation and
         // rows: the team worked one contested group for 250-400 rounds per champion while the enemy farmed and took it.
         if (!group_invested.empty()) score /= 1.0 + group_invested[i] / 150.0;

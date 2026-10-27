@@ -1,6 +1,7 @@
 # Download our recent ranked games on maps matching any of MAPS into data/replays/platform/NAME and write index.txt
 # (mid map side result) for tools/replay/pextract.py. usage: python -I tools/replay/qmaps.py NAME LIMIT MAP [MAP ...]
 import os, re, subprocess, sys, json
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 CAMBC = os.path.expandvars(r'%LOCALAPPDATA%\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts\cambc.exe')
 OUR = '118dbffc-87ec-48a6-ac9c-dc1e371ba364'
 name, limit, maps = sys.argv[1], sys.argv[2], sys.argv[3:]

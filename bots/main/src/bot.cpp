@@ -119,7 +119,7 @@ static void play_turn_core() {
         std::cout << '\n';
     }
     if (!me.is_alive() && was_alive && round > 1) {
-        if (death_ctx.n > 0) death_rounds.push_back(round);  // Camp deaths say nothing about enemy control.
+        if (death_ctx.n > 0) death_rounds.push_back(round), add_death_mark(S.me);  // Camp deaths say nothing about enemy control.
         print_death(round);
         ++my_deaths;
         if (death_ctx.n > 0) ++kill_deaths;
@@ -150,16 +150,25 @@ static void play_turn_core() {
     take_snapshot();
     STAGE("knowledge");
     refresh_claims();
+    track_mate_deaths();
     update_knowledge();
     build_phantoms();
     read_broadcast();
     record_sightings();
     record_death_ctx();
+    // No call when three or more enemies stand within 6: helpers come from up to 14 tiles, one at a time, and feed the
+    // pack. cw1 on four panels, to r1000 (`tools/replay/chain.py`): we die within 60 rounds and 8 tiles of a teammate's
+    // death 2.16 times per game, the rivals 1.16; 19% of our later victims were 11+ tiles from the spot at the first death
+    // (theirs 7%), and 2.7 enemies stood within 6 of it (1.8).
     {
         bool caught = false;
-        for (const auto& e : S.enemies)
-            if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= 3) caught = true;
-        write_help(caught && home_side(S.me) ? help_code(S.me) : 0);
+        int near = 0;
+        for (const auto& e : S.enemies) {
+            if (W.enemy_spawn.is_set(e.pos)) continue;
+            if (dist(S.me, e.pos) <= 3) caught = true;
+            if (dist(S.me, e.pos) <= 6) ++near;
+        }
+        write_help(caught && near < 3 && home_side(S.me) ? help_code(S.me) : 0);
     }
     // Stunned: no action is allowed this turn. Acting anyway threw "Champion cannot act" (recall, ward placement) and
     // aborted the turn.
@@ -408,7 +417,11 @@ static void play_turn_core() {
     // Not engaging: from here on, moves keep out of enemy reach.
     S.avoid_danger = !S.danger.empty();
     if ((threatened && losing) || (hit_by_enemy && !prey)) {
-        if (prey) use_champion_abilities(*prey);
+        // No rooting spell yet: the branch below may kite or flee, and a rooted champion cannot walk this turn (the duel
+        // casts everything). cw1 on four panels, to r1000 (scratch castrisk.py): our Marcella cast her rooting spell while
+        // outnumbered or under 40% health 4.2 times per game, and died within 10 rounds after 23% of those casts against
+        // 16% of her other rounds there; the rivals' Marcella 2.3 times, 11% against 12%.
+        if (prey) use_champion_abilities(*prey, false);
         const bool healthy = S.hp >= S.max_hp * 0.5f && !hit_by_enemy;
         // A healthy capturer holds its tile too, until a hit lands: stepping away resets the capture, and the enemy
         // then takes the group (b9p, dq3 decoded: 2.6 holds per game left with an enemy 5-8 tiles away, the rivals 1.2).
