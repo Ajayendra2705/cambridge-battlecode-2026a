@@ -1,0 +1,64 @@
+diff -ru --strip-trailing-cr bots/main/src/abilities.h bots/exp/rz5/src/abilities.h
+--- bots/main/src/abilities.h	2026-10-28 23:53:39.736371200 +0530
++++ bots/exp/rz5/src/abilities.h	2026-10-29 00:23:37.954968200 +0530
+@@ -405,6 +405,41 @@
+     }
+ }
+ 
++// A ranged champion one tile beyond its basic range: walk in, cast the attack reset (it restores the shot the walk cost),
++// shoot. Probe rz5p: 63 of 63 such tries landed. sq2 on brkp2 (to r1000): the rivals' shooters hit our champions outside
++// fights 2.63 times per game after a walk and a reset (1.58 more after a dash), ours none; in the top 12 games the top
++// teams do it 4.6 times per game, their opponents 3.4. Only onto a tile where the enemies' burst is under half our health.
++bool step_reset_shot(const ChampSnap& target) {
++    if (stale() || S.range < 3 || dist(S.me, target.pos) != S.range + 1) return false;
++    auto& me = cambc::self();
++    if (!me.can_move() || !me.can_attack() || !me.can_cast()) return false;
++    bool ready = false;
++    for (const auto& ab : me.abilities()) if (ab.is_attack_reset() && ab.is_ready()) ready = true;
++    if (!ready) return false;
++    vec2 best{-1, -1};
++    float best_e = 0;
++    for (auto d : DIRS) {
++        const vec2 t{S.me.x + d.x, S.me.y + d.y};
++        if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t) || dist(t, target.pos) > S.range) continue;
++        const float e = exposure_at(t);
++        if (best.x < 0 || e < best_e) best = t, best_e = e;
++    }
++    if (best.x < 0 || best_e >= S.hp * 0.5f || stale() || !safe_move(best)) return false;
++    for (const auto& ab : me.abilities()) {
++        if (!ab.is_attack_reset() || !ab.is_ready()) continue;
++        if (stale()) return false;
++        try {
++            if (ab.use() && attack_unit(target.ch)) {
++                ++n_reset;
++                return true;
++            }
++        } catch (const cambc::error&) {
++        }
++        break;
++    }
++    return false;
++}
++
+ // Every branch of the turn returns early, so an attack can be left unused with something in reach: the audit build
+ // counted about 2,900 such turns per 80 games (840 in enemy fights with an awake camp in reach, 262 with an enemy
+ // champion in reach, the rest while walking, capturing or leaving camps). Spend it at the end of the turn: the weakest
+diff -ru --strip-trailing-cr bots/main/src/bot.cpp bots/exp/rz5/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-28 23:53:39.745095100 +0530
++++ bots/exp/rz5/src/bot.cpp	2026-10-29 00:19:03.567116900 +0530
+@@ -403,6 +403,7 @@
+             attack_unit(prey->ch);
+             return;
+         }
++        if (step_reset_shot(*prey)) return;
+         // Close in through the tile least exposed to enemy bursts; melee strikes after the step.
+         if (me.can_move()) {
+             vec2 best{-1, -1};
+@@ -535,6 +536,7 @@
+                 if (dist(S.me, t->pos) == 2) step_next_to(*t);
+                 else if (dist(S.me, t->pos) == 3) dash_next_to(*t);
+             }
++            if (dist(S.me, t->pos) == S.range + 1 && S.hp > S.max_hp * 0.5f && !in_kill_range && !S.holding) step_reset_shot(*t);
+             // Ranged champions also shoot when hurt unless the enemies near can burst them this round: our Vespers hit in
+             // 41% of rounds with an enemy in range, the rivals' 53% (b6 decoded).
+             if (dist(S.me, t->pos) <= S.range && (S.range <= 1 || S.hp > S.max_hp * 0.5f || dist(S.me, t->pos) > t->range || !in_kill_range)
