@@ -1,0 +1,17 @@
+diff -ru a/src/comms.h b/src/comms.h
+--- a/src/comms.h	2026-10-28 12:08:16.242141300 +0530
++++ b/src/comms.h	2026-10-28 12:39:52.763332100 +0530
+@@ -98,6 +98,13 @@
+     int r = (S.round & ~0xff) | static_cast<int>(shared_cache[6]);
+     if (r < S.round - 64) r += 256;
+     if (r > S.round + 192) r -= 256;
++    // Once the respawn has passed the broadcast says nothing, and left in place it decoded 65-255 rounds later as a respawn
++    // 256 rounds after the real one: every champion out of view of that group then held it as respawning until then (probe
++    // h2pr1l, 18 local games: twice, once 00eight's north double elk from r395 to r586). Clear it.
++    if (r <= S.round) {
++        if (!stale()) write_byte(5, 0), shared_cache[5] = std::byte{0};
++        return;
++    }
+     auto& grp = W.groups[g];
+     if (r > S.round && (grp.state == 0 || grp.respawn_round != r)) {
+         bool seen = false;

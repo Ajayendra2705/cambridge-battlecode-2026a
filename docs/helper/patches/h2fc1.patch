@@ -1,0 +1,19 @@
+diff -ru a/src/enemies.h b/src/enemies.h
+--- a/src/enemies.h	2026-10-28 12:08:16.246147700 +0530
++++ b/src/enemies.h	2026-10-28 12:39:52.109775600 +0530
+@@ -62,7 +62,14 @@
+ }
+ const ChampSnap* focus_target() {
+     const int b = static_cast<int>(shared_cache[7]);
+-    if (b == 0 || ((S.round - (b & 31)) & 31) > 3) return nullptr;
++    if (b == 0) return nullptr;
++    // The call keeps only the round's low 5 bits, so a call nobody replaced read as fresh again every 32 rounds (probe
++    // h2pr1l, 18 local games: 77 such reads at ages 32-35, 64-67, ...; 74 gave a champion a prey it did not have and 17
++    // started an engagement). Clear it once it has expired.
++    if (((S.round - (b & 31)) & 31) > 3) {
++        if (!stale()) write_byte(7, 0), shared_cache[7] = std::byte{0};
++        return nullptr;
++    }
+     const int idx = (b >> 5) - 1;
+     for (const auto& e : S.enemies)
+         if (enemy_index(e) == idx) return &e;

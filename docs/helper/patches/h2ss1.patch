@@ -1,0 +1,14 @@
+diff -ru a/src/shop.h b/src/shop.h
+--- a/src/shop.h	2026-10-28 12:08:16.257671100 +0530
++++ b/src/shop.h	2026-10-28 12:56:14.036375500 +0530
+@@ -144,6 +144,10 @@
+         }
+         if (me.gold_count() < choice.cost() || !me.can_buy(choice)) break;
+         me.buy(choice);
++        // The snapshot's strength is the strength before this turn's purchases: after a strength emblem the next emblem was
++        // chosen as if it had not been bought (probe h2pr2l: Power over Durability at 45 strength against the real 70), and
++        // my_dps cached the old value for 10 rounds.
++        S.str = me.strength();
+         cached_dps_round = -100;
+     }
+ }

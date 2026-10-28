@@ -3,6 +3,42 @@
 Newest entries first. Bots are `bots/exp/h2*` (gitignored), scripts `tools/helper/`, outputs `data/helper/`.
 Everything here is local only: nothing was submitted or gated.
 
+## 10-28 13:30 IST: Job 1 summary for the lead (7 confirmed bugs, patches ready for tg1 or go1)
+
+wb1 was rejected and deleted at 12:55, so my folders are built on `bots/exp/h2base`, a byte-identical copy of wb1 made
+before. Every fix touches code that tg1, uf1 and go1 share unchanged: the patches in `docs/helper/patches/` apply with
+`patch -p1 < .../h2X.patch` inside a bot folder (dry-run on a copy of tg1: all seven apply).
+
+| Bug | Fix (patch) | Mechanism check | Local effect, paired to the same games (two 60-game sets) |
+|---|---|---|---|
+| Focus call re-read as fresh every 32 rounds | `h2fc1` | twin `h2cx2l`: stale focus reads 77 -> 0 in the same 18 games | set 1: margin +27 +- 39, deaths +0.03 +- 0.37 (15 games changed) |
+| Respawn broadcast decoded 256 rounds late | `h2bc1` | twin: late broadcasts 10 -> 0 | set 1: 3 games changed, margin -5 +- 4 |
+| Dead or resumed turns write claims and help from a stale cache | `h2sm2` (supersedes `h2sm1`) | twin with `h2sm1`: dead-turn reverts 17 -> 0; 2 ghost-claim events left came from turns resumed after running out of fuel, which `h2sm2` covers (it reads bytes 0-4 inside each write) | `h2sm1` set 1: margin +0 +- 33, deaths +0.20 +- 0.38; `h2sm2` set 2: margin -2 +- 55, deaths -0.10 +- 0.36 |
+| Group back up keeps 0 health for members out of view | `h2hz1` | (in the twin: built on `h2sm1`'s twin) | set 1: collected -40 +- 26, deaths -0.22 +- 0.30; set 2: collected +23 +- 28, deaths -0.45 +- 0.25 |
+| Help call: clears erase another's call, erased calls never rewritten | `h2hl1` | probe 2: 227 erasing clears, 13% of calling turns without the call | set 1: deaths -1.07 +- 0.50 (00contest -7.0 per game over 6 games, the rest -0.33); set 2: deaths +0.03 +- 0.23, collected +26 +- 26 |
+| Shop picks the next emblem on the strength from before this turn's purchases | `h2ss1` | probe 3: 217 emblem starts in 18 games differ (12 per game), mostly Bruiser-strength bought where the formula gives Durability | item change: local runs cannot judge it |
+| D line names the activity of the turn before the last | one line (section 7 below) | probe 2: 68 of 177 D lines | logging only |
+
+Combinations: `h2cx3` = `h2fc1` + `h2bc1` + `h2sm2` (set 2: margin -41 +- 61, deaths +0.43 +- 0.44, their deaths -0.62 +-
+0.54); `h2cx1` (with `h2sm1`) set 1: margin +3 +- 50, deaths +0.40 +- 0.56; `h2cx2` (= `h2cx1` + `h2hz1`) set 1: margin
+-52 +- 44, deaths +0.53 +- 0.46. Read with `python -I tools/helper/h2_localpair.py BASE_RUN BASE_CAND NEW_RUN CAND...`.
+Set 1 = the lead's 10 maps (base wb1 `data/runs/multi-120939`; `multi-124154`, `multi-130103`), set 2 = 01boss-battle,
+00rows, 02gift-wrapping, 00split, 00swirl, 01elk-arena, 00corners, 02the-pack, 00lanes, 00stampede (base `h2base` in the
+same run, `data/runs/multi-131553`). Decoded (set 1, r1000, `decoded.py gems`): wb1 collected 826, tributed 688, lost on
+death 73, deaths 5.3; `h2fc1` 829 / 689 / 70 / 5.3; `h2sm1` 827 / 677 / 86 / 5.7; `h2cx1` 817 / 669 / 85 / 5.7.
+
+My reading: none of the fixes moves a local number beyond noise (local games are our own pool bots; fights and items need
+the platform). The four knowledge fixes (`h2fc1`, `h2bc1`, `h2sm2`, `h2hz1`) make the bot act on what it means to know, at
+no measurable local cost; if the lead wants one gate for them, `h2cx3` + `h2hz1` is the bundle, judged by the usual
+deaths and tribute guards. `h2hl1` (more help reaches callers) and `h2ss1` (strength users buy more health emblems) change
+behaviour in a direction only the platform can judge; note that `h2ss1` moves our strength users further from the top
+teams' strength-heavy builds, so the current build is partly this bug.
+
+Smaller findings of round 3 (probe `h2pr3l`, 18 games, `data/runs/multi-130742`): the calibration `cal_f` takes 6% of its
+predicted damage from samples after a skipped turn (death, channel), which lowers it by about 1% (1.307 against 1.322):
+no fix. A live group whose members in view are all dead keeps those members' old health (`update_knowledge`, second
+branch, raw state 1): 607 events, almost all gem or gold clusters (mean stale strength 4): minor, not fixed.
+
 ## 10-28 13:00 IST: second round: a fourth knowledge bug (groups back up keep 0 health out of view), help-call desync, stale shop strength
 
 Probe `bots/exp/h2pr2l` (wb1 plus event prints, never ship) on 00eight, 00crater, 01yellow-brick-road, 01boss-battle and
@@ -160,5 +196,4 @@ that complete (93%), so the code is probably better than the comment.
 
 ### Local check of the fixes
 
-Pending: `multi.py exp/h2fc1,exp/h2bc1,exp/h2sm1,exp/h2cx1` on the lead's 10 maps (60 games each), decoded and compared
-with wb1's `data/fights/local_multi-120939_exp.wb1`.
+Done: see the 13:30 summary at the top (`data/runs/multi-124154`, decoded in `data/fights/local_multi-124154_exp.h2*`).

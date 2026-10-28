@@ -1,0 +1,18 @@
+diff -ru a/src/comms.h b/src/comms.h
+--- a/src/comms.h	2026-10-28 12:08:16.242141300 +0530
++++ b/src/comms.h	2026-10-28 12:56:13.611834400 +0530
+@@ -56,7 +56,13 @@
+ int help_rows() { return (cm::height() + help_res() - 1) / help_res(); }
+ int my_help = 0;
+ void write_help(int v) {
+-    if (W.team_count > 5 || v == my_help) return;
++    if (W.team_count > 5) return;
++    // my_help is what we wrote, not what the field holds: a clear erased the call another champion had made since, and a
++    // call that someone's clear had removed was never written again (probe h2pr2l, 30 local games: 227 clears erased a live
++    // call; in 14% of calling turns the caller's call was gone). Clear only our own call; write ours again into an empty field.
++    const int field = static_cast<int>(claim_bits() >> 30 & 1023);
++    if (v == 0 && field != my_help) { my_help = 0; return; }
++    if (v == my_help && !(v != 0 && field == 0)) return;
+     my_help = v;
+     auto bits = claim_bits();
+     bits &= ~(std::uint64_t{1023} << 30);

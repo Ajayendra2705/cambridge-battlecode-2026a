@@ -1,0 +1,61 @@
+diff -ru a/src/comms.h b/src/comms.h
+--- a/src/comms.h	2026-10-28 12:08:16.242141300 +0530
++++ b/src/comms.h	2026-10-28 13:10:25.620451400 +0530
+@@ -31,9 +31,16 @@
+         claim_cache[s] = s < W.team_count && s != W.slot ? static_cast<int>(bits >> (6 * s) & 63) - 1 : -1;
+ }
+ 
++// Bytes 0-4 hold every champion's claim and the help call, so each write reads them again first: on a dead turn (no
++// knowledge stage) or a turn resumed after running out of fuel the cache is from an earlier round, and writing it back put
++// teammates' claims and the help call back to older values; an owner does not rewrite a claim it thinks it holds (probe
++// h2pr1l, 18 local games: 17 of 33 dead-turn writes reverted a teammate's claim, ghosts lasted up to 39 rounds).
++void reload_claim_word() { cambc::shared_memory.read(0, std::span{shared_cache.data(), 5}); }
++
+ void write_claim(int group) {
+     if (W.slot >= MAX_SLOTS || group == my_claim) return;
+     my_claim = group;
++    reload_claim_word();
+     auto bits = claim_bits();
+     bits &= ~(std::uint64_t{63} << (6 * W.slot));
+     bits |= static_cast<std::uint64_t>((group + 1) & 63) << (6 * W.slot);
+@@ -58,6 +65,7 @@
+ void write_help(int v) {
+     if (W.team_count > 5 || v == my_help) return;
+     my_help = v;
++    reload_claim_word();
+     auto bits = claim_bits();
+     bits &= ~(std::uint64_t{1023} << 30);
+     bits |= static_cast<std::uint64_t>(v & 1023) << 30;
+@@ -98,6 +106,13 @@
+     int r = (S.round & ~0xff) | static_cast<int>(shared_cache[6]);
+     if (r < S.round - 64) r += 256;
+     if (r > S.round + 192) r -= 256;
++    // Once the respawn has passed the broadcast says nothing, and left in place it decoded 65-255 rounds later as a respawn
++    // 256 rounds after the real one: every champion out of view of that group then held it as respawning until then (probe
++    // h2pr1l, 18 local games: twice, once 00eight's north double elk from r395 to r586). Clear it.
++    if (r <= S.round) {
++        if (!stale()) write_byte(5, 0), shared_cache[5] = std::byte{0};
++        return;
++    }
+     auto& grp = W.groups[g];
+     if (r > S.round && (grp.state == 0 || grp.respawn_round != r)) {
+         bool seen = false;
+diff -ru a/src/enemies.h b/src/enemies.h
+--- a/src/enemies.h	2026-10-28 12:08:16.246147700 +0530
++++ b/src/enemies.h	2026-10-28 12:39:52.109775600 +0530
+@@ -62,7 +62,14 @@
+ }
+ const ChampSnap* focus_target() {
+     const int b = static_cast<int>(shared_cache[7]);
+-    if (b == 0 || ((S.round - (b & 31)) & 31) > 3) return nullptr;
++    if (b == 0) return nullptr;
++    // The call keeps only the round's low 5 bits, so a call nobody replaced read as fresh again every 32 rounds (probe
++    // h2pr1l, 18 local games: 77 such reads at ages 32-35, 64-67, ...; 74 gave a champion a prey it did not have and 17
++    // started an engagement). Clear it once it has expired.
++    if (((S.round - (b & 31)) & 31) > 3) {
++        if (!stale()) write_byte(7, 0), shared_cache[7] = std::byte{0};
++        return nullptr;
++    }
+     const int idx = (b >> 5) - 1;
+     for (const auto& e : S.enemies)
+         if (enemy_index(e) == idx) return &e;

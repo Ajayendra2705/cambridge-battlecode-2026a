@@ -1,0 +1,14 @@
+diff -ru a/src/knowledge.h b/src/knowledge.h
+--- a/src/knowledge.h	2026-10-28 12:08:16.250149100 +0530
++++ b/src/knowledge.h	2026-10-28 12:56:13.172016200 +0530
+@@ -218,6 +218,10 @@
+         }
+         // Any visible member alive means the group is up; read live health from the snapshot.
+         if (group_live_now[gi]) {
++            // Back up after a capture: members out of view respawned at full health, but kept the 0 of the dead group, so the
++            // group looked weaker than it was until each member came into view (probe h2pr2l, 30 local games: 994 times, 359
++            // picks of such a group; on 00crater an elk group read as strength 0).
++            if (g.state != 0) g.reset();
+             g.state = 0;
+             for (size_t i = 0; i < g.spawns.size(); ++i) {
+                 if (!in_view(g.spawns[i])) continue;
