@@ -1,7 +1,57 @@
 # Helper agent h2: stale-state audit (notes for the lead)
 
 Newest entries first. Bots are `bots/exp/h2*` (gitignored), scripts `tools/helper/`, outputs `data/helper/`.
-Everything here is local only: nothing was submitted or gated.
+Everything here is local only (this PC, or cloud machines running the same local tools): nothing was submitted or gated.
+
+## 10-28 14:15 IST: tg1 check, probe twin, and cloud runs
+
+**Local check** of the tg1 variants (13:40 entry), the lead's 10 maps and pool, 60 games each, `data/runs/multi-135004`
+(per-game digests in `data/helper/h2_check4/`). `h2tg1` plays all 60 games exactly as the lead's tg1 run
+`data/runs/multi-083411`. Paired to `h2tg1`, mean difference per game +- SE:
+
+| Variant | Games identical | Our deaths | Their deaths | Collected | Tributed | Margin | Wins (of 60) |
+|---|---|---|---|---|---|---|---|
+| `h2hlt` (help fix) | 13 | -0.98 +- 0.54 | +0.52 +- 0.47 | +12 +- 26 | +22 +- 22 | +87 +- 50 | 48 vs 45 |
+| `h2kb2` (knowledge fixes + help fix) | 3 | -0.63 +- 0.62 | +0.73 +- 0.61 | -4 +- 34 | +12 +- 27 | +77 +- 55 | 49 vs 45 |
+| `h2kb1` (knowledge fixes) | 8 | +0.83 +- 0.49 | -0.33 +- 0.55 | -13 +- 24 | -17 +- 22 | -4 +- 40 | 45 vs 45 |
+| `h2da1` (D-line logging) | 59 | -0.02 | -0.03 | +0.6 | 0 | +0.6 | 45 vs 45 |
+
+Per map (`python -I tools/helper/h2_digest.py --maps BASE NEW`):
+
+- `h2hlt`: 00contest -7.67 deaths per game (all 6 games changed; tributed +133, margin +300), 00eight -3.17 (margin +262),
+  00packs -1.33, 00ribs +1.67; the other six maps within +-0.7. Without 00contest the change is -0.24 per game. This
+  repeats the wb1 result (set 1: 00contest -7.0 over 6 games, -0.33 elsewhere): on both bases the help fix's gain sits on
+  00contest and 00eight.
+- `h2kb1`: 00ribs +5.33 deaths per game, 00eight +2.17, 01yellow-brick-road +2.17, the rest -0.8 to +0.8. The 00ribs rise
+  stays in `h2kb2` (+3.50). On wb1 the knowledge combinations were +0.40 and +0.53 (not significant); on tg1 the bundle
+  is +0.83 +- 0.49. So I withdraw the 13:40 proposal to gate `h2kb1` as hygiene until the single fixes are measured (cloud
+  runs below).
+- `h2da1` changed one game (our deaths -1, theirs -2, margin +36). The fix adds one engine call per turn
+  (`cambc::self().is_alive()`), so a logging change is not exactly play-neutral here; probably through fuel (not traced).
+
+**Probe twin** `h2tw2l` (probe 2's counters with the HZ fix and the help fix; the same 30-game grid as probe 2,
+`data/runs/multi-140209` against `data/runs/multi-125121`), counters summed over 144 champion-games
+(`python -I tools/helper/h2_probe_sum.py RUN exp.h2tw2l`):
+
+| Counter | Probe 2 (bugs) | Twin (fixed) |
+|---|---|---|
+| unseen members still at 0 health in a group seen back up (hz) | 920 | 0 |
+| target picks on such a group (hp), turns it held (hg_turns) | 332, 51 | 0, 0 |
+| clears that erased another champion's live call (erase_live, erase_dead) | 217, 5 | 0, 0 |
+| calling turns that found their own call gone (help_erased) | 277 | 61, each rewritten in that turn |
+| calling turns that found another call in the field (help_overwritten) | 423 | 371 |
+
+Both fixes remove their events. The 61 calls still found gone come from other writers (this twin has no `h2sm2`, so
+stale-cache writes remain; two champions calling the same cell also share one clear); not traced further.
+
+**Cloud runs.** The user allowed pushing on 10-28. Branch `h2/cloud-1028` carries the sources of my tg1-based folders
+(pushed from a temporary index; the working branch and `bots/exp` are untouched) and the per-game digest of the lead's tg1
+run. Three cloud agents build them with `pip install cambc==4.0.0` on Linux and run `tools/local/multi.py` on all 70 maps
+against cand1, cp3 and dh3 (420 games per variant), each with its own `h2tg1` base:
+`hl` = `h2hlt`, `h2kb2`; `kb` = `h2kb1`, `h2hzt`; `sg` = `h2fct`, `h2bct`, `h2smt`. The singles are `h2tg1` plus one patch
+each (`h2fc1`, `h2bc1`, `h2sm2`, `h2hz1`); stacked, they equal `h2kb1` file for file. Each run also checks that the cloud
+build plays the lead's 60 tg1 games identically. Digests come back on `h2/cloud-1028-{hl,kb,sg}`.
+New tool: `tools/helper/h2_digest.py` (one line per game; `--pair` and `--maps` compare digests like `h2_localpair.py`).
 
 ## 10-28 13:45 IST: note on uf1 (read only, not tested)
 
