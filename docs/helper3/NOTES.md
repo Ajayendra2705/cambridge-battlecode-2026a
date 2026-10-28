@@ -20,7 +20,10 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
 - 13:05 01corridors done. Gap: the five east lanes (groups 6-10), which we never enter: the same `covered` lock
   (elk groups 7 and 8 cover each other). Across the five maps: the cover lock (yellow, corridors, and five more maps
   by `h3_cover.py`) and the banking batch on gem-cluster maps (gemcombat1, gemcombat5) repeat; interlock is lane deaths.
-- Next: job 2 (why the rivals collect about twice our gems on brk and b13).
+- 13:23 Job 2 done: we use alive time like the rivals (walking about half for both); 74% (brk) and 91% (b13) of
+  the capture gap is what a farming round yields. On brk that is strong-camp lives (elk -173, monolith -66 of -376;
+  58% after r600): we lose 3.1 strong-camp lives per game that we hit to their capture (they 0.75). On b13, 16% of
+  the gap is the cover lock. Fix idea: no futility discount on strong camps under half health.
 
 ## Method
 
@@ -31,6 +34,8 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
 - Numbers per game, us against the opponents: `tools/helper3/h3_mapsum.py` (collected, of it taken from kills,
   tributed, lost on death, deaths at r300 and r1000; first gem capture and first tribute),
   `tools/replay/firstcap.py`, `decoded.py gold`, `cohesion.py`, `deathfactors.py`, `bagdeath.py`, `hpbag.py`.
+- Lane deaths: `tools/helper3/h3_deathgrp.py` (deaths by the nearest group, in the victim's own view). Cover lock:
+  `tools/helper3/h3_cover.py` (all maps), `h3_lockgems.py` (gems from the locked groups in a decoded run).
 - Layout: `tools/helper3/h3_layout.py data/maps_txt/<map>.txt --map` (groups with ids, gems, gold, health, walking
   steps from each spawn; zone A / mid / B by 6+ steps). `tools/helper3/h3_groups.py` counts captures, camp hits and
   presence per group, us against them, with games on side b mirrored so a group id always means the same group seen
@@ -327,3 +332,69 @@ batch (`bot.cpp`, "Order quantity") grows with the collection rate and the trip 
 rich cluster groups and one contested altar the carriers hold 40-200 gems for 90-130 rounds. A cap on the batch (about
 40 gems) is the simple fix. 00interlock is the odd one: its gap is lone champions dying on long lanes after r600
 (4.4 deaths per game away from camps against 1.7), the cohesion and fleeing problem seen on other maps before.
+
+## Job 2: why the rivals collect about twice our gems (go1 on brk and b13, to r1000)
+
+Runs (read only): `data/fights/main_brk1028_brk` (100 games, the five bad maps 00ribs, 00contest, 00crater, 00packs,
+00eight) and `data/fights/main_b13_1028_b13` (50 games on 50 maps), both go1, decoded; and for comparison
+`data/fights/tg1e_brkp2_brkp2` (tg1 on brkp2, which is pinned to main_brk1028's games, so the same opponents and
+maps). Readers: `tools/helper3/h3_gemgap.py` (source, time band, activity per champion-round, decomposition),
+`h3_lives.py` (camp-hit rounds by who captured the life), `h3_lostlives.py` (strong-camp lives one side hit and the
+other captured), `h3_campdmg.py` (damage per camp hit), `h3_lockgems.py` (gems from the groups `h3_cover.py` lists).
+Outputs in `data/helper3/h3_*_{brk,b13,tg1e}.txt`.
+
+Collected by r1000: brk 373 against 749, b13 604 against 803 (deaths 9.6 against 4.9 and 6.5 against 3.8).
+
+**By source** (gems per game, us / them, gap):
+
+| source | brk | b13 |
+|---|---|---|
+| elk groups | 178 / 351 (-173) | 304 / 346 (-42) |
+| monolith groups | 6 / 72 (-66) | 13 / 20 (-8) |
+| cluster-only groups | 63 / 119 (-56) | 119 / 176 (-57) |
+| wolf groups | 77 / 121 (-44) | 106 / 144 (-37) |
+| golem groups | 26 / 35 (-9) | 43 / 52 (-9) |
+| kills (the killer takes the bag) | 22 / 47 (-24) | 20 / 52 (-32) |
+
+Captures make 94% of the brk gap and 84% of the b13 gap; kills the rest.
+
+**By time** (captures; kills): brk r1-300 -45 (0), r301-600 -90 (-9), r601-1000 -217 (-16): 58% of the brk gap
+comes after r600, mostly strong camps (elk lives r601-1000: our 2.1 captures against their 4.3, and nearly all of
+their monolith captures). b13: -35 (-10), -64 (-14), -68 (-8).
+
+**Per champion-round** (brk; shares of alive rounds, us / them): walking 60% / 58% (empty and healthy 49% / 47%,
+with a bag of 20+ 6% / 7%, under half health 5% / 4%), farming 13% / 15%, on a dead group's tiles 5% / 5%, fighting 5% / 6%, waiting 9% / 9%, at home 6% / 5%, banking 1% /
+2%; dead 12% of all champion-rounds against 6% (560 against 280 per game). b13 is the same picture (walking 51% /
+52%, farming 20% / 19%, waiting 9% / 8%, dead 9% / 5%). We use our alive time as they do.
+
+**Decomposition.** Capture gems = alive champion-rounds x share of them farming or on a dead group's tiles x capture
+gems per such round. brk: 351 / 702 = 3947 / 4385 x 0.185 / 0.199 x 0.48 / 0.80; share of the log gap: alive rounds
+15%, farm share 11%, **gems per farming round 74%**. b13: 585 / 751 = 3634 / 3833 x 0.277 / 0.269 x 0.58 / 0.73;
+alive rounds 21%, farm share -13% (we farm more), gems per farming round 91%. tg1 on the same brk games: 0.49 / 0.77,
+93% of the log gap.
+
+**The largest piece: what a farming round yields, and on brk that is strong-camp lives.** Within a camp type a
+capture is worth the same to both sides (elk lives 41 against 42 gems, golem 64 against 66, monolith 200), and our
+damage per camp hit is the same as theirs (elks 64 / 63 at r1-300, 96 / 101 at r301-600, 140 / 140 at r601-1000 on
+brk; b13 alike), so it is not weaker hits. On brk we put the same share of our camp hits into elk groups as they do
+(40% against 39%), but finish 4.4 elk lives per game to their 8.3, and their 0.36 monolith lives per game (72 gems,
+00contest) to our 0.03. Our captures are cheaper on average (9.7 gems per capture against 17.7; 66% of ours are
+cluster-only groups, many of them gold, against 52%). 16% of our camp-hit rounds (elk 19%) go into lives the rivals
+then capture, theirs 4% (3%). Strong-camp lives we hit and they capture: 3.1 per game against 0.75 the other way
+(b13 2.0 against 0.6). In 53% of those the rivals resume hitting it while one of ours still stands within 6 (a camp
+fight we lose; one of ours dies before their capture in 14%), in 30% after we left; 39% are left under 30% health,
+and they capture 34 rounds after our last hit on average. tg1 (cl1 + the opening) on the same games lowers our lost
+elk share to 14% and the elk gap to -105 (elk captures 4.7 against 7.1), but leaves 2.3 lost strong-camp lives per
+game. On b13 a second piece is the cover lock of the map sections above: 6 of b13's 50 maps have groups our bot
+never picks, and those groups give the rivals 43 gems per game over the whole panel against our 11, 32 of the
+198-gem gap (16%).
+
+**Fix idea:** camps never heal, so a damaged strong camp is the cheapest gems on the map: in `pick_group`, the
+futility discount (`targets.h`, `score /= 1.0 + group_invested[i] / 150.0`, which grows with every round this
+champion spent on the group) should not apply to a group under half its health, and a champion that has to leave one
+(heal, flee) should not count it as worth less on its return. This targets the 30% of lost lives we walk away from
+and the 39% left under 30% health. Metric: strong-camp lives we hit and the rivals capture, per game by r1000
+(`h3_lostlives.py`; go1 brk 3.13, tg1 2.28, theirs 0.75-0.91); bar: 1.5 or fewer on brkp2; guards: our elk
+captures per game up (4.4), deaths per game not up by more than 0.5. The contested half (we stand there and lose the
+camp fight) is the fighting gap the team has worked on all week (turn order, stuns, packs); the cover-lock fix of the
+map sections is the separate, larger lever on normal panels (16% of the b13 gap) and on the seven lock maps.
