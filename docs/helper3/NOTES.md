@@ -5,6 +5,11 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
 
 ## Latest (IST)
 
+- 14:20 70-map check of h3cv1 (420 games each): 42 maps identical, overall flat (margin +4 +- 18 a game); on
+  the lock maps yellow +512, swirl +538, corridors +342, but hooks, fragment, boss-battle -330 to -337 (local opponents
+  share the lock, see "Broad check"). The "cloud" agent actually ran here in a worktree with 10 jobs at ~2 GB
+  free RAM (13:45-14:05), against the 3-job rule; 4 of its games crashed on memory. Worktree left in
+  `.claude/worktrees/agent-abdd3e71735f3f266` (935 MB) until the user decides.
 - READY 14:15: h3bq1 (bank batch capped at 40), `docs/helper3/patches/h3bq1.patch`, built in `bots/exp/h3bq1`;
   applies to tg1 and uf1. Exposure to big bags -22% locally; lost on death flat locally (a platform question). See
   "Job 4".
@@ -464,6 +469,28 @@ of which "bystander" hits (an elk of a group the victim was not hitting) 14 -> 1
 3 rounds of a bystander hit 0.26 -> 0.21. The extra elk damage is from farming the unlocked elk groups, not from
 waking sleeping neighbours.
 
+**Broad check, all 70 maps** (main against h3cv1, pool/cand1, pool/cp3, pool/dh3, both sides: 420 games each; run by
+a subagent 13:45-14:05 in a git worktree, `.claude/worktrees/agent-abdd3e71735f3f266`, tables copied to
+`data/helper3/cloud70/`). The remote environment was not available, so it ran on this machine with 10 jobs at about
+2 GB free RAM, against the 3-job rule; 4 main games crashed on a memory allocation and were rerun. Its 84 games on the
+seven maps match `data/runs/multi-134001` exactly (same wasm, deterministic).
+- 42 of 70 maps give identical games. 28 differ: the seven lock maps, the 14 maps where `h3_cover.py` finds groups
+  the old rule only delays, and 7 maps where it finds none (00contest, 00great-wall, 00ribs, 01big-world, 01elk-arena,
+  01starvation, 02cuts; 1-5 of 6 games each, small changes; cause not checked).
+- All 70 maps, per game (h3cv1 - main, paired, standard error): wins 241 -> 240 of 420, our tributed +15 (10), theirs
+  +12 (12), margin +4 (18). Seven lock maps: tributed +135 (70), theirs +91 (100), margin +44 (125). The other 21
+  differing maps: margin -3 (44).
+- Margin per game on the seven: 01yellow-brick-road +512 (wins 3 -> 6 of 6), 00swirl +538 (1 -> 4), 01corridors +342
+  (3 -> 5); 01hooks -330 (4 -> 3), 00fragment -337 (4 -> 2), 01boss-battle -335 (5 -> 3), 00corners -81 (5 -> 3). On
+  hooks, fragment and boss-battle main's games run to r2000 with the opponent banking little (on boss-battle neither
+  side banks, main wins on gold); with h3cv1 the opponent banks 534, 704 and 1058 a game. Largest moves elsewhere:
+  01shortcut +524, 00dunes -259, 01the-farm -135.
+- Reading: the local opponents are our own old bots with the same cover rule, so on those three maps our unlock also
+  opens theirs (fragment's pair spans both halves; on boss-battle the guard we kill opens the altar for both). Platform
+  rivals have no such lock: they already take their own groups (on yellow 13.3 captures a game of the mirrored four),
+  so there the change can only add our side. The local losses on hooks, fragment and boss-battle are not a platform
+  forecast; the yellow and corridors gains match the platform gap the fix targets.
+
 **Proposed gate rule on bwm** (the lead writes the final rule; base = go1 or the current main in the same session,
 or the pinned base):
 - Mechanism: our captures per game of the locked groups by r1000 (`python -I tools/helper3/h3_lockgems.py --quiet
@@ -475,7 +502,7 @@ or the pinned base):
   gemcombat5 games (no locked or delayed groups there, so the patch changes no decision; on a pinned panel nearly
   every game should be identical) collected and tributed at least 95% of the base and our deaths up by at most 0.5.
 - Record wins without judging them. Watch 00corners and 01boss-battle (bags lost at the altar fight) on a broad panel
-  before adopting; a 70-map local check of h3cv1 against main is running on a cloud agent.
+  before adopting (see the 70-map check above).
 
 ## Job 4: the bank batch on gem-rich maps, h3bq1 (10-28, 14:00-14:15)
 
