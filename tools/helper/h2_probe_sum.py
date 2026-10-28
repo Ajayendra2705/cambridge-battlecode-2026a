@@ -11,8 +11,11 @@ Reads our side's stdout (team-a in ~A files, team-b in ~B) and counts the probe'
   BC  respawn broadcasts decoded 256 rounds late (group held as respawning while it is up)
   EH  bank decisions that differ when the enemy's tributed total is read from an every-turn history
   RS/RE  recalls: started with an enemy seen within 6 in the last 3 rounds or not, and how they ended
-  PS/PT/PU  the probes' counters every 250 rounds; the last line of each champion in each game is summed (probe_lines.py
+  PS/PT/PU/PV  the probes' counters every 250 rounds; the last line of each champion in each game is summed (probe_lines.py
   keys lines by map and side only, which merges the three opponents' games, so read the files here)
+  BW  ally waits at a big group carried into the group's next life (probe h2pr5l)
+  HT  waits at one hole edge for the dash that ran past the intended 10 rounds (h2pr5l)
+  MD  teammate deaths seen, with the rounds since this champion last ran (h2pr5l)
 """
 import collections, glob, os, re, sys, zipfile
 
@@ -27,7 +30,8 @@ for path in sorted(glob.glob(os.path.join(run, prefix + '~*.repl26a'))):
     text = re.sub(r'[^\x20-\x7e\n]', '', zipfile.ZipFile(path).read(f'team-{side}.stdout').decode('latin1'))
     for line in text.splitlines():
         f = line.split()
-        if f and f[0] in ('SW', 'GC', 'GE', 'FG', 'BC', 'EH', 'RS', 'RE', 'PS', 'PT', 'PU', 'SP', 'HZ', 'HP', 'HG', 'HX'):
+        if f and f[0] in ('SW', 'GC', 'GE', 'FG', 'BC', 'EH', 'RS', 'RE', 'PS', 'PT', 'PU', 'SP', 'HZ', 'HP', 'HG', 'HX', 'PV',
+                          'BW', 'HT', 'MD'):
             lines[f[0]].append((game, f[1:]))
 print(f'{games} games of {prefix} in {run}')
 
@@ -54,6 +58,35 @@ if lines['PT']:
 if lines['PU']:
     s, n = last_sums('PU', ('hv', 'emblem_starts_stale_str', 'emblem_starts_changed', 'dps_turns', 'dps_stale_turns', '', '', '', '', 'cal_gaps', 'cal_gap_pred', 'cal_pred'))
     print(f'PU counters ({n} champion-games): ' + ', '.join(f'{k} {v:.0f}' for k, v in s.items()))
+if lines['PV']:
+    pv = ('bw_events', 'bw_lost', 'bw_skip', 'ht_restart', 'ht_over', 'ht_long', 'md_det', 'md_late', 'md_gap', 'deaths')
+    s, n = last_sums('PV', pv)
+    print(f'PV counters ({n} champion-games): ' + ', '.join(f'{k} {v:.0f}' for k, v in s.items()))
+    # Each of our deaths could be seen by every teammate: per game, deaths times (champions - 1), to the last 250 mark.
+    last, per = {}, collections.defaultdict(lambda: [0, 0.0])
+    for g, f in lines['PV']:
+        if (g, f[1]) not in last or int(f[0]) > int(last[g, f[1]][0]): last[g, f[1]] = f
+    for (g, _), f in last.items():
+        per[g][0] += 1
+        per[g][1] += float(f[2 + pv.index('deaths')])
+    chances = sum(d * (c - 1) for c, d in per.values())
+    print(f'MD teammate deaths seen {s["md_det"]:.0f} of {chances:.0f} chances ({s["md_det"] / max(1, chances):.0%}); seen late '
+          f'{s["md_late"]:.0f}, mean delay {s["md_gap"] / max(1, s["md_late"]):.1f} rounds')
+bw = lines['BW']  # round slot group carried present need would_wait old_life new_life
+if bw:
+    print(f'BW waits carried into a new group life {len(bw)} in {len({g for g, _ in bw})} games: would wait '
+          f'{sum(1 for _, f in bw if f[6] == "1")}, of those with all 25 used (no wait at all) '
+          f'{sum(1 for _, f in bw if f[6] == "1" and int(f[3]) >= 25)}, carried rounds {sum(int(f[3]) for _, f in bw)}')
+ht = lines['HT']  # round slot start x y
+if ht:
+    print(f'HT hole-edge waits past 10 rounds {len(ht)} in {len({g for g, _ in ht})} games: ' +
+          ', '.join(f'{g.split("~")[2]} r{f[2]}' for g, f in ht[:12]))
+md = lines['MD']  # round observer dead_slot gap marked
+if md:
+    gaps = collections.Counter('1' if int(f[3]) <= 1 else '2-5' if int(f[3]) <= 5 else '6-20' if int(f[3]) <= 20 else '21+'
+                               for _, f in md)
+    print(f'MD deaths seen {len(md)}: rounds since the observer last ran ' + ', '.join(f'{k}: {gaps[k]}' for k in ('1', '2-5', '6-20', '21+'))
+          + f'; with a fresh claim (a death mark) {sum(1 for _, f in md if f[4] == "1")}')
 sp = lines['SP']  # round slot S.str strength choice fresh_choice
 if sp:
     print(f'SP emblems started on a stale strength {len(sp)}: ' + ', '.join(f'{k} {v}' for k, v in collections.Counter(f'{f[4]}->{f[5]}' for _, f in sp).most_common()))
