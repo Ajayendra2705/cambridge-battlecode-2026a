@@ -1,5 +1,5 @@
-# How ranged champions spend their attack reset: per game and side, turns with a reset cast followed by an attack,
-# split by what came before the reset in that turn: an attack (double shot), a walk (walk-in shot), nothing.
+# How Vesper spends her dash (slot 1): per game and side, dashes split by what came before the dash in that turn (an
+# attack: shoot, then dash; a walk; nothing) and by whether a shot followed it (dash, then shot).
 import collections, sys
 sys.path.insert(0, 'tools/replay')
 from decoded import games, who, RANGE, NAMES
