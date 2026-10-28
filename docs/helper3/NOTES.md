@@ -5,6 +5,8 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
 
 ## Latest (IST)
 
+- READY 14:10: h3cv1 (the cover fix), `docs/helper3/patches/h3cv1.patch`, built in `bots/exp/h3cv1`; applies to
+  tg1 and uf1. Local check and proposed bwm rule in "Job 3" below. Job 4 (bank batch cap) next.
 - 12:45 01yellow_brick_road done. Cause: the `covered` rule in `pick_group` (`targets.h`) never lets us pick a group
   within reach 4 of a live elk group, even a sleeping one; two elk groups that cover each other block each other for
   good. On yellow that is our corner pair and the centre pair (39% of the map's gems). `tools/helper3/h3_cover.py`
@@ -403,3 +405,71 @@ and the 39% left under 30% health. Metric: strong-camp lives we hit and the riva
 captures per game up (4.4), deaths per game not up by more than 0.5. The contested half (we stand there and lose the
 camp fight) is the fighting gap the team has worked on all week (turn order, stuns, packs); the cover-lock fix of the
 map sections is the separate, larger lever on normal panels (16% of the b13 gap) and on the seven lock maps.
+
+## Job 3: the cover fix h3cv1 (10-28, 13:30-14:10)
+
+**Change** (`bots/exp/h3cv1` = go1 with one edit in `pick_group`, `targets.h`): an elk group covers its neighbours
+only while it is awake (seen awake within 10 rounds), as golems and monoliths already did. Diff:
+`docs/helper3/patches/h3cv1.patch` (`patch -p1` inside a bot folder; removes the `strong` and `cluster` tests, which
+only served the asleep-elk case, and adds a comment with the h3_cover.py numbers). Built `--release` clean. Dry runs
+(`patch -p1 --dry-run` on copies in `data/helper3/dry/`): applies to `bots/exp/tg1` and `bots/exp/uf1` (hunk at line
+159, offset -1). Pushed with the rest of HEAD to `origin/h3/cloud-1028` (user, 13:38: pushing allowed).
+
+**Local check** (`data/runs/multi-134001`, main and exp/h3cv1 against pool/cand1, pool/cp3, pool/dh3 on the seven lock
+maps, both sides: 42 games each, `--jobs 2` at 1.5 GB free RAM with the user's approval; decoded into
+`data/fights/local_multi-134001_main` and `..._exp.h3cv1`). Local opponents are our own old bots with the same cover
+rule, so these games show the mechanism and the economy, not fights.
+
+(a) Mechanism: captures of the locked groups per game by r1000 (`tools/helper3/h3_jsoncaps.py`, from the statistics
+JSONs; ours / all ours / the opponent's of locked groups):
+
+| map | main | h3cv1 |
+|---|---|---|
+| 01yellow-brick-road | 1.67 / 50.2 / 1.17 | 20.33 / 47.7 / 0.83 |
+| 01corridors | 0.00 / 14.2 / 0.00 | 4.33 / 14.0 / 0.00 |
+| 01hooks | 4.17 / 52.2 / 3.33 | 15.00 / 42.7 / 10.17 |
+| 00fragment | 0.00 / 29.0 / 0.00 | 9.67 / 32.8 / 11.67 |
+| 01boss-battle | 0.00 / 74.5 / 0.00 | 26.33 / 58.2 / 0.50 |
+| 00corners | 0.17 / 63.7 / 0.00 | 13.50 / 55.0 / 7.33 |
+| 00swirl | 2.67 / 37.8 / 5.17 | 12.33 / 43.3 / 7.50 |
+| all seven | 1.24 / 45.9 / 1.38 | 14.50 / 42.0 / 5.43 |
+
+The opponents' captures of locked groups rise too: a pair split across the two halves (00fragment, 00corners)
+unlocks for them once we take our half.
+
+(b) Gems per game to r1000 (`tools/helper3/h3_bymap.py`, as `decoded.py gems`), us / them, main against h3cv1:
+
+| map | wins | collected | tributed | lost on death | our deaths |
+|---|---|---|---|---|---|
+| 01yellow-brick-road | 3 -> 6 of 6 | 788 / 755 -> 1034 / 516 | 751 -> 976 | 17 -> 7 | 7.8 -> 5.0 |
+| 01corridors | 3 -> 5 | 419 / 491 -> 448 / 421 | 364 -> 391 | 19 -> 20 | 7.7 -> 7.0 |
+| 01hooks | 4 -> 3 | 77 / 51 -> 354 / 205 | 77 -> 332 | 4 -> 11 | 6.7 -> 9.3 |
+| 00fragment | 4 -> 2 | 118 / 115 -> 334 / 414 | 108 -> 304 | 3 -> 18 | 2.8 -> 3.5 |
+| 01boss-battle | 5 -> 3 | 1695 / 1548 -> 2225 / 1761 | 0 -> 390 | 5 -> 438 | 1.0 -> 2.2 |
+| 00corners | 5 -> 3 | 1041 / 991 -> 945 / 927 | 946 -> 793 | 10 -> 73 | 2.3 -> 5.8 |
+| 00swirl | 1 -> 4 | 469 / 789 -> 649 / 482 | 412 -> 547 | 44 -> 56 | 10.5 -> 10.5 |
+| all 42 games | 25 -> 26 | 658 / 677 -> 855 / 675 | 380 -> 533 | 15 -> 89 | 5.5 -> 6.2 |
+
+Collected +30% and tributed +40% overall, with yellow the clearest gain (6 of 6, tributed +225, deaths -2.8).
+On 01boss-battle main never tributes by r1000 (the guard monolith is locked, 0 hits); h3cv1 kills it and banks 390,
+but carries big bags into the altar fight (lost on death 438). The one map that got worse is 00corners (tributed
+-153, deaths +3.5): its locked pair sits near the middle (17 and 20 steps), so taking it means fighting there.
+
+(c) Elk hits taken per game to r1000 (`tools/helper3/h3_elkdmg.py`, inferred: each live elk of a group hit in the
+last 3 rounds hits its nearest champion within 4 for 60): us 506 -> 623 (+23%, about +7,000 damage before Jungle),
+of which "bystander" hits (an elk of a group the victim was not hitting) 14 -> 19 per game, 3% in both; deaths within
+3 rounds of a bystander hit 0.26 -> 0.21. The extra elk damage is from farming the unlocked elk groups, not from
+waking sleeping neighbours.
+
+**Proposed gate rule on bwm** (the lead writes the final rule; base = go1 or the current main in the same session,
+or the pinned base):
+- Mechanism: our captures per game of the locked groups by r1000 (`python -I tools/helper3/h3_lockgems.py --quiet
+  DIR`, which reads `data/maps_txt` and mirrors side-b games): on the 01yellow_brick_road games 6 or more (ranked
+  go1 1.2), on the 01corridors games 2 or more (ranked 0).
+- Target, on the 40 yellow and corridors games: collected by r1000 at least +15% over the base (ranked go1: 498 and
+  440 a game) and tributed by r1000 up.
+- Guards: on yellow and corridors our deaths per game up by at most 1.0; on the 60 interlock, gemcombat1 and
+  gemcombat5 games (no locked or delayed groups there, so the patch changes no decision; on a pinned panel nearly
+  every game should be identical) collected and tributed at least 95% of the base and our deaths up by at most 0.5.
+- Record wins without judging them. Watch 00corners and 01boss-battle (bags lost at the altar fight) on a broad panel
+  before adopting; a 70-map local check of h3cv1 against main is running on a cloud agent.
