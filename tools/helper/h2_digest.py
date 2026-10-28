@@ -2,13 +2,16 @@
 
 usage: python -I tools/helper/h2_digest.py RUNDIR CAND > FILE              one line per game of CAND in the run
        python -I tools/helper/h2_digest.py --pair BASE_FILE NEW_FILE [NEW_FILE...]
+       python -I tools/helper/h2_digest.py --maps BASE_FILE NEW_FILE      the paired differences map by map
   e.g. python -I tools/helper/h2_digest.py data/runs/multi-083411 exp.tg1 > data/helper/h2_ref/tg1_multi-083411.txt
 
 The statistics JSON files are about 1 MB each. A digest keeps what tools/helper/h2_localpair.py compares in one line per
 game, keyed by opponent, map and side without the candidate's name: winner, rounds, both teams' tributed gems, both teams'
 deaths, our gems collected and our gems lost on death. Two runs of the same bot on different machines (this PC, a cloud
 Linux box) can then be checked for identical play with `diff`, and a cloud run's numbers travel in a git branch without the
-JSON files. --pair prints what h2_localpair.py prints (identical games, mean +- SE of the paired differences), from digests.
+JSON files. --pair prints what h2_localpair.py prints (identical games, mean +- SE of the paired differences), from digests;
+--maps prints, for each map, the paired games, how many changed, and the mean differences in our deaths, our tributed gems,
+the tribute margin and wins, then the same over all maps.
 """
 import glob, json, math, os, sys
 
@@ -47,7 +50,22 @@ def mean_se(xs):
     return m, math.sqrt(sum((x - m) ** 2 for x in xs) / (len(xs) - 1) / len(xs))
 
 
-if sys.argv[1] == '--pair':
+if sys.argv[1] == '--maps':
+    base, new = load(sys.argv[2]), load(sys.argv[3])
+    per = {}
+    for g in sorted(new):
+        if g not in base: continue
+        s1, s0 = new[g], base[g]
+        same = all(s1[k] == s0[k] for k in ('win', 'trib', 'margin', 'deaths', 'rounds'))
+        row = per.setdefault(g.split('~')[1], [])
+        row.append((same, s1['deaths'] - s0['deaths'], s1['trib'] - s0['trib'], s1['margin'] - s0['margin'], s1['win'] - s0['win']))
+    per['(all maps)'] = [r for m in sorted(per) for r in per[m]]
+    print(f'{os.path.basename(sys.argv[3])} against {os.path.basename(sys.argv[2])}, per map: games changed, mean differences')
+    for m, rows in per.items():
+        n = len(rows)
+        print(f'  {m:28} {n:4} {n - sum(r[0] for r in rows):4}  deaths {sum(r[1] for r in rows) / n:+6.2f}  trib {sum(r[2] for r in rows) / n:+7.1f}'
+              f'  margin {sum(r[3] for r in rows) / n:+7.1f}  win {sum(r[4] for r in rows) / n:+.2f}')
+elif sys.argv[1] == '--pair':
     base = load(sys.argv[2])
     keys = ('trib', 'margin', 'deaths', 'their_deaths', 'coll', 'lost', 'win')
     for path in sys.argv[3:]:
