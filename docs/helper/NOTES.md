@@ -3,6 +3,22 @@
 Newest entries first. Bots are `bots/exp/h2*` (gitignored), scripts `tools/helper/`, outputs `data/helper/`.
 Everything here is local only: nothing was submitted or gated.
 
+## 10-28 13:40 IST: ready-to-gate variants on tg1
+
+Built on `bots/exp/h2tg1` (a byte-for-byte copy of tg1's source), so each is tg1 plus the named patches only:
+
+- `h2kb1` = tg1 + `h2fc1` + `h2bc1` + `h2sm2` + `h2hz1` (the four knowledge fixes; `docs/helper/patches/h2kb1_on_tg1.patch`).
+- `h2kb2` = `h2kb1` + the help-call fix (`h2kb2_on_tg1.patch`; in this combination `write_help` reads bytes 0-4 first,
+  so its compare-and-clear sees fresh memory on dead turns too).
+- `h2hlt` = tg1 + the help-call fix alone (`h2hl1.patch`).
+- `h2da1` = tg1 + the D-line logging fix (play should be identical; the local check will show whether any game differs).
+
+The help fix is the one with a local signal on a ranked bad map: on 00contest (set 1) it lowered our deaths in all 6 games
+(18 to 16, 14 to 7, 13 to 3, 3 to 0, 29 to 10, 13 to 12), one-sided sign test p = 0.016; over the other 114 local games of
+both sets the change in our deaths is about 0 (-0.33 per game on set 1's other maps, +0.03 on set 2). brkp2 holds 20
+00contest games, so a brkp2 gate would test it there. The lead's 60-game check of all five is queued (waiting for free
+RAM; the machine is at 1-2 GB).
+
 ## 10-28 13:30 IST: Job 1 summary for the lead (7 confirmed bugs, patches ready for tg1 or go1)
 
 wb1 was rejected and deleted at 12:55, so my folders are built on `bots/exp/h2base`, a byte-identical copy of wb1 made
