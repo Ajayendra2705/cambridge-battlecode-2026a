@@ -1,0 +1,77 @@
+diff -ru bots/main/src/abilities.h bots/exp/rz7/src/abilities.h
+--- bots/main/src/abilities.h	2026-10-28 23:53:39.736371200 +0530
++++ bots/exp/rz7/src/abilities.h	2026-10-29 02:18:24.937089600 +0530
+@@ -105,6 +105,46 @@
+     return false;
+ }
+ 
++// Melee with a dash closing from 4 tiles in one turn: a step onto a tile 3 from the target from which a dash lands next
++// to it, then the dash (Heart of Ruin's striking dash lands its damage and stun there), leaving the basic attack for the
++// caller. The rivals' Hearts and Vendettas open fights this way 2.4 times per game on brkp2 and the top 12 teams' about
++// 4.9, ours never (`tools/replay/fs_closein.py`). Only when the landing is exposed to less than half our health.
++bool step_dash_next_to(const ChampSnap& target) {
++    if (stale() || S.walked) return false;
++    auto& me = cambc::self();
++    if (!me.can_move() || !me.can_cast() || !me.can_attack() || dist(S.me, target.pos) != 4) return false;
++    int range = 0;
++    for (const auto& ab : me.abilities()) {
++        if (!ab.is_dash() || !castable_now(ab)) continue;
++        range = 2;
++        if (ab.info())
++            if (const auto* d = std::get_if<cambc::ability_dash>(&*ab.info())) range = std::max(1, static_cast<int>(d->range));
++        break;
++    }
++    if (range < 2) return false;
++    refresh_occ();
++    const bitboard path_block = cm::walls() | cm::altars() | W.enemy_spawn | S.occ;
++    vec2 best{-1, -1};
++    float best_e = 0;
++    for (auto d : DIRS) {
++        const vec2 w{S.me.x + d.x, S.me.y + d.y};
++        if (!cm::is_in_bounds(w) || W.terrain.is_set(w) || S.occ.is_set(w) || dist(w, target.pos) != 3) continue;
++        bitboard land = path_block.reachable_tiles(w, static_cast<std::uint16_t>(range)) & ~W.terrain & ~S.occ;
++        land.set(w, false);
++        bool ok = false;
++        float e = 0;
++        for (auto t : land.positions()) {
++            if (dist(t, target.pos) > S.range) continue;
++            const float x = exposure_at(t);
++            if (!ok || x < e) e = x, ok = true;
++        }
++        if (ok && (best.x < 0 || e < best_e)) best = w, best_e = e;
++    }
++    if (best.x < 0 || best_e >= S.hp * 0.5f || stale()) return false;
++    if (!safe_move(best)) return false;
++    return strike_dash({target.pos}, false) || dash_next_to(target);
++}
++
+ // Keep the free ward a couple of tiles towards the enemy approach so attackers show up before they reach us.
+ void place_ward_forward() {
+     if (stale()) return;
+diff -ru bots/main/src/bot.cpp bots/exp/rz7/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-28 23:53:39.745095100 +0530
++++ bots/exp/rz7/src/bot.cpp	2026-10-29 02:18:25.270775300 +0530
+@@ -403,6 +403,11 @@
+             attack_unit(prey->ch);
+             return;
+         }
++        // From 4 tiles a step and then the dash reach it.
++        if (S.range <= 1 && step_dash_next_to(*prey)) {
++            attack_unit(prey->ch);
++            return;
++        }
+         // Close in through the tile least exposed to enemy bursts; melee strikes after the step.
+         if (me.can_move()) {
+             vec2 best{-1, -1};
+@@ -535,6 +540,11 @@
+                 if (dist(S.me, t->pos) == 2) step_next_to(*t);
+                 else if (dist(S.me, t->pos) == 3) dash_next_to(*t);
+             }
++            // Heart of Ruin and Vendetta open a fight from 4 tiles (a step, then the dash next to the target), when no
++            // enemy is nearer, the simulation does not say we die and we are healthy and carry no big bag.
++            if (S.range <= 1 && dist(S.me, t->pos) == 4 && nearest_enemy_dist(S.me) >= 4 && !sim_me_dies && !S.holding && !big_bag
++                && !in_kill_range && S.hp > S.max_hp * 0.5f)
++                step_dash_next_to(*t);
+             // Ranged champions also shoot when hurt unless the enemies near can burst them this round: our Vespers hit in
+             // 41% of rounds with an enemy in range, the rivals' 53% (b6 decoded).
+             if (dist(S.me, t->pos) <= S.range && (S.range <= 1 || S.hp > S.max_hp * 0.5f || dist(S.me, t->pos) > t->range || !in_kill_range)
