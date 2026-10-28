@@ -23,6 +23,14 @@ Built on `bots/exp/h2tg1` (a byte-for-byte copy of tg1's source), so each is tg1
 - `h2hlt` = tg1 + the help-call fix alone (`h2hl1.patch`).
 - `h2da1` = tg1 + the D-line logging fix (play should be identical; the local check will show whether any game differs).
 
+Proposed rules (the lead's to accept or change; both against the tg1 base the lead uses, paired to r1000):
+
+- `h2hlt` on brkp2 (help fix). Factor: our deaths on 00contest. Mechanism: none readable from replays (shared memory is
+  invisible); the probe twin shows the erasures gone. Target: on the 20 00contest games our deaths down 1.0 or more per
+  game. Guards: the other 80 games, our deaths up at most 0.5 per game, collected and tributed at least 97%.
+- `h2kb1` on brkp2 (knowledge fixes, no targeted factor). Guards only, over all 100 games: our deaths up at most 0.3 per
+  game, collected and tributed at least 98%; adopt as hygiene if they hold, since every fix removes a measured false belief.
+
 The help fix is the one with a local signal on a ranked bad map: on 00contest (set 1) it lowered our deaths in all 6 games
 (18 to 16, 14 to 7, 13 to 3, 3 to 0, 29 to 10, 13 to 12), one-sided sign test p = 0.016; over the other 114 local games of
 both sets the change in our deaths is about 0 (-0.33 per game on set 1's other maps, +0.03 on set 2). brkp2 holds 20
