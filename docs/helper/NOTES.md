@@ -113,6 +113,12 @@ alternate.
     if (v == my_help && !(v != 0 && field == 0)) return;
 ```
 
+Platform footprint (`python -I tools/helper/h2_spree.py data/fights/wb1_brkp2_brkp2 data/fights/go1_b13p_b13p`, 149
+decoded games, read only): our Vesper, Vendetta and Varg started 862 emblems in the same round step as a strength emblem
+completed (5.8 per game; 43% strength, 57% health) and 741 in other turns (57% strength). Decoded games cannot show what
+the fresh strength would have chosen; at the local probe's rate (39% of such starts flip, nearly all towards health) it is
+about 2 emblem choices per game on the ladder.
+
 ### 6. Shop and `my_dps` use the strength from before the purchase (`shop.h`)
 
 `shop()` judges each new emblem with `S.str`, the strength at the snapshot. In one spree the loop completes an emblem and
