@@ -162,6 +162,10 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
+## Changes in cov1 (ladder bot from 2026-10-28 17:14 IST, version 1004)
+
+cov1 = go1 (now `bots/pool/go1`) plus the cover fix from helper h3 (`targets.h`, `pick_group`, the `covered` loop): an elk group makes the groups within its reach unpickable only within 10 rounds of a hit (`cb.awake_round`), as golems and monoliths already did. Before, a live elk group covered its neighbours asleep too (clusters excepted), so elk groups within 4 of each other locked each other for good: on 7 of 70 maps (`tools/helper3/h3_cover.py`; 01hooks, 00fragment, 01boss_battle, 01yellow_brick_road, 01corridors, 00corners, 00swirl) we never picked those groups. Platform evidence in `docs/experiments.md`, rows cov1 and cov1r.
+
 ## Changes in go1 (ladder bot from 2026-10-28 06:27 IST, version 985)
 
 go1 = cr3 (now `bots/pool/cr3`) plus turn order, one block at the end of `Bot::play_turn()` (`bot.cpp`). Within a team champions act in priority order (higher first), then in draft order, and a priority set with `set_priority` applies from the next round and persists (`docs/MECHANICS.md` section 2). Each turn a champion within 5 tiles of a visible enemy champion off the enemy spawn sets 2000 minus its health in thousandths (so in contact the most hurt acts first), and every other champion sets 0. Before go1 we never set a priority, so our turns always ran in draft order.
