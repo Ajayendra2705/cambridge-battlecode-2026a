@@ -70,6 +70,8 @@ How much gem income exists matters more than it looks. The whole board yields be
 - A round is: camp respawns, existing spell and ward updates, camp captures, camp actions, then champion turns. [doc]
 - Champion turns alternate between teams, and **the team that starts swaps every round**. Within a team, higher priority acts first, then draft order. `set_priority` applies from the next round and persists. [doc]
   - Consequence [measured]: an enemy can act twice between two of our turns, at the end of round N and the start of round N+1. Fight maths must count two enemy actions per gap.
+  - Interleaving [measured 10-28 from replays, `tools/replay/orderdump.mjs`]: one champion per team in turn, A1 B1 A2 B2 ... in a round team A starts, B1 A1 B2 A2 ... in the next. So our k-th champion acts before their j-th in both kinds of round only when k < j; at k = j it alternates.
+  - Priority [measured 10-28]: a higher `set_priority` value acts earlier (local go1 run, `data/runs/multi-053656`: champions given priority when an enemy stood within 5 acted first in contact 72% of the time, against 51% in draft order). The default order is draft order. 19 of the 21 top teams in the top12 replays reorder their champions every round, mostly putting a hurt champion next to an enemy first (`docs/findings.md`, "Turn order").
 - Each champion turn starts by resolving timers that reached zero, in this order: respawn, ward recharge, buff and shield expiry, channels. Timers then decrement at that champion's **turn end**. [doc]
 - Dead champions still get a turn, and can shop during it. [doc]
 - Captures resolve before channels, so gems captured this round are included in a tribute that completes this round. [doc]
@@ -355,5 +357,3 @@ Test bots: `bots/probe/mt1` (turn order, camp behaviour) and `bots/probe/mt2` (r
 | Claim | Why it matters | Test |
 |---|---|---|
 | How damage reductions combine (Durability with the Heart of Ruin bonus, shields) | fight maths | buy items in a long test, hit a dummy, log health loss |
-| Whether higher `set_priority` moves a champion earlier in our order | who acts first in a fight | set priorities, log the order |
-| Exact interleaving of the two teams' champions within a round | how many enemy actions land between ours | log both teams' order in one game |
