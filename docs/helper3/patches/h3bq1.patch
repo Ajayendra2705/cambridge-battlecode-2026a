@@ -1,0 +1,15 @@
+--- a/src/bot.cpp
++++ b/src/bot.cpp
+@@ -669,7 +669,11 @@
+         // Measured trip overhead: with the plain c * tau trip cost (ef1) the b6 bags halved (median about 15) and collection
+         // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
+         // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
+-        const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
++        // Cap: the batch grows with the collection rate, so on rich harmless cluster maps it held 40-200 gems for 90-130
++        // rounds and the bags fed the rivals' kills (platform, our ranked games: adgato_gemcombat1 lost on death 289 a game
++        // against 49, our bag at a tribute start median 42 against the rivals' 21; adgato_gemcombat5 434 against 174, our
++        // q3 140 against 84; tools/helper3/h3_tribbag.py). On brk both sides start tributes near 30, under the cap.
++        const double batch = std::min(40.0, std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0)));
+         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
+             // Give up for a while if the way to the altar makes no progress (blocked or contested).
+             // Waiting at a hole edge for the dash is not a blocked way (dh1).

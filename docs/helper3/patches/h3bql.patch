@@ -1,0 +1,15 @@
+--- a/src/bot.cpp
++++ b/src/bot.cpp
+@@ -670,6 +670,12 @@
+         // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
+         // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
+         const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
++        // h3bql probe (never ship): the batch and its terms every 10 rounds while carrying 10+ gems.
++        if (gems >= 10 && round % 10 == 0)
++            std::cout << "BQ r" << round << " s" << W.slot << " g" << gems << " b" << static_cast<int>(batch)
++                      << " c" << static_cast<int>(c * 1000) << " tau" << static_cast<int>(tau) << " mh"
++                      << static_cast<int>(m * h * 1e5) << " lam" << static_cast<int>(lambda * 1e4) << " alt" << altar_d
++                      << " go" << ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) << '\n';
+         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
+             // Give up for a while if the way to the altar makes no progress (blocked or contested).
+             // Waiting at a hole edge for the dash is not a blocked way (dh1).

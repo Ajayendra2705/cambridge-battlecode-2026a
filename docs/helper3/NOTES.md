@@ -5,6 +5,9 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
 
 ## Latest (IST)
 
+- READY 14:16: h3bq1 (bank batch capped at 40), `docs/helper3/patches/h3bq1.patch`, built in `bots/exp/h3bq1`;
+  applies to tg1 and uf1. Exposure to big bags -22% locally; lost on death flat locally (a platform question). See
+  "Job 4".
 - READY 14:10: h3cv1 (the cover fix), `docs/helper3/patches/h3cv1.patch`, built in `bots/exp/h3cv1`; applies to
   tg1 and uf1. Local check and proposed bwm rule in "Job 3" below. Job 4 (bank batch cap) next.
 - 12:45 01yellow_brick_road done. Cause: the `covered` rule in `pick_group` (`targets.h`) never lets us pick a group
@@ -473,3 +476,53 @@ or the pinned base):
   every game should be identical) collected and tributed at least 95% of the base and our deaths up by at most 0.5.
 - Record wins without judging them. Watch 00corners and 01boss-battle (bags lost at the altar fight) on a broad panel
   before adopting; a 70-map local check of h3cv1 against main is running on a cloud agent.
+
+## Job 4: the bank batch on gem-rich maps, h3bq1 (10-28, 14:00-14:15)
+
+**Mechanism, measured.** Probe twin h3bql (go1 plus one `BQ` line every 10 rounds while carrying 10+ gems in the bank
+stage: batch, collection rate c, trip tau, m x h, lambda; `docs/helper3/patches/h3bql.patch`; the folder is deleted,
+never shipped), local run `data/runs/multi-141017` (main, exp/h3bq1, exp/h3bql against pool/cand1, pool/cp3, pool/dh3
+on adgato-gemcombat1-5, 01the-farm, 00road-of-riches, 00great-wall, both sides: 48 games each), read with
+`tools/helper3/h3_bqprobe.py`. go1's batch on these maps: quartiles 31 / 52 / 75 gems (gemcombat1 31 / 50 / 67,
+gemcombat5 36 / 65 / 94, road_of_riches 36 / 65 / 89), with c 0.25-0.35 gems per alive round (two to three times a
+normal map's), tau 24-78; in 29% of the probe's carrying rounds a champion holds 40+ gems and is still under its
+batch (gemcombat5 45%). The rivals' bag at a tribute start on the platform (`tools/helper3/h3_tribbag.py`, our ranked
+games): gemcombat1 median 21 (q3 42; ours 42, q3 63), gemcombat5 63 (q3 84; ours 63, q3 140), brk 33 (ours 30).
+Platform exposure, champion-rounds per game carrying 40+ / 80+ gems to r1000: gemcombat1 us 687 / 227, them 355 / 57;
+gemcombat5 us 817 / 441, them 414 / 148.
+
+**Change** (`bots/exp/h3bq1` = go1 with one edit, `bot.cpp` "Order quantity"): `batch = min(40, sqrt(...))`, with a
+comment citing the numbers above. Diff: `docs/helper3/patches/h3bq1.patch`; built clean; dry runs apply to tg1
+(exact) and uf1 (offset 16).
+
+**Local numbers** (48 games each, to r1000, from the statistics JSONs: `tools/helper3/h3_jsonbank.py`, which agrees
+with `decoded.py gems` on tributed and lost on death; main -> h3bq1):
+
+| map | tributes | median bag tributed | rounds carrying 40+ / 80+ | tributed | lost on death | our deaths |
+|---|---|---|---|---|---|---|
+| adgato-gemcombat1 | 17.8 -> 21.8 | 42 -> 42 | 737 / 186 -> 487 / 94 | 882 -> 934 | 72 -> 51 | 3.2 -> 3.5 |
+| adgato-gemcombat5 | 9.7 -> 12.5 | 63 -> 63 | 1003 / 374 -> 860 / 374 | 840 -> 970 | 225 -> 234 | 5.7 -> 5.8 |
+| adgato-gemcombat2 | 13.7 -> 15.8 | 63 -> 49 | 755 / 234 -> 489 / 95 | 964 -> 916 | 58 -> 62 | 3.3 -> 3.3 |
+| adgato-gemcombat3 | 17.8 -> 21.0 | 42 -> 42 | 493 / 125 -> 373 / 31 | 856 -> 951 | 91 -> 76 | 4.0 -> 3.2 |
+| adgato-gemcombat4 | 17.7 -> 16.3 | 42 -> 42 | 647 / 151 -> 712 / 193 | 960 -> 860 | 56 -> 111 | 3.7 -> 3.0 |
+| 00great-wall | 12.7 -> 15.5 | 58 -> 50 | 1435 / 526 -> 1020 / 524 | 788 -> 863 | 117 -> 78 | 4.2 -> 3.2 |
+| 00road-of-riches | 21.2 -> 21.2 | 36 -> 41 | 1488 / 406 -> 937 / 160 | 985 -> 934 | 10 -> 54 | 0.8 -> 1.8 |
+| 01the-farm | 9.8 -> 10.5 | 66 -> 59 | 1416 / 752 -> 1342 / 660 | 813 -> 761 | 49 -> 37 | 0.7 -> 1.3 |
+| all eight | 15.0 -> 16.8 | 49 -> 43 | 997 / 344 -> 778 / 266 | 886 -> 899 | 85 -> 88 | 3.2 -> 3.1 |
+
+The cap does what it should to exposure (rounds carrying 40+ -22%, 80+ -23%; gemcombat1 80+ halved), but locally the
+gems lost on death do not fall (85 -> 88): our old pool bots do not hunt carriers the way the platform rivals do, so
+the outcome is a platform question. On gemcombat5 the 80+ exposure does not move: one capture there brings 63-140
+gems at once, and the 25-step walk to the one altar follows either way. Wins (not judged) 31 -> 35.
+
+**Proposed gate rule on bwm** (the cap binds on gemcombat1, gemcombat5 and 01corridors, where our tribute bag median
+is 58, a little on 00interlock (37), hardly on 01yellow_brick_road (19)):
+- Mechanism: our champion-rounds carrying 40+ gems per game by r1000 on the 40 gemcombat1 and gemcombat5 games
+  (`h3_tribbag.py` on the decoded run; ranked go1-era base 687 and 817): at least 25% fewer than the base.
+- Target: gems lost on death per game on those 40 games at least 30% lower (ranked base 289 and 434), tributed by
+  r1000 not lower.
+- Guards: our deaths per game on those maps up by at most 0.5; on the other 60 games collected and tributed at least
+  95% of the base and our deaths up by at most 0.5.
+- h3cv1 and h3bq1 touch different files and act on mostly different bwm maps (the cover lock on yellow and corridors,
+  the cap on gemcombat1, gemcombat5 and corridors), so one combined gate could judge both by map if the lead prefers
+  to save quota; "one factor at a time" argues for two gates.
