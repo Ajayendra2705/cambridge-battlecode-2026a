@@ -34,6 +34,18 @@ deaths and tribute guards. `h2hl1` (more help reaches callers) and `h2ss1` (stre
 behaviour in a direction only the platform can judge; note that `h2ss1` moves our strength users further from the top
 teams' strength-heavy builds, so the current build is partly this bug.
 
+Round 4 (probe `h2pr4l`, 00eight, 00crater, 01yellow-brick-road, 00contest, 24 games, `data/runs/multi-132348`), two
+more real but minor ones, not fixed:
+
+- **Held-walk detector counts fighting as a held way** (`bot.cpp`, `Bot::play_turn`, `held_turns`): a walk activity that
+  ends on the start tile twice while moves avoid danger bans the target for 20 rounds. 123 bans in 24 games; in 35 the
+  champion had attacked or cast in a held turn instead of walking (32 in both turns), including 23 of the 29 bans of a
+  ranged champion, which cannot walk after a basic attack. All 123 had 1-3 enemies in view (nearest 2-6 tiles), so the
+  group is contested anyway; a fix would add `!S.attacked && me.can_cast()` to the condition, effect unclear.
+- **A bank give-up outlives a death or a trip home** (`bank_blocked_until` is never cleared): 2 give-ups in 24 games (wb1's
+  reset made them rare), and both still blocked banking after the carrier had been home (00contest r1718: 200 gems, 32
+  more rounds blocked). Fix if wanted: `bank_blocked_until = 0` at spawn and on death.
+
 Smaller findings of round 3 (probe `h2pr3l`, 18 games, `data/runs/multi-130742`): the calibration `cal_f` takes 6% of its
 predicted damage from samples after a skipped turn (death, channel), which lowers it by about 1% (1.307 against 1.322):
 no fix. A live group whose members in view are all dead keeps those members' old health (`update_knowledge`, second
