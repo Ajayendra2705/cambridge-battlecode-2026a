@@ -70,5 +70,8 @@ bool standoff(const Group& g) {
     return static_standoff[gi] == 1 && g.hardest() < 150.0f;
 }
 
-// Gold buys stats early; late it only matters as a tiebreak.
-double gold_weight(int round) { return round < 1400 ? 0.25 : 0.05; }
+// Gold buys stats early; late it only matters as a tiebreak. From round 300 a gold counts 0.1 gem (was 0.25): main on the
+// pinned panels b13p2 and b16p (to r1000) holds 1.03-1.21 times the rivals' team gold from r300 on and spends it (about 50
+// unspent per champion), but on b13p2 collects 640 gems against 724; its captures yield 3712 gold and 554 gems against
+// the rivals' 3385 and 612, and the gap is the pure gem-cluster groups (5.8 captures per game against 11.0).
+double gold_weight(int round) { return round < 300 ? 0.25 : round < 1400 ? 0.1 : 0.05; }
