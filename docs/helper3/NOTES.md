@@ -5,7 +5,7 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
 
 ## Latest (IST)
 
-- READY 14:16: h3bq1 (bank batch capped at 40), `docs/helper3/patches/h3bq1.patch`, built in `bots/exp/h3bq1`;
+- READY 14:15: h3bq1 (bank batch capped at 40), `docs/helper3/patches/h3bq1.patch`, built in `bots/exp/h3bq1`;
   applies to tg1 and uf1. Exposure to big bags -22% locally; lost on death flat locally (a platform question). See
   "Job 4".
 - READY 14:10: h3cv1 (the cover fix), `docs/helper3/patches/h3cv1.patch`, built in `bots/exp/h3cv1`; applies to
