@@ -10,7 +10,9 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
   good. On yellow that is our corner pair and the centre pair (39% of the map's gems). `tools/helper3/h3_cover.py`
   finds the same lock on 7 of 70 maps (01hooks 100% of gems, 00fragment 76%, 01boss_battle 63%, yellow 39%,
   01corridors 22%, 00corners 15%, 00swirl 5%).
-- Next: 00interlock, adgato_gemcombat1, adgato_gemcombat5, 01corridors (downloads running).
+- 12:52 00interlock done. Gap after r600: lone champions die on the long lanes of our half (4.4 deaths per game
+  away from camps against 1.7) and the rivals take the middle elk group in their corner 6.1 times to our 2.0.
+- Next: adgato_gemcombat1, adgato_gemcombat5, 01corridors.
 
 ## Method
 
@@ -94,3 +96,64 @@ our captures per game by r1000 of the groups `h3_cover.py` lists as blocked (yel
 the rivals take their mirrored four 13.3 times). Bar: 4+ per game on yellow, and on the seven maps together at least
 a third of the rivals' rate on their mirrored groups; guards: deaths per game not up by more than 1.0, collected by
 r1000 up. Captures are an economy metric, so a local run on the seven maps can check the mechanism before a gate.
+
+## 00interlock (12 ranked games, 10-27 05:40 to 10-28 06:50 UTC; 2 wins)
+
+Bots: go1 3 games, cr3 3, cw1 2, older 1, gated variants 3. 4-pick map (we draft Heart of Ruin, Vesper, Marcella,
+Vendetta; 8 of the 12 opponents field Ryth, one fields Cassi and Issac, five bodies). Data: `data/fights/h3_00interlock`.
+
+**Layout** (40x40, 180-degree rotation). Spawns in opposite corners (x0-2 y0-2 and x37-39 y37-39), 41 steps apart.
+Gem-poor: 200 gems per full clear, about 3.5 gems a round for both teams together, so games run to r1160-r1450.
+Walls form a pinwheel that splits each half into lanes: on our half a wall line at y7 (x15-32, with a bush gap at
+x16-25), a column at x15 (y7-15), a column at x32 (y0-7) and a line at y15 (x31-39); the mirror on theirs; a hole
+block in the centre (x16-23, y19-20). Our groups: 2 gold (x19 y2, 16 steps), a wolf (x5 y8, 5 steps), gem + wolf
+(x4-5 y14, 11 steps, 11 gems), gold + wolf (x4-5 y21, 18 steps), and our only elk group (2 elks, gem, gold: 37 gems)
+far out in the top-right corner (x28-29 y2-4, 25 steps from us, 33 from them). Two middle elk groups (2 elks, 2 gems:
+44 gems), each 28 steps from both spawns: group 4 (x31-32 y9-11) beside our elk group, group 9 (x7-8 y28-30) beside
+theirs. Four altars: two in the centre ((19,16) 17 steps from us, (20,23) 17 from them) and two in the far corners
+(33 steps from both).
+
+**Us against them** (per game; games end r1163-r1445, so r1500 is the end):
+
+| | r300 us | r300 them | r1000 us | r1000 them | r1500 us | r1500 them |
+|---|---|---|---|---|---|---|
+| collected (of it from kills) | 107 (2) | 97 (0) | 580 (20) | 684 (44) | 779 (24) | 991 (77) |
+| tributed | 86 | 69 | 512 | 592 | 675 | 910 |
+| lost on death | 2 | 9 | 46 | 32 | 79 | 35 |
+| deaths | 1.2 | 0.7 | 6.2 | 4.2 | 8.8 | 5.2 |
+
+First gem capture median r48 against r34 (ours is the gem-wolf group at r48 in 11 of 12 games); first reward median
+r24 against r26, third r89 against r50, reward events by r100 2.9 against 5.3, team gold r100 136 against 317 (they
+take four or five small groups in parallel by r60: 2 gold, gem-wolf, wolf, gold-wolf; we take 2 gold, then the
+gem-wolf group, then the gold-wolf one). The gold gap closes by r300 (968 against 1061) and r600 (2525 against 2582).
+First tribute median r146 against r118. We lead at r300 and r600 (collected 305 against 287); from r600 to the end
+they collect 704 to our 474 and we die 6.2 times to their 3.2.
+
+**Largest gap: lone champions killed in our half after r600, and the middle elk group in their corner.** By r1500,
+gems from the middle: 279 against 442, of which group 9 (beside their elk group) 88 against 274 (captures 2.0 against
+6.1) and group 4 (beside ours) 191 against 169 (4.3 against 3.8); gems from kills 24 against 77 and lost on death 79
+against 35. Our own-half groups give 470 against their 436. Deaths: 4 of the 12 games are massacres (our deaths minus
+theirs 6+ by r1000, all lost); in them 5.0 of our 8.75 deaths per game are in our own half, 4.75 more than 20 steps
+from home, contacts last 11-30 rounds, and the bot was in its flee branch at 60% of the deaths (77% in the even
+games: 2.0 of 2.6). Our deaths more than 5 tiles from any camp: 4.4 per game against their 1.7 (3.2 against 1.3
+after r600; `tools/helper3/h3_deathgrp.py`): on the lanes, not at camps. We stand apart more (allies within 6 per alive champion-round 0.70 against
+0.97; alone 50% against 42%; r600-1000 0.58 against 0.87).
+
+**Cause, from the trace of 43c8d164** (go1, side a, lost 457-968 to Valenki's five bodies, `tools/replay/trace.py`):
+their four or five walk our half's top lane as a pack. r87-r106: our Vendetta leaves spawn alone along the top edge
+toward our elk group, sees Marcella and Cassi at 8 tiles at r87 and keeps walking toward them for 9 rounds (one ally
+within 6 from r93), trades hits at r95-r97 and dies fleeing at (10,0). r96-r109: our Heart of Ruin leaves our elk group at (28,2) at 49% health (the heal rule
+(`bot.cpp`, "Heal when worn down") sends a champion home under 50% only if an enemy was seen in the last 30 rounds,
+else under 20%) and walks west along the same lane, sees the pack at r99, keeps walking and dies at (16,2), alone
+from r103. r207-r219: Vendetta walks from the gem-wolf group at (4,13) toward
+(10,16) into five enemies and dies; r224-r247: Heart of Ruin fights at (11,13), flees at 30% and dies at (5,10), 9
+steps from spawn. The map's long lanes (our elk group is 25 steps out) make every trip a walk alone past where their
+pack stands.
+
+**Fix idea (no map code):** go home and recall at 50% health whenever home is 15+ steps away, also when quiet (the
+heal rule's quiet threshold of 20% assumes home is near; the rivals go home at about half health, mostly by recall,
+`docs/findings.md`, 00ribs), and never take a lane step that brings a visible pack of 3+ closer (the 9 rounds of
+warning above). Metric: our deaths per game by r1500 more than 5 tiles from any camp (`h3_deathgrp.py`, now 4.4
+against their 1.7); bar: 2.5 or fewer; guards: collected by r1000 not below 95% of base, tributed by r1500 up. Earlier pack-avoidance variants (pa1, kb1, ob1, `docs/experiments.md`)
+failed on mixed panels, so judge this on interlock and the other long-lane maps first. A cohesion variant (sq1,
+`bots/exp/sq1`, teammates within 6 at r300-1000 locally 1.25-1.31) is the other lever for the 0.70 against 0.97 gap.
