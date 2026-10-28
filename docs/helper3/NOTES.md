@@ -19,7 +19,8 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
   same banking batch as gemcombat1, with a 25-step trip from the rich groups to the one altar.
 - 13:05 01corridors done. Gap: the five east lanes (groups 6-10), which we never enter: the same `covered` lock
   (elk groups 7 and 8 cover each other). Across the five maps: the cover lock (yellow, corridors, and five more maps
-  by `h3_cover.py`) and the banking batch on gem-cluster maps (gemcombat1, gemcombat5) repeat; interlock is lane deaths.
+  by `h3_cover.py`) and the banking batch on gem-cluster maps (gemcombat1, gemcombat5) repeat; interlock is lane
+  deaths.
 - 13:23 Job 2 done: we use alive time like the rivals (walking about half for both); 74% (brk) and 91% (b13) of
   the capture gap is what a farming round yields. On brk that is strong-camp lives (elk -173, monolith -66 of -376;
   58% after r600): we lose 3.1 strong-camp lives per game that we hit to their capture (they 0.75). On b13, 16% of
@@ -113,7 +114,8 @@ r1000 up. Captures are an economy metric, so a local run on the seven maps can c
 ## 00interlock (12 ranked games, 10-27 05:40 to 10-28 06:50 UTC; 2 wins)
 
 Bots: go1 3 games, cr3 3, cw1 2, older 1, gated variants 3. 4-pick map (we draft Heart of Ruin, Vesper, Marcella,
-Vendetta; 8 of the 12 opponents field Ryth, one fields Cassi and Issac, five bodies). Data: `data/fights/h3_00interlock`.
+Vendetta; 8 of the 12 opponents field Ryth, one fields Cassi and Issac, five bodies). Data:
+`data/fights/h3_00interlock`.
 
 **Layout** (40x40, 180-degree rotation). Spawns in opposite corners (x0-2 y0-2 and x37-39 y37-39), 41 steps apart.
 Gem-poor: 200 gems per full clear, about 3.5 gems a round for both teams together, so games run to r1160-r1450.
@@ -149,27 +151,29 @@ against 35. Our own-half groups give 470 against their 436. Deaths: 4 of the 12 
 theirs 6+ by r1000, all lost); in them 5.0 of our 8.75 deaths per game are in our own half, 4.75 more than 20 steps
 from home, contacts last 11-30 rounds, and the bot was in its flee branch at 60% of the deaths (77% in the even
 games: 2.0 of 2.6). Our deaths more than 5 tiles from any camp: 4.4 per game against their 1.7 (3.2 against 1.3
-after r600; `tools/helper3/h3_deathgrp.py`): on the lanes, not at camps. We stand apart more (allies within 6 per alive champion-round 0.70 against
-0.97; alone 50% against 42%; r600-1000 0.58 against 0.87).
+after r600; `tools/helper3/h3_deathgrp.py`): on the lanes, not at camps. We stand apart more (allies within 6 per
+alive champion-round 0.70 against 0.97; alone 50% against 42%; r600-1000 0.58 against 0.87).
 
 **Cause, from the trace of 43c8d164** (go1, side a, lost 457-968 to Valenki's five bodies, `tools/replay/trace.py`):
 their four or five walk our half's top lane as a pack. r87-r106: our Vendetta leaves spawn alone along the top edge
 toward our elk group, sees Marcella and Cassi at 8 tiles at r87 and keeps walking toward them for 9 rounds (one ally
-within 6 from r93), trades hits at r95-r97 and dies fleeing at (10,0). r96-r109: our Heart of Ruin leaves our elk group at (28,2) at 49% health (the heal rule
-(`bot.cpp`, "Heal when worn down") sends a champion home under 50% only if an enemy was seen in the last 30 rounds,
-else under 20%) and walks west along the same lane, sees the pack at r99, keeps walking and dies at (16,2), alone
-from r103. r207-r219: Vendetta walks from the gem-wolf group at (4,13) toward
+within 6 from r93), trades hits at r95-r97 and dies fleeing at (10,0). r96-r109: our Heart of Ruin leaves our elk
+group at (28,2) at 49% health (the heal rule, `bot.cpp` "Heal when worn down", sends a champion home under 50% only
+if an enemy was seen in the last 30 rounds, else under 20%) and walks west along the same lane, sees the pack at r99,
+keeps walking and dies at (16,2), alone from r103. r207-r219: Vendetta walks from the gem-wolf group at (4,13) toward
 (10,16) into five enemies and dies; r224-r247: Heart of Ruin fights at (11,13), flees at 30% and dies at (5,10), 9
 steps from spawn. The map's long lanes (our elk group is 25 steps out) make every trip a walk alone past where their
 pack stands.
 
 **Fix idea (no map code):** go home and recall at 50% health whenever home is 15+ steps away, also when quiet (the
-heal rule's quiet threshold of 20% assumes home is near; the rivals go home at about half health, mostly by recall,
-`docs/findings.md`, 00ribs), and never take a lane step that brings a visible pack of 3+ closer (the 9 rounds of
-warning above). Metric: our deaths per game by r1500 more than 5 tiles from any camp (`h3_deathgrp.py`, now 4.4
-against their 1.7); bar: 2.5 or fewer; guards: collected by r1000 not below 95% of base, tributed by r1500 up. Earlier pack-avoidance variants (pa1, kb1, ob1, `docs/experiments.md`)
-failed on mixed panels, so judge this on interlock and the other long-lane maps first. A cohesion variant (sq1,
-`bots/exp/sq1`, teammates within 6 at r300-1000 locally 1.25-1.31) is the other lever for the 0.70 against 0.97 gap.
+heal rule's quiet threshold of 20% assumes home is near; on 00ribs the rivals went home at 51% health, mostly by
+recall, `docs/status.md`, late night 10-27), and never take a lane step that brings a visible pack of 3+ closer (the
+9 rounds of warning above). Metric: our deaths per game by r1500 more than 5 tiles from any camp (`h3_deathgrp.py`,
+now 4.4 against their 1.7); bar: 2.5 or fewer; guards: collected by r1000 not below 95% of base, tributed by r1500
+up. Earlier pack-avoidance variants (pa1, kb1, ob1, `docs/experiments.md`) failed on mixed panels, so judge this on
+interlock and the other long-lane maps first. Cohesion alone is a weak lever: du1 (pairs) cut our alone share from
+51% to 44% but raised deaths 0.5 per game (`docs/findings.md`, "Idle time and deaths near home"); sq1
+(`bots/exp/sq1`) is the untested cohesion candidate.
 
 ## adgato_gemcombat1 (9 ranked games, 10-27 04:40 to 10-28 06:10 UTC; 0 wins)
 
@@ -362,10 +366,11 @@ Captures make 94% of the brk gap and 84% of the b13 gap; kills the rest.
 comes after r600, mostly strong camps (elk lives r601-1000: our 2.1 captures against their 4.3, and nearly all of
 their monolith captures). b13: -35 (-10), -64 (-14), -68 (-8).
 
-**Per champion-round** (brk; shares of alive rounds, us / them): walking 60% / 58% (empty and healthy 49% / 47%,
-with a bag of 20+ 6% / 7%, under half health 5% / 4%), farming 13% / 15%, on a dead group's tiles 5% / 5%, fighting 5% / 6%, waiting 9% / 9%, at home 6% / 5%, banking 1% /
-2%; dead 12% of all champion-rounds against 6% (560 against 280 per game). b13 is the same picture (walking 51% /
-52%, farming 20% / 19%, waiting 9% / 8%, dead 9% / 5%). We use our alive time as they do.
+**Per champion-round** (brk; shares of alive rounds, us / them): walking 60% / 58% (empty and healthy 49% / 47%, with
+a bag of 20+ 6% / 7%, under half health 5% / 4%), farming 13% / 15%, on a dead group's tiles 5% / 5%, fighting 5% /
+6%, waiting 9% / 9%, at home 6% / 5%, banking 1% / 2%; dead 12% of all champion-rounds against 6% (560 against 280
+per game). b13 is the same picture (walking 51% / 52%, farming 20% / 19%, waiting 9% / 8%, dead 9% / 5%). We use our
+alive time as they do.
 
 **Decomposition.** Capture gems = alive champion-rounds x share of them farming or on a dead group's tiles x capture
 gems per such round. brk: 351 / 702 = 3947 / 4385 x 0.185 / 0.199 x 0.48 / 0.80; share of the log gap: alive rounds
