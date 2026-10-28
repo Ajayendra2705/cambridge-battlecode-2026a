@@ -162,6 +162,10 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
+## Changes in nm2 (ladder bot from 2026-10-28 23:54 IST, version 1034)
+
+nm2 = sq2 (now `bots/pool/sq2`) plus one change in the draft (`draft.cpp`): on a 3-pick map whose camp groups give no gold (adgato_gemcombat1 is the only one of the 70), the team drafts Heart of Ruin, Vesper, Marcella (the first three of the 4-5 pick order) instead of Heart, Vendetta, Vesper. There gold comes only from kills and Marcella's +2 per tributed gem, and Vesper's gold passive gives nothing. The draft bot sees the whole map (`cambc::map::camp_groups()` works in the draft). Play on every other map is unchanged. Evidence: `docs/experiments.md`, rows nm1 and nm2; `docs/findings.md`, "adgato_gemcombat1: deaths at the altar and no gold".
+
 ## Changes in sq2 (ladder bot from 2026-10-28 18:21 IST, version 1009)
 
 sq2 = cov1 (now `bots/pool/cov1`) plus two changes to the live-group score in `pick_group` (`targets.h`). (1) The team size: main scored a group for three team sizes (the claimants plus us, two more, the whole team) with 4 rounds' wait per extra champion and kept the best, so one champion went to wake an elk or golem as if the team would follow; sq2 scores it only for the champions already heading there plus us (from tg1; before round 40 every champion scores as if alone). (2) The share: `value / (time x sqrt(n) + ...)` instead of `time x n`, so a group a teammate works is worth joining; the candidate bound divides the fight time by sqrt(claimants + 1) to stay an upper bound (from sq1). `planned_team` is still set and still unread. Evidence: `docs/experiments.md`, rows tg2, sq2; `docs/findings.md`, "00interlock: lone waiters in our own half".

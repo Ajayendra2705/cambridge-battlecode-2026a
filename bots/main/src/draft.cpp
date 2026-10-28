@@ -18,8 +18,17 @@ void play_draft() {
     // against main's 5-6, where main fields Varg and dies 8.0 times per game by r1000 to the rivals' 4.1; 5-pick 22 of 66
     // against 16-17). 3-pick maps keep Heart, Vendetta, Vesper (dq2m's Heart, Vesper, Marcella won 8 of 21, main 10).
     static constexpr std::array big_pref{cd::heart_of_ruin, cd::vesper_vale, cd::marcella, cd::vendetta, cd::varg};
+    // A map with no gold camps (adgato_gemcombat1, the one such 3-pick map of 70) gives gold only for kills and Marcella's
+    // tributes (+2 per gem): there the 3-pick team takes Heart, Vesper, Marcella. bwmp, sq2 to r600: our team gold 210
+    // against the rivals' 530.
+    bool cashless = false;
+    if (cambc::draft::team_size() <= 3) {
+        unsigned gold = 0;
+        for (const auto& g : cambc::map::camp_groups()) gold += g.gold_value();
+        cashless = gold == 0;
+    }
     if (cambc::draft::team_size() <= 5)
-        for (auto pick : cambc::draft::team_size() >= 4 ? big_pref : small_pref)
+        for (auto pick : cambc::draft::team_size() >= 4 || cashless ? big_pref : small_pref)
             if (std::find(chosen.begin(), chosen.end(), pick) == chosen.end()) {
                 cambc::draft::pick(pick);
                 return;
