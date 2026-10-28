@@ -73,6 +73,25 @@ void Bot::play_turn() {
     } else {
         held_turns = 0;
     }
+    // Turn order for the next round (`set_priority`; within a team a higher priority acts first, then draft order): a
+    // champion within 5 of an enemy acts before the others, the most hurt first, so it can strike or step away before the
+    // enemies near it act. Top teams order their turns this way (top12 replays: 70 of 80 team-games reorder; a champion
+    // under 40% health within 2 of an enemy acts first among its team nearly always); against cr3 on brkp, rivals that
+    // reorder acted before our champion in 63% of contact rounds (46% for rivals that do not).
+    if (W.ready) {
+        try {
+            auto& me = cambc::self();
+            int pri = 0;
+            if (me.is_alive() && S.round == static_cast<int>(cambc::round_number()) && S.max_hp > 0)
+                for (const auto& e : S.enemies)
+                    if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= 5) {
+                        pri = 2000 - static_cast<int>(1000.0f * S.hp / S.max_hp);
+                        break;
+                    }
+            me.set_priority(pri);
+        } catch (const cambc::error&) {
+        }
+    }
 }
 
 static void play_turn_core() {

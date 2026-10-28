@@ -1,6 +1,6 @@
 # Bot architecture (`bots/main`)
 
-`bots/main` is the current best bot, ladder bot `m4` (2026-10-26 07:50 IST, version 734): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`), "Changes in cand1" (now `bots/pool/cand1`), "Changes in fd2z" (now `bots/pool/fd2z`) and "Changes in m4". Read this page before you open the code.
+`bots/main` is the current best bot, ladder bot `go1` (2026-10-28 06:27 IST, version 985): `pool/hb4` split into files by concern, plus the changes listed under "Changes since hb4" (up to `dr3`), "Changes in cp3" (the Sprint 2 entry, now `bots/pool/cp3`), "Changes in cand1" (now `bots/pool/cand1`), "Changes in fd2z" (now `bots/pool/fd2z`), "Changes in m4" and the sections after it (hc2 to go1, newest first). Read this page before you open the code.
 
 ## Game in one paragraph
 
@@ -161,6 +161,14 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 - `world.h`, `targets.h` (ag4): `W.altar_guards` is the set of groups whose camps fill every standable tile in tribute range of every altar (01boss-battle: one group; 02guardians: two monoliths, one group each), and banking is blocked while each guard camp beside an altar lives. It replaces the single `altar_guard`.
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
+
+## Changes in go1 (ladder bot from 2026-10-28 06:27 IST, version 985)
+
+go1 = cr3 (now `bots/pool/cr3`) plus turn order, one block at the end of `Bot::play_turn()` (`bot.cpp`). Within a team champions act in priority order (higher first), then in draft order, and a priority set with `set_priority` applies from the next round and persists (`docs/MECHANICS.md` section 2). Each turn a champion within 5 tiles of a visible enemy champion off the enemy spawn sets 2000 minus its health in thousandths (so in contact the most hurt acts first), and every other champion sets 0. Before go1 we never set a priority, so our turns always ran in draft order.
+
+## Changes in cr3 (ladder bot from 2026-10-28 00:50 IST, version 974)
+
+cr3 = cw1 (now `bots/pool/cw1`) plus dm1 (death marks in `pick_group`), hw1 (no help call with three or more enemies within 6 of the caller) and mr1 (Marcella does not root herself while losing); rows in `docs/experiments.md`.
 
 ## Changes in cw1 (ladder bot from 2026-10-27 05:38 IST, version 838)
 
