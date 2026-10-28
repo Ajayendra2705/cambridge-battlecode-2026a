@@ -15,6 +15,7 @@ bots matter more than a stable comparison, at least once a day.
 
 | Panel | Built | Teams (ladder ranks then) | Games |
 |---|---|---|---|
+| `bgl` | 2026-10-29 01:35 IST, we were 73 (1920) | the gold-less maps (t9, for esc8b): five eligible teams 14-29 ranks above us that are in none of b16, brz and bwm: SkuBap (44), SkibidiSloppers (47), DOOMSDAY (50), FürFortnite (54), PtitLK (59) (`data/eligible_1029a.txt`, ladder `data/ladder_1029a.jsonl`), unpinned, two groups each on adgato_gemcombat1-5 with our sides a,b,a,b,a and b,a,b,a,b (10 games per map). Base run `bk1_bgl@bgl`; pinned to it as `bglp` | 50 |
 | `b13p` | 2026-10-27 12:00 | `b13` pinned to the opponents' bots of `main_b13@b13` (cw1, 11:48-11:56 IST, 23 of 50), whose games are its base | 50 |
 | `b13p2` | 2026-10-28 11:25 | `b13` pinned to the opponents' bots of `main_b13_1028@b13` (go1, 11:20-11:24 IST, 13 of 50), whose games are its base. The daily re-pin of `b13p` | 50 |
 | `bwm` | 2026-10-28 12:20 | ten eligible teams of ladder ranks 79-90 (ours 85 at 11:50 IST): cheesynachos, filter, bentheboss, bbas, KratosMessi, we were fed fish, Antam, geese geese go, 0xDEADBEEF, JukeFall (`data/eligible_1028b.txt`), unpinned, two groups each on 01yellow_brick_road, 00interlock, adgato_gemcombat5, adgato_gemcombat1 and 01corridors with our sides a,b,a,b,a and b,a,b,a,b: our five worst ranked maps of 10-28 (00:00-11:30 IST, 330 games, `tools/platform/ourmaps.py`: 0/11, 0/7, 0/3, 0/3, 0/3), each map 20 games. For task 6 onward; run main's base, then pin it as `bwmp` | 100 |
