@@ -1,0 +1,20 @@
+--- a/src/targets.h
++++ b/src/targets.h
+@@ -160,11 +160,12 @@
+         for (int b : W.covered_by[i]) {
+             const auto& cb = W.groups[b];
+             if (cb.state != 0) continue;
+-            const bool strong = *std::max_element(cb.strength.begin(), cb.strength.end()) >= 100.0f;
+-            // Elks reach 4 since 3.0 and count as covering camps. Asleep they hit nobody: a cluster (no strength, cleared
+-            // in a few hits) beside sleeping elks is free (starvation: the enemy farmed one 19 times, we never did).
+-            const bool cluster = *std::max_element(g.strength.begin(), g.strength.end()) <= 0.0f;
+-            if ((!strong && !cluster) || round - cb.awake_round <= 10) covered = true;
++            // Elks reach 4 since 3.0 and count as covering camps, but asleep they hit nobody and a hit wakes only its own
++            // group, so an elk group covers only while awake too. Covering while asleep locked elk groups within 4 of each
++            // other for good (tools/helper3/h3_cover.py: 7 of 70 maps; 01hooks all 88 gems a clear, 00fragment 76%,
++            // 01boss_battle 63%, 01yellow_brick_road 39%: our corner and centre pairs, 1.2 captures a game against the
++            // rivals' 13.3 on theirs; 01corridors: we never entered the five east lanes, the rivals took 197 gems a game).
++            if (round - cb.awake_round <= 10) covered = true;
+         }
+         // The altar guard is itself a monolith group: its own range must not exclude it.
+         if (covered) continue;

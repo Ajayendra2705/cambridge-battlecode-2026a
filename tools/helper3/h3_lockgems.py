@@ -1,11 +1,12 @@
 """Gems captured from groups our bot can never pick (tools/helper3/h3_cover.py), us vs them, per decoded run (h3, 10-28).
 
-usage: python -I tools/helper3/h3_lockgems.py DIR [DIR ...]
+usage: python -I tools/helper3/h3_lockgems.py [--quiet] DIR [DIR ...]   (--quiet: no per-game lines)
 
 For every game whose map has blocked groups (md1 dump in data/maps_txt, map name with hyphens), sums the gems each
 side captured from those groups to r1000 (capture = bag rises without a kill while standing on or next to a group
-tile; games on side b mirrored through the dump's symmetry, so the blocked ids are ours). Prints per game and the total
-per game over all games of the run (lock maps or not), with the run's whole collected gap for scale.
+tile; games on side b mirrored through the dump's symmetry, so the blocked ids are ours). A capture is one (round,
+side, group) event. Prints per game, per lock map, and per game over all games of the run (lock maps or not), with the
+run's whole collected gap for scale.
 """
 import collections, os, sys
 sys.path.insert(0, os.path.join(os.getcwd(), 'tools', 'replay'))
@@ -38,8 +39,9 @@ def layout(mp):
     TF = {'rotational180': lambda x, y: (W - 1 - x, H - 1 - y), 'horizontal': lambda x, y: (W - 1 - x, y), 'vertical': lambda x, y: (x, H - 1 - y)}
     tf = TF.get(L[0].split()[4], TF['rotational180'])
     cache[mp] = (blocked, tile, tf); return cache[mp]
+quiet = '--quiet' in sys.argv
 tot = collections.Counter(); ng = 0
-for us, res, mp, meta, rows in D.games(sys.argv[1:]):
+for us, res, mp, meta, rows in D.games([a for a in sys.argv[1:] if a != '--quiet']):
     ng += 1
     n = len(rows[0]['c'])
     for a, b in zip(rows, rows[1:]):
@@ -51,7 +53,7 @@ for us, res, mp, meta, rows in D.games(sys.argv[1:]):
     lay = layout(mp)
     if not lay or not lay[0]: continue
     blocked, tile, tf = lay
-    got = collections.Counter()
+    got = collections.Counter(); events = set()
     for a, b in zip(rows, rows[1:]):
         if b['r'] > 1000: break
         for i in range(n):
@@ -62,9 +64,19 @@ for us, res, mp, meta, rows in D.games(sys.argv[1:]):
             gi = next((x for x in cand if x is not None), None)
             if gi is None: continue
             if us == 1: gi = tile.get(tf(*next(t for t, v in tile.items() if v == gi)), gi)
-            if gi in blocked: got['us' if c['t'] == us else 'them'] += nb['g'] - c['g']
+            if gi in blocked:
+                got['us' if c['t'] == us else 'them'] += nb['g'] - c['g']
+                events.add((b['r'], 'us' if c['t'] == us else 'them', gi))
+    caps = collections.Counter(w for r, w, gi in events)
     tot['us', 'lock'] += got['us']; tot['them', 'lock'] += got['them']
-    print(f'  {meta["file"][:8]} {mp:22} {res:4} blocked-group gems us {got["us"]:4} them {got["them"]:4}')
-print(f'{ng} games: gems from blocked groups per game us {tot["us", "lock"] / ng:.1f} them {tot["them", "lock"] / ng:.1f}'
+    tot['us', 'caps'] += caps['us']; tot['them', 'caps'] += caps['them']
+    tot[mp, 'n'] += 1; tot[mp, 'us caps'] += caps['us']; tot[mp, 'them caps'] += caps['them']; tot[mp, 'us gems'] += got['us']; tot[mp, 'them gems'] += got['them']
+    if not quiet: print(f'  {meta["file"][:28]:28} {mp:22} {res:4} blocked groups: us {caps["us"]:3} captures {got["us"]:4} gems, them {caps["them"]:3} captures {got["them"]:4} gems')
+for mp in sorted({k[0] for k in tot if len(k) == 2 and k[1] == 'n'}):
+    m = tot[mp, 'n']
+    print(f'  {mp:22} {m:3} games: blocked-group captures per game us {tot[mp, "us caps"] / m:5.2f} them {tot[mp, "them caps"] / m:5.2f};'
+          f' gems us {tot[mp, "us gems"] / m:6.1f} them {tot[mp, "them gems"] / m:6.1f}')
+print(f'{ng} games: blocked-group captures per game us {tot["us", "caps"] / ng:.2f} them {tot["them", "caps"] / ng:.2f};'
+      f' gems from blocked groups per game us {tot["us", "lock"] / ng:.1f} them {tot["them", "lock"] / ng:.1f}'
       f' (gap {(tot["us", "lock"] - tot["them", "lock"]) / ng:+.1f}); all collected us {tot["us", "all"] / ng:.0f} them {tot["them", "all"] / ng:.0f}'
       f' (gap {(tot["us", "all"] - tot["them", "all"]) / ng:+.0f})')
