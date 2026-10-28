@@ -1,0 +1,218 @@
+diff -ru -x .cambc -x compile_commands.json bots/main/src/bot.cpp bots/exp/esc5/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-28 23:53:39.745095100 +0530
++++ bots/exp/esc5/src/bot.cpp	2026-10-28 23:28:49.813087800 +0530
+@@ -669,7 +669,12 @@
+         // Measured trip overhead: with the plain c * tau trip cost (ef1) the b6 bags halved (median about 15) and collection
+         // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
+         // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
+-        const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
++        // Cap at 60 on gold-less maps: on rich cluster maps the batch grows with the collection rate (adgato_gemcombat5:
++        // about 227 at r71, so the 140-gem capturer waited 60 rounds for the respawn and walked 280 gems to the altar
++        // alone); banked at once, the bag leaves while its teammates are still beside it and can escort it (below). bq2's
++        // cap of 40 also bound on interlock and corridors bags and cost tributes there, and esc4 (this cap, the escort and
++        // the respawn-wait fixes on every map) lost 5% of main's collected on the fresh batch b15.
++        const double batch = std::min(cashless_map() ? 60.0 : 1e9, std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0)));
+         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
+             // Give up for a while if the way to the altar makes no progress (blocked or contested).
+             // Waiting at a hole edge for the dash is not a blocked way (dh1).
+@@ -714,6 +719,46 @@
+             return;
+         }
+     }
++    // Escort a big bag: a teammate within 8 with 60+ gems and no group claimed (on its way to an altar, or home) gets a
++    // healthy light-bagged companion until it tributes. adgato_gemcombat5 (sq2 on bwmp, to r1000): when a carrier of 30+
++    // gems met an enemy within 10 of the one altar, the rivals had a teammate within 6 in 6.15 of 9.1 contacts per game and
++    // lost 0.65 bags; ours had one in 3.7 of 9.7 and lost 1.40 (297 gems lost on death per game against 102).
++    {
++        const bool capturing = current_target >= 0 && W.groups[current_target].state == 1 && W.groups[current_target].tiles.is_set(p);
++        const ChampSnap* carrier = nullptr;
++        int carrier_bag = 0;
++        if (cashless_map() && gems < 30 && S.hp >= S.max_hp * 0.5f && !capturing && !S.holding && me.can_move())
++            for (const auto& a : S.allies) {
++                if (dist(p, a.pos) > 8) continue;
++                // Ally snapshots carry no bag (knowledge.h reads gems for enemies only): read it here, for the few in
++                // reach. esc1 and esc2 tested a.gems and never escorted.
++                int bag = 0;
++                try {
++                    cambc::champion ch = a.ch;
++                    bag = static_cast<int>(ch.gem_count());
++                } catch (const cambc::error&) {
++                    continue;
++                }
++                if (bag < 60) continue;
++                // A carrier on a group's tiles is capturing or boxed in at a respawning group: escorts walking up to it
++                // fill its way out (esc3: the 140-gem capturer froze with its escorts in the pocket's exit).
++                bool on_group = false;
++                for (const auto& gr : W.groups) if (gr.tiles.is_set(a.pos)) { on_group = true; break; }
++                if (on_group) continue;
++                int s = -1;
++                for (int k = 0; k < MAX_SLOTS && k < static_cast<int>(W.slot_ids.size()); ++k)
++                    if (W.slot_ids[k] == handle_id(a.ch)) s = k;
++                if (s < 0 || claim_cache[s] != -1) continue;
++                if (!carrier || bag > carrier_bag) carrier = &a, carrier_bag = bag;
++            }
++        if (carrier) {
++            ACT("escort");
++            write_claim(-1);
++            if (gems > 0 && W.altar_field.get(p) <= 1 && bank_gems()) return;
++            if (dist(p, carrier->pos) > 1) walk_towards(carrier->pos);
++            return;
++        }
++    }
+     STAGE("pick");
+     // Keep fighting an awake target; one champion captures; the rest follow the team target.
+     const bool in_fight = current_target >= 0 && W.groups[current_target].state == 0
+diff -ru -x .cambc -x compile_commands.json bots/main/src/camp_fight.h bots/exp/esc5/src/camp_fight.h
+--- bots/main/src/camp_fight.h	2026-10-28 23:53:39.732305300 +0530
++++ bots/exp/esc5/src/camp_fight.h	2026-10-28 23:29:14.915280100 +0530
+@@ -15,12 +15,38 @@
+             if (g.tiles.is_set(S.me)) {
+                 if (!me.can_move()) { ACT("resp_wait"); return; }
+                 const auto occ = S.occ | g.tiles;
++                bool off = false;
+                 for (auto d : DIRS) {
+                     vec2 t{S.me.x + d.x, S.me.y + d.y};
+-                    if (cm::is_in_bounds(t) && !W.terrain.is_set(t) && !occ.is_set(t) && safe_move(t)) break;
++                    if (cm::is_in_bounds(t) && !W.terrain.is_set(t) && !occ.is_set(t) && safe_move(t)) { off = true; break; }
++                }
++                // Inside a big group every neighbour is a spawn tile: walk on toward the altar, which leaves the group in a
++                // few steps. adgato_gemcombat5's 140-gem group is 5x4 in a walled pocket; its capturer stood in the middle
++                // and held back the respawn it waited for (rw1 locally: 85 such rounds per game; sq2 on bwmp: 94). Gold-less
++                // maps only, as both fixes here (esc4 on every map cost collection on the fresh batch b15).
++                if (!off && cashless_map()) step_field(W.altar_field, W.altar_tiles, cambc::constants::submit_gems_range);
++            } else {
++                // A teammate still on a spawn tile holds the respawn back, and waiters beside the group can box it in:
++                // stand back to 4 until it is off. adgato_gemcombat5 (sq2 and esc3 on bwmp): the 140-gem group sits in a
++                // pocket with a 3-wide exit; its capturer stayed on a spawn tile with 140 gems while three teammates filled
++                // the exit row waiting for the respawn it blocked, and all five stood still from r80 to r200.
++                bool mate_on_tiles = false;
++                if (cashless_map())
++                    for (const auto& a : S.allies) if (g.tiles.is_set(a.pos)) mate_on_tiles = true;
++                const int gf = group_field(g).get(S.me);
++                if (mate_on_tiles && gf < 4 && me.can_move()) {
++                    vec2 best{-1, -1};
++                    int best_v = gf;
++                    for (auto d : DIRS) {
++                        const vec2 t{S.me.x + d.x, S.me.y + d.y};
++                        if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t)) continue;
++                        const int v = group_field(g).get(t);
++                        if (v != UNREACH && v > best_v) best = t, best_v = v;
++                    }
++                    if (best.x >= 0) safe_move(best);
++                } else if (!mate_on_tiles && gf > 2) {
++                    step_field(group_field(g), g.tiles, 2);
+                 }
+-            } else if (group_field(g).get(S.me) > 2) {
+-                step_field(group_field(g), g.tiles, 2);
+             }
+             ACT("resp_wait");
+             return;
+diff -ru -x .cambc -x compile_commands.json bots/main/src/draft.cpp bots/exp/esc5/src/draft.cpp
+--- bots/main/src/draft.cpp	2026-10-28 23:55:41.977546200 +0530
++++ bots/exp/esc5/src/draft.cpp	2026-10-28 23:27:20.612434200 +0530
+@@ -1,42 +1,42 @@
+-#include <cambc.h>
+-#include "draft.h"
+-#include <algorithm>
+-#include <array>
+-#include <vector>
+-
+-// Pick the most preferred champion our team has not drafted yet.
+-void play_draft() {
+-    using cd = cambc::champion_draft;
+-    static constexpr std::array preference{cd::cassi_and_issac, cd::stellar, cd::ren, cd::varg, cd::heart_of_ruin, cd::tavi, cd::ryth, cd::vendetta, cd::vesper_vale,
+-        cd::tavi, cd::marcella, cd::stellar, cd::ren, cd::willow, cd::prism};
+-    const auto chosen = cambc::draft::current_draft(cambc::team::ally);
+-    // Teams of up to 5 picks need bodies that survive alone: no linked pair (Cassi and Issac).
+-    // Engine 3.0.4 meta (top-10 ranked drafts, 2026-10-21): Heart of Ruin, Vendetta, Vesper, Ryth, Marcella.
+-    // Batch b3: our Ryth dealt 6854 damage per game against theirs 11207 (K/D 1.3/2.6); rivals draft Varg often.
+-    static constexpr std::array small_pref{cd::heart_of_ruin, cd::vendetta, cd::vesper_vale, cd::varg, cd::marcella};
+-    // 4- and 5-pick maps: Heart of Ruin, Vesper, Marcella, Vendetta, Varg (dq2m on b9, 10-26: 4-pick maps 11 of 26 wins
+-    // against main's 5-6, where main fields Varg and dies 8.0 times per game by r1000 to the rivals' 4.1; 5-pick 22 of 66
+-    // against 16-17). 3-pick maps keep Heart, Vendetta, Vesper (dq2m's Heart, Vesper, Marcella won 8 of 21, main 10).
+-    static constexpr std::array big_pref{cd::heart_of_ruin, cd::vesper_vale, cd::marcella, cd::vendetta, cd::varg};
+-    // A map with no gold camps (adgato_gemcombat1, the one such 3-pick map of 70) gives gold only for kills and Marcella's
+-    // tributes (+2 per gem): there the 3-pick team takes Heart, Vesper, Marcella. bwmp, sq2 to r600: our team gold 210
+-    // against the rivals' 530.
+-    bool cashless = false;
+-    if (cambc::draft::team_size() <= 3) {
+-        unsigned gold = 0;
+-        for (const auto& g : cambc::map::camp_groups()) gold += g.gold_value();
+-        cashless = gold == 0;
+-    }
+-    if (cambc::draft::team_size() <= 5)
+-        for (auto pick : cambc::draft::team_size() >= 4 || cashless ? big_pref : small_pref)
+-            if (std::find(chosen.begin(), chosen.end(), pick) == chosen.end()) {
+-                cambc::draft::pick(pick);
+-                return;
+-            }
+-    for (auto pick : preference) {
+-        if (std::find(chosen.begin(), chosen.end(), pick) == chosen.end()) {
+-            cambc::draft::pick(pick);
+-            return;
+-        }
+-    }
+-}
++#include <cambc.h>
++#include "draft.h"
++#include <algorithm>
++#include <array>
++#include <vector>
++
++// Pick the most preferred champion our team has not drafted yet.
++void play_draft() {
++    using cd = cambc::champion_draft;
++    static constexpr std::array preference{cd::cassi_and_issac, cd::stellar, cd::ren, cd::varg, cd::heart_of_ruin, cd::tavi, cd::ryth, cd::vendetta, cd::vesper_vale,
++        cd::tavi, cd::marcella, cd::stellar, cd::ren, cd::willow, cd::prism};
++    const auto chosen = cambc::draft::current_draft(cambc::team::ally);
++    // Teams of up to 5 picks need bodies that survive alone: no linked pair (Cassi and Issac).
++    // Engine 3.0.4 meta (top-10 ranked drafts, 2026-10-21): Heart of Ruin, Vendetta, Vesper, Ryth, Marcella.
++    // Batch b3: our Ryth dealt 6854 damage per game against theirs 11207 (K/D 1.3/2.6); rivals draft Varg often.
++    static constexpr std::array small_pref{cd::heart_of_ruin, cd::vendetta, cd::vesper_vale, cd::varg, cd::marcella};
++    // 4- and 5-pick maps: Heart of Ruin, Vesper, Marcella, Vendetta, Varg (dq2m on b9, 10-26: 4-pick maps 11 of 26 wins
++    // against main's 5-6, where main fields Varg and dies 8.0 times per game by r1000 to the rivals' 4.1; 5-pick 22 of 66
++    // against 16-17). 3-pick maps keep Heart, Vendetta, Vesper (dq2m's Heart, Vesper, Marcella won 8 of 21, main 10).
++    static constexpr std::array big_pref{cd::heart_of_ruin, cd::vesper_vale, cd::marcella, cd::vendetta, cd::varg};
++    // A map with no gold camps (adgato_gemcombat1, the one such 3-pick map of 70) gives gold only for kills and Marcella's
++    // tributes (+2 per gem): there the 3-pick team takes Heart, Vesper, Marcella. bwmp, sq2 to r600: our team gold 210
++    // against the rivals' 530.
++    bool cashless = false;
++    if (cambc::draft::team_size() <= 3) {
++        unsigned gold = 0;
++        for (const auto& g : cambc::map::camp_groups()) gold += g.gold_value();
++        cashless = gold == 0;
++    }
++    if (cambc::draft::team_size() <= 5)
++        for (auto pick : cambc::draft::team_size() >= 4 || cashless ? big_pref : small_pref)
++            if (std::find(chosen.begin(), chosen.end(), pick) == chosen.end()) {
++                cambc::draft::pick(pick);
++                return;
++            }
++    for (auto pick : preference) {
++        if (std::find(chosen.begin(), chosen.end(), pick) == chosen.end()) {
++            cambc::draft::pick(pick);
++            return;
++        }
++    }
++}
+diff -ru -x .cambc -x compile_commands.json bots/main/src/world.h bots/exp/esc5/src/world.h
+--- bots/main/src/world.h	2026-10-28 23:53:39.778529500 +0530
++++ bots/exp/esc5/src/world.h	2026-10-28 23:28:35.454948200 +0530
+@@ -69,6 +69,17 @@
+ 
+ World W;
+ 
++// A map whose camp groups give no gold (the five adgato_gemcombat maps of 70): gold comes only from kills and Marcella's
++// tributes, and cluster groups of up to 140 gems lie far from one altar. Read after init_world has filled W.groups.
++bool cashless_map() {
++    static const bool v = [] {
++        int gold = 0;
++        for (const auto& g : W.groups) gold += g.gold;
++        return gold == 0;
++    }();
++    return v;
++}
++
+ void compute_field(distance_field& field, const bitboard& roots, const bitboard& terrain = W.terrain) {
+     bitboard visited;
+     field.compute(terrain & ~roots, roots, visited);
