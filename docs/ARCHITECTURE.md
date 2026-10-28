@@ -162,6 +162,10 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
 
+## Changes in sq2 (ladder bot from 2026-10-28 18:21 IST, version 1009)
+
+sq2 = cov1 (now `bots/pool/cov1`) plus two changes to the live-group score in `pick_group` (`targets.h`). (1) The team size: main scored a group for three team sizes (the claimants plus us, two more, the whole team) with 4 rounds' wait per extra champion and kept the best, so one champion went to wake an elk or golem as if the team would follow; sq2 scores it only for the champions already heading there plus us (from tg1; before round 40 every champion scores as if alone). (2) The share: `value / (time x sqrt(n) + ...)` instead of `time x n`, so a group a teammate works is worth joining; the candidate bound divides the fight time by sqrt(claimants + 1) to stay an upper bound (from sq1). `planned_team` is still set and still unread. Evidence: `docs/experiments.md`, rows tg2, sq2; `docs/findings.md`, "00interlock: lone waiters in our own half".
+
 ## Changes in cov1 (ladder bot from 2026-10-28 17:14 IST, version 1004)
 
 cov1 = go1 (now `bots/pool/go1`) plus the cover fix from helper h3 (`targets.h`, `pick_group`, the `covered` loop): an elk group makes the groups within its reach unpickable only within 10 rounds of a hit (`cb.awake_round`), as golems and monoliths already did. Before, a live elk group covered its neighbours asleep too (clusters excepted), so elk groups within 4 of each other locked each other for good: on 7 of 70 maps (`tools/helper3/h3_cover.py`; 01hooks, 00fragment, 01boss_battle, 01yellow_brick_road, 01corridors, 00corners, 00swirl) we never picked those groups. Platform evidence in `docs/experiments.md`, rows cov1 and cov1r.

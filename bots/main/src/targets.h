@@ -112,7 +112,6 @@ int pick_group(int current) {
     const float dps = my_dps();
     // Fastest our damage can take a group down, for the bound: its health over our best damage per round.
     const double bound_dps = std::max({1.0, static_cast<double>(dps), static_cast<double>(my_spell_dps())});
-    const int team_alive = alive_allies();
     const bool solo = solo_phase();
     double best = 0, current_score = 0;
     int best_i = -1, best_n = 1, current_n = 1;
@@ -138,7 +137,9 @@ int pick_group(int current) {
         double mult = mid_push && round < 400 && side >= -6 && side <= 6 && travel <= 20 ? 2.0 : 1.0;
         if (side > 0) mult /= 1.0 + std::min(side, 20) / 20.0;
         // Clearing takes at least its health over our damage (champion-rounds), except a defeated group: capture only.
-        const double fight = g.state == 1 ? 0.0 : g.hp_left() / bound_dps;
+        // With the sqrt(n) share below, n champions clear in a time that weighs hp / (sqrt(n) dps) at least.
+        const int nb = round < 40 ? 1 : claimants(i) + 1;
+        const double fight = g.state == 1 ? 0.0 : g.hp_left() / (bound_dps * std::sqrt(static_cast<double>(nb)));
         cands.push_back({value * mult / ((safe_speed ? 1.0 : 0.7) * travel + fight + 5.0), value, i, travel});
     }
     std::sort(cands.begin(), cands.end(), [](const Cand& a, const Cand& b) { return a.ub > b.ub; });
@@ -219,14 +220,23 @@ int pick_group(int current) {
         } else {
             const int home = W.spawn_field.get(g.spawns[0]);
             const ClearStats cs = clear_stats(g);
-            const std::array<int, 3> sizes{others + 1, std::min(std::max(others + 1, team_alive), others + 2),
-                                           std::max(others + 1, team_alive)};
-            for (int n : sizes) {
+            // Only the champions already heading here clear it. Scoring with the whole team sent one champion to wake a
+            // golem or elk alone while nothing brought the others (00crater, go1 on brkp to r300: 58.8 solo
+            // strong-camp tank rounds per game against the rivals' 15.1, and 49% of our middle wakes taken by them;
+            // 00interlock: lone champions fought our far elk groups and walked to the middle ones, and died there).
+            // Opening: before round 40 every champion scores as if alone, so the team stays on the group all five set out
+            // for. On 00crater all five picked our top wolves at r1, then four left for the middle elk at r4-r7 once
+            // teammates' claims cut the wolves' share, and the rivals' five, back from their own wolves, caught them on it.
+            const int mates = round < 40 ? 0 : others;
+            for (int n : {mates + 1}) {
                 double time = travel * (safe_speed ? 1.0 : 0.7) + clear_time(cs, n, dps, S.max_hp, home == UNREACH ? 30 : home);
                 if (g.state == 2) time += wait_w * std::max(0, g.respawn_round - round - travel);
-                time += (n - others - 1) * 4;  // Waiting for extra teammates.
+                time += (n - mates - 1) * 4;  // Waiting for extra teammates.
                 // One champion then captures (5 rounds), walks to an altar and tributes.
-                const double sc = value / (time * n + 5 + g.bank_cost * 0.5 * bank_share(g));
+                // A joiner's share counts sqrt(n), not n: champions stay near each other on groups (00crater after
+                // r150: 0.80 teammates within 6 against the rivals' 1.31, and 62% of the middle camps we wake are lost
+                // once they arrive, against 26% for the top teams, who keep 3 at a camp where we keep 2).
+                const double sc = value / (time * std::sqrt(static_cast<double>(n)) + 5 + g.bank_cost * 0.5 * bank_share(g));
                 if (sc > score) score = sc, score_n = n;
             }
         }
