@@ -76,7 +76,8 @@ for c in cands:
 for c in cands:
     r = res[c]
     print(f'  {c}: rnd {r["rnd"] / max(1, r["games"]):.0f} ' + ' '.join(f'{k[4:]}={r[k] / max(1, r["n_" + k[4:]]):.0f}' for k in sorted(r) if k.startswith('mon_')))
-if not args.keep:
+# --from only reads a finished run: its kept replays stay (10-28: a --from summary deleted a kept run's replays).
+if not args.keep and not args.src:
     for f in os.listdir(out):
         if f.endswith('.repl26a'): os.remove(os.path.join(out, f))
 print('dir', out)
