@@ -12,7 +12,10 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
   01corridors 22%, 00corners 15%, 00swirl 5%).
 - 12:52 00interlock done. Gap after r600: lone champions die on the long lanes of our half (4.4 deaths per game
   away from camps against 1.7) and the rivals take the middle elk group in their corner 6.1 times to our 2.0.
-- Next: adgato_gemcombat1, adgato_gemcombat5, 01corridors.
+- 13:08 adgato_gemcombat1 done. Gap: gems lost on death 289 against 49 by r1000 (their kill gems are our bags);
+  our banking batch grows with the collection rate, and with no gold camps and no Marcella our team gold is 0.21 of
+  theirs by r600.
+- Next: adgato_gemcombat5, 01corridors.
 
 ## Method
 
@@ -157,3 +160,56 @@ warning above). Metric: our deaths per game by r1500 more than 5 tiles from any 
 against their 1.7); bar: 2.5 or fewer; guards: collected by r1000 not below 95% of base, tributed by r1500 up. Earlier pack-avoidance variants (pa1, kb1, ob1, `docs/experiments.md`)
 failed on mixed panels, so judge this on interlock and the other long-lane maps first. A cohesion variant (sq1,
 `bots/exp/sq1`, teammates within 6 at r300-1000 locally 1.25-1.31) is the other lever for the 0.70 against 0.97 gap.
+
+## adgato_gemcombat1 (9 ranked games, 10-27 04:40 to 10-28 06:10 UTC; 0 wins)
+
+Bots: cr3 2 games, cw1 2, older 3, gated variants 2 (all the gemcombat1 games in our ranked list since 10-26 21:00
+UTC). 3-pick map: we draft Heart of Ruin, Vendetta, Vesper (our 3-pick draft on every 3-pick map, 173 games); 6 of
+the 9 opponents field Marcella. Data: `data/fights/h3_adgato_gemcombat1`.
+
+**Layout** (31x31, 180-degree rotation). Spawns in opposite corners (x1-3 y1-3 and x27-29 y27-29), 26 steps apart.
+Six groups, each three gem clusters (21 gems, 360 health, no damage, no gold), respawn 50: per side one 3 steps
+from spawn and one 10 steps along the edge, and two in the middle corners (18 steps from both). 126 gems per full
+clear, about 2.5 a round for both teams. One altar, in the centre (15,15), 12 steps from each spawn, inside a ring of
+holes that is open only toward each spawn's side (x9-12 y8-10 for us, the mirror for them). No camp gives gold, so
+gold comes only from kills (100) and Marcella's tributes (+2 per gem).
+
+**Us against them** (per game; games end r820-r1188):
+
+| | r300 us | r300 them | r1000 us | r1000 them |
+|---|---|---|---|---|
+| collected (of it from kills) | 299 (14) | 271 (65) | 744 (51) | 1036 (288) |
+| tributed | 164 | 199 | 424 | 946 |
+| lost on death | 67 | 13 | 289 | 49 |
+| deaths | 1.9 | 1.0 | 8.7 | 2.1 |
+
+First capture r11 against r19 (we farm faster: reward events by r100 5.0 against 3.4); first tribute median r71
+against r44. Team gold r300 115 against 278, r600 170 against 803 (0.21). Captures from camps are level by r1000
+(own half 474 against 452, middle 205 against 234). 5 of the 9 games are massacres (our deaths minus theirs 6+), in
+which the bot was in its flee branch at 68% of our deaths.
+
+**Largest gap: gems lost on death, 289 against 49 by r1000.** The rivals' 288 gems from kills are our bags: the
+whole collected gap (292) is gems they took off our dead. Deaths by bag (`bagdeath.py`): with 20-39 gems 2.8 per
+game (58 gems), 40-79 1.6 (79), 80+ 1.0 (151); theirs 0.3, 0.6 and 0.1. Our bags of 20+ were carried 92 rounds
+before the death (theirs 53). Tribute channels per game (`decoded.py channels`): we start 11.1 (7.1 of 21-50 gems,
+2.6 of 51-100, 1.4 over 100), they 27.9 (23.4 of 21-50); our channels over 100 gems complete 31% (259 gems started,
+56 banked per game), theirs 100%.
+
+**Cause.** (1) Our banking batch is large on this map: the order-quantity rule (`bot.cpp`, "Order quantity", line
+672) sets the batch to sqrt(6 c^2 tau / (m h + lambda c / 5)), which grows in proportion to the collection rate c,
+and harmless 21-gem cluster groups make c high while the hazard h comes from our own past deaths (low early). So the
+carriers hold 40-150 gems on a map whose only altar is the contested centre. (2) We lose the fights at equal
+numbers and fall behind in gold, which on this map only kills and Marcella give: our 3-pick draft has no Marcella,
+so our team gold stays at 170 by r600 against 803 (about 25 shards' worth less), and fights get worse as the game
+goes on (deaths r300 1.9 against 1.0, r600 4.4 against 1.6). Trace 79c1f4c2 (cr3, side a, lost 672-987 to PtitLK's
+Heart of Ruin, Vesper, Vendetta, the same three as ours): r36-r61 our Vesper takes 42 gems from the middle group at
+(7,22), walks alone east and then up to the centre altar, trades shots with their Vesper at r45-r54, meets their
+Heart of Ruin and Vendetta at the altar at r53-r59 and dies at (13,12) with the 42 gems; r62-r76 our Heart of Ruin
+meets their Vendetta at (8,11) and dies 7 steps from spawn; r99-r125 our Vendetta walks alone through the centre to
+(23,26), 25 steps from home beside their spawn, attacks their Vendetta and dies.
+
+**Fix idea (no map code):** cap the banking batch at 40 gems (the rivals' typical bag here is 21-50; on normal maps
+the rule already gives about 26, so the cap acts on fast-collection maps). Metric: gems lost on death per game by
+r1000 on gemcombat1; bar: 150 or less (now 289); guards: tributed by r1000 up, collected not below 95%. Second
+lever, platform only: a 3-pick draft with Marcella (Heart of Ruin, Vesper, Marcella, the first three of our 5-pick
+draft), metric team gold at r600 on gem-only maps (170 now, bar 400).
