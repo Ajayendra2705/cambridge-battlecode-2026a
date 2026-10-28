@@ -25,7 +25,8 @@ for y in range(H):
             groups.append(comp)
 SA = {(x, y) for y in range(H) for x in range(W) if g[y][x] == 'S'}; SB = {(x, y) for y in range(H) for x in range(W) if g[y][x] == 's'}
 TF = [lambda x, y: (W-1-x, H-1-y), lambda x, y: (W-1-x, y), lambda x, y: (x, H-1-y)]
-tf = next((f for f in TF if {f(*p) for p in SA} == SB), TF[0])
+SYM = {'rotational180': TF[0], 'horizontal': TF[1], 'vertical': TF[2]}  # the dump header names it; spawns alone can be ambiguous
+tf = SYM.get(L[0].split()[4], next((f for f in TF if {f(*p) for p in SA} == SB), TF[0]))
 def nearest(p):
     best = min(((max(abs(p[0]-x), abs(p[1]-y)), i) for i, c in enumerate(groups) for x, y in c))
     return best[1] if best[0] <= 5 else -1

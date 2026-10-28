@@ -17,7 +17,10 @@ Third agent ("h3"). Read-only on the shared docs; everything h3 learns is here. 
   theirs by r600.
 - 13:00 adgato_gemcombat5 done. Gap: gems lost on death 434 against 174 (bags of 80+ carried 129 rounds); the
   same banking batch as gemcombat1, with a 25-step trip from the rich groups to the one altar.
-- Next: 01corridors.
+- 13:05 01corridors done. Gap: the five east lanes (groups 6-10), which we never enter: the same `covered` lock
+  (elk groups 7 and 8 cover each other). Across the five maps: the cover lock (yellow, corridors, and five more maps
+  by `h3_cover.py`) and the banking batch on gem-cluster maps (gemcombat1, gemcombat5) repeat; interlock is lane deaths.
+- Next: job 2 (why the rivals collect about twice our gems on brk and b13).
 
 ## Method
 
@@ -260,3 +263,67 @@ Heart of Ruin dies with 63 at (52,52), beside the altar, at r280.
 **Fix idea (no map code):** the same cap as on gemcombat1: once the bag reaches 40 gems, bank before taking another
 group (a capture that brings more than 40 is banked at once). Metric: gems lost on death per game by r600 on
 gemcombat5; bar: 200 or less (now 410); guards: tributed by r600 up, collected by r600 not below 95%.
+
+## 01corridors (12 ranked games, 10-27 02:20 to 10-28 02:10 UTC; 3 wins)
+
+Bots: go1 1 game, cr3 2, cw1 1, older 6, gated variants 2. 5-pick map. Data: `data/fights/h3_01corridors`. (A first
+run of `h3_groups.py` mirrored side-b games by 180-degree rotation, which also maps this map's centred spawns onto
+each other; the tools now take the symmetry from the dump header, which says top-bottom mirror. The numbers below
+are from the corrected run; the other four maps were mirrored correctly.)
+
+**Layout** (51x40, top-bottom mirror). Spawns at the top and bottom centre (x24-26, y0-2 and y37-39), 35 steps apart.
+Wall columns every 4 tiles (x3, 7, ..., 47) cut the map from y3 to y36 into twelve 3-wide vertical lanes; lanes
+connect only along the top and bottom rows (and over a few one-tile holes in the walls, by dash). Every camp group
+sits on the mirror rows y19-20 and fills its lane, so each group is a gate that both teams reach from opposite ends,
+at the same distance. Centre lane: 2 monoliths + 4 gems (428 gems, 40480 health, 16 steps). West of it: group 4
+(2 elks + 4 gems, 58 gems, 17 steps), group 3 (4 wolves + 2 gold, 16 gems, 21), group 2 (8 gems, 25), the altar lane
+((13,19) and (13,20), 25 steps; it stays open past the altars), group 1 (16 gems, 33) and group 0 (2 elks, 2 gems,
+2 gold: 44 gems, 37). East of it: group 6 (4 wolves + 2 gold, 16 gems, 17 steps), group 7 (4 elks + 2 gold, 60 gems,
+21), group 8 (2 elks, 2 gems, 2 wolves: 52 gems, 25), group 9 (2 elks + 4 gold, 30 gems, 29), group 10 (8 gems, 33),
+group 11 (16 gems, 37). 752 gems per full clear.
+
+**Us against them** (per game; games end r1170-r1555):
+
+| | r300 us | r300 them | r1000 us | r1000 them |
+|---|---|---|---|---|
+| collected (of it from kills) | 124 (3) | 100 (6) | 440 (22) | 628 (21) |
+| tributed | 56 | 60 | 367 | 474 |
+| lost on death | 9 | 8 | 28 | 62 |
+| deaths | 1.1 | 1.6 | 4.2 | 7.1 |
+
+First capture median r58 against r51, first tribute median r282 against r178 (the altar lane is 25 steps out).
+Team gold r300 637 against 965, r1000 2656 against 4781 (0.56). No massacres: we die less than they do, carriers
+are safe (deaths with 20+ gems 0.6 per game) and channels complete (97-100%). The gap is farming.
+
+**Largest gap: the five east lanes, which we never enter.** Captures by r1000 per game (`h3_groups.py`): groups 6-10
+us 0 (0 gems), them 6.4 (197 gems); our camp hits on them 0 and our champion-rounds within 2 of them 0 in all 12
+games (theirs 87-171 per group). We put our farming into group 4 (5.4 captures, 314 gems, against their 3.5 and 203)
+and the west lanes 0-3 (102 gems against 164). Group 11 at the far east edge: 0.08 against 0.5.
+
+**Cause: the `covered` rule again** (see 01yellow_brick_road). Group 7's elks stand 2 tiles from group 6's and group
+8's tiles, group 8's from 7's and 9's, group 9's from 8's and 10's, so 7 and 8 lock each other and 6, 9 and 10 sit
+behind them: `h3_cover.py` lists groups 6-10 (166 gems per clear) as never pickable while 7 and 8 live. The rivals do
+kill 7 and 8 (1.0 and 1.1 times per game), which would free 6 and 9 for a while, but our champions never see those
+lanes, so our knowledge keeps 7 and 8 alive. On the west side group 4's elks cover 3 and the monolith lane, so those
+wait for group 4 to die, which we do (5.4 times).
+
+**Fix idea:** the same as on yellow: an elk group covers its neighbours only while awake. Metric: our captures per
+game of groups 6-10 by r1000 (0 now, theirs 6.4); bar: 3 or more; guards: deaths per game not up by more than 1.0,
+collected by r1000 up.
+
+## Across the five maps
+
+Two causes repeat, and both live in general code, not in the maps. (1) **The `covered` rule** in `pick_group`
+(`targets.h`): any group within reach 4 of a live elk group is skipped, sleeping elk or not, so elk groups that sit
+within 4 of each other lock each other for good. It costs us our corner pair and the centre pair on
+01yellow_brick_road (we take them 1.2 times per game by r1000, the rivals their mirrored four 13.3 times) and the
+five east lanes on 01corridors (0 against 6.4), and `h3_cover.py` finds the same lock on 01hooks (all 88 gems per
+clear), 00fragment (76%), 01boss_battle (63%, including the 400-gem guard), 00corners (15%) and 00swirl (5%): seven
+of our worst maps. One change (elks cover only while awake, as golems and monoliths do) addresses all seven, and its
+metric (captures of the listed groups) can be checked locally before a gate. (2) **Carriers lose their bags on
+gem-cluster maps.** On adgato_gemcombat1 and adgato_gemcombat5 we collect as much from camps as the rivals but lose
+289 and 434 gems per game on death (they 49 and 174), and those bags become their kill gems; the order-quantity
+batch (`bot.cpp`, "Order quantity") grows with the collection rate and the trip length, so on maps with harmless,
+rich cluster groups and one contested altar the carriers hold 40-200 gems for 90-130 rounds. A cap on the batch (about
+40 gems) is the simple fix. 00interlock is the odd one: its gap is lone champions dying on long lanes after r600
+(4.4 deaths per game away from camps against 1.7), the cohesion and fleeing problem seen on other maps before.
