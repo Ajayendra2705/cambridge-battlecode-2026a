@@ -1,0 +1,28 @@
+diff -ru bots/main/src/bot.cpp bots/exp/bk1/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-28 23:53:39.745095100 +0530
++++ bots/exp/bk1/src/bot.cpp	2026-10-29 00:21:26.805214800 +0530
+@@ -673,6 +673,12 @@
+         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
+             // Give up for a while if the way to the altar makes no progress (blocked or contested).
+             // Waiting at a hole edge for the dash is not a blocked way (dh1).
++            // Progress counts within one walk: a heal trip home, a fight or a death since the last bank turn left the best
++            // distance of the earlier walk, so the walk back counted as no progress and banking was blocked for 40 rounds
++            // while the bag grew (adgato_gemcombat4 locally: a Vendetta recalled home with 119 gems, was blocked 6 rounds
++            // into the walk back, farmed on and died at the altar with 350).
++            if (S.round > bank_last + 2) bank_best = UNREACH, bank_stall = 0;
++            bank_last = S.round;
+             if (altar_d < bank_best) bank_best = altar_d, bank_stall = 0;
+             else if (!hole_ahead(W.altar_field, altar_d) && ++bank_stall > 6)
+                 bank_blocked_until = S.round + 40, bank_best = UNREACH, bank_stall = 0;
+diff -ru bots/main/src/state.h bots/exp/bk1/src/state.h
+--- bots/main/src/state.h	2026-10-28 23:53:39.775525700 +0530
++++ bots/exp/bk1/src/state.h	2026-10-29 00:21:25.926375900 +0530
+@@ -28,7 +28,7 @@
+ int last_pick_round = -100, last_pick_state = -2;
+ int big_wait = 0;
+ int big_wait_group = -1;  // The group big_wait counts for: the wait runs once per group life.
+-int bank_best = UNREACH, bank_stall = 0, bank_blocked_until = 0;
++int bank_best = UNREACH, bank_stall = 0, bank_blocked_until = 0, bank_last = -10;
+ int planned_team = 1;
+ int alive_cache = 1, alive_round = -10;
+ 
