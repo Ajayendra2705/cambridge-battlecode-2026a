@@ -3,6 +3,16 @@
 Newest entries first. Bots are `bots/exp/h2*` (gitignored), scripts `tools/helper/`, outputs `data/helper/`.
 Everything here is local only: nothing was submitted or gated.
 
+## 10-28 13:45 IST: note on uf1 (read only, not tested)
+
+uf1's tribute under fire (`bot.cpp`, before the threat branch) starts a channel when our health outlasts
+`enemy_dps * cal_f * channel turns`. A stun cancels a channel (`docs/MECHANICS.md` section 9), and the test does not look
+at stuns: an adjacent Marcella with her stunning attack ready, a Heart of Ruin with its dash ready, or a Ryth, Tavi, Prism,
+Ren or Cassi with a stun in range ends the channel on their next turn, and the carrier has stood still meanwhile. The
+rivals land about 21 stuns per game (findings, "Stuns carry the death gap"). `cached_slots(e.ch)` already gives each
+visible enemy's `stun` flag, cooldown and reach, so a guard "no enemy within a ready stun's reach" costs little. If uf1's
+00eight carriers still die at the altar, check the channels broken by a stun (`tools/replay/breaks.py`).
+
 ## 10-28 13:40 IST: ready-to-gate variants on tg1
 
 Built on `bots/exp/h2tg1` (a byte-for-byte copy of tg1's source), so each is tg1 plus the named patches only:
