@@ -1,0 +1,21 @@
+diff -ru main/src/bot.cpp exp/bc1/src/bot.cpp
+--- main/src/bot.cpp	2026-10-28 18:21:39.998946500 +0530
++++ exp/bc1/src/bot.cpp	2026-10-28 22:22:15.266966200 +0530
+@@ -669,7 +669,16 @@
+         // Measured trip overhead: with the plain c * tau trip cost (ef1) the b6 bags halved (median about 15) and collection
+         // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
+         // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
+-        const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
++        // A 3-champion map with no gold camps (adgato_gemcombat1, the only one of 70: six 21-gem cluster groups and one
++        // altar in the centre that both teams hold) banks each group: bwmp (sq2, esc4) the rivals start 30-33 tributes per
++        // game with a median bag of 21, we 15 with 42, and our bag deaths (1.65 per game, 88 gems each) fall beside the
++        // altar, half after standing in tribute range without channelling.
++        static const bool cluster_duel = [] {
++            int gold = 0;
++            for (const auto& g : W.groups) gold += g.gold;
++            return gold == 0 && W.team_count <= 3;
++        }();
++        const double batch = std::min(cluster_duel ? 20.0 : 1e9, std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0)));
+         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
+             // Give up for a while if the way to the altar makes no progress (blocked or contested).
+             // Waiting at a hole edge for the dash is not a blocked way (dh1).
