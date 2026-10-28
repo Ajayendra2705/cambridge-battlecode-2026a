@@ -155,3 +155,12 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `fight_geo.py FIGHTDIR INDEX...` | Team geometry from those datasets, us vs them by phase: distance to nearest teammate, teammates within 5, time on the enemy half, local numbers at deaths. |
 | `fetch_ranked.py RANKS [--per-team N]` | Download recent ranked replays of a ladder rank range into `data/replays/ranked/`. |
 | `vis_assets.py REPLAY` | Fetch the installed cambc's visualiser engine WASM and decoder JS into `data/vis/<newest engine>/` (starts and stops `cambc view`). `vis_decode.mjs` reads each replay with the folder of its engine, else the flat `data/vis/` (cambc 3.0.5, engines up to 1.0.3). |
+
+## helper/ and helper3/ (the helper agents h2 and h3, from 10-28; notes in `docs/helper/NOTES.md` and `docs/helper3/NOTES.md`)
+
+| Tool | Purpose |
+|---|---|
+| `helper/h2_*.py` | h2's stale-state audit: `h2_localpair.py` and `h2_digest.py` pair local runs game by game, `h2_probe_sum.py` sums probe counters; usage in each docstring. |
+| `helper3/h3_cover.py MAPDUMP...` | Replays `pick_group`'s `covered` rule on map dumps (`data/maps_txt`): the groups our bot can never pick while their covering elk groups live, with their gems (7 of 70 maps locked before cov1). |
+| `helper3/h3_lockgems.py [--quiet] DIR...` | Captures and gems from those locked groups per game to r1000, us against them, from decoded runs (side-b games mirrored). |
+| `helper3/h3_*.py` (others) | h3's map research readers: layout, groups, lives lost to the rival, camp damage, gem gap by source and time, tribute bags; usage in each docstring. |
