@@ -12,8 +12,8 @@ Probe `bots/exp/h2pr2l` (wb1 plus event prints, never ship) on 00eight, 00crater
 | Suspect | Where | Verdict | Probe numbers (30 games) | Fix folder |
 |---|---|---|---|---|
 | A group seen back up keeps the dead group's 0 health for members out of view | `knowledge.h` `update_knowledge` | **bug, confirmed** | 994 times (977 after a respawn, 17 after a reward); 294 left an elk-sized member or bigger at 0; 359 picks chose such a group (yellow_brick_road 194, boss_battle 126); 18 gather waits skipped only because of it | `h2hz1` |
-| `my_help` is what we wrote, not what the help field holds | `comms.h` `write_help` | **bug, confirmed** | 227 clears on live turns (5 on dead turns) erased another champion's live call; of 2284 calling turns, the caller's call was missing in 316 (179 overwritten, 137 erased) and is never written again | `h2hl1` |
-| Shop choices use the snapshot's strength after this turn's purchases | `shop.h` `shop`, `S.str` | **bug, confirmed** | 767 emblem choices differed from the choice with the current strength (e.g. after the Treasure emblem: 45 against the real 70, which picks Power over Durability); `my_dps` also caches the old strength for 10 rounds | `h2ss1` |
+| `my_help` is what we wrote, not what the help field holds | `comms.h` `write_help` | **bug, confirmed** | 227 clears on live turns (5 on dead turns) erased another champion's live call; of 5328 calling turns, the caller's call was missing in 700 (13%: 423 overwritten, 277 erased) and is never written again | `h2hl1` |
+| Shop choices use the snapshot's strength after this turn's purchases | `shop.h` `shop`, `S.str` | **bug, confirmed** | probe 3 (18 games): 552 emblems were started after a purchase in the same turn had raised strength, and 217 of them (12 per game) were a different emblem than the current strength gives: Bruiser-strength for Durability 141, Power for Durability 40, Power for Jungle 23, Power for Bruiser 13 (at 45 strength against the real 70 after the Treasure emblem, Power beats Durability); `my_dps` used a strength from before a purchase in 4437 of 74597 fight evaluations (6%) | `h2ss1` |
 | Reward (state 1) held in knowledge after it was gone | `knowledge.h` | fog, no fix | 110 of 5784 reward observations ended 11+ rounds after we last saw them (31 found the group alive again, 79 respawning) | - |
 | Guard-blocked banking let through by an enemy tribute first noticed late | `targets.h` `bank_gems` (`enemy_rise`) | real, rare | 1 game of 10 on guard maps: 02guardians r1872-1900 (noticed r1798, rose r1742) | none |
 | D line names the activity of the turn before the last | `state.h` `record_death_ctx` (`last_activity`) | **logging bug** | 68 of 177 deaths name a different activity than the last live turn (flee for stunned 12, pvp for flee 8, flee for pvp 6) | one line, below |
@@ -109,7 +109,7 @@ round in the window [round - 64, round + 192]. Once the real respawn R is more t
 R + 256 instead, which is in the future while round - R is 65-255. Every champion that cannot see that group's spawn
 tiles then sets it to respawning until R + 256 (and again each time it loses sight of it), so `pick_group` ignores a live
 group. It needs 65 rounds without a new broadcast: 2 of 18 games in the probe, each time all five champions; on 00eight
-it was the north double elk (37 gems, 200 gold) from r395 to r586 (879 champion-turns with a ghost in force over the
+it was the north double elk (37 gems, 200 gold) from r395 to r586 (1664 champion-turns with a ghost in force over the
 18 games).
 
 Fix (`h2bc1`): once the decoded respawn round has passed, the reader clears byte 5 (fresh turns only). A fresh broadcast

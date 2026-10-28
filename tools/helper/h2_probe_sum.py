@@ -11,6 +11,8 @@ Reads our side's stdout (team-a in ~A files, team-b in ~B) and counts the probe'
   BC  respawn broadcasts decoded 256 rounds late (group held as respawning while it is up)
   EH  bank decisions that differ when the enemy's tributed total is read from an every-turn history
   RS/RE  recalls: started with an enemy seen within 6 in the last 3 rounds or not, and how they ended
+  PS/PT/PU  the probes' counters every 250 rounds; the last line of each champion in each game is summed (probe_lines.py
+  keys lines by map and side only, which merges the three opponents' games, so read the files here)
 """
 import collections, glob, os, re, sys, zipfile
 
@@ -25,9 +27,36 @@ for path in sorted(glob.glob(os.path.join(run, prefix + '~*.repl26a'))):
     text = re.sub(r'[^\x20-\x7e\n]', '', zipfile.ZipFile(path).read(f'team-{side}.stdout').decode('latin1'))
     for line in text.splitlines():
         f = line.split()
-        if f and f[0] in ('SW', 'GC', 'GE', 'FG', 'BC', 'EH', 'RS', 'RE'):
+        if f and f[0] in ('SW', 'GC', 'GE', 'FG', 'BC', 'EH', 'RS', 'RE', 'PS', 'PT', 'PU', 'SP', 'HZ', 'HP', 'HG', 'HX'):
             lines[f[0]].append((game, f[1:]))
 print(f'{games} games of {prefix} in {run}')
+
+
+def last_sums(tag, names):
+    """Sum the last summary line (highest round) of each champion in each game, per named field (field 2 on)."""
+    last = {}
+    for g, f in lines[tag]:
+        key = (g, f[1])
+        if key not in last or int(f[0]) > int(last[key][0]): last[key] = f
+    sums = collections.Counter()
+    for f in last.values():
+        for i, n in enumerate(names):
+            if n: sums[n] += float(f[2 + i])
+    return sums, len(last)
+
+
+if lines['PS']:
+    s, n = last_sums('PS', ('gc_n', 'gc_turns', 'help_missing', 'help_clears_other', 'bc_n', 'bc_turns', 'eh_eval', 'eh_holes', 'eh_changed', 'fg'))
+    print(f'PS counters ({n} champion-games, to each one\'s last 250-round mark): ' + ', '.join(f'{k} {v:.0f}' for k, v in s.items()))
+if lines['PT']:
+    s, n = last_sums('PT', ('hz', 'hg_turns', 'hp', 's1', 'help_turns', 'help_overwritten', 'help_erased', 'erase_live', 'erase_dead', 'er', 'ss'))
+    print(f'PT counters ({n} champion-games): ' + ', '.join(f'{k} {v:.0f}' for k, v in s.items()))
+if lines['PU']:
+    s, n = last_sums('PU', ('hv', 'emblem_starts_stale_str', 'emblem_starts_changed', 'dps_turns', 'dps_stale_turns', '', '', '', '', 'cal_gaps', 'cal_gap_pred', 'cal_pred'))
+    print(f'PU counters ({n} champion-games): ' + ', '.join(f'{k} {v:.0f}' for k, v in s.items()))
+sp = lines['SP']  # round slot S.str strength choice fresh_choice
+if sp:
+    print(f'SP emblems started on a stale strength {len(sp)}: ' + ', '.join(f'{k} {v}' for k, v in collections.Counter(f'{f[4]}->{f[5]}' for _, f in sp).most_common()))
 
 sw = lines['SW']  # round slot reverted_slots fresh_help cache_help my_help my_claim
 rev = sum(1 for _, f in sw if int(f[2]) > 0)
