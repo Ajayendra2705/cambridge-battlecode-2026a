@@ -48,7 +48,7 @@ before. Every fix touches code that tg1, uf1 and go1 share unchanged: the patche
 | Focus call re-read as fresh every 32 rounds | `h2fc1` | twin `h2cx2l`: stale focus reads 77 -> 0 in the same 18 games | set 1: margin +27 +- 39, deaths +0.03 +- 0.37 (15 games changed) |
 | Respawn broadcast decoded 256 rounds late | `h2bc1` | twin: late broadcasts 10 -> 0 | set 1: 3 games changed, margin -5 +- 4 |
 | Dead or resumed turns write claims and help from a stale cache | `h2sm2` (supersedes `h2sm1`) | twin with `h2sm1`: dead-turn reverts 17 -> 0; 2 ghost-claim events left came from turns resumed after running out of fuel, which `h2sm2` covers (it reads bytes 0-4 inside each write) | `h2sm1` set 1: margin +0 +- 33, deaths +0.20 +- 0.38; `h2sm2` set 2: margin -2 +- 55, deaths -0.10 +- 0.36 |
-| Group back up keeps 0 health for members out of view | `h2hz1` | (in the twin: built on `h2sm1`'s twin) | set 1: collected -40 +- 26, deaths -0.22 +- 0.30; set 2: collected +23 +- 28, deaths -0.45 +- 0.25 |
+| Group back up keeps 0 health for members out of view | `h2hz1` | twin `h2tw2l` (probe 2's prints with this fix and the help fix), see below | set 1: collected -40 +- 26, deaths -0.22 +- 0.30; set 2: collected +23 +- 28, deaths -0.45 +- 0.25 |
 | Help call: clears erase another's call, erased calls never rewritten | `h2hl1` | probe 2: 227 erasing clears, 13% of calling turns without the call | set 1: deaths -1.07 +- 0.50 (00contest -7.0 per game over 6 games, the rest -0.33); set 2: deaths +0.03 +- 0.23, collected +26 +- 26 |
 | Shop picks the next emblem on the strength from before this turn's purchases | `h2ss1` | probe 3: 217 emblem starts in 18 games differ (12 per game), mostly Bruiser-strength bought where the formula gives Durability | item change: local runs cannot judge it |
 | D line names the activity of the turn before the last | one line (section 7 below) | probe 2: 68 of 177 D lines | logging only |
@@ -63,8 +63,8 @@ death 73, deaths 5.3; `h2fc1` 829 / 689 / 70 / 5.3; `h2sm1` 827 / 677 / 86 / 5.7
 
 My reading: none of the fixes moves a local number beyond noise (local games are our own pool bots; fights and items need
 the platform). The four knowledge fixes (`h2fc1`, `h2bc1`, `h2sm2`, `h2hz1`) make the bot act on what it means to know, at
-no measurable local cost; if the lead wants one gate for them, `h2cx3` + `h2hz1` is the bundle, judged by the usual
-deaths and tribute guards. `h2hl1` (more help reaches callers) and `h2ss1` (strength users buy more health emblems) change
+no measurable local cost; if the lead wants one gate for them, `h2kb1` (13:40 entry) is that bundle on tg1, judged by the
+usual deaths and tribute guards. `h2hl1` (more help reaches callers) and `h2ss1` (strength users buy more health emblems) change
 behaviour in a direction only the platform can judge; note that `h2ss1` moves our strength users further from the top
 teams' strength-heavy builds, so the current build is partly this bug.
 
