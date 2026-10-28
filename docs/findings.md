@@ -808,3 +808,24 @@ Reader: `tools/replay/rangedhits.py` (decoded runs, to r1000). It splits every b
 - **Cause in code (sq2).** In the threat branch (`bot.cpp`) `healthy` was `S.hp >= 0.5 * max && !hit_by_enemy`: any hit made a champion unhealthy, and it fled home (`walk_home` with danger avoidance off) through the shooter's range. `take_snapshot` (`knowledge.h`) adds danger tiles only for enemies whose burst is at least 30% of our health; a Vesper's burst (135 at base stats against 1000-1200 health) never qualifies, so no move avoided a shooter's range.
 - **rz1** (shooters' basic range is danger, and a light shot from shooters alone keeps a champion `healthy`; row rz1 in `docs/experiments.md`). Local probe pair on the brkp2 maps (30 games each, `XP` lines per turn ending in a shooter's range): no-hit exposure turns to_capture 118 to 25, approach 105 to 18, respawn waits 90 to 18, camp fights 85 to 4, bank 40 to 0, flee 440 to 332, pvp 1304 to 1582; hits outside fights 39.9 to 31.9 per game; by r1000 deaths 6.0 to 4.4, collected 706 to 735. Most of the remaining pvp exposure is the chase step from 4 to 3 (990 of 1582 turns).
 - **Holding at the range edge in a chase costs more than it saves** (rz2 = rz1 + no pvp close-in step that enters a shooter's range unless it reaches the prey; local, the same 30 games): whole-game kills 458 to 394, deaths 189 to 228; by r1000 deaths 4.4 to 5.4, collected 735 to 670, although hits outside fights fell to 27.4.
+
+## False bank blocks after a break (main = nm2, local probe; 10-29 00:20 IST, lead session)
+
+- **The bug.** `bot.cpp` gives up banking for 40 rounds (`bank_blocked_until`) when the walk to the altar makes no
+  progress for 7 bank turns (`bank_best`, `bank_stall`). Both were reset only when the bag fell below the batch or a
+  block fired, not when the walk broke off. A heal trip home (recall), a fight or a death between two bank turns kept
+  the best distance of the earlier walk, so the walk back from home counted as no progress and the carrier was blocked
+  six or seven turns into it. It then farmed on with its bag for 40 rounds.
+- **How often** (probe `exp/mainpl` = main + one print per block with the rounds since the best was set and the
+  current run of consecutive bank turns; play identical to main; 7 maps x cand1, cp3, dh3 x both sides,
+  `data/runs/multi-002132`, lines in `data/task9_scratch/bs_main.txt`): 215 of 223 blocks were false (the best
+  predated the current walk), 8 genuine. Per game: 00fragment 2.0 (mean bag at the block 25), 00interlock 5.5 (38),
+  00lost_world 7.3 (30), 00packs 1.5 (29), 01corridors 6.0 (67), adgato_gemcombat4 9.7 (50), adgato_gemcombat5 3.8
+  (106).
+- **Found through esc5 on adgato_gemcombat4** (locally esc5 lost 183 gems on death per game against main's 40;
+  ablation `data/runs/multi-001050`: without the escort 41, without the cap or the respawn fixes 183). In
+  `exp-esc5~pool-cp3~adgato-gemcombat4~A` our Vendetta recalled home with 119 gems at r198-203, was blocked at r210
+  on the walk back (probe `exp/esc5pl`), farmed to 196, recalled again with 238 at r349, was blocked again at r355,
+  and died at the centre altar at r516 with 350. The escort adds fights and heal trips (champion-rounds per game to r1000,
+  main against esc5: pvp 146 to 206, recall 41 to 49, home_heal 17 to 21), which is likely why esc5 hits the bug more
+  often.
