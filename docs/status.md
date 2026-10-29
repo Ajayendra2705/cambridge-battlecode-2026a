@@ -1,4 +1,22 @@
-# Status (updated 2026-10-30 04:31 IST)
+# Status (updated 2026-10-30 05:24 IST)
+
+## Update at 05:24 IST 10-30 (session 86)
+
+- **Main is mi8** (version 1183 after the dl6 chain and a manual resubmit at 05:13).
+- **dl6 chain done** (04:36-05:05): raw `dl6m_b19p` 12/50 and `dl6m_b20p` 19/50 against main's 12 and 18; `td1m_b19p`
+  11/50, our deaths 421 against 446. `data/run_dl6.sh` is still decoding; it writes `data/judge_dl6.txt` and
+  `data/judge_td1m_b19p.txt`.
+- **Pinned panels are deterministic** (findings): `mi8g_b19p` / `mi8g_b20p` repeated `mi8_b19p` / `mi8_b20p` game for game,
+  so a variant on b19p or b20p needs no new base run. `data/plan_w3.txt` is now tw13b on b19p and b20p plus td1m on
+  b20p (30 groups), with `mi8_b19p` and `mi8_b20p` as bases (rules amended before any game).
+- **Do not start a chain while the quota is spent:** `gate.sh` submits the variant first and then waits for groups. At
+  05:12 the w3 chain put tw13b on the ladder while waiting; it was stopped and main resubmitted (1183). Start
+  `data/run_w3.sh` (once, in the background) after 05:36, when groups free up (`cambc match-groups quota --json`).
+- **Lead: tw13b** (travel weight 1.3 in `pick_group`): on two local map sets (20 maps, 120 games) +5 wins each, deaths
+  155 and 72 against 173 and 87, collected +5.5% and +4.0%; gains spread over many maps, most on big ones (01islands 2 to
+  5 wins, 01broken-curve 2 to 5). 1.6 and 2.0 and 0.8 are worse. Sixteen other one-constant variants (side and
+  recent-death discounts, banking batch, hysteresis, shop threshold, help range, engage thresholds) moved collection
+  by under 2%: none passed.
 
 ## Update at 04:31 IST 10-30 (session 86)
 

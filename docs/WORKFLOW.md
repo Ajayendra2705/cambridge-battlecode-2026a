@@ -38,6 +38,12 @@ All commands run from the repo root. Python scripts run with `python -I`. On Win
 - Gates submit the bot. Never run two gate chains at once, because the second submission replaces the first bot mid-gate. In Git Bash, `ps` does not show command lines, so find and stop gates with `bash tools/platform/procs.sh [kill]`. Near a lock, stop every gate in time and make sure the last upload is main (after `gateq.sh` the last upload always is).
 - Run names in `results/gate.log` are `BOT@PANEL[@OFFSET] groupid...`. Panels: `p8` = full panel (`gate_full.sh`, 10 teams at ladder ranks 60-69 on 2026-10-23), `p8s` = small gate. `GATE_OFFSET` shifts the map windows of the full panel. Opponent team ids are inside the gate scripts. Refresh them when the ladder moves.
 - **rcmp cache trap:** `rcmp.py` caches results per run name in `data/cache/res_<run>.json` and reads the last `gate.log` line with that name. Reusing a name (`hb4l@p8s` twice) silently reuses the old result. Give every base run a unique name, or delete the cache file.
+- `gate.sh` submits the variant before it creates the match groups, and a full quota makes it retry every 30 s: a chain
+  started while the hour's 50 groups are spent leaves the variant on the ladder for the whole wait (10-30 05:12: tw13b
+  would have waited 24 minutes; the chain was stopped and main resubmitted). Start a chain when the quota has room
+  (`cambc match-groups quota --json`: `used`, `resetsAt`; groups free up one hour after their creation).
+- Pinned panels (`--source-group`) are deterministic: the same bot replays the same games (`docs/findings.md`, "Pinned
+  panels are deterministic"), so a base run of main from earlier in the day serves as the base on that panel.
 - Opponent teams without a bot for the current engine cannot be scheduled ("doesn't have an eligible bot", HTTP 409). The gates skip them.
 - Platform stdout in replay bundles is NUL-padded per turn. Strip `\0` before splitting lines.
 - Ranked matches run every 10 minutes with the currently submitted bot. Each gate puts a test bot on the ladder for its whole run, so a day of gating costs rating (2026-10-24: rank 76 to 82 between 11:30 and 15:15 while main itself was unchanged). Near a lock, gate less and leave main submitted.

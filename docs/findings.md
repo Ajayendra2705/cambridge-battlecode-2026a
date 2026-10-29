@@ -1286,3 +1286,12 @@ sides by r1000: "quiet" at most 4 (43 games), "loud" the rest (101). Splitter: s
   channel 1.23 (0.14) against 0.90 (0.09). By numbers within 6 of the victim: outnumbered 12.10 (0.31) against 5.52
   (0.17), even 8.99 (0.16) against 4.82 (0.12), ahead 8.30 (0.11) against 5.24 (0.05). The largest share of our deaths
   is pile-ons: a further enemy joining a fight we are already in.
+
+## Pinned panels are deterministic (session 86, 10-30 05:00 IST)
+
+The same bot on the same pinned panel plays the same games: main (mi8) gated as `mi8_b19p` (03:46) and again as
+`mi8g_b19p` (04:39) gave identical raw results (12 of 50, our gems 31090 against 46992, deaths 446 against 271), and so
+did `mi8_b20p` (03:53) and `mi8g_b20p` (04:55) (18 of 50, 36240 against 41487, deaths 235 against 240). On a pinned
+panel the base therefore needs no fresh run in the same session: any earlier run of the same bot on that panel is the
+same set of games, as long as the engine and the pinned opponents do not change. Each variant then costs 10 groups per
+panel instead of 20. Non-pinned panels still need a same-session base (the opponents change their bots).
