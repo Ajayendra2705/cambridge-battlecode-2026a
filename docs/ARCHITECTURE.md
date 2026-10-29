@@ -28,7 +28,7 @@ Two teams of 3-5 champions share a grid map. Neutral camp groups (wolves, elks, 
 | `sim.h` | `simulate_fight`: 3-round focus-fire simulation between nearby champions, using live cooldowns, stuns and the Cassi/Issac link. `my_dps`, `my_spell_dps`. |
 | `knowledge.h` | Known units (camps by tile, every champion handle). `take_snapshot()` makes one raw engine call per unit. `build_phantoms()` covers unseen camps of recently awake groups. `update_knowledge()` updates group states. |
 | `comms.h` | Shared memory: target claims, help call, respawn broadcast, `home_side`. |
-| `move.h` | Movement: field descent, dashes, `step_to_tiles`, `step_away`, `step_out_of_danger`, `walk_home` (avoids awake camp reach), `go_home` (recall only when no enemy is near). |
+| `move.h` | Movement: field descent, dashes, `step_to_tiles`, `step_away`, `step_out_of_danger`, `walk_home` (avoids awake camp reach; `walk_home(true)`, used by the flee, takes the step down that ends farthest from the enemy champions), `go_home` (recall only when no enemy is near). |
 | `shop.h` | Items: the Treasure emblem first, then each emblem chosen by its fight-power gain (Power, Bruiser, Durability, Jungle; see "Changes in cp3"). Also holds capture priority and wealth (owned shards). |
 | `abilities.h` | Casting on camps (stun, area hit, landing dash, damage spell) and on champions. Also attack resets, heals, shields, ward placement and basic attacks. |
 | `camps.h` | Camp threat and incoming damage, `clear_time` estimate, `standoff` groups (casters hit from spell range 4), `gold_weight`. |
@@ -51,7 +51,7 @@ Each step either acts and returns, or falls through to the next. The activity na
 7. **Damage accounting:** damage taken that camps do not explain is blamed on an unseen camp in range, or else on an unseen enemy. A big hit (>25% hp) prints an `H` line.
 8. **Calibration:** `cal_f` scales enemy damage in the simulator when the opponent hits harder than local play (clamped 1-2).
 9. **Engage enemy** (`pvp`): choose prey (best dps/hp weighted by its gems, an enemy fighting an ally, or the team focus call). Engage when the simulation says we win, when the prey is nearly dead (`finisher`), when it carries 30+ gems (`rich`), or when we stand on our spawn. A lone 1v1 with a close kill race also counts as winning. Never engage with 150+ gems in the bag.
-10. **Threat** (`kite`, `duel`, `flee`): if threatened and losing (outnumbered, weaker, under 40% hp, in kill range, or the simulation says we die), step out of danger when healthy, first hitting the weakest enemy in reach if the hit is free (melee keeps its move; a target out of its own reach cannot answer). Duel a lone adjacent chaser only if we kill it first, or if running home is fatal anyway. Otherwise flee home through bushes: melee first hits the weakest adjacent enemy, then the run hits whatever is in range, and calls focus on the chaser.
+10. **Threat** (`kite`, `duel`, `flee`): if threatened and losing (outnumbered, weaker, under 40% hp, in kill range, or the simulation says we die), step out of danger when healthy. Melee first hits the weakest enemy in reach if the hit is free (it keeps its move; a target out of its own reach cannot answer); a ranged champion steps out first and then shoots with its attack reset (`reset_shot_after_walk`). Duel a lone adjacent chaser only if we kill it first, or if running home is fatal anyway. Otherwise flee home through bushes: melee first hits the weakest adjacent enemy, then the run hits whatever is in range, and calls focus on the chaser.
 11. **Attack on sight:** hit the weakest enemy in reach before anything else. Vendetta first dashes next to an enemy 2-3 tiles away when the simulation does not say she dies. Ranged champions shoot when healthy, when the target cannot reach them, or when the enemies near cannot burst them this round.
 12. **Heal wait** (`heal_wait`): at spawn below 90% hp.
 13. **Camp retreat** (`retreat`, `home_heal`): sum the camps that target us and the steps needed to leave all their reaches. Leave before the next hits could kill. Rejoin if healthy, else go home (bank on the way if an altar is within 3).
@@ -161,6 +161,15 @@ m4 = fd2z (now `bots/pool/fd2z`) built on SDK 4.0.0 (engine 2.0.0, Sprint 3) plu
 - `world.h`, `targets.h` (ag4): `W.altar_guards` is the set of groups whose camps fill every standable tile in tribute range of every altar (01boss-battle: one group; 02guardians: two monoliths, one group each), and banking is blocked while each guard camp beside an altar lives. It replaces the single `altar_guard`.
 
 70-map local quick pool against b_log, pd1, tf3: 358 of 420 (fd2z 359), 0 bot faults, turns out of fuel after round 3 386 (fd2z 934).
+
+## Changes in rz20 (ladder bot from 2026-10-29 14:05 IST, version 1118)
+
+rz20 = rz12 (now `bots/pool/rz12`) plus two steps out of fights, adopted together on the fresh batch b20 (our deaths -0.76 +- 0.40 per game to r1000, their deaths +0.46, collected and tributed held):
+
+- `move.h` (rz14, flee step): `walk_home(bool away)`. With `away` (only the flee branch of `bot.cpp` passes it) the step down towards spawn is the one that ends farthest from the nearest enemy champion (capped at 7), the closest to spawn among those, and it is taken directly when it is outside every awake camp reach. Before, the step closest to spawn kept the nearest enemy's distance in 29% of flee rounds with three or more enemies within 6.
+- `bot.cpp` kite branch and `abilities.h` (rz17, shooter step): a ranged champion no longer takes the free shot before stepping out of danger (the shot cost its step and the melee enemy stepped in); it steps out first, then `reset_shot_after_walk` spends the attack reset to shoot the weakest enemy in reach from the new tile. Melee keeps the hit-first rule.
+
+The two bots before it: rz12 (10-29 10:34, version 1099) = rz9 + Vendetta dashes in only with the numbers at the landing (`abilities.h` `dash_next_to`, helper `margin_at`); rz9 (07:48, version 1072) = nm2 + no striking dash for Heart of Ruin at the top of the threat branch (`use_champion_abilities` skips `strike_dash` without `may_root`). Evidence for all three: `docs/lineage.md` and their `docs/experiments.md` rows.
 
 ## Changes in nm2 (ladder bot from 2026-10-28 23:54 IST, version 1034)
 

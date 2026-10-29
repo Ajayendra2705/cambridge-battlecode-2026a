@@ -451,6 +451,16 @@ static void play_turn_core() {
                        // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target
                        // that cannot reach us cannot answer (b5 ge4: with an enemy within 3 the rivals hit a champion in
                        // 50% of rounds, we in 35%, and stand idle 12% vs 6%).
+                       // Not for a shooter: its shot costs the step, so it stayed in danger and the melee enemy stepped in.
+                       // It steps out first and shoots with the attack reset. rz12 on b13p2, b16p and b17p, five a side, to
+                       // r1000 (`tools/replay/contacts.py`): our Vesper began a contact while short 2.11 times per game, the
+                       // rivals' 1.10, and 0.97 of ours (theirs 0.34) came right after her shot from 2 tiles; she died within
+                       // 10 rounds after 0.28 of her contacts (theirs 0.22).
+                       if (S.range > 1) {
+                           if (!step_out_of_danger()) return false;
+                           reset_shot_after_walk();
+                           return true;
+                       }
                        const ChampSnap* t = nullptr;
                        for (const auto& e : S.enemies)
                            if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (S.range <= 1 || dist(S.me, e.pos) > e.range)
@@ -509,7 +519,7 @@ static void play_turn_core() {
                 if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
             }
             if (!at_spawn && flee_dash()) ACT("flee_dash");
-            if (!at_spawn && !flee_bush()) walk_home();
+            if (!at_spawn && !flee_bush()) walk_home(true);
             for (const auto& e : S.enemies)
                 if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
             write_claim(-1);

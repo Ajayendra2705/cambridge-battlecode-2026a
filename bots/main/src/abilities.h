@@ -420,6 +420,31 @@ template <class U> bool attack_unit(const U& target) {
     }
 }
 
+// Walk, reset, shot: a shooter that walked this turn cannot shoot, but the attack reset restores the shot (probe rz5p:
+// 63 of 63 landed). The weakest enemy in reach from the new tile.
+bool reset_shot_after_walk() {
+    if (stale()) return false;
+    auto& me = cambc::self();
+    if (S.range <= 1 || !S.walked || me.can_attack() || !me.can_cast()) return false;
+    const ChampSnap* t = nullptr;
+    for (const auto& e : S.enemies)
+        if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (!t || e.hp < t->hp)) t = &e;
+    if (!t) return false;
+    for (const auto& ab : me.abilities()) {
+        if (!ab.is_attack_reset() || !ab.is_ready()) continue;
+        if (stale()) return false;
+        try {
+            if (ab.use() && attack_unit(t->ch)) {
+                ++n_reset;
+                return true;
+            }
+        } catch (const cambc::error&) {
+        }
+        break;
+    }
+    return false;
+}
+
 // Every branch of the turn returns early, so an attack can be left unused with something in reach: the audit build
 // counted about 2,900 such turns per 80 games (840 in enemy fights with an awake camp in reach, 262 with an enemy
 // champion in reach, the rest while walking, capturing or leaving camps). Spend it at the end of the turn: the weakest
