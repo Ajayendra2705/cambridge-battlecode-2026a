@@ -21,7 +21,8 @@ for spec in $specs; do
   set -- ${spec//:/ }  # TEAM:MAP,MAP,MAP,MAP,MAP[:SIDE,SIDE,SIDE,SIDE,SIDE[:GROUP]] (our side per game, default a;
   # GROUP: play the opponent's bot from that earlier match group, so every run meets the same versions)
   until out=$(powershell -File tools/cambc.ps1 match-groups create $1 --maps "$2" ${3:+--sides "$3"} ${4:+--source-group $4} --json 2>&1 | tail -1) && echo "$out" | grep -q groupId; do
-    echo "$out" | grep -q "eligible bot" && { echo "skip $1: $out" >&2; break; }
+    # A team without a ready bot, or one that has left the competition (HTTP 409; snoc, 10-29), can never play: skip it.
+    echo "$out" | grep -qE "eligible bot|no longer taking part" && { echo "skip $1: $out" >&2; break; }
     echo "retry $1: $out" >&2; sleep 30
   done
   echo "$out" | grep -q groupId || continue
