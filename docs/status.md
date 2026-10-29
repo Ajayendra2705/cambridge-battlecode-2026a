@@ -1,4 +1,15 @@
-# Status (updated 2026-10-30 02:35 IST)
+# Status (updated 2026-10-30 03:40 IST)
+
+## Update at 03:40 IST 10-30 (session 86)
+
+- **Main is dl4** (version 1170, submitted at 02:09). No gate since then; nothing runs.
+- **Ladder:** rank 62, rating 1966.9 at 03:38 (rank 51 is 2008.9). The user's target is now 2050 (about rank 40).
+- **Local N tonight, none gated:** pk1 (camp ring breach), wl1 (Willow for Varg), cm4 (cm2's churn fix rebased),
+  mi7 (mi6's exact fuel cut rebased; 0 mismatches). Each failed the local deaths guard (155 on dl3's 10 maps); the
+  calibration rows nop1 / nop2 show the guard's noise is about 6 deaths, so the rises are real.
+- **Where the gap is** (findings, "Where the gap is after dl4"): the rivals start twice as many fights; above half
+  health we die about twice as often as they do in the same spot; our captures trail in the middle (8.9 against 11.1
+  a game by r1000) and in their half (1.8 against 4.9); their Vesper collects about twice what ours does.
 
 ## Update at 02:35 IST 10-30 (session 86)
 

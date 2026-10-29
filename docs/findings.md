@@ -1220,3 +1220,33 @@ decoded. Readers: `decoded.py channels`, `tools/replay/deny.py`, `tools/replay/w
   bag stayed at half the base's (5 against 10): the carrier is hit while walking.
 - **Ranked close losses** (`data/fights/rk_close`, 4 games of 10-30 00:40-01:10): we held no winning bag in any; one of
   ours stood within 2 tiles of the rivals' winning carrier in one (adgato_gemcombat4) and within 6 in another.
+
+## Where the gap is after dl4: fight starts, health, captures by region; local guard noise (session 86, 10-30 02:30-03:40 IST)
+
+Runs `dl4_b19p@b19p`, `dl4_b20p@b20p`, `wn3_b20p@b20p`, `cd2_b19p@b19p` (main-like bots; wn3 and cd2 differ from dl4
+only near the end), 197 decoded games to r1000. Readers: `decoded.py risk`, `starts`, `fights`, `types`, `items`,
+`gems`, `sources`, `captures`, `holds`.
+
+- **Economy:** collected 171 / 373 / 651 by r300 / r600 / r1000 against the rivals' 203 / 482 / 824; tributed 523
+  against 644 by r1000; lost on death 60 against 28. By r600 the gap is in gem clusters (146 against 195) and elks
+  (105 against 139).
+- **Captures by region (r1000):** our own half level (27.8 captures, 381 gems, against 28.9 and 387); the middle 8.9
+  (187 gems) against 11.1 (257); the other side's half 1.8 (27) against 4.9 (69). Our capturer takes 87.8 rounds
+  between captures (median 64) against 69.6 (48), with 52.8 moves against 43.6.
+- **Fights:** by r800 the rivals start 27.3 champion fights a game, we 14.9; 3.1 of our 4.2 deaths by r800 come in
+  fights they started. Above half health our P(death within 10 rounds) is about twice theirs in every cell of enemies
+  and allies within 6 (alone against one: 0.033 against 0.017; against three: 0.186 against 0.088); below half health
+  the two sides are close (alone against one: 0.167 against 0.146).
+- **Per champion type (r1000):** the rivals' Vesper collects 285 gems a game against ours 146 and deals 4840
+  champion damage against 3393; their Marcella 5538 against 4036. Our Varg deals 1098, the least of any champion on
+  either side. Max health at r600: Marcella 1888 against the rivals' 2200, Vesper 1949 against 2113.
+- **Ranked, 100 games before 02:35** (`data/ranked100.txt`): 57 won. Lost in every recent game: 01islands (0 of 3,
+  562-1002, 659-1004, 810-1002), adgato_gemcombat4 (0 of 3), 01boss_battle (0 of 2, 0-1103 and 162-1014).
+- **01islands locally** (6 deterministic games a bot against cand1, cp3, dh3): main wins 1, earlier mains nm2 to mi5
+  win 4 (collected 936-1028 a game against main's 909); cm3m 3, dl2 2, sc1 1. Not separated from the spread of
+  near-identical bots on six games (row ns1).
+- **Local guard noise** (rows nop1 / nop2, dl3's 10 maps against cand1, cp3, dh3): a fuel-only change of a few hundred
+  fuel a turn moves main's 49 wins and 141 deaths to 50 and 135, so the guard bars (47 wins, 155 deaths) sit above
+  noise; every mid-game change tested tonight raised deaths past them (pk1 160, mi7 173, cm4 181, wl1 193). Burning
+  about 25k fuel a turn (nop1) gives 38 wins and 260 deaths, and an exact fuel saving (mi7, 0 mismatches) also moved
+  deaths to 173: play depends on fuel through the fuel-gated picks and travel fields.
