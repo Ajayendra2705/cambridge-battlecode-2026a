@@ -1019,5 +1019,6 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
   gems, middle 1.2 for 44, their half 0.5 for 12), they 18.6 (own 14.2 for 92, middle 2.7 for 107, ours 1.7 for 13):
   the middle is 63 of the 90 gems they lead by at r300. Per capture, a capturer's rounds since its previous capture
   are 64.6 (median 51) against 49.9 (42), with 38.9 moves against 28.6 for the same straight hop (14.4 against 15.0
-  tiles); clear and claim times are close (11.9 and 8.2 against 13.7 and 6.8). Their bag at r1000 is 97 against our
-  32, so a likely part of the longer cycle is trips home; that is a question for the next look, not yet measured.
+  tiles); clear and claim times are close (11.9 and 8.2 against 13.7 and 6.8). Trips home are not it (scratch
+  `data/task9_scratch/hometrips.py`, to r1000: they make 40.6 a game against our 36.2, 20.8 against 13.6 with a bag;
+  their bag at r1000 is 97 against our 32). Where our extra 10 moves a cycle go is the next look.
