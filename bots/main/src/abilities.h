@@ -80,16 +80,28 @@ bool step_next_to(const ChampSnap& target) {
     }
     return best.x >= 0 && safe_move(best);
 }
+// Enemy champions within 3 of a tile minus ours there (this champion and the allies within 3).
+int margin_at(vec2 t) {
+    int m = -1;
+    for (const auto& e : S.enemies) if (dist(t, e.pos) <= 3) ++m;
+    for (const auto& a : S.allies) if (dist(t, a.pos) <= 3) --m;
+    return m;
+}
 bool dash_next_to(const ChampSnap& target) {
     if (stale()) return false;
     auto& me = cambc::self();
     if (!me.can_cast()) return false;
+    // Dash in only with the numbers at the landing, or level against a hurt target: the dash is also the way out. Our
+    // Vendetta dashed in 2.87 times per game (the rivals' 1.33) and died within 10 rounds after 0.16 of them (theirs
+    // 0.05): level against a target above 40% health after 0.17 (theirs 0.04), one or more short after 0.43 (0.25), and
+    // those targets died after 0.12 and 0.06 (rz9 on b13p2, b16p, b17p; `tools/replay/dives.py`).
+    const int need = target.hp <= 0.4f * target.max_hp ? 0 : -1;
     for (const auto& ab : me.abilities()) {
         if (!ab.is_dash() || !castable_now(ab)) continue;
         vec2 best{-1, -1};
         float best_e = 0;
         for (auto t : dash_landings(ab).positions()) {
-            if (dist(t, target.pos) > S.range) continue;
+            if (dist(t, target.pos) > S.range || margin_at(t) > need) continue;
             const float e = exposure_at(t);
             if (best.x < 0 || e < best_e) best = t, best_e = e;
         }
