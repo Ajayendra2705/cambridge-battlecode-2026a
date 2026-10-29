@@ -204,12 +204,35 @@ static void play_turn_core() {
         // The rivals' game-winning channel within 10 tiles: walk to its altar (the lock goes down once within 2),
         // hitting whoever is in reach on the way. The game is lost when that channel completes.
         vec2 to;
-        if (deny_channel(to) && dist(S.me, to) <= 10) {
+        const ChampSnap* carrier = nullptr;
+        if (deny_channel(to, carrier) && dist(S.me, to) <= 10) {
             ACT("deny");
             walk_towards(to);
             for (const auto& e : S.enemies)
                 if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
-            deny_channel(to);
+            deny_channel(to, carrier);
+            return;
+        }
+        // A rival carrying a game-winning bag within 6 tiles, walking or channelling: a stun or its death cancels the
+        // channel (damage does not), and its killer takes the whole bag, so cast every stun at it and hit it (dl4).
+        // deny.py on the cm3m and dl2 runs of b19p: one of ours within 6 of that carrier during its walk or channel in
+        // 11 of 33 and 9 of 29 losses (within 4: 6 and 7).
+        if (carrier && dist(S.me, carrier->pos) <= 6) {
+            ACT("deny_hit");
+            const ChampSnap c = *carrier;
+            auto& self = cambc::self();
+            if (self.can_cast() && c.ch.passive() != cambc::passive_type::stun_immunity)
+                for (const auto& ab : self.abilities()) {
+                    if (stale() || !castable_now(ab) || !ab.is_cc()) continue;
+                    try {
+                        if (ab.valid_tiles().is_set(c.pos) && (ab.can_target_ground() ? ab.use(c.pos) : ab.use(c.ch))) break;
+                    } catch (const cambc::error&) {
+                    }
+                }
+            if (!stale()) strike_dash({c.pos}, false);
+            if (dist(S.me, c.pos) > S.range) walk_towards(c.pos);
+            if (dist(S.me, c.pos) <= S.range && attack_unit(c.ch)) try_attack_reset_and_hit(c.ch);
+            use_champion_abilities(c);
             return;
         }
     }

@@ -1,4 +1,10 @@
-# Status (updated 2026-10-30 01:10 IST)
+# Status (updated 2026-10-30 01:31 IST)
+
+## Update at 01:31 IST 10-30 (session 86)
+
+- **Main is dl4** (sc1 + a chase of the rivals' winning carrier, `abilities.h` and `bot.cpp`), adopted and submitted at 01:30 as version 1164; sc1 is `bots/pool/sc1`. Its guards held on b19p, the death guard close to its bar (+0.26, bar +0.3): watch our deaths on the next panel, and go back to sc1 if they rise.
+- **Ladder:** rank 69, rating 1949.1 at 01:30 (1946.6 at 01:13, 1926.8 at 00:57; rank 51 is 2004.1). Ranked 00:20-01:10: 14 wins in 20.
+- Close ranked losses of 00:40-01:10 (`data/fights/rk_close`): we held no winning bag in any; the rivals' winning carrier had one of ours within 2 tiles (adgato_gemcombat4) or 6 (01broken_curve) in two of four.
 
 ## Update at 01:10 IST 10-30 (session 86)
 

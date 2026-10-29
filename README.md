@@ -4,7 +4,7 @@ Our C++ bot for [Cambridge Battlecode 2026a](https://2026a.battlecode.co.uk) (`c
 
 **Start here:** `docs/status.md` (where we are and what to do next), then `docs/ARCHITECTURE.md` (how the bot works), then `docs/WORKFLOW.md` (how to test a change).
 
-The ladder bot is `sc1` (`bots/main`, cm3m plus an altar lock against the rivals' game-winning tribute (dl2) and a split winning capture, adopted as version 1161 on 10-30 01:09 IST; dl2 is `bots/pool/dl2`, cm3m `bots/pool/cm3m`); the Sprint 2 entry was `cp3` (`bots/pool/cp3`, version 691). The next lock is Sprint 3, Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST).
+The ladder bot is `dl4` (`bots/main`, cm3m plus an altar lock against the rivals' game-winning tribute (dl2), a split winning capture (sc1) and a chase of the rivals' winning carrier, adopted as version 1164 on 10-30 01:30 IST; sc1 is `bots/pool/sc1`, dl2 `bots/pool/dl2`, cm3m `bots/pool/cm3m`); the Sprint 2 entry was `cp3` (`bots/pool/cp3`, version 691). The next lock is Sprint 3, Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST).
 
 ## Layout
 

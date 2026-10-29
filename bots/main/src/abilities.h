@@ -122,20 +122,23 @@ bool dash_next_to(const ChampSnap& target) {
 // own lock (MECHANICS section 9). dl1 spends one only on a channel that wins the game for the rivals (their tributed
 // gems plus the carrier's bag reach 1000): in 35% of the platform games we lost before r2000 one of ours stood within
 // 6 tiles of that channel's carrier (findings, "Endgame: winning bags and the rivals' last channel"). Within 2 tiles
-// of its altar the lock goes down at once; farther away the altar comes back in `to` for a walk.
+// of its altar the lock goes down at once; farther away the altar comes back in `to` for a walk. Any visible rival
+// carrying a game-winning bag, walking or channelling, comes back in `carrier`, with or without a lock (dl4).
 int lock_fail = 0;
-bool deny_channel(vec2& to) {
+bool deny_channel(vec2& to, const ChampSnap*& carrier) {
+    carrier = nullptr;
     if (lock_fail > 5) return false;
     auto& me = cambc::self();
     try {
-        const auto& lk = me.consumables()[cambc::consumable_type::altar_lock];
-        if (lk.count() == 0) return false;
         const int e_sub = static_cast<int>(cambc::global_submitted_gems(team::enemy));
         for (const auto& e : S.enemies) {
-            if (e_sub + static_cast<int>(e.gems) < cambc::constants::winning_gems) continue;
+            if (W.enemy_spawn.is_set(e.pos) || e_sub + static_cast<int>(e.gems) < cambc::constants::winning_gems) continue;
+            carrier = &e;
             bool channel = false;
             try { channel = e.ch.is_submitting_gems(); } catch (const cambc::error&) {}
             if (!channel) continue;
+            const auto& lk = me.consumables()[cambc::consumable_type::altar_lock];
+            if (lk.count() == 0) return false;
             for (auto a : W.altars) {
                 if (dist(e.pos, a) > 1) continue;
                 if (cambc::vision::has_altar_lock(a) && !cambc::vision::altar_lock_at(a).is_enemy()) continue;
