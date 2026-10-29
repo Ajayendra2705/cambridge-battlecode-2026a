@@ -1,0 +1,88 @@
+diff -ru bots/main/src/abilities.h bots/exp/rz13/src/abilities.h
+--- bots/main/src/abilities.h	2026-10-29 10:34:16.155626400 +0530
++++ bots/exp/rz13/src/abilities.h	2026-10-29 09:13:03.657758100 +0530
+@@ -66,6 +66,27 @@
+     return e;
+ }
+ 
++// Enemy champions within 3 of a tile minus ours there (this champion and the allies within 3).
++int margin_at(vec2 t) {
++    int m = -1;
++    for (const auto& e : S.enemies) if (dist(t, e.pos) <= 3) ++m;
++    for (const auto& a : S.allies) if (dist(t, a.pos) <= 3) --m;
++    return m;
++}
++// Walk next to an enemy only where they do not outnumber us within 3, or one short against a target under 40% health.
++// Our Vendetta and Varg walked in one or more short 2.40 times per game (the rivals' 1.33): one short against a target
++// above 40% they died within 10 rounds after 0.28 (theirs 0.08) and the target after 0.08; two or more short 0.54
++// (0.20); one short against a hurt target 0.07, with the target dead after 0.36. Our Vesper walked in short 0.45 times
++// per game and died after 0.47 (theirs 0.21, 0.17). Heart of Ruin and Marcella die after it no more than the rivals' do
++// (0.28 and 0.16 deaths per game against 0.30 and 0.18). rz9 on b13p2, b16p, b17p; `tools/replay/walkins.py`.
++bool walk_in_refused(vec2 t, const ChampSnap& target) {
++    const auto ty = cambc::self().champion_name();
++    if (ty == cambc::champion_type::heart_of_ruin || ty == cambc::champion_type::marcella) return false;
++    bool next_to = false;
++    for (const auto& e : S.enemies) if (!W.enemy_spawn.is_set(e.pos) && dist(t, e.pos) <= 1) next_to = true;
++    return next_to && margin_at(t) > (target.hp <= 0.4f * target.max_hp ? 1 : 0);
++}
++
+ // Melee closing moves onto a tile in attack reach of `target`, the least exposed one: a step, or a dash (any dash;
+ // Heart of Ruin's striking dash goes through strike_dash).
+ bool step_next_to(const ChampSnap& target) {
+@@ -74,19 +95,13 @@
+     float best_e = 0;
+     for (auto d : DIRS) {
+         const vec2 t{S.me.x + d.x, S.me.y + d.y};
+-        if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t) || dist(t, target.pos) > S.range) continue;
++        if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t) || dist(t, target.pos) > S.range
++            || walk_in_refused(t, target)) continue;
+         const float e = exposure_at(t);
+         if (best.x < 0 || e < best_e) best = t, best_e = e;
+     }
+     return best.x >= 0 && safe_move(best);
+ }
+-// Enemy champions within 3 of a tile minus ours there (this champion and the allies within 3).
+-int margin_at(vec2 t) {
+-    int m = -1;
+-    for (const auto& e : S.enemies) if (dist(t, e.pos) <= 3) ++m;
+-    for (const auto& a : S.allies) if (dist(t, a.pos) <= 3) --m;
+-    return m;
+-}
+ bool dash_next_to(const ChampSnap& target) {
+     if (stale()) return false;
+     auto& me = cambc::self();
+diff -ru bots/main/src/bot.cpp bots/exp/rz13/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-29 10:34:16.129543500 +0530
++++ bots/exp/rz13/src/bot.cpp	2026-10-29 09:13:15.336780400 +0530
+@@ -403,16 +403,22 @@
+             attack_unit(prey->ch);
+             return;
+         }
+-        // Close in through the tile least exposed to enemy bursts; melee strikes after the step.
++        // Close in through the tile least exposed to enemy bursts; melee strikes after the step. Where every step in
++        // would leave us outnumbered next to an enemy, wait here for the others.
+         if (me.can_move()) {
+             vec2 best{-1, -1};
+             float best_exposure = 0;
+             int best_d = 99;
++            bool refused = false;
+             for (auto d : DIRS) {
+                 const vec2 t{S.me.x + d.x, S.me.y + d.y};
+                 if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t)) continue;
+                 const int pd = dist(t, prey->pos);
+                 if (pd >= dist(S.me, prey->pos)) continue;
++                if (walk_in_refused(t, *prey)) {
++                    refused = true;
++                    continue;
++                }
+                 float exposure = 0;
+                 for (const auto& e : S.enemies)
+                     if (!W.enemy_spawn.is_set(e.pos) && dist(t, e.pos) <= e.reach) exposure += e.burst;
+@@ -420,6 +426,7 @@
+                     || ((pd <= S.range) == (best_d <= S.range) && (exposure < best_exposure || (exposure == best_exposure && pd < best_d)));
+                 if (better) best = t, best_exposure = exposure, best_d = pd;
+             }
++            if (best.x < 0 && refused) return;
+             if (best.x >= 0 ? safe_move(best) : walk_towards(prey->pos)) {
+                 if (dist(S.me, prey->pos) <= S.range && attack_unit(prey->ch)) try_attack_reset_and_hit(prey->ch);
+             }
