@@ -986,3 +986,9 @@ Readers: `decoded.py gems`, `tools/replay/bysize.py`, `mapgap.py`, `capkind.py -
   captures, 1563 gold, against 23.0 and 1105) and they the middle wolf+gem groups (10.7 captures, 413 gems, against 6.0
   and 236); on 00vault the middle gem groups of 140-200 gems a capture (2.5 a game, 0.5 of them in our half, against
   our 1.5). 00ribs, 00eight and 00crater are the death maps of the sections above.
+- **Locally only 02crossing shows a gap** (main against cand1, cp3 and dh3 on 02crossing, 00vault and 00quarry, both
+  sides, 18 games, `data/runs/multi-111953`, decoded `local_multi-111953_main`): 02crossing 2 of 6 won, collected 898
+  against 1040, but its shape differs from the platform's: the pool bots take more of their own elk+gem groups (7.83
+  captures a game against our 4.83) and a few more pure clusters (24.3 against 19.0; middle 5.7 against 3.5). 00vault
+  (5 of 6, 693 against 410) and 00quarry (6 of 6, 989 against 248) do not reproduce. A change for 02crossing's
+  clusters needs a platform panel with that map; the local pool is no test bed for it.
