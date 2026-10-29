@@ -1012,3 +1012,6 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
 - So against teams this high the collection gap is broad farming speed from the first rounds, not one group kind;
   on the pinned panels (lower teams) it hid behind maps we win. `bcgp` is the exact base for a change aimed at it;
   with 2 wins in 50, judge such a change on collected by r300, r600 and r1000 and captures, not on wins.
+- **Fights there** (`decoded.py starts`, to r1000): they start 24.9 champion fights a game, we 14.5; of our 4.0 deaths
+  2.84 come in fights they start (theirs in fights we start 0.98). So on these maps the death gap is the fights the
+  rivals start (t10's factor, 'Deaths in fights the rivals start'), beside the farming gap.
