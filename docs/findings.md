@@ -1173,3 +1173,28 @@ Readers: `tools/replay/fuel_events.py` (platform `fuelExhausted` events), `decod
 - **Local, six heavy maps** (01yellow-brick-road, 00vault, 00stampede, 02the-pack, 02stalactites, 00swirl against cand1, cp3, dh3; 36 games each): contact turns (an enemy within 6) cost mi5 51.2k on average against rz20's 38.5k and ran out 7.6 times per 1000 against 1.85. By stage: the fight sim +6.8k, the fight branch +4.8k (on 36% of contact turns), `build_foes` +2.7k; the later stages (pick, camp fight, retreat) are where the turns run out.
 - **Per function (mi5c, per game per team):** `pick_group` 16k a call (883 calls, the largest overall, as in main), `read_slots` 1,084 a call (6,615 calls: `build_foes` reads every enemy within 8 every turn), `simulate_fight` 4.7k a call (1,105 calls), `dash_landings` 2.1k, `refresh_occ` 1.9k, `step_tiles` 1.3k, `threat_at` 330, `guard_of` 85 after its cache (mi4's fuel fix).
 - **mi6's `read_slots`** (the design cached once per champion, two raw host calls a slot): 478 a call, contact turns 45.0k, 5.0 run-outs per 1000 contact turns (row mi6).
+
+## Endgame: winning bags and the rivals' last channel (rz20, cm1r and mi4 runs, ranked sets; 10-29 23:50 IST, agent)
+
+Runs: rz20 and cm1r on b13p2, b16p, b17p and bcgp, rz20 and mi4 on b19p and b20, and the ranked sets `rk_atnam` and
+`rk_mff`, decoded; a pinned game played identically by two bots counts once (472 games). Readers:
+`tools/replay/winbag.py`, `tools/replay/deny.py`.
+
+- **Winning bags** (a bag that alone lifts its team's tributed gems to 1000): we held one in 184 games and lost 13 of
+  them (7%); the rivals held one in 289 and lost 9 (3%). From the first round with such a bag to its first tribute
+  start: 18.9 rounds for us (median 13), 14.8 for them (median 9). Most of it is the walk (15.8 move rounds a bag for us,
+  12.0 for them); camp hits 0.61 and champion hits 0.71 rounds a bag for us, 0.36 and 0.45 for them.
+- **Examples.** 00dunes (rz20 on b16p): at 997 tributed our Varg captured 18 gems (a two-turn channel) and hit a camp
+  until the rivals won five rounds later, because the bank stage waits while camps hit us (the `incoming == 0` gate in
+  `bot.cpp`; row wn1). adgato_gemcombat2: at 973 tributed a 42-gem Vendetta paced beside the altar for 16 rounds with
+  two enemies 5-6 tiles away. 02geodes (ranked against atnaM, lost 997-1002): at 997 with empty bags, four of ours
+  cleared a 92-gem group, all of it went to the Heart of Ruin (a 10-turn channel), and the rivals won about 3 rounds
+  before it would have completed. The reward is split among the allies on the tiles, so with four capturers each
+  channel would have been 3 turns.
+- **The rivals' last channel** (237 games lost before r2000): one of ours stood within 4 tiles of the winning carrier
+  during its channel in 34 games (14%), within 6 in 82 (35%), within 8 in 115 (49%); counting the carrier's walk with
+  the winning bag, 53 (22%) within 4. A stun cancels a channel (`docs/MECHANICS.md` section 9), so denying that channel
+  is an untested lever.
+- **Big bags are slow to bank.** Several of our lost winning bags were 120-470 gems (00rows 470, 01corridors 428,
+  00monolith 256, 01fracture and 02uncharted_lands 200): 12-47 turns of channel, against the rivals' final bags of
+  14-66 gems.
