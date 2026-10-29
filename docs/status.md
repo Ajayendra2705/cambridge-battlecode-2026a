@@ -7,9 +7,11 @@
   of the base's, our deaths -0.21 a game, collected 103.5%, tributed 103.6%; wins 30 and 28 of 100.
 - **New local baseline:** main's numbers on dl3's 10 maps are now mi7's run `data/runs/multi-033723` (the same code):
   48 wins, deaths 173, collected 1021. Local bars for a variant on main: wins at least 46, deaths at most 187.
-- **Queued, not started:** `data/run_dl6.sh` now gates `exp/dl6m` (dl6 rebased on mi8; its local check passed) and fresh
-  main runs `mi8g_b19p`, `mi8g_b20p` (40 groups). Start it after the quota resets at 04:46 IST, once `procs.sh` shows no
-  chain.
+- **Running since 04:36:** `data/run_dl6.sh` (started once, in the background): the chain `data/plan_dl6.txt` gates
+  `exp/dl6m` (dl6 rebased on mi8) and fresh main runs `mi8g_b19p`, `mi8g_b20p`, then `exp/td1m` on b19p (50 groups; the
+  first gate used the last 10 of the old window, the rest wait for the 04:46 reset). It resubmits main at its end and
+  writes `data/judge_dl6.txt` and `data/judge_td1m_b19p.txt` (rules in rows dl6 and td1m). td1m (td1's danger rule on
+  mi8) passed its local check: deaths 158 against main's 173.
 - **N tonight:** mx1 (mi8 + dl6 as a pair; superseded by mi8's adoption and dl6m), cap1b (Capture emblem second: local
   deaths 201).
 - **Ladder at 04:00:** rank 68, rating 1957.5 (rank 51 is 2012.2, rank 40 2042.2).
