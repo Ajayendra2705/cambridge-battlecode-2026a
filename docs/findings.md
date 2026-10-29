@@ -1032,6 +1032,61 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
   for t9 is that idle own-half time: what our empty champions wait for (respawns, claims) while the rivals farm the
   middle and our half.
 
+## Where the idle own-half time goes on bcg: a camp hidden in a bush (00quarry), walk churn (5-pick maps), the vault wait (main = rz12 on bcg; 10-29 13:15 IST, t9)
+
+Base `main1029_bcg@bcg` as in the section above (decoded `data/fights/main1029_bcg_bcg`). Scratch readers in
+`data/task9_scratch/`: `whatnext.py` (what an empty-handed champion's still or walking round leads to), `stillnear.py
+--kind` (still rounds by the dead group near, its kind and rounds to its respawn), `walkdirect.py` (rounds of a walk
+that do not bring the champion closer to where it ends), `cmswitch.py` (probe cm0pl's target switches), `adiff.py`
+(A-line activity deltas). Per-map gems: `data/task9_scratch/bcg_base_permap_gems.txt`.
+
+- **The 220 idle rounds split by map** (own half, r300-700, empty-handed champion-rounds a game, us against them):
+  00quarry stands 377 against 133 (258 against 51 next to a dead camp); 00vault stands 137 against 41 (101 against
+  12); 02famine walks 684 against 283 (walks that end at a camp 447 against 157); 02crossing walks 401 against 291
+  (225 against 147); 00expanse walks 764 against 643 (to a camp 530 against 442, to a respawning group 173 against
+  77). So on 00quarry and 00vault we wait, on the 5-pick maps we walk. Collected by r600 (us against them): 00quarry
+  162 against 657, 00vault 282 against 949, 02crossing 598 against 826, 00expanse 321 against 364, 02famine 288
+  against 333: the gem gap by r600 sits on the two waiting maps and 02crossing, not on the two maps that walk most.
+- **00quarry: a gold cluster hidden in a bush.** Each side has a two-cluster gold group, (5,10) and (6,10) on the
+  west side, whose inner cluster stands on a bush tile (the bush column at x=6, rows 10-18). A bush tile is seen only
+  from inside its bush (`docs/MECHANICS.md` section 4), so from (5,10) our bot never sees it. After killing (5,10) a
+  champion stands on that tile in the capture branch (`camp_fight.h`: no live camp of the group in view, so walk onto
+  a spawn tile), while the engine reports the group alive (probe cm0pl's CF lines: `sdk_camp_group_state` 1, the
+  adjacent bush tile not in view, capture state no_capture_available). The capture never starts, the group never
+  comes back, and teammates that target it wait beside it. On the platform base our champions stood on that tile 359
+  champion-rounds a game to r1000 (282 to r600) and stood still within 2 of it 326 more; the rivals 52 and 48 on
+  theirs. That is about one of our four champions parked there all game: the A lines give `capture` 309
+  champion-rounds a game in r250-750 on 00quarry (6 games reaching r750). Locally the same (`data/runs/multi-130554`,
+  6 games against cand1, cp3 and dh3: every long capture on that tile or its mirror (29,10), from round 8 on). Of the
+  70 maps (probe cmbushl, output `data/task9_scratch/bushcamps.txt`) only 00quarry and 02harvest have camps on bush
+  tiles: two gold clusters each (on 02harvest the outer gold of the gold+elk+gold groups at (29-31,29) and its
+  mirror, 15 gems and 130 gold a capture).
+- **5-pick maps: walk churn.** Walks that end at a camp waste 0.206 of their rounds against 0.114 (94 against 45
+  rounds a game, r300-700): 02famine 168 against 67, 02crossing 111 against 45, 00expanse 101 against 43, 00quarry
+  61 against 49, 00vault 30 against 21. Probe cm0pl (a CM line at each target switch; 30 local games on the five maps
+  against cand1, cp3 and dh3, `data/runs/multi-125437`): per game in r300-700, 14.5 switches away from a live target
+  4+ tiles away while walking to it. Of those, 89% come at a periodic re-pick with no state change, 44% go back to
+  the old target within 40 rounds, 41% turn to a target the other way, the new score over the current is 1.27 at
+  the median (quartiles 1.10 and 1.59), a teammate also claims the current target in 51%, and 26% would have held
+  without the futility divisor (`group_invested` counts walking rounds). Another 15.5 switches a game leave a
+  respawning target while walking to it. Locally the waste share is the platform's (0.21), so it can be checked
+  locally. But the r600 gem gap on 02famine and 00expanse is 45 and 43 a game: there we lose champion time more
+  than gems, so a fix for it must be judged on the walk waste and must not cost gems.
+- **00vault: the wait at the 343-gem group.** Our still rounds beside the respawning centre group with 31+ rounds
+  to go: 58 a game in our half against 3.8 (`stillnear.py --kind`); locally 1712 of 2000 champion-rounds in r250-750
+  are `resp_wait` on 00vault. This is the hold described in '00vault: one 343-gem group, a door fight and a hold'
+  (our waiters cannot step off the group; the rivals take it 1.9 times by r1000 against our 0.7).
+- **Target metric (written 13:15 IST, before any variant):** gems collected by r600 on bcgp, paired against the base
+  `main1029_bcg@bcg` (330 a game; the rivals 626), judged on the games a variant changes. First variant cm1, the
+  bush camp: mechanism, 00quarry champion-rounds on our outer gold tile beside the bush (to r1000) 100 a game or fewer
+  (base 359, `data/task9_scratch/quarrytile.py`); target, 00quarry collected by r600 up by 60 a game or more (base
+  162; 10 paired games). Guards (to r1000): all 50 bcgp games, and the pinned b13p2, b16p and b17p against rz12's
+  runs there, our deaths up at most 0.3 a game and collected and tributed at least 97% of the base; 00quarry deaths
+  up at most 0.5 a game. (13:35, before the gate: the other 40 bcgp games were first to be judged alone, as if they
+  replayed unchanged. They do not: a local check with a cheaper test (`multi-132649`) still changed 2 of 4 games on
+  00vault and 02crossing against main's, the fuel chaos of any code change, so they are a fresh draw and are judged
+  with the whole panel. Guard panels hold one 00quarry and one 02harvest game each in b13p2 and b17p, none in b16p.)
+
 ## Against teams 34-60 we lose the group fights (rz12 on the fresh batch b19; 10-29 13:20 IST, t10)
 
 Base `rz12_b19@b19` (main = rz12; Olympus 34, Noobot 37, PENTAKILL 48, Sheeesh--- 55, SquidProxyLovers 60 of the 12:40
