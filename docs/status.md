@@ -1,4 +1,12 @@
-# Status (updated 2026-10-30 02:12 IST)
+# Status (updated 2026-10-30 02:35 IST)
+
+## Update at 02:35 IST 10-30 (session 86)
+
+- **Main is dl4**, resubmitted as version 1170 at the end of the wn3 chain (02:09). No gate or local run is going.
+- **Ladder:** rank 69, rating 1955.3 at 02:30 (rank 51 is 2010.6, rank 60 1971.9). Last 100 ranked games: 57 wins.
+- **wn3 is N** (target missed on b20p: 13.4 to 11.4 rounds, 85% of the base, bar 75%). **pk1 is N** locally: the camp-ring breach for 02the-pack made that map worse (margin -1935 against main's -227 over 6 local games) and raised deaths on the 10 guard maps to 160 (bar 155). Locally main banks on 02the-pack, so the ranked 0-1097 is not its usual result. pk0 was its probe.
+- **Maps lost in every recent ranked game** (`data/ranked100.txt`, 100 games): 01islands 0 of 3 (562-1002, 659-1004, 810-1002), adgato_gemcombat4 0 of 3, 01boss_battle 0 of 2 (0-1103 and 162-1014: the altar guard of two monoliths, a known gap). 01starfish 81-1006 had 24 of our deaths to their 2.
+- Next: the death gap (b19p: our deaths 6.9 a game to r1000 against the rivals' 3.4) is still the largest general gap.
 
 ## Update at 02:12 IST 10-30 (session 86)
 

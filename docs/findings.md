@@ -1198,3 +1198,25 @@ Runs: rz20 and cm1r on b13p2, b16p, b17p and bcgp, rz20 and mi4 on b19p and b20,
 - **Big bags are slow to bank.** Several of our lost winning bags were 120-470 gems (00rows 470, 01corridors 428,
   00monolith 256, 01fracture and 02uncharted_lands 200): 12-47 turns of channel, against the rivals' final bags of
   14-66 gems.
+
+## Denying tribute channels (dl2, sc1, dl4, cd2 on b19p and b20p; 10-30 00:30-02:10 IST, session 86)
+
+Runs `cm3m_b19p`, `dl2_b19p`, `sc1_b19p`, `dl4_b19p`, `cd2_b19p` (b19p, pinned) and `sc1_b20p`, `dl4_b20p` (b20p),
+decoded. Readers: `decoded.py channels`, `tools/replay/deny.py`, `tools/replay/winbag.py`.
+
+- **We almost never act on the rivals' channels.** With one of ours within 4 of a rival channelling 30+ gems (1.2 a
+  game on b19p) we cast on the channeller in 3% of those channels; they cast on ours in 30-34%. Their near channels
+  complete 61-65%, ours 54-59%; our 100+ bags complete 65%, theirs 79%. Our draft (Heart of Ruin, Marcella, Vendetta,
+  Vesper, Varg) has no stun spell: the only stuns are Heart of Ruin's landing dash and Marcella's reset hit. cd2
+  (hit, dash or step in on a channel of 30+ within 3 tiles) raised our share to 6% only.
+- **An altar lock cancels the last channel.** dl2 (one lock bought once the rivals have tributed 600; placed only on a
+  game-winning channel) fired 3 times in 48 local games and turned one loss into a win (02fields against dh3: the
+  rivals' 142-gem channel at 902 cancelled at r913, we won at r917). On b19p its guards held; games lost before r2000
+  33 to 29. Buying the lock at the first shop (dl1) shifted every game's item timing and raised local deaths 15%.
+- **Splitting the winning capture** (sc1) acts only at the capture that completes our 1000; on b19p it matched the
+  base to r1000 and cut the rounds from a winning bag to its tribute start 22.3 to 21.2.
+- **The winning carrier's walk.** wn2 (a winning carrier skips kiting and duels and walks to the altar) cut the rounds
+  from a winning bag to its tribute start 19.8 to 10.8 on b19p, but its camp plus champion hit rounds while holding the
+  bag stayed at half the base's (5 against 10): the carrier is hit while walking.
+- **Ranked close losses** (`data/fights/rk_close`, 4 games of 10-30 00:40-01:10): we held no winning bag in any; one of
+  ours stood within 2 tiles of the rivals' winning carrier in one (adgato_gemcombat4) and within 6 in another.
