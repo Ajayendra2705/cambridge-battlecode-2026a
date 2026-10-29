@@ -195,10 +195,23 @@ int pick_group(int current) {
             bool better_claim = false;
             for (int s = 0; s < MAX_SLOTS && s < static_cast<int>(W.slot_types.size()); ++s)
                 if (s != W.slot && claim_cache[s] == i && claim_value(s) > mine) better_claim = true;
-            if (better_claim || (others > 0 && i != current)) continue;
+            // Except next to it with an enemy near: the better claimant may be far off, and the enemy steps on as we
+            // leave. rz12 on bcg (02crossing): our Vesper killed an elk group from 2 tiles, left it to Marcella's claim 8
+            // tiles off, and the enemy's Vesper, 1 tile away, stood on it the next round and captured. Local probe cm3pl
+            // (bcg maps against cand1, cp3, dh3): 1.2 such departures a game, 0.67 with an enemy in view within 8.
+            bool contested = false;
+            int near_me = 99;
+            for (auto sp : g.spawns) near_me = std::min(near_me, dist(S.me, sp));
+            if (near_me <= 2)
+                for (const auto& e : S.enemies) {
+                    if (W.enemy_spawn.is_set(e.pos)) continue;
+                    for (auto sp : g.spawns) if (dist(e.pos, sp) <= 8) contested = true;
+                    if (contested) break;
+                }
+            if (!contested && (better_claim || (others > 0 && i != current))) continue;
             // At most two share a capture: the two with the fewest items stay, so gold reaches the poorest champions
             // (platform lg1: slot order starved Ryth and Marcella, slots 3 and 4, to half the gold of the others).
-            if (others >= 2) {
+            if (others >= 2 && !contested) {
                 const int mine_w = slot_wealth_now(W.slot);
                 int poorer = 0;
                 for (int s = 0; s < MAX_SLOTS && s < static_cast<int>(W.slot_ids.size()); ++s) {

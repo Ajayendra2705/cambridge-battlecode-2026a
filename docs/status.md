@@ -1,8 +1,15 @@
-# Status (updated 2026-10-29 23:52 IST)
+# Status (updated 2026-10-30 00:08 IST)
+
+## Update at 00:08 IST 10-30 (supersedes the handoff below where they differ)
+
+- **Main is cm3m** (mi5 + cm3's contested-group rule in `targets.h`), adopted and submitted at 00:05 as version 1153; mi5 is `bots/pool/mi5`. cm3m passed its rule on bcgp (row cm3m): steals by the rivals 1.04 to 0.82 a game (bar -0.2), our deaths -0.06, collected 109%, tributed 106%; wins 5 to 11 of 50.
+- **mi6 is N** (row mi6): exhaustions after r30 fell only to 89% of mi5's (bar 70%); guards held.
+- The gate chain ended at 00:01 (no gate runs). Raw b19p: `mi6_b19p` 10/50 (deaths 399 to 234), `td1_b19p` 11/50 (deaths 384 to 244). The judge runner `data/run_judge6.sh` was still decoding both at 00:08 and writes `data/judge_td1.txt` (td1's rule: our deaths -0.3 a game against mi6_b19p; guards: their deaths at least base -0.3, collected and tributed 97%).
+- **If td1 passes:** main is now cm3m, so build the candidate as cm3m plus td1's `knowledge.h` and mi6's `sim.h` (td1 carries mi6's exact fuel change), with a local build check, then adopt and submit.
 
 ## Handoff at 23:52 IST 10-29 (the session ran out of context; the next session continues from here)
 
-- **Main is mi5** (version 1138, submitted). Its guard check passed at 23:46 (row mi5, `data/judge_mi5g.txt`: our deaths -0.13 a game against cm1r over 134 games, collected and tributed 103%).
+- **Main was mi5** (version 1138, submitted). Its guard check passed at 23:46 (row mi5, `data/judge_mi5g.txt`: our deaths -0.13 a game against cm1r over 134 games, collected and tributed 103%).
 - **Ladder at 23:10:** rank 80, rating 1915.6 (1918.9 at 22:58). Last 30 ranked games: 17 wins. Of the 13 losses, 6 were massacres (12-17 of our deaths to their 1-2), 6 were economy losses at even deaths, and 1 was the endgame (02geodes 997-1002).
 - **Still running at 23:52** (check `bash tools/platform/procs.sh`; never start a second copy of a runner):
   - The gate chain `data/run_cm3m.sh` over `data/plan_cm3m.txt` (log `data/chain_cm3m.log`). Done: `mi5_bcgp` (base, 5/50, our gems 27555 against 49584, deaths 194/133), `cm3m_bcgp` (11/50, 31930 against 47342, deaths 196/179) and `mi6_bcgp` (7/50, 30263 against 49148, deaths 204/163). Playing: `mi6_b19p` (from 23:28). Next: `td1_b19p`. At its end the chain resubmits main and the runner decodes the two bcgp runs and writes `data/judge_cm3m.txt` (steals and pooled numbers for cm3m's rule).
