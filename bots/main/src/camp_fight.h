@@ -1,6 +1,35 @@
 // Part of bot.cpp: fight_or_approach: respawn wait, capture, standoff casting, gathering, hitting camps.
 // Unity build: bot.cpp includes this inside its anonymous namespace; not a standalone header.
 
+// Whether a camp of group gi stands on a bush tile. A bush tile is seen only from inside its bush (docs/MECHANICS.md
+// section 4), so such a camp shows only to a champion in that bush. Of the 70 maps only 00quarry and 02harvest have
+// one: a gold cluster on each side. A cheap test, since fight_or_approach runs it on every map.
+bool bush_group(int gi) {
+    static std::vector<signed char> bushy;
+    if (bushy.empty()) {
+        bushy.assign(W.groups.size(), 0);
+        for (size_t i = 0; i < W.groups.size(); ++i)
+            for (auto sp : W.groups[i].spawns) if (cm::bushes().is_set(sp)) bushy[i] = 1;
+    }
+    return bushy[gi] != 0;
+}
+
+// Free bush tiles beside a camp of group gi that stands on a bush tile out of our view (empty if none).
+bitboard bush_lookouts(int gi) {
+    bitboard goals;
+    goals.clear();
+    for (auto sp : W.groups[gi].spawns) {
+        if (!cm::bushes().is_set(sp) || in_view(sp)) continue;
+        for (auto d : DIRS) {
+            if (d.x != 0 && d.y != 0) continue;  // Edge neighbours only: they are surely in the camp's bush.
+            const vec2 t{sp.x + d.x, sp.y + d.y};
+            if (cm::is_in_bounds(t) && cm::bushes().is_set(t) && !W.terrain.is_set(t) && W.camp_owner[t.y * cm::width() + t.x] < 0)
+                goals.set(t);
+        }
+    }
+    return goals;
+}
+
 void fight_or_approach(int gi) {
     auto& me = cambc::self();
     auto& g = W.groups[gi];
@@ -24,6 +53,21 @@ void fight_or_approach(int gi) {
             }
             ACT("resp_wait");
             return;
+        }
+        // Up but no live camp in view: a camp of it may hide in a bush. Walk into that bush, where it shows and is hit.
+        // 00quarry: our champion stood on the dead cluster beside one in the capture branch while the engine said the
+        // group was alive, 359 champion-rounds a game to r1000 (the rivals 52), and the group never came back.
+        if (g.state == 0 && bush_group(gi)) {
+            const bitboard look = bush_lookouts(gi);
+            if (!look.is_empty()) {
+                ACT("bush");
+                // Inside the bush and still nothing in view: leave the group for a while rather than wait on its tiles.
+                if (look.is_set(S.me)) {
+                    if (!blocked_until.empty()) blocked_until[gi] = S.round + 50;
+                    return;
+                }
+                if (step_to_tiles(look)) return;
+            }
         }
         // Dead or unseen: walk onto a spawn tile (captures when the group is down).
         if (g.tiles.is_set(S.me)) { ACT("capture"); use_support_abilities(false); return; }

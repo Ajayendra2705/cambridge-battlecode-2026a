@@ -2,8 +2,7 @@
 // Unity build: bot.cpp includes this inside its anonymous namespace; not a standalone header.
 
 // ---- Enemy sightings ----
-// Where enemies were seen recently; targets near them are risky. The latest group sighting is shared through
-// shared memory bytes 6 (x + 1) and 7 (y + 1).
+// Where enemies were seen recently; targets near them are risky. Each champion keeps its own (not shared).
 struct Sighting { vec2 pos; int round; int count; };
 std::vector<Sighting> sightings;
 int shared_sighting_seen = -1;
@@ -29,16 +28,12 @@ void add_sighting(vec2 pos, int count) {
 
 void record_sightings() {
     std::erase_if(sightings, [](const Sighting& s) { return S.round - s.round > 40; });
-    int first = -1;
-    for (int i = 0; i < static_cast<int>(S.enemies.size()); ++i) {
-        const auto& e = S.enemies[i];
+    for (const auto& e : S.enemies) {
         if (W.enemy_spawn.is_set(e.pos)) continue;
         int count = 0;
         for (const auto& o : S.enemies) if (dist(o.pos, e.pos) <= 4) ++count;
         add_sighting(e.pos, count);
-        if (first < 0) first = i;
     }
-    (void)first;  // Shared memory byte 7 now carries the team focus call instead of a sighting.
 }
 
 // ---- Team focus (shared memory byte 7) ----

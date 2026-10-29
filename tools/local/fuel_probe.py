@@ -36,7 +36,8 @@ for f in sorted(glob.glob(os.path.join(run, '*.repl26a'))):
         TOT[kind]['sum'] += int(kv['mean']) * (n - sp); TOT[kind]['full'] += n - sp
         TOT[kind]['max'] = max(TOT[kind]['max'], int(kv['max']))
         MAPS[mp][kind + ' spill'] += sp; MAPS[mp][kind + ' n'] += n
-        for b, cn, mean, mx in re.findall(r' (\d):(\d+)/(\d+)/(\d+)', head.split(' crowd')[1]):
+        # Probe builds from mi4c on print no "crowd" part.
+        for b, cn, mean, mx in re.findall(r' (\d):(\d+)/(\d+)/(\d+)', head.split(' crowd')[1] if ' crowd' in head else ''):
             c = CR[kind][b]; c[0] += int(cn) * int(mean); c[1] = max(c[1], int(mx)); c[2] += int(cn)
         for name, mean, mx, cnt in re.findall(r' ([a-z ]+?)=(\d+)/(\d+)/(\d+)', stages):
             s = ST[kind][name.strip()]; s[0] += int(mean) * int(cnt); s[1] = max(s[1], int(mx)); s[2] += int(cnt)

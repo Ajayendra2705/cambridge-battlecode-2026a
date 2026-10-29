@@ -1,4 +1,14 @@
-# Status (updated 2026-10-29 04:31 IST)
+# Status (updated 2026-10-29 23:00 IST)
+
+## Evening 10-29 (agent, from 21:00 IST; the user's goal: rating 2000 tonight)
+
+- **Ladder:** rank 86, rating 1902 at 21:30 IST; rank 81, 1908 at 22:20 (2000 is rank 51-52). Ranked plays one group of 5 games every 10 minutes. Since mi5 went live (groups of 22:20, 22:30, 22:40): 8 wins of 15.
+- **Main is mi5** (cm1r + mi4's fight layer: `micro.h`, the per-tile fight evaluator, and the exact damage model of the 10-29 audit), adopted 22:16, version 1138, on mi4's pass on b19p + b20p (our deaths -0.33 a game against rz20, bar -0.3; guards held). Its guard panels against cm1r's runs (b13p2, b16p, b17p; row mi5) were playing at 22:50; raw so far: b13p2 our deaths 248 against cm1r's 249 (45 games), b16p 171 against 198 (50 games), our gems 99% of cm1r's. If a guard fails, `bots/pool/cm1r` goes back to main.
+- **fx1** (mi4's model with rz20's engaging) is N: our deaths +0.00 against the -0.3 target.
+- **Queued in one chain on bcgp** (`data/run_cm3m.sh`, after the mi5 guards): a fresh mi5 base, then **cm3m** (cm3's rule on mi5: a defeated group is kept when contested; target: groups we killed that the rivals capture, -0.2 a game) and **mi6** (mi5 with a cheaper `read_slots`: the same slot data on every read, checked over 91,474 reads, at 478 fuel a call instead of 1084; target: our platform fuel exhaustions after round 30 at most 70% of mi5's). On the platform mi4 ran out of fuel after round 30 about three times as often as rz20 (b19p 1.48 against 0.46 a game). Judge numbers go to `data/judge_cm3m.txt`; mi6's are read by hand from `fuel_events.py` and `pooled.py`.
+- **Seen in ranked (decoded `data/fights/rk_atnam`, atnaM 22:40):** the 14-1 and 12-1 death games are late fights against champions with twice our health (their Vesper 4-5k, Vendetta 3-6k): our healthy champions walk into their reach because the danger tiles count only one-turn bursts of 30% of our health or more, and a tank's burst is below that. Deaths after a melee chase of 3+ rounds are 9% of mi4's platform deaths (0.43 a game, 100 games), so not the main gap.
+- Pinned panels play 50 games in about 4 minutes; the quota (50 groups an hour) and decoding (about 15 minutes a run at 2 jobs) set the pace.
+
 
 ## Summary of the night's tasks (10-28, agent alone; the user's task list)
 

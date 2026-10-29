@@ -6,9 +6,11 @@
 // other side (melee may step and hit, ranged either steps or shoots), casts its best ready spell (stuns first)
 // and hits the weakest living opponent. Cassi and Issac fall together.
 // reach: the farthest distance at which the cast lands (a dash travels 2 and hits radius 1 around its landing: 3).
-struct SimSlot { float dmg = 0; int cd = 99; bool stun = false, reset = false; int reach = 4; };
+// dash, move: a dash and its travel; roots: the spell cannot share a turn with a walk (micro.h reads these).
+struct SimSlot { float dmg = 0; int cd = 99; bool stun = false, reset = false; int reach = 4; bool dash = false, roots = false; int move = 0; };
 struct SimUnit {
-    float hp = 0, str = 0;
+    float hp = 0, str = 0;  // hp: health plus shield; str: basic attack damage (the Heart of Ruin bonus included).
+    float mit = 1.0f;       // Damage this unit takes per point dealt (a Durability emblem: 0.9).
     int range = 1, d = 99;
     std::array<SimSlot, 2> slots{};
     int link = -1;       // Index of the linked body (Cassi/Issac), -1 if none.
@@ -37,8 +39,11 @@ template <class C> std::array<SimSlot, 2> read_slots(const C& c) {
             if (ab.info())
                 std::visit([&](const auto& a) {
                     using T = std::decay_t<decltype(a)>;
+                    s.roots = a.exclusive_with_movement;
                     if constexpr (std::is_same_v<T, cambc::ability_dash>) {
                         s.reach = static_cast<int>(a.range) + std::max(1, static_cast<int>(a.radius));
+                        s.dash = true;
+                        s.move = static_cast<int>(a.range);
                         if (a.duration > 0) s.stun = true;
                     } else if constexpr (requires { a.range; a.radius; }) {
                         s.reach = static_cast<int>(a.range) + static_cast<int>(a.radius);
@@ -111,7 +116,7 @@ SimResult simulate_fight(const std::array<std::vector<SimUnit>, 2>& in, int roun
                     if (cast->stun) t->stunned = true;
                     cast->cd = 9;  // Cooldown 8 after this turn's tick.
                 }
-                t->hp -= dmg;
+                t->hp -= dmg * t->mit;
                 if (t->hp <= 0 && t->link >= 0) u[o][t->link].hp = 0;
             }
         }
@@ -127,16 +132,23 @@ SimResult simulate_fight(const std::array<std::vector<SimUnit>, 2>& in, int roun
     return res;
 }
 
+// Our damage per round: basic attacks and resets plus every damaging cast over its 8-turn cooldown, like a ChampSnap's
+// dps. Cached without the Heart of Ruin bonus, which moves with our health and is applied at each call (damage_amount()
+// includes the bonus as of its call: divided out).
 float my_dps() {
-    if (S.round - cached_dps_round < 10) return cached_dps;
     auto& me = cambc::self();
+    const float scale = damage_scale(me.champion_name(), S.hp, S.max_hp);
+    if (S.round - cached_dps_round < 10) return cached_dps * scale;
     float d = S.str, spell = 0;
     for (const auto& ab : me.abilities()) {
-        if (ab.is_damage() || ab.is_aoe_damage()) d += ab.damage_amount() / 8.0f;
-        // Stuns that also deal damage (Tavi, Ren) report as crowd control, not damage.
-        if (ab.is_damage() || ab.is_aoe_damage() || ab.is_cc()) {
+        // Stuns that also deal damage (Ren, Tavi, Prism) report as crowd control, a landing strike as a dash; only
+        // the spells reach 4 tiles (my_spell_dps).
+        const bool cast = ab.is_damage() || ab.is_aoe_damage() || ab.is_cc();
+        if (cast || ab.is_dash()) {
             try {
-                spell += ab.damage_amount() / 8.0f;
+                const float x = ab.damage_amount() / scale / 8.0f;
+                d += x;
+                if (cast) spell += x;
             } catch (const cambc::error&) {
             }
         }
@@ -145,11 +157,11 @@ float my_dps() {
     cached_dps = d;
     cached_spell_dps = spell;
     cached_dps_round = S.round;
-    return cached_dps;
+    return cached_dps * scale;
 }
 
 // Damage per round from spells alone: they reach 4 tiles, one beyond any camp's attack range.
 float my_spell_dps() {
     my_dps();
-    return cached_spell_dps;
+    return cached_spell_dps * damage_scale(cambc::self().champion_name(), S.hp, S.max_hp);
 }

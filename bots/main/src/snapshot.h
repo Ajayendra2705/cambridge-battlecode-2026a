@@ -65,11 +65,66 @@ float champion_burst(const FightCoef& f, float str, float focus) {
 // Sustained damage per round: basic attacks and resets plus every damaging cast averaged over its cooldown.
 float champion_dps(const FightCoef& f, float str, float focus) { return str * (1.0f + f.resets) + f.per_round * focus; }
 
+// What a hit takes off a champion (rp1 probe, 140 local games on engine 2.0.0, each hit read right before and after it:
+// 26,900 basic attacks and 3,900 casts on champions, exact to rounding): a basic attack deals Strength times the
+// attacker's Heart of Ruin bonus, a cast what its `damage_amount()` says (Focus times modifier, the bonus included); a
+// Durability emblem on the target takes 10% off either, and its shield absorbs what is left before its health. Camps
+// hit a champion holding a Jungle emblem for 30% less, and Durability multiplies with it (0.63 with both).
+// `mit` scales champion damage on the champion, `camp` camp damage. A second emblem of a family adds no passive
+// (MECHANICS). Raw reads: a known teammate's items can be out of our view (au8 audit), and a caught throw costs far
+// more fuel than a call. Fuel: a full read cost 491 a call and the fight turns read every champion within 8 (mi4c
+// probe, 32 local games), so emblems, which change only at a shop, are read every 20 rounds, and the shield each round
+// only for the two champions that cast one (Varg and Heart of Ruin shield themselves; no item gives a shield).
+struct Guard { float mit = 1.0f, camp = 1.0f, shield = 0.0f; };
+Guard guard_of(const cambc::champion& c) {
+    struct Entry { std::uint32_t id; int round, items_round; bool shields; Guard g; };
+    static std::vector<Entry> cache;
+    using it = cambc::item_type;
+    using ct = cambc::champion_type;
+    static const float durable = 1.0f - it::durability_emblem_of_health.passive_magnitude();
+    static const float jungle = 1.0f - it::jungle_emblem_of_health.passive_magnitude();
+    const std::uint32_t id = handle_id(c);
+    const int round = static_cast<int>(cambc::round_number());
+    Entry* e = nullptr;
+    for (auto& x : cache) if (x.id == id) { e = &x; break; }
+    if (e && e->round == round) return e->g;
+    if (!e) {
+        cambc::detail::champion_identity ident{};
+        const bool known = cambc::detail::sdk_champion_identity(id, &ident) == 0;
+        const auto type = static_cast<ct>(ident.type);
+        cache.push_back({id, -1, -100, !known || type == ct::varg || type == ct::heart_of_ruin, Guard{}});
+        e = &cache.back();
+    }
+    if (round - e->items_round >= 20) {
+        cambc::enum_map<it> n;
+        if (cambc::detail::sdk_champion_items(id, n.ptr()) == 0) {
+            e->items_round = round;
+            e->g.mit = 1.0f;
+            if (n[it::durability_emblem_of_strength] + n[it::durability_emblem_of_focus] + n[it::durability_emblem_of_health] > 0)
+                e->g.mit = durable;
+            e->g.camp = e->g.mit;
+            if (n[it::jungle_emblem_of_strength] + n[it::jungle_emblem_of_focus] + n[it::jungle_emblem_of_health] > 0)
+                e->g.camp *= jungle;
+        }
+    }
+    e->g.shield = 0.0f;
+    if (e->shields) {
+        std::array<cambc::detail::buff_data, static_cast<std::size_t>(cambc::buff_types::count)> buffs{};
+        std::uint32_t count = 0;
+        if (cambc::detail::sdk_champion_buff_data(id, buffs.data(), static_cast<std::uint32_t>(buffs.size()), &count) == 0)
+            for (std::uint32_t i = 0; i < count && i < buffs.size(); ++i)
+                if (buffs[i].type == static_cast<std::uint32_t>(cambc::buff_types::shield)) e->g.shield = buffs[i].data.shield.value;
+    }
+    e->round = round;
+    return e->g;
+}
+
 struct Snap {
     int round = 0;
     vec2 me;
     float hp = 0, max_hp = 0, str = 0;
     int range = 1;
+    Guard guard;                  // Our damage factors and shield (build_foes reads them; a shield cast adds to it).
     bitboard visible, occ;        // occ: visible champions, camps and teleports, excluding us.
     std::vector<CampSnap> camps;  // Live visible camps.
     std::vector<CampSnap> phantoms;  // Unseen live camps of recently awake groups: they still hit.

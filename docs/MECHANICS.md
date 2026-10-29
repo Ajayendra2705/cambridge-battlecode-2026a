@@ -82,8 +82,9 @@ How much gem income exists matters more than it looks. The whole board yields be
 | Action | Limit | Notes | Source |
 |---|---|---|---|
 | Move | 1 tile, any of 8 directions | Chebyshev geometry: a diagonal costs 1 | [doc] |
-| Basic attack | 1 | Damage = Strength. Range 1 (melee) or 3 (ranged), Chebyshev | [engine] base_attack_range |
+| Basic attack | 1 | Damage = Strength times the attacker's Heart of Ruin bonus (section 5). Range 1 (melee) or 3 (ranged), Chebyshev | [engine] base_attack_range; damage [measured 2026-10-29, probe rp1] |
 | Ranged move/attack | either one | Ranged champions cannot move and basic-attack in the same turn. Melee can do both. A **dash still works after a ranged basic attack** (`can_move()` is false, the dash lands): shoot, then dash away. **An attack reset restores the shot after a walk**: walk, cast the reset, shoot (`can_attack()` false after the walk, true after the reset). The rivals use it, and a dash before the shot, to hit from 4 and 5 tiles (`docs/findings.md`, "How a shooter shoots from beyond its range") | [doc]; dash [measured 2026-10-25, probe pf19: 40 of 40 Vesper dashes right after her attack succeeded]; walk, reset, shot [measured 2026-10-29, probe rz5p: 63 of 63 Vesper attempts landed, no errors] |
+| Walk and dash | both in one turn, either order | Walk then dash, and dash then walk, are both legal; a melee champion can walk, dash and hit (reach 4). A shooter's walk spends its shot, so walk + dash + shot never happens, but dash then shot does (reach 5) | [measured 2026-10-29, action order in 99 decoded platform games (`data/fights/rz20_b19p_b19p`, `rz20_b20_b20`): walk then dash 758 times for Heart of Ruin, 655 Vesper, 414 Vendetta; dash then walk 11974 Vendetta, 11063 Vesper, 10078 Heart; melee walk, dash, hit 433 Heart, 88 Vendetta; Vesper dash then attack 245, attack then dash 151] |
 | Ability cast | **one successful cast per turn across both slots** | Each slot has its own 8-turn-end cooldown | [engine] cooldown=8 |
 | "Excludes walking" spells | cannot share a turn with a walk, before or after | Engine flag `exclusive_with_movement`. See the champion table for which spells have it | [engine] attrs bit 0 |
 | Attack reset | restores the basic-attack allowance | Lets a melee champion step, hit, reset, hit | [doc] |
@@ -118,7 +119,7 @@ Source: [doc]. Maps run from 30x30 to 100x100 tiles [engine]. All maps are symme
 
 | Item | Rule | Source |
 |---|---|---|
-| Basic attack | Strength damage, needs a visible target in range | [doc] |
+| Basic attack | Strength damage times the attacker's Heart of Ruin bonus, needs a visible target in range | [doc]; bonus [measured 2026-10-29, rp1] |
 | Spells | modifier × Focus (e.g. 2.0 × Focus) | [engine] modifiers |
 | Cooldown | 8 owner turn ends per slot | [engine] |
 | Stun | target loses its next turn (duration 1) | [engine] durations |
@@ -132,7 +133,15 @@ Source: [doc]. Maps run from 30x30 to 100x100 tiles [engine]. All maps are symme
 | Visibility | targets must be visible; you cannot hit what you cannot see | [doc] |
 | Live cooldowns | an enemy's ability cooldowns and `damage_amount(target)` are readable | [measured] |
 
-Stacking: whether reductions multiply or add is [unverified].
+How damage is dealt [measured 2026-10-29, rules probe rp1: 140 local games on all 70 maps against cand1, each hit read right before and after it, `docs/experiments.md` row mi4]:
+
+- A basic attack deals Strength times the attacker's Heart of Ruin bonus (1 + 0.5 x its missing-health fraction; 1 for every other champion).
+- A cast deals what its `damage_amount()` reports: Focus times the spell's modifier times the caster's Heart of Ruin bonus. The bonus is already inside `damage_amount()`; multiplying by it again counts it twice. Heart of Ruin's dash landing has modifier 1.5, Marcella's spell 2.0.
+- A Durability emblem on the target takes 10% off everything: basic attacks, spells and dash landings.
+- A shield absorbs what is left after the reduction, before health.
+- Camp hits on a champion with a Jungle emblem are cut by 30%. With Durability as well the two multiply: 0.9 x 0.7 = 0.63.
+- `damage_amount(target)` is the exact health the target loses: after reductions and shields, capped at its health. The SDK documentation says the same.
+- The engine stores passive magnitudes as fractions (Durability 0.1, Jungle 0.3). A second emblem of the same family adds no second passive [doc].
 
 ## 6. Champions (13; Cassi & Issac are one draft pick)
 
@@ -289,6 +298,7 @@ Bonuses add, so Treasure on Vesper gives +43% (+53% before 2.0.0). [doc] The tie
     - `cm::camp_groups()`: about 40k for one call on boss_battle (31 groups).
     - `cm::width()` and `cm::height()` read a cached struct (free); `bitboard::is_set` and `set` are host calls.
     - `distance_field::compute_to` from a goal set until it reaches our tile: 4.3k at the median, 11k at the 95th percentile, 25k at most over 1,886 calls in 80 games (au10); about 4k within 10 steps, 10k beyond 40, more on some maps (ambush, starvation).
+    - A champion's two ability slots read through the accessors (`abilities()` copy, `cooldown()`, the `is_*` kind checks, `damage_amount()`, `info()` visit): about 1,080 fuel a champion; the same data with the design cached once per champion and the raw `sdk_champion_cooldown` / `sdk_champion_ability_damage` calls: about 480 [measured 2026-10-29, probes mi5c and mi6p, 36 local games each]. A champion's ability design (kind, range, radius, rooting) reads for champions outside our view too, from handles made at game start: 0 throws in 2,000+ reads of enemies within 8 [measured 2026-10-29, probe sp1, 6 games]; the cooldown and the damage need the champion in view.
     - One status line with two floats, two `to_string` strings and five integers through `std::cout`: about 13k fuel. Every 20 rounds per champion it raised the median turn from 38k to 51k fuel on those rounds and made 1.6% of them run out (0.17% of other rounds; au10).
   - A plain C++ loop also costs: fuel counts wasm instructions. 9,000 distance checks (strong camps against every spawn) took 430k.
   - Bulk memory is not free either [measured 2026-10-25, probes pf9-pf10 on big_world, 100x100]: clearing a 10,000-byte array (`vector::assign`) costs about 12.5k fuel (about 1.25 per byte); `bitboard::positions()` on the view plus one store per tile costs about 25 fuel per visible tile (10k a turn); `bitboard::export_linear_buffer` of the whole map (1,250 bytes, packed row-major bits, least significant first) costs about 600.
@@ -354,6 +364,4 @@ Test bots: `bots/probe/mt1` (turn order, camp behaviour) and `bots/probe/mt2` (r
 
 ## 18. Still to verify
 
-| Claim | Why it matters | Test |
-|---|---|---|
-| How damage reductions combine (Durability with the Heart of Ruin bonus, shields) | fight maths | buy items in a long test, hit a dummy, log health loss |
+Nothing open. How damage reductions combine was settled on 10-29 (section 5).

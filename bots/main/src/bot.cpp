@@ -36,6 +36,7 @@ namespace {
 #include "move.h"
 #include "shop.h"
 #include "abilities.h"
+#include "micro.h"
 #include "camps.h"
 #include "enemies.h"
 #include "state.h"
@@ -220,8 +221,9 @@ static void play_turn_core() {
         retreating = false;
     }
 
-    // Damage not explained by camps comes from an enemy, possibly hidden in a bush.
-    const float incoming = camp_incoming(p);
+    // Damage not explained by camps comes from an enemy, possibly hidden in a bush. Our Jungle and Durability emblems
+    // cut the camps' hits (guard_of): unscaled, a camp's 100 hid an enemy's 25 from a Jungle holder.
+    const float incoming = camp_incoming(p) * guard_of(me).camp;
     const float taken = last_round + 1 == round ? last_hp - S.hp : 0.0f;
     // Some champions act only every other round: camps then land several hits per step we take.
     const int turn_gap = round - last_round >= 1 && round - last_round <= 3 ? round - last_round : 1;
@@ -260,7 +262,8 @@ static void play_turn_core() {
                   << " " << static_cast<int>(eburst) << " " << static_cast<int>(S.max_hp) << '\n';
     }
     // Calibration log: predicted champion damage on us this round (enemies in reach, live cooldowns) vs the
-    // champion damage actually taken since our last turn. Analysed by tools/calib.py.
+    // champion damage actually taken since our last turn. Analysed by tools/calib.py. A basic attack carries the Heart
+    // of Ruin bonus (casts report theirs), and our Durability emblem cuts both (guard_of).
     {
         static float prev_pred = -1;
         float pred = 0;
@@ -273,8 +276,9 @@ static void play_turn_core() {
             float spell = 0;
             if (d <= 5)
                 for (const auto& sl : cached_slots(e.ch)) if (sl.cd <= 0) spell = std::max(spell, sl.dmg);
-            pred += (basic ? e.str : 0.0f) + spell;
+            pred += (basic ? e.str * damage_scale(e.type, e.hp, e.max_hp) : 0.0f) + spell;
         }
+        if (pred > 0) pred *= guard_of(me).mit;
         const float actual = std::max(0.0f, taken - incoming);
         if (prev_pred >= 0 && (prev_pred > 0 || actual > 0)) {
             cal_pred += prev_pred, cal_act += actual;
@@ -335,22 +339,26 @@ static void play_turn_core() {
         static std::vector<vec2> pos[2];
         static std::vector<ct> types[2];
         for (int s = 0; s < 2; ++s) side[s].clear(), pos[s].clear(), types[s].clear();
-        auto add = [&](int s, float hp, float str, int range, vec2 at, std::array<SimSlot, 2> slots, ct type) {
+        // A basic attack carries the Heart of Ruin bonus (casts report theirs); a unit's Durability emblem cuts what it
+        // takes and its shield absorbs first (guard_of).
+        auto add = [&](int s, const cambc::champion& c, float hp, float max_hp, float str, int range, vec2 at,
+                       std::array<SimSlot, 2> slots, ct type) {
+            const Guard g = guard_of(c);
             SimUnit x;
-            x.hp = hp, x.str = str, x.range = range, x.slots = slots;
+            x.hp = hp + g.shield, x.mit = g.mit, x.str = str * damage_scale(type, hp, max_hp), x.range = range, x.slots = slots;
             side[s].push_back(x);
             pos[s].push_back(at);
             types[s].push_back(type);
         };
-        add(0, S.hp, S.str, S.range, p, read_slots(cambc::self()), cambc::self().champion_name());
+        add(0, me, S.hp, S.max_hp, S.str, S.range, p, cached_slots(me), me.champion_name());
         for (const auto& a : S.allies)
-            if (dist(p, a.pos) <= 8) add(0, a.hp, a.str, a.range, a.pos, cached_slots(a.ch), a.type);
+            if (dist(p, a.pos) <= 8) add(0, a.ch, a.hp, a.max_hp, a.str, a.range, a.pos, cached_slots(a.ch), a.type);
         for (const auto& e : S.enemies)
             if (dist(p, e.pos) <= 8 && !(W.enemy_spawn.is_set(e.pos) && dist(p, e.pos) > e.range))
                 {
                     auto sl = cached_slots(e.ch);
                     for (auto& x : sl) x.dmg *= cal_f;
-                    add(1, e.hp, e.str * cal_f, e.range, e.pos, sl, e.type);
+                    add(1, e.ch, e.hp, e.max_hp, e.str * cal_f, e.range, e.pos, sl, e.type);
                 }
         for (int s = 0; s < 2; ++s) {
             for (size_t i = 0; i < side[s].size(); ++i) {
@@ -368,13 +376,23 @@ static void play_turn_core() {
             && (res.dead[1] > res.dead[0] || (res.dead[1] == res.dead[0] && res.hp_frac[0] > res.hp_frac[1] + 0.2f))
             && !(sim_me_dies && res.dead[1] == 0);
     }
+    // Kill races from sustained damage per round (engine metadata, the Heart of Ruin bonus included) with each side's
+    // Durability and shield (guard_of): the rounds we need to kill `e`, and the rounds it needs to kill us.
+    static const FightCoef my_coef = read_coef(me);
+    const float mine = champion_dps(my_coef, S.str, me.focus()) * damage_scale(me.champion_name(), S.hp, S.max_hp);
+    const auto race = [&](const ChampSnap& e, float& ours, float& theirs) {
+        const Guard g = guard_of(e.ch), us = guard_of(me);
+        ours = mine > 0 ? (e.hp + g.shield) / (mine * g.mit) : 1e9f;
+        theirs = e.dps > 0 ? (S.hp + us.shield) / (e.dps * us.mit) : 1e9f;
+    };
     // First strike in a lone 1v1 with a close kill race: being caught later means fleeing with free hits taken.
     if (prey && !winning && enemy_count == 1 && S.hp >= S.max_hp * 0.5f) {
-        auto& self = cambc::self();
-        const float mine = champion_dps(read_coef(self), S.str, self.focus());
-        if (mine > 0 && prey->dps > 0 && prey->hp / mine < 1.2f * S.hp / prey->dps) winning = true;
+        float ours, theirs;
+        race(*prey, ours, theirs);
+        if (mine > 0 && prey->dps > 0 && ours < 1.2f * theirs) winning = true;
     }
-    const bool finisher = prey && prey->hp <= ally_dps * 2.5f && S.hp > S.max_hp * 0.3f && !sim_me_dies;
+    const bool finisher = prey && prey->hp + guard_of(prey->ch).shield <= ally_dps * guard_of(prey->ch).mit * 2.5f
+        && S.hp > S.max_hp * 0.3f && !sim_me_dies;
     // A carrier with a full bag is worth a risky fight: the kill takes all of it.
     const bool rich = prey && prey->gems >= 30 && ally_power >= enemy_power * 0.5f && S.hp > S.max_hp * 0.5f && !sim_me_dies;
     // A big bag is worth more banked than any fight: its carrier never engages, and a threat counts as a lost fight (it
@@ -384,46 +402,43 @@ static void play_turn_core() {
     // in 38% of those rounds against 26%. We lose 141 gems per game on death by r1000, they 33 (was 150: boss_battle
     // bags of 1446-3289 lost in fights).
     const bool big_bag = me.gem_count() >= 30;
-    if (!big_bag && prey && (winning || finisher || rich || (at_spawn && dist(p, prey->pos) <= S.range))) {
+    // The per-tile threat (micro.h): what the visible enemies can deal on our tile before our next turn, summed, from
+    // their live cooldowns, doubled under a ready stun. A fight the simulation calls won is still not taken from a tile
+    // where that would kill us, unless the prey is nearly dead.
+    build_foes();
+    const float threat_now = foes.empty() ? 0.0f : threat_at(p);
+    // A prey in reach that our hit kills this turn deals nothing back.
+    const float threat_fight = prey && dist(p, prey->pos) <= S.range && kills(*prey, false, true) ? threat_at(p, prey->pos) : threat_now;
+    if (!big_bag && prey && (winning || finisher || rich || (at_spawn && dist(p, prey->pos) <= S.range))
+        && (threat_fight < 0.9f * S.hp || finisher)) {
         STAGE("fight enemy");
         ACT("pvp");
         call_focus(*prey);
-        // Favourable fight: focus the weakest enemy, spells first; an unused cast raises the shield.
-        use_champion_abilities(*prey);
-        use_support_abilities(true);
+        // Favourable fight: focus the weakest enemy, spells first; an unused cast raises the shield. Not when the kill
+        // needs the attack reset's second hit: the cast goes to the reset.
+        const bool reset_kill = needs_reset_kill(*prey);
+        if (!reset_kill) {
+            use_champion_abilities(*prey);
+            use_support_abilities(true);
+        }
+        // In reach: hit. A shooter under heavy threat then dashes out instead of the reset hit; melee steps to a safer
+        // tile that keeps the prey in reach (micro.h).
         if (dist(S.me, prey->pos) <= S.range) {
-            if (attack_unit(prey->ch)) try_attack_reset_and_hit(prey->ch);
+            if (attack_unit(prey->ch)) {
+                drop_foe(*prey);
+                if (reset_kill || !micro_shot_dash()) try_attack_reset_and_hit(prey->ch);
+            }
+            micro_after_hit(*prey);
             return;
         }
         // A capturer does not chase off its tile: the prey comes into reach or the capture completes (local probe cl0:
         // 2.6 chases per game left a capture).
         if (S.holding) return;
-        // Melee with a dash reaches a prey 3 tiles away this turn: dash next to it and hit (a walk only gets to 2).
-        if (S.range <= 1 && dist(S.me, prey->pos) == 3 && dash_next_to(*prey)) {
-            attack_unit(prey->ch);
-            return;
-        }
-        // Close in through the tile least exposed to enemy bursts; melee strikes after the step.
-        if (me.can_move()) {
-            vec2 best{-1, -1};
-            float best_exposure = 0;
-            int best_d = 99;
-            for (auto d : DIRS) {
-                const vec2 t{S.me.x + d.x, S.me.y + d.y};
-                if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t)) continue;
-                const int pd = dist(t, prey->pos);
-                if (pd >= dist(S.me, prey->pos)) continue;
-                float exposure = 0;
-                for (const auto& e : S.enemies)
-                    if (!W.enemy_spawn.is_set(e.pos) && dist(t, e.pos) <= e.reach) exposure += e.burst;
-                const bool better = best.x < 0 || (pd <= S.range) > (best_d <= S.range)
-                    || ((pd <= S.range) == (best_d <= S.range) && (exposure < best_exposure || (exposure == best_exposure && pd < best_d)));
-                if (better) best = t, best_exposure = exposure, best_d = pd;
-            }
-            if (best.x >= 0 ? safe_move(best) : walk_towards(prey->pos)) {
-                if (dist(S.me, prey->pos) <= S.range && attack_unit(prey->ch)) try_attack_reset_and_hit(prey->ch);
-            }
-        }
+        // Close in on the tile micro.h picks (a hit this turn when the threat there allows, else a safe step closer,
+        // else stay); around a wall, walk the path while little threatens us.
+        if (micro_close_in(*prey) < 0 && threat_now < 0.3f * S.hp && walk_towards(prey->pos) && dist(S.me, prey->pos) <= S.range
+            && attack_unit(prey->ch))
+            try_attack_reset_and_hit(prey->ch);
         return;
     }
     bool threatened = false;
@@ -435,7 +450,10 @@ static void play_turn_core() {
         || in_kill_range || big_bag;
     // Not engaging: from here on, moves keep out of enemy reach.
     S.avoid_danger = !S.danger.empty();
-    if ((threatened && losing) || (hit_by_enemy && !prey)) {
+    // Also leave, while still healthy, a tile where the enemies can take 60% of our health before our next turn: our
+    // deaths start in contacts at high health, and the victim has about one enemy more within 6 at the death than ten
+    // rounds before (findings, "Stuns carry the death gap").
+    if ((threatened && losing) || (hit_by_enemy && !prey) || threat_now >= 0.6f * S.hp) {
         // No rooting spell and no striking dash yet: the branch below may kite or flee, and a rooted champion cannot walk
         // this turn, nor walk home from where the dash lands (the duel casts everything). cw1 on four panels, to r1000
         // (scratch castrisk.py): our Marcella cast her rooting spell while outnumbered or under 40% health 4.2 times per
@@ -445,7 +463,7 @@ static void play_turn_core() {
         const bool healthy = S.hp >= S.max_hp * 0.5f && !hit_by_enemy;
         // A healthy capturer holds its tile too, until a hit lands: stepping away resets the capture, and the enemy
         // then takes the group (b9p, dq3 decoded: 2.6 holds per game left with an enemy 5-8 tiles away, the rivals 1.2).
-        if (healthy && (S.holding || !in_danger(S.me))) {
+        if (healthy && (S.holding || threat_now < 0.25f * S.hp)) {
             // Already out of reach: keep working, staying out of it.
         } else if (healthy && [&] {
                        // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target
@@ -456,17 +474,13 @@ static void play_turn_core() {
                        // r1000 (`tools/replay/contacts.py`): our Vesper began a contact while short 2.11 times per game, the
                        // rivals' 1.10, and 0.97 of ours (theirs 0.34) came right after her shot from 2 tiles; she died within
                        // 10 rounds after 0.28 of her contacts (theirs 0.22).
-                       if (S.range > 1) {
-                           if (!step_out_of_danger()) return false;
-                           reset_shot_after_walk();
-                           return true;
-                       }
+                       if (S.range > 1) return micro_kite(true);
                        const ChampSnap* t = nullptr;
                        for (const auto& e : S.enemies)
                            if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (S.range <= 1 || dist(S.me, e.pos) > e.range)
                                && (!t || e.hp < t->hp)) t = &e;
                        if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
-                       return step_out_of_danger();
+                       return micro_kite(false);
                    }()) {
             ACT("kite");
             return;
@@ -484,18 +498,18 @@ static void play_turn_core() {
             // rounds against 3.5 for fleeing, mostly against chasers near full health.
             bool we_kill_first = false, turn_and_fight = false;
             if (chaser) {
-                auto& self = cambc::self();
-                const float mine = champion_dps(read_coef(self), S.str, self.focus());
-                we_kill_first = mine > 0 && chaser->dps > 0 && chaser->hp / mine < S.hp / chaser->dps;
+                float ours, theirs;
+                race(*chaser, ours, theirs);
+                we_kill_first = mine > 0 && chaser->dps > 0 && ours < theirs;
                 // A melee chaser keeps adjacent and hits every round of the run home; when that run is fatal anyway
                 // and the kill race is close, trading blows beats taking free hits (platform traces: 440 of 538
                 // deaths start as a 1v1 at full health and end fleeing).
-                const bool futile = chaser->range <= 1 && chaser->dps * W.spawn_field.get(p) >= S.hp;
-                turn_and_fight = futile && mine > 0 && chaser->dps > 0 && chaser->hp / mine < 1.5f * S.hp / chaser->dps;
+                const bool futile = chaser->range <= 1 && theirs <= W.spawn_field.get(p);
+                turn_and_fight = futile && mine > 0 && chaser->dps > 0 && ours < 1.5f * theirs;
             }
             if (chaser && near_enemies == 1 && W.spawn_field.get(p) > 4 && (we_kill_first || turn_and_fight)) {
                 ACT("duel");
-                use_champion_abilities(*chaser);
+                if (!needs_reset_kill(*chaser)) use_champion_abilities(*chaser);
                 if (dist(S.me, chaser->pos) <= S.range && attack_unit(chaser->ch)) try_attack_reset_and_hit(chaser->ch);
                 return;
             }
@@ -518,8 +532,8 @@ static void play_turn_core() {
                     if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (!t || e.hp < t->hp)) t = &e;
                 if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
             }
-            if (!at_spawn && flee_dash()) ACT("flee_dash");
-            if (!at_spawn && !flee_bush()) walk_home(true);
+            if (!at_spawn && micro_flee_dash()) ACT("flee_dash");
+            if (!at_spawn && !flee_bush() && !micro_flee_step()) walk_home(true);
             for (const auto& e : S.enemies)
                 if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
             write_claim(-1);
@@ -537,7 +551,14 @@ static void play_turn_core() {
         }
         if (t) {
             call_focus(*t);
-            use_champion_abilities(*t);
+            // Ranged champions also shoot when hurt unless the enemies near can burst them this round: our Vespers hit in
+            // 41% of rounds with an enemy in range, the rivals' 53% (b6 decoded).
+            const auto may_hit = [&] {
+                const int d = dist(S.me, t->pos);
+                return d <= S.range && (S.range <= 1 || S.hp > S.max_hp * 0.5f || d > t->range || !in_kill_range);
+            };
+            // A kill that needs the attack reset's second hit keeps the cast for it.
+            if (!(may_hit() && needs_reset_kill(*t))) use_champion_abilities(*t);
             // Vendetta closes in and hits the same round: with an enemy 2-3 tiles away the rivals' Vendettas hit a
             // champion in 26% of rounds, ours in 16% (b6 decoded). Only when the fight is not lost (we are past the flee
             // branch) and the simulation does not say we die. At 2 tiles a step does it and keeps the cast for the reset
@@ -546,11 +567,7 @@ static void play_turn_core() {
                 if (dist(S.me, t->pos) == 2) step_next_to(*t);
                 else if (dist(S.me, t->pos) == 3) dash_next_to(*t);
             }
-            // Ranged champions also shoot when hurt unless the enemies near can burst them this round: our Vespers hit in
-            // 41% of rounds with an enemy in range, the rivals' 53% (b6 decoded).
-            if (dist(S.me, t->pos) <= S.range && (S.range <= 1 || S.hp > S.max_hp * 0.5f || dist(S.me, t->pos) > t->range || !in_kill_range)
-                && attack_unit(t->ch))
-                try_attack_reset_and_hit(t->ch);
+            if (may_hit() && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
         }
     }
 

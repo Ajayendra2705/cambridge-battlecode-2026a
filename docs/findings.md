@@ -1164,3 +1164,12 @@ rest (no-hit deaths, engagement starts, the size of a shot).
 - **What our poked melee champions are doing** (probe rz21l, local against cand1, cp3, dh3, 48 games): in the turn after
   the poke `flee` 38%, `pvp` 31%, farming activities 16% (`to_capture`, `fight`, `resp_wait`, `approach`, `tribute`,
   `bank`, `retreat`). Local pokes are fewer and less deadly (dead within 10 after 12%).
+
+## Fuel of the fight layer: mi4 and mi5 against rz20 (platform and local probes; 10-29 evening, agent)
+
+Readers: `tools/replay/fuel_events.py` (platform `fuelExhausted` events), `decoded.py fuel`, `tools/local/fuel_probe.py` (stage fuel of a probe build; it now also reads probe builds whose PF lines have no crowd part), and the per-function `FN` lines of the probe builds mi4c, mi5c and mi6p (scratch summer, not kept).
+
+- **Platform:** mi4 ran out of fuel after round 30 1.48 times a game on b19p (rz20 0.46) and 0.60 on b20 (rz20 0.28); with an enemy within 6, 1.1 and 0.6 times a game (rz20 0.2 and 0.2). Deaths within 5 rounds after our own exhaustion stay rare (0.04 a game). The worst map is 01yellow_brick_road (17 contact exhaustions in one b19p game).
+- **Local, six heavy maps** (01yellow-brick-road, 00vault, 00stampede, 02the-pack, 02stalactites, 00swirl against cand1, cp3, dh3; 36 games each): contact turns (an enemy within 6) cost mi5 51.2k on average against rz20's 38.5k and ran out 7.6 times per 1000 against 1.85. By stage: the fight sim +6.8k, the fight branch +4.8k (on 36% of contact turns), `build_foes` +2.7k; the later stages (pick, camp fight, retreat) are where the turns run out.
+- **Per function (mi5c, per game per team):** `pick_group` 16k a call (883 calls, the largest overall, as in main), `read_slots` 1,084 a call (6,615 calls: `build_foes` reads every enemy within 8 every turn), `simulate_fight` 4.7k a call (1,105 calls), `dash_landings` 2.1k, `refresh_occ` 1.9k, `step_tiles` 1.3k, `threat_at` 330, `guard_of` 85 after its cache (mi4's fuel fix).
+- **mi6's `read_slots`** (the design cached once per champion, two raw host calls a slot): 478 a call, contact turns 45.0k, 5.0 run-outs per 1000 contact turns (row mi6).

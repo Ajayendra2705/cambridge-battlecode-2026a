@@ -80,24 +80,11 @@ void shop() {
     auto& me = cambc::self();
     using it = cambc::item_type;
     if (me.gold_count() < 30) return;
-    // Emblems in order (Monster for camp damage, then Durability and Bruiser of health to survive bursts),
-    // then power shards of the main stat.
+    // The Treasure emblem first (gold), then one emblem at a time by its relative gain in fight power (below). The top
+    // teams build their bruisers (Heart of Ruin, Marcella, Ryth, Vesper) Bruiser of the main stat: 5 shards of it plus
+    // one of each other stat (engine 3.0.4; ranks 20-28 build Vesper Bruiser strength 40 : Power strength 31).
     const bool focus = uses_focus(me.champion_name());
-    // Melee bruisers that trade blows (Heart of Ruin, Marcella, Ryth) take Bruiser emblems after the core three: 5
-    // shards of the main stat plus one of each other stat beats Power (6 of the main stat) once health decides
-    // fights. This is how the top-10 teams build them (engine 3.0.4).
-    const auto t = me.champion_name();
-    // Vesper too: ranks 20-28 build her Bruiser strength 40 : Power strength 31.
-    const bool bruiser = t == cambc::champion_type::heart_of_ruin || t == cambc::champion_type::marcella
-        || t == cambc::champion_type::ryth || t == cambc::champion_type::vesper_vale;
-    const std::array<it, 4> plan = focus
-        ? std::array<it, 4>{it::treasure_shard_of_focus, it::durability_shard_of_health, it::jungle_shard_of_health,
-                            bruiser ? it::bruiser_shard_of_focus : it::power_shard_of_focus}
-        : std::array<it, 4>{it::treasure_shard_of_strength, it::durability_shard_of_health, it::jungle_shard_of_health,
-                            bruiser ? it::bruiser_shard_of_strength : it::power_shard_of_strength};
-    // Burst casters stay at range and win fights by damage: straight to power after the Monster emblem.
-    const auto self_type = me.champion_name();
-    const bool burst_caster = self_type == cambc::champion_type::stellar || self_type == cambc::champion_type::tavi;
+    const it treasure = focus ? it::treasure_shard_of_focus : it::treasure_shard_of_strength;
     // After the Treasure emblem, buy for fight power. Fights go roughly by health x damage, so a purchase is worth its
     // relative gain d(health)/health + d(main)/main, judged per emblem (the emblem bonus comes on completion):
     //   Power:      6 growth of the main stat;  Bruiser: 5 of the main stat + 1 health growth;
@@ -116,21 +103,21 @@ void shop() {
     const it jun = it::jungle_shard_of_health;
     for (int guard = 0; guard < 20; ++guard) {
         const auto counts = me.item_count();
-        it choice = plan[0];
-        const auto e0 = plan[0].result();
-        if (!e0 || counts[*e0] == 0) {
-            choice = plan[0];
-        } else {
+        it choice = treasure;
+        const auto e0 = treasure.result();
+        if (e0 && counts[*e0] > 0) {
             bool in_progress = false;
             for (it x : {power, bruis, dur, jun})
                 if (counts[x] > 0 && counts[x] < 5) choice = x, in_progress = true;
             if (!in_progress) {
-                const float hp = std::max(1.0f, me.max_health()), main = std::max(1.0f, focus ? me.focus() : S.str);
+                // Live stats: the snapshot's strength is stale after a purchase in this loop, and while dead.
+                const float str = std::max(1.0f, me.strength());
+                const float hp = std::max(1.0f, me.max_health()), main = std::max(1.0f, focus ? me.focus() : str);
                 const float gh = growth(true), gm = growth(false);
                 const auto ed = dur.result();
                 // Heart of Ruin's basic attack scales with strength (30 + 3.5 per shard), which Bruiser-focus also grows; the
                 // rivals build it Bruiser-focus (b56 r400: 0.32 emblems per champion, Power none).
-                const float v_str = me.champion_name() == cambc::champion_type::heart_of_ruin ? design.strength_growth / std::max(1.0f, S.str) : 0.f;
+                const float v_str = me.champion_name() == cambc::champion_type::heart_of_ruin ? design.strength_growth / str : 0.f;
                 const float v_power = 6.f * gm / main, v_bruis = 5.f * gm / main + gh / hp + v_str;
                 const float v_dur = 5.f * gh / hp + (ed && counts[*ed] == 0 ? 0.11f : 0.f);
                 // Jungle: -30% damage from camps, which deal about half of what we take (0.57 locally, ab2 on four

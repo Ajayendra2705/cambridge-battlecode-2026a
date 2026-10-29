@@ -393,9 +393,14 @@ void use_support_abilities(bool in_combat) {
                 }
                 if (best && !stale() && ab.use(best->ch)) return;
             }
-            // A shield absorbs most when raised before the hits land: any fight, any health.
+            // A shield absorbs most when raised before the hits land: any fight, any health. The tile choices after it
+            // count it (threat_at).
             if (ab.is_shield() && in_combat) {
-                if (!stale() && ab.use()) return;
+                const float amount = ab.shield_amount();
+                if (!stale() && ab.use()) {
+                    S.guard.shield = std::max(S.guard.shield, amount);
+                    return;
+                }
             }
         } catch (const cambc::error&) {
         }

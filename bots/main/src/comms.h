@@ -12,8 +12,8 @@ void write_byte(int i, int v) {
     cambc::shared_memory.write(i, std::span{&b, 1});
 }
 
-// Layout: bytes 0-4 hold six 6-bit claims (group + 1); bytes 5-6 broadcast an observed respawn (group + 1,
-// respawn round low byte); byte 7 holds a coarse enemy sighting ((x / 7 + 1) << 4 | y / 7).
+// Layout: bytes 0-4 hold six 6-bit claims (group + 1: at most 62 groups; the 70 maps have up to 51, rp1 probe); bytes
+// 5-6 broadcast an observed respawn (group + 1, respawn round low byte); byte 7 holds the team focus call (enemies.h).
 std::array<int, MAX_SLOTS> claim_cache{};
 int my_claim = -1;
 std::array<std::byte, 8> shared_cache{};
