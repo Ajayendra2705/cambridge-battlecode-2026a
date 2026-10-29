@@ -992,3 +992,23 @@ Readers: `decoded.py gems`, `tools/replay/bysize.py`, `mapgap.py`, `capkind.py -
   captures a game against our 4.83) and a few more pure clusters (24.3 against 19.0; middle 5.7 against 3.5). 00vault
   (5 of 6, 693 against 410) and 00quarry (6 of 6, 989 against 248) do not reproduce. A change for 02crossing's
   clusters needs a platform panel with that map; the local pool is no test bed for it.
+
+## The gap maps against teams 18-34: half their collection, from the opening (main = rz12 on bcg; 10-29 11:44 IST, t9)
+
+Base run `main1029_bcg@bcg` (live main = rz12, 11:24-11:35 IST; panel row `bcg` in `results/panels/README.md`, pinned
+as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapgap.py`, `decoded.py gems`, `capkind.py
+--map` (output `data/task9_scratch/bcg_base.txt`).
+
+- **2 of 50 won.** Collected 504 against 942 a game, tributed 437 against 827, lost on death 36 against 18, deaths 4.0
+  against 2.8. The gap opens in the opening: collected 171 against 261 by r300, 330 against 626 by r600.
+- **Per map** (10 games each): 00quarry 1 win, 214 against 964 (deaths 6.5 against 2.6); 00vault 1 win, 354 against
+  1074 (5.0 against 4.4); 02crossing 0, 713 against 1062 (6.4 against 3.7); 00expanse 0, 750 against 948 (0.7 against
+  1.0, so a pure economy gap); 02famine 0, 491 against 660 (1.3 against 2.4).
+- **They capture more of almost every kind** (captures a game, us against them): 00quarry wolf+gem 3.4 against 15.9,
+  gem clusters 4.6 against 11.3, gold 24.2 against 31.2; 00vault wolf+gold 1.6 against 7.0, gem 0.9 against 2.6;
+  02crossing elk+gem 8.1 against 12.7, gem clusters 17.2 against 22.4, wolf+gold 1.0 against 6.3 (wolf+gem 13.0
+  against 9.2 is ours); 00expanse wolf+gold 3.7 against 8.0, wolf+gem 3.8 against 7.7, elk+gem+gold 7.7 against 10.3;
+  02famine gold 7.4 against 12.6, wolf+gold 6.7 against 11.0, the golem group 0.5 against 2.9.
+- So against teams this high the collection gap is broad farming speed from the first rounds, not one group kind;
+  on the pinned panels (lower teams) it hid behind maps we win. `bcgp` is the exact base for a change aimed at it;
+  with 2 wins in 50, judge such a change on collected by r300, r600 and r1000 and captures, not on wins.
