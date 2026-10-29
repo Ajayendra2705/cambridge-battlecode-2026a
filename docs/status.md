@@ -1,4 +1,11 @@
-# Status (updated 2026-10-30 01:31 IST)
+# Status (updated 2026-10-30 02:12 IST)
+
+## Update at 02:12 IST 10-30 (session 86)
+
+- **Main is dl4** (version 1164, resubmitted as 1168 by the cd2 chain). Its guard check on b20p held (row dl4: our deaths +0.00, collected 99.2%, tributed 98.0% against sc1).
+- **Ladder:** rank 69, rating 1949.0 at 02:03 (rank 51 is 2013.6). Flat since 01:30.
+- **cd1 and cd2 are N** (rows cd1, cd2): hitting or stunning the rivals' tribute channels. On b19p with one of ours within 4 of their 30+ channel we cast on the channeller in 3% of the channels, they on ours in about 30%; cd2 raised ours to 6% only (target missed), because our only stuns are Heart of Ruin's landing dash and Marcella's reset hit. Guards held and wins were 14 against 11 (not judged).
+- **Running at 02:12:** the gate chain `data/run_wn3.sh` (wn3 = wn2's winning-carrier change on main, b20p against `dl4_b20p@b20p`; target: rounds from a winning bag to its tribute start at most 75% of the base's). It resubmits main at its end and writes `data/judge_wn3.txt`.
 
 ## Update at 01:31 IST 10-30 (session 86)
 
