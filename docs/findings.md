@@ -965,3 +965,24 @@ who dealt the last hit, its length and the largest crew), 88 platform games on m
   own-side golem group with its respawn waited out (the rivals' famine pattern), or crews only for own-side golem groups.
 - **Narrowed to golems, the same (lv6, local on rz12, 11:10):** crews only for golem groups outside the enemy's half raised golem kills from 1.69 to 2.81 a game, but captures fell from 52.5 to 45.1, collected from 1055 to 963 and deaths rose 0.46 a game; the opponents' collected rose where our crews went (00quadrants 973 to 1100, 00split 906 to 1040). Golem crews in `pick_group` are closed. What the rivals do differently on these maps is still open: their golem clears are not crews (55% of their golem-hit rounds are one champion), so the next look is how their lone champion survives a golem (items, abilities, kiting at range) before any variant.
 - **No lone-champion trick either** (scratch `data/task9_scratch/golemhit.py`, rz9 on b13p2, b16p, b17p, 33 games with golems, to r1000): the rivals hit golems 128.9 times a game against our 91.8, all from 1-3 tiles (0-4% from 5 or more), and lose as much health per golem hit (weighted over types about 38 against our 34; their Marcella 42, Vesper 38, Heart of Ruin 37, Vendetta 76, Ryth 57, and the ranged Willow, Tavi and Cassi 4-10 while a teammate holds the golem; ours Marcella 45, Vendetta 45, Vesper 29, Heart of Ruin 29, Varg 17). So the rivals simply spend more champion time on golems on these maps and still out-collect us elsewhere; the golem gap follows from a wider gap there, not from how golems are cleared.
+
+## Where the gap is after rz12: six maps hold all of the collection gap (rz12 on b13p2, b16p, b17p; 10-29 11:18 IST, t9)
+
+Readers: `decoded.py gems`, `tools/replay/bysize.py`, `mapgap.py`, `capkind.py --map`. Runs `rz12_b13p2@b13p2`,
+`rz12_b16p@b16p`, `rz12_b17p@b17p` (145 games, 78 won: 21 of 45, 27 of 50, 30 of 50), to r1000.
+
+- **Overall, us against them:** collected 692 against 706, tributed 563 against 610, lost on death 42 against 38, bag
+  at r1000 87 against 58, deaths 4.2 against 4.6. Collection is level at r300 (182 and 182) and 409 against 426 at r600.
+  By team size the 5-pick maps still trail on two panels (tributed 556 against 651 on b13p2, 572 against 664 on b17p,
+  650 against 649 on b16p), 4-pick maps on b17p (463 against 572); we win 19 of 26 on 3-pick maps.
+- **Six maps carry it** (`mapgap.py`, the rivals' collected minus ours summed over the map's games per panel game):
+  00ribs +11.0 (2 games, 64 against 860, deaths 7.5 against 4.0), 00eight +10.7 (4 games, 512 against 900, deaths 11.0
+  against 5.5), 00vault +8.8 (2, 694 against 1330), 00quarry +6.8 (3, 511 against 839), 02crossing +6.3 (2, 603 against
+  1060), 00crater +5.1 (1, 178 against 923, deaths 17 against 1). These 14 games (10% of the panel) hold about 49 a
+  panel game against a whole gap of about 14: on the other 131 games we collect more than the rivals.
+- **What the rivals take there** (`capkind.py --map`): on 02crossing pure gem clusters (7 gems each), 42.0 captures a
+  game against our 12.5 (their own half 20 against our 12, the middle 13.5 against 0.5, and 8.5 a game in our half
+  against our 0 in theirs) and middle elk+gem groups 8.0 against 3.0; on 00quarry we take more of our own gold (27.3
+  captures, 1563 gold, against 23.0 and 1105) and they the middle wolf+gem groups (10.7 captures, 413 gems, against 6.0
+  and 236); on 00vault the middle gem groups of 140-200 gems a capture (2.5 a game, 0.5 of them in our half, against
+  our 1.5). 00ribs, 00eight and 00crater are the death maps of the sections above.
