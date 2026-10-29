@@ -1021,4 +1021,11 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
   are 64.6 (median 51) against 49.9 (42), with 38.9 moves against 28.6 for the same straight hop (14.4 against 15.0
   tiles); clear and claim times are close (11.9 and 8.2 against 13.7 and 6.8). Trips home are not it (scratch
   `data/task9_scratch/hometrips.py`, to r1000: they make 40.6 a game against our 36.2, 20.8 against 13.6 with a bag;
-  their bag at r1000 is 97 against our 32). Where our extra 10 moves a cycle go is the next look.
+  their bag at r1000 is 97 against our 32).
+- **Where the time goes, r300-700** (scratch `data/task9_scratch/activity.py`, champion-rounds a game, our own half /
+  middle / their half from each side's view, us against them): we move empty 487 / 50 / 30 against 336 / 60 / 75 and
+  stand empty 171 / 41 / 6 against 99 / 44 / 26, so about 220 more rounds a game walk or wait empty-handed in our
+  own half. They spend 238 rounds a game in our half (fights 28, camp hits 32, carrying a bag 75) against our 67 in
+  theirs, and 285 against 203 in the middle; we fight in our own half 29 against their 11.5 in theirs. The next look
+  for t9 is that idle own-half time: what our empty champions wait for (respawns, claims) while the rivals farm the
+  middle and our half.
