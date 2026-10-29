@@ -1,0 +1,40 @@
+diff --git a/bots/pool/rz9/src/targets.h b/bots/exp/lv4/src/targets.h
+index dc3d37a..8eaee82 100644
+--- a/bots/pool/rz9/src/targets.h
++++ b/bots/exp/lv4/src/targets.h
+@@ -101,6 +101,21 @@ double death_mark_weight(const Group& g) {
+     return w;
+ }
+ 
++// Harmless groups not on their side: clusters only (no camp hits back), at most 3 steps farther from our spawn than
++// theirs, so the middle's clusters count too (nm2 on b13p2 + b16p + b17p to r1000: middle pure-cluster captures 1.84 a
++// game against the rivals' 3.69; on b13p2 + b16p their nearest champion stood a median 2 tiles from a middle gem group
++// as it came up, ours 8).
++std::vector<signed char> static_own_clusters;
++bool own_clusters(int gi) {
++    if (static_own_clusters.empty()) static_own_clusters.assign(W.groups.size(), -1);
++    if (static_own_clusters[gi] < 0) {
++        float full = 0;
++        for (float s : W.groups[gi].strength) full += s;
++        static_own_clusters[gi] = W.group_side[gi] <= 3 && full <= 0.0f ? 1 : 0;
++    }
++    return static_own_clusters[gi] == 1;
++}
++
+ int pick_group(int current) {
+     const int round = S.round;
+     if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
+@@ -127,7 +142,12 @@ int pick_group(int current) {
+         if (travel == UNREACH) continue;
+         // Before the first emblem gold is worth a gem: it buys the stats that win the next fights (top-10 teams take
+         // 6.9 gold clusters and 7.0 small groups before round 300, we took 4.0 and 3.5).
+-        const double value = g.gems + g.gold * gold_weight(round);
++        // Harmless gem groups not on their side within 8 steps count their gems 1.6 times: a champion passing by clears and
++        // captures one alone in a few rounds, yet they lost nearly every pick to solo mixed groups whose gold counts (probe
++        // lv2pl, 00road-of-riches r100-1000: of 3285 picks with an own cluster group up within 20, the bound pruned it in
++        // 2643, and the scored ones stood at 0.68 of the pick). Far ones keep their value: boosted at any distance (lv2) the
++        // champions walked home for them and the opponents took the middle (local: tributed margin +6 a game, gold -10%).
++        const double value = g.gems * (travel <= 8 && own_clusters(i) ? 1.6 : 1.0) + g.gold * gold_weight(round);
+         if (value <= 0) continue;
+         const int side = W.group_side[i];
+         const bool safe_speed = side <= 0 || round - enemy_seen_round > 30;

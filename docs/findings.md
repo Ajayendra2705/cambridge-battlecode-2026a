@@ -938,3 +938,28 @@ Five-a-side games to r1000, 76 with our Vesper and 59 with the rivals' (`tools/r
 - **Next to an enemy while short:** with half health or more 3.5 rounds per game against 1.9 (P(dies within 5) 0.120 against 0.036; ours attack in 32% and walk in 35%, theirs 48% and 26%); under half health 2.9 against 0.7 (0.452 against 0.548).
 - **Cause in the code.** The threat branch's kite step (`bot.cpp`) takes a "free" hit, on a target farther away than its own reach, before it steps out of danger. A shooter cannot walk after its shot, and with the reset ready the reset spends the turn's one cast, so the flee dash cannot run either: she stays at 2 tiles and the melee enemy steps in. **rz17** (row) steps out first and shoots with the reset after the walk.
 - **rz14's flee step** (rows rz14, N) cut our Vesper's deaths on the three panels from 0.82 to 0.64 per game, more than any other type's (Marcella 0.76 to 0.62, Varg 1.04 to 0.92).
+
+## Golem groups: nobody starts them alone (rz9, lv3, lv3r on b13p2, b16p, b17p; probe lv5pl; 10-29 10:55 IST, t9)
+
+Reader: `tools/replay/golemcrew.py` (each side's champions hitting a golem per round, and per golem life
+who dealt the last hit, its length and the largest crew), 88 platform games on maps with golems.
+
+- **Level overall, behind on four maps.** Golems killed per game, us against the rivals: 2.11 against 2.35 over the 88
+  games, with the same crew sizes (one champion in 54-55% of golem-hit rounds). By map: 02famine 1.10 against 4.30,
+  00split 2.12 against 3.62, 00quadrants 0.75 against 1.88 (the rivals' largest crew 3.7, ours 2.7; one champion in 63%
+  of our golem-hit rounds, 23% of theirs), 02cuts 3.17 against 3.83, 02uncharted_lands 3.27 against 3.91; we kill more
+  on 00oasis (8.2 against 2.0) and 00dunes (3.6 against 1.2). Ranked, last 300 games: 00quadrants 1 win of 7, 00split
+  2 of 7, the six golem maps 9 of 24.
+- **02famine:** each side has its own gem+gold+golem group (5 camps, 50 gems, 200 gold). The rivals capture theirs 3.86
+  times a game with 411 champion-rounds within 2 of it; we capture ours 1.14 times (69) and farm our home elk group
+  instead (11.9 captures a game, 699 champion-rounds).
+- **Why (probe lv5pl, main's `pick_group`):** a lone champion scores a golem group at about a quarter of what it
+  picks. 00quadrants' two middle gem+golem groups (13 camps, 120 gems, 160 gold each): median 0.21-0.25 alone against a
+  median pick of 1.0-1.07; 02famine's own golem group 0.11-0.14 against 0.44-0.45. With 2-4 teammates already claiming
+  it the score is 0.36-2.06, so the group is taken only after others have committed (in 4-22% of picks, by crews of
+  3-5). `clear_time` charges a lone champion for the heal trips the golem's 120 strength forces.
+- **A crew in the score is not enough (lv5, local):** scoring strong groups with one more teammate and gathering for
+  that crew raised our golem kills from 1.50 to 2.83 a game on 8 golem maps (crews up to 3.07), but group captures fell
+  from 52 to 42 a game, collected from 1029 to 965, and deaths rose 0.9 a game; a golem life lasted 86 rounds against
+  54. A golem crew pays only when it does not stop the rest of the farming. Next to try: one designated farmer for our
+  own-side golem group with its respawn waited out (the rivals' famine pattern), or crews only for own-side golem groups.
