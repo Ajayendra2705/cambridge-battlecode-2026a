@@ -1,4 +1,30 @@
-# Status (updated 2026-10-30 03:40 IST)
+# Status (updated 2026-10-30 04:31 IST)
+
+## Update at 04:31 IST 10-30 (session 86)
+
+- **Main is mi8** (dl4 + the exact fuel cut in `sim.h`), adopted and submitted at 04:28 as version 1175; dl4 is
+  `bots/pool/dl4`. mi8 passed its rule on b19p + b20p against fresh dl4 runs (row mi8): fuel exhaustions after r30 73%
+  of the base's, our deaths -0.21 a game, collected 103.5%, tributed 103.6%; wins 30 and 28 of 100.
+- **New local baseline:** main's numbers on dl3's 10 maps are now mi7's run `data/runs/multi-033723` (the same code):
+  48 wins, deaths 173, collected 1021. Local bars for a variant on main: wins at least 46, deaths at most 187.
+- **Queued, not started:** `data/run_dl6.sh` now gates `exp/dl6m` (dl6 rebased on mi8; its local check passed) and fresh
+  main runs `mi8g_b19p`, `mi8g_b20p` (40 groups). Start it after the quota resets at 04:46 IST, once `procs.sh` shows no
+  chain.
+- **N tonight:** mx1 (mi8 + dl6 as a pair; superseded by mi8's adoption and dl6m), cap1b (Capture emblem second: local
+  deaths 201).
+- **Ladder at 04:00:** rank 68, rating 1957.5 (rank 51 is 2012.2, rank 40 2042.2).
+- **Findings** ("Quiet and loud games ..."): the economy gap sits in loud games (we collect 69% of the rivals'); quiet
+  games are close (92%) but the rivals hold bigger bags late; the largest share of our deaths is pile-ons in fights we
+  are already in (12.1 starts a game, P(death) 0.28, against 6.9 and 0.13).
+
+## Update at 03:57 IST 10-30 (session 86)
+
+- **Running:** `data/run_mi8.sh` (started 03:46): the chain `data/plan_mi8.txt` (mi8 and a fresh main on b19p, then on
+  b20p), then it decodes the four runs and writes `data/judge_mi8.txt` (rule in row mi8). b19p: mi8 12/50, main
+  (`dl4f_b19p`) 11/50. The chain resubmits main at its end.
+- **Queued, not started:** `data/run_dl6.sh` (dl6 and a fresh main on b19p and b20p, 40 groups). The match-group quota
+  (50) was at 30 used at 03:55 and resets at 04:46 IST; start it after that, once `procs.sh` shows no chain.
+- dl5 is N locally (its early lock purchase changes play); dl6 (the same lock rule with dl2's lock only) passed locally.
 
 ## Update at 03:40 IST 10-30 (session 86)
 

@@ -1250,3 +1250,39 @@ only near the end), 197 decoded games to r1000. Readers: `decoded.py risk`, `sta
   noise; every mid-game change tested tonight raised deaths past them (pk1 160, mi7 173, cm4 181, wl1 193). Burning
   about 25k fuel a turn (nop1) gives 38 wins and 260 deaths, and an exact fuel saving (mi7, 0 mismatches) also moved
   deaths to 173: play depends on fuel through the fuel-gated picks and travel fields.
+
+## Quiet and loud games, idle rounds beside a hit teammate, big channels (session 86, 10-30 04:00-04:20 IST)
+
+Runs `dl4_b19p@b19p`, `dl4_b20p@b20p`, `dl4f_b19p@b19p` (main = dl4), 144 decoded games to r1000, split by deaths of both
+sides by r1000: "quiet" at most 4 (43 games), "loud" the rest (101). Splitter: scratch, copies the games into
+`data/fights/q_split/{quiet,loud}` with their index lines; then `decoded.py gems`, `captures`, `sources`, `channels`.
+
+- **Loud games carry the economy gap.** Collected by r1000 537 against 783 (69%), tributed 420 against 651, lost on death
+  77 against 23, deaths 7.8 against 4.7. Captures 34.7 against 43.1: our own half level (23.6 against 24.1), the middle
+  9.5 against 12.5, the other side's half 1.6 against 6.5 (93 gems a game: the rivals take our groups). Won 27 of 101.
+- **Quiet games are close but still lost.** Collected 818 against 885 (92%), tributed 687 against 653, but the rivals
+  hold bags of 224 at r1000 against our 104 (tributed plus bag 791 against 877) and win with late big tributes. Won 10
+  of 43. Lost quiet maps: 02geodes, 01big_world, 00monolith, 00expanse, 00collision (3 each). By camp type the rivals
+  take more elk (303 against 261), wolf (159 against 124) and monolith gems (48 against 23).
+- **Big channels break.** In quiet games our channels over 100 gems complete 59% (1.0 a game, 172 gems started, 87
+  banked), theirs 83%; per channel turn with 1 or 2 enemies within 10 of the altar ours break at 0.015 and 0.026, theirs
+  at 0.006 and 0.007. With an enemy within 4 of our channeller (1.47 a game) 56% complete and an enemy casts on the
+  channeller in 24% (theirs 0.74 a game, 69%, 3%). `bank_gems` (`targets.h`) walks to the nearest altar and channels
+  whatever enemies are near.
+- **Idle beside a hit teammate.** A healthy (60%+) champion with an enemy within 4 and a teammate within 6 hit this
+  round stands still (no hit, no camp hit, same distance) 12.7 rounds a game against 7.7 (scratch reader on
+  `decoded.py assist`'s cases). The difference is rounds with no action at all, off a capture or channel and not
+  parked: 5.1 against 1.6, spread over all five of our types (0.7-1.3 each; the rivals' 0.03-0.43). The rivals field
+  more stuns (Ryth, Tavi, Ren, Prism); the earlier Vesper reader found half of her no-action rounds near enemies had a
+  stun cause.
+- **Item timing moves deaths.** cap1b (Capture as the second emblem, in place of a Power or Bruiser one) raised the
+  local deaths from 141 to 201 on dl3's 10 maps while captures rose 46 to 48 a game: one emblem of fight stats less in
+  the mid-game costs about one death a game against our own pool.
+- **What our champions do when a fight is opened on them** (scratch reader on the `defend` cases: the first hit of an
+  enemy on a healthy (50%+) champion after 15 quiet rounds between the pair, 147 games of dl4 on b19p and b20p, to
+  r1000; per game, P(the victim dies within 10 rounds) in brackets): already in a fight with someone else (a hit
+  either way in the 5 rounds before) 12.14 (0.28) against the rivals' 6.89 (0.13); walking 10.61 (0.16) against 5.76
+  (0.10); hitting a camp 3.24 (0.11) against 1.37 (0.10); standing 2.15 (0.20) against 0.67 (0.15); in or just after a
+  channel 1.23 (0.14) against 0.90 (0.09). By numbers within 6 of the victim: outnumbered 12.10 (0.31) against 5.52
+  (0.17), even 8.99 (0.16) against 4.82 (0.12), ahead 8.30 (0.11) against 5.24 (0.05). The largest share of our deaths
+  is pile-ons: a further enemy joining a fight we are already in.

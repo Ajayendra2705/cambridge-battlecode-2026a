@@ -17,42 +17,79 @@ struct SimUnit {
     bool stunned = false;
 };
 
+// Fuel (mi6, rebased as mi7 and mi8): a slot's design (kind, stun, reset, reach, dash travel, rooting) never changes, so
+// it is read once per champion; each round reads only the cooldown and the cast's damage, through the raw host calls,
+// whose error codes stand in for the accessors' throws. About 480 fuel a champion instead of 1,080 (0 mismatches against
+// the accessor version: mi6 in 91,474 reads, mi7 in 24 games).
+struct SlotDesign {
+    std::uint32_t slot = 0;
+    bool reads_dmg = false, cc = false;  // cc: the kind's stun, before a dash's landing stun is added.
+    SimSlot s{};                         // Everything but the cooldown and the damage.
+};
+std::array<SlotDesign, 2> slot_designs(const cambc::champion& c) {
+    struct Entry { std::uint32_t id; std::array<SlotDesign, 2> d; };
+    static std::vector<Entry> cache;
+    const std::uint32_t id = handle_id(c);
+    for (const auto& e : cache) if (e.id == id) return e.d;
+    std::array<SlotDesign, 2> d{};
+    int i = 0;
+    for (const auto& ab : c.abilities()) {
+        if (i >= 2) break;
+        auto& x = d[i++];
+        x.slot = ab.slot();
+        x.cc = x.s.stun = ab.is_cc();
+        x.s.reset = ab.is_attack_reset();
+        x.reads_dmg = ab.is_damage() || ab.is_aoe_damage() || ab.is_cc() || ab.is_dash();
+        // Reach and stun from the metadata: Heart of Ruin's dash lands within 3 and stuns, but counted as a range-4
+        // spell without stun before.
+        if (ab.info())
+            std::visit([&](const auto& a) {
+                using T = std::decay_t<decltype(a)>;
+                x.s.roots = a.exclusive_with_movement;
+                if constexpr (std::is_same_v<T, cambc::ability_dash>) {
+                    x.s.reach = static_cast<int>(a.range) + std::max(1, static_cast<int>(a.radius));
+                    x.s.dash = true;
+                    x.s.move = static_cast<int>(a.range);
+                    if (a.duration > 0) x.s.stun = true;
+                } else if constexpr (requires { a.range; a.radius; }) {
+                    x.s.reach = static_cast<int>(a.range) + static_cast<int>(a.radius);
+                } else if constexpr (requires { a.range; }) {
+                    x.s.reach = static_cast<int>(a.range);
+                }
+            }, *ab.info());
+    }
+    cache.push_back({id, d});
+    return d;
+}
+
 template <class C> std::array<SimSlot, 2> read_slots(const C& c) {
     std::array<SimSlot, 2> out{};
     // Live cooldowns need the champion in view: out of view every read threw (726 per 80 games in the bf2 audit).
     cambc::detail::champion_info info{};
-    if (cambc::detail::sdk_champion(handle_id(c), &info) != 0 || info.x < 0 || !in_view(vec2{info.x, info.y}))
+    const std::uint32_t id = handle_id(c);
+    if (cambc::detail::sdk_champion(id, &info) != 0 || info.x < 0 || !in_view(vec2{info.x, info.y}))
         return out;
-    int i = 0;
-    for (const auto& ab : c.abilities()) {
-        if (i >= 2) break;
+    std::array<SlotDesign, 2> d;
+    try {
+        d = slot_designs(c);
+    } catch (const cambc::error&) {
+        for (auto& s : out) s.cd = 99;
+        return out;
+    }
+    for (int i = 0; i < 2; ++i) {
         // A turn that ran out of fuel resumes next round, when the champion can have left our view (au14 audit).
         if (stale()) return out;
-        auto& s = out[i++];
-        try {
-            s.cd = ab.cooldown();
-            s.stun = ab.is_cc();
-            s.reset = ab.is_attack_reset();
-            if (ab.is_damage() || ab.is_aoe_damage() || ab.is_cc() || ab.is_dash()) s.dmg = ab.damage_amount();
-            // Reach and stun from the metadata: Heart of Ruin's dash lands within 3 and stuns, but counted as a range-4
-            // spell without stun before.
-            if (ab.info())
-                std::visit([&](const auto& a) {
-                    using T = std::decay_t<decltype(a)>;
-                    s.roots = a.exclusive_with_movement;
-                    if constexpr (std::is_same_v<T, cambc::ability_dash>) {
-                        s.reach = static_cast<int>(a.range) + std::max(1, static_cast<int>(a.radius));
-                        s.dash = true;
-                        s.move = static_cast<int>(a.range);
-                        if (a.duration > 0) s.stun = true;
-                    } else if constexpr (requires { a.range; a.radius; }) {
-                        s.reach = static_cast<int>(a.range) + static_cast<int>(a.radius);
-                    } else if constexpr (requires { a.range; }) {
-                        s.reach = static_cast<int>(a.range);
-                    }
-                }, *ab.info());
-        } catch (const cambc::error&) {
+        auto& s = out[i];
+        std::int32_t cd = 0;
+        float dmg = 0;
+        if (cambc::detail::sdk_champion_cooldown(id, d[i].slot, &cd) != 0) {
             s.cd = 99;
+        } else if (d[i].reads_dmg && cambc::detail::sdk_champion_ability_damage(id, d[i].slot, &dmg) != 0) {
+            s.cd = 99, s.stun = d[i].cc, s.reset = d[i].s.reset;
+        } else {
+            s = d[i].s;
+            s.cd = cd;
+            s.dmg = dmg;
         }
     }
     return out;
