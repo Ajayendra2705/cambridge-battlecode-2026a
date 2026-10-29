@@ -1082,7 +1082,7 @@ that do not bring the champion closer to where it ends), `cmswitch.py` (probe cm
   (base 359, `data/task9_scratch/quarrytile.py`); target, 00quarry collected by r600 up by 60 a game or more (base
   162; 10 paired games). Guards (to r1000): all 50 bcgp games, and the pinned b13p2, b16p and b17p against rz12's
   runs there, our deaths up at most 0.3 a game and collected and tributed at least 97% of the base; 00quarry deaths
-  up at most 0.5 a game. (13:35, before the gate: the other 40 bcgp games were first to be judged alone, as if they
+  up at most 0.5 a game. (13:30, before the gate: the other 40 bcgp games were first to be judged alone, as if they
   replayed unchanged. They do not: a local check with a cheaper test (`multi-132649`) still changed 2 of 4 games on
   00vault and 02crossing against main's, the fuel chaos of any code change, so they are a fresh draw and are judged
   with the whole panel. Guard panels hold one 00quarry and one 02harvest game each in b13p2 and b17p, none in b16p.)

@@ -1,0 +1,59 @@
+diff -ru bots/main/src/bot.cpp bots/exp/cm2/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-29 10:34:16.129543500 +0530
++++ bots/exp/cm2/src/bot.cpp	2026-10-29 13:38:09.545944200 +0530
+@@ -750,7 +750,14 @@
+     write_claim(current_target);
+     if (group_invested.empty()) group_invested.assign(W.groups.size(), 0);
+     for (size_t i = 0; i < W.groups.size(); ++i) if (W.groups[i].state != 0) group_invested[i] = 0;
+-    if (current_target >= 0 && W.groups[current_target].state == 0) ++group_invested[current_target];
++    // Futility counts rounds at the group only (a spawn tile within 4). Counted on the walk there, it cut a far target's
++    // score on the way: 26% of the switches away from a live target 4+ tiles off while walking to it would have held
++    // without it (probe cm0pl, docs/findings.md 'Where the idle own-half time goes on bcg').
++    if (current_target >= 0 && W.groups[current_target].state == 0) {
++        bool near = false;
++        for (auto sp : W.groups[current_target].spawns) if (dist(S.me, sp) <= 4) { near = true; break; }
++        if (near) ++group_invested[current_target];
++    }
+     // A camp fight that starts with little fuel runs out (pf14 probe, rounds 1-40: 28 of 43 that started under 15k,
+     // 15 of 156 at 15-24k, 2 of 11,600 from 25k up): end the turn instead, the next one has the budget (a turn that
+     // runs out loses the next round to its stale rest as well).
+diff -ru bots/main/src/targets.h bots/exp/cm2/src/targets.h
+--- bots/main/src/targets.h	2026-10-29 10:34:16.150616200 +0530
++++ bots/exp/cm2/src/targets.h	2026-10-29 13:38:12.331040800 +0530
+@@ -114,7 +114,8 @@
+     const double bound_dps = std::max({1.0, static_cast<double>(dps), static_cast<double>(my_spell_dps())});
+     const bool solo = solo_phase();
+     double best = 0, current_score = 0;
+-    int best_i = -1, best_n = 1, current_n = 1;
++    int best_i = -1, best_n = 1, current_n = 1, current_travel = 0;
++    bool current_calm = false;
+     // Fuel: big_world and road_of_riches ran out of fuel 200-380 times per game in this loop. Score every group's
+     // upper bound first (travel weight, side and mid factors; the rest only lowers a score), then do the costly
+     // estimate in bound order and skip groups whose bound cannot beat the best so far.
+@@ -257,16 +258,23 @@
+         const double danger = sightings.empty() ? 0.0 : group_danger(g);
+         gd_fuel += gd0 - cambc::fuel_remaining();
+         if (danger > 0) score /= 1.0 + danger * 0.25;
+-        if (!death_marks.empty()) score /= 1.0 + 2.0 * death_mark_weight(g);
++        const double mark = death_marks.empty() ? 0.0 : death_mark_weight(g);
++        if (!death_marks.empty()) score /= 1.0 + 2.0 * mark;
+         // Futility: rounds this champion already spent on the group since it last went down. Platform starvation and
+         // rows: the team worked one contested group for 250-400 rounds per champion while the enemy farmed and took it.
+         if (!group_invested.empty()) score /= 1.0 + group_invested[i] / 150.0;
+         // The altar guard blocks every tribute: its worth grows with the gems we cannot bank, and it takes the team.
+-        if (i == current) current_score = score, current_n = score_n;
++        if (i == current) current_score = score, current_n = score_n, current_travel = travel, current_calm = danger <= 0 && mark <= 0;
+         if (score > best) best = score, best_i = i, best_n = score_n;
+     }
+     TRACE("pick bfs=" << (pf0 - pf1) << " loop=" << (pf1 - cambc::fuel_remaining()) << " danger=" << gd_fuel);
+-    if (current >= 0 && current_score > 0 && current_score * 1.05 >= best) {
++    // On the way to a live target with no enemy or death mark near it, keep it unless another scores half as much
++    // again. Re-picks every 3 rounds turned walkers 14.5 times a game in r300-700 (probe cm0pl), at a median score ratio
++    // of 1.27, 44% of them back to the old target within 40 rounds and 51% when a teammate also claimed it; our walks
++    // to camps waste 21% of their steps against the rivals' 11% (docs/findings.md 'Where the idle own-half time goes
++    // on bcg').
++    const double hold = current >= 0 && W.groups[current].state == 0 && current_travel > 3 && current_calm ? 1.5 : 1.05;
++    if (current >= 0 && current_score > 0 && current_score * hold >= best) {
+         planned_team = current_n;
+         return current;
+     }
