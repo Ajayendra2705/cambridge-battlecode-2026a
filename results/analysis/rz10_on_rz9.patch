@@ -1,0 +1,24 @@
+diff --git a/bots/main/src/shop.h b/bots/exp/rz10/src/shop.h
+index a7a7572..5ce56ae 100644
+--- a/bots/main/src/shop.h
++++ b/bots/exp/rz10/src/shop.h
+@@ -114,12 +114,16 @@ void shop() {
+     const it bruis = focus ? it::bruiser_shard_of_focus : it::bruiser_shard_of_strength;
+     const it dur = it::durability_shard_of_health;
+     const it jun = it::jungle_shard_of_health;
++    // Heart of Ruin takes Durability of health as its first emblem, not Treasure of focus (rz10). It holds the least gold
++    // of our champions and spent the first 150 on focus: 5-pick games of nm2 on b13p2, b16p and b17p, r400, held 229 gold
++    // against the rivals' Heart 347, max health 1192 against 1576, and 1.28 deaths per game to r1000 against 0.73.
++    const it first = t == cambc::champion_type::heart_of_ruin ? dur : plan[0];
+     for (int guard = 0; guard < 20; ++guard) {
+         const auto counts = me.item_count();
+-        it choice = plan[0];
+-        const auto e0 = plan[0].result();
++        it choice = first;
++        const auto e0 = first.result();
+         if (!e0 || counts[*e0] == 0) {
+-            choice = plan[0];
++            choice = first;
+         } else {
+             bool in_progress = false;
+             for (it x : {power, bruis, dur, jun})
