@@ -1031,3 +1031,41 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
   theirs, and 285 against 203 in the middle; we fight in our own half 29 against their 11.5 in theirs. The next look
   for t9 is that idle own-half time: what our empty champions wait for (respawns, claims) while the rivals farm the
   middle and our half.
+
+## Against teams 34-60 we lose the group fights (rz12 on the fresh batch b19; 10-29 13:20 IST, t10)
+
+Base `rz12_b19@b19` (main = rz12; Olympus 34, Noobot 37, PENTAKILL 48, Sheeesh--- 55, SquidProxyLovers 60 of the 12:40
+ladder, we were 72), 50 games, 15 won, decoded in `data/fights/rz12_b19_b19`, to r1000. Readers: `bysize.py`,
+`typedeaths5.py`, `outnumbered.py`, `decoded.py starts`, `fights`, `gold`, `items`, `teamfight.py`, `packreact.py`, and
+two scratch readers (allies within 6 over alive rounds; deaths by the rivals' draft).
+
+- **Five a side is where it goes wrong.** 31 games: 6 won, our deaths 6.61 per game against 2.71, collected 618
+  against 877, tributed 533 against 799; with three a side we are level (deaths 4.09 against 4.55, 6 of 11 won). By
+  type in the 25 games with exactly five a side: Heart of Ruin 1.44 against 0.64, Marcella 1.36 against 0.28,
+  Varg 1.64 against 1.00 (their Varg in 5 games), Vendetta 1.68 against 0.43, Vesper 1.36 against 0.40. Every type dies
+  about three times as often. Deaths come at the same rate all game: 2.2 against 1.1 by r300, 4.2 against 2.2 by r600,
+  6.8 against 3.3 by r1000 (all 50 games).
+- **Not spread out, but beaten together.** Alive rounds off spawn by allies within 6 (none / one / two or more): ours
+  0.31 / 0.26 / 0.42, theirs 0.32 / 0.24 / 0.45. With an enemy champion within 8, our deaths per 100 rounds are 0.79 /
+  0.80 / 0.70, theirs 0.35 / 0.38 / 0.09; on the three pinned panels (rz12, 76 five-a-side games) the same cells are
+  0.71 / 0.50 / 0.26 against 0.57 / 0.37 / 0.29. With three or more enemies within 6 and two or more allies we die 1.92
+  times per game against 0.40 (P(dies within 5) 0.107 against 0.019 per round) and lose 48 / 33 / 39 health per round
+  with two / three / four allies near (theirs 36 / 29 / 13).
+- **They start the fights.** They start 36.3 champion fights a game (outnumbering the target's side in 48%), we 16.8
+  (36%); 4.50 of our 6.8 deaths a game come in fights they started and 1.08 in ours, while 1.04 of their 3.3 come in
+  ours. After a pack sighting (two or more enemies within 8, at most one ally within 6) we die within 15 rounds in 9.7%
+  (theirs 4.4%), stepping towards the pack -0.57 tiles over the next 5 rounds (theirs -0.83) and hitting a champion in
+  0.50 of those rounds (0.74).
+- **They hit harder and together.** By r800 their champion damage is 15285 a game against our 9821 (hits 169 against
+  122), with 31.2 rounds a game where two or more of them hit champions (ours 16.9). Team gold in the five-a-side games
+  is 0.79 of theirs at r300 (1136 against 1449) and r600 (2708 against 3414); a kill pays 100 gold, so their 2.0 extra
+  kills by r600 are about 200 of the 706 gap. Max health at r600: Marcella 1862 against 2536 (they hold 1.71 Bruiser-focus
+  and 1.13 Bruiser-health emblems, ours 1.33 Power-focus and 0.87 Treasure-focus), Heart of Ruin 1476 against 1876,
+  Vendetta 1575 against 1770, Vesper 1914 against 2012.
+- **Drafts with stuns and heals** (scratch, three pinned panels, five a side, rz12): our deaths against a rival Tavi
+  6.16 per game against their 4.79 (19 games), without one 3.75 against 3.67 (57); against a Willow 5.23 against 3.41
+  (22), without 4.00 against 4.17 (54). The fight simulation (`sim.h`) has no heals. Team strength may explain part of
+  this, as the teams that draft them may simply be stronger.
+- **rz19** (main + rz14's flee step, row rz19) on b19: our deaths 6.76 to 6.24 per game (-0.52 +- 0.41), theirs +0.58,
+  collected 97.8%, tributed 97.9%, the same 15 wins; N by its mechanism bar. rz20 (the flee step plus rz17's shooter
+  step) gates on the fresh batch b20 with a target-only rule.
