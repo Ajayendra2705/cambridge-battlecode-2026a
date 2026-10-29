@@ -271,7 +271,10 @@ bool flee_bush() {
     return false;
 }
 // Stun the most dangerous enemy in reach first, then burst the focus target. Without may_root, spells that root the
-// caster are skipped: the turn still has to walk.
+// caster are skipped: the turn still has to walk. So is Heart of Ruin's striking dash, which lands next to the target,
+// among the enemies the turn then walks away from (nm2 on b13p2, b16p and b17p, 5-champion maps: our Heart dashed, hit
+// and walked on in the same turn 2.8 times per game and died within 10 rounds after 28% of those; the rivals' Heart
+// 0.2 times).
 bool use_champion_abilities(const ChampSnap& target, bool may_root = true) {
     if (stale()) return false;
     auto& me = cambc::self();
@@ -293,7 +296,7 @@ bool use_champion_abilities(const ChampSnap& target, bool may_root = true) {
         } catch (const cambc::error&) {
         }
     }
-    if (!S.holding && strike_dash({target.pos}, false)) return true;  // A capturer keeps its tile.
+    if (may_root && !S.holding && strike_dash({target.pos}, false)) return true;  // A capturer keeps its tile.
     for (const auto& ab : me.abilities()) {
         if (!castable_now(ab) || (!may_root && roots(ab))) continue;
         try {

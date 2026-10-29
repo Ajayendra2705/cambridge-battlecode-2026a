@@ -436,10 +436,11 @@ static void play_turn_core() {
     // Not engaging: from here on, moves keep out of enemy reach.
     S.avoid_danger = !S.danger.empty();
     if ((threatened && losing) || (hit_by_enemy && !prey)) {
-        // No rooting spell yet: the branch below may kite or flee, and a rooted champion cannot walk this turn (the duel
-        // casts everything). cw1 on four panels, to r1000 (scratch castrisk.py): our Marcella cast her rooting spell while
-        // outnumbered or under 40% health 4.2 times per game, and died within 10 rounds after 23% of those casts against
-        // 16% of her other rounds there; the rivals' Marcella 2.3 times, 11% against 12%.
+        // No rooting spell and no striking dash yet: the branch below may kite or flee, and a rooted champion cannot walk
+        // this turn, nor walk home from where the dash lands (the duel casts everything). cw1 on four panels, to r1000
+        // (scratch castrisk.py): our Marcella cast her rooting spell while outnumbered or under 40% health 4.2 times per
+        // game, and died within 10 rounds after 23% of those casts against 16% of her other rounds there; the rivals'
+        // Marcella 2.3 times, 11% against 12%.
         if (prey) use_champion_abilities(*prey, false);
         const bool healthy = S.hp >= S.max_hp * 0.5f && !hit_by_enemy;
         // A healthy capturer holds its tile too, until a hit lands: stepping away resets the capture, and the enemy
