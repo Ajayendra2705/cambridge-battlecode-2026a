@@ -1,0 +1,89 @@
+diff --git a/bots/main/src/targets.h b/bots/exp/lv6/src/targets.h
+index dc3d37a..b278b97 100644
+--- a/bots/main/src/targets.h
++++ b/bots/exp/lv6/src/targets.h
+@@ -101,6 +101,25 @@ double death_mark_weight(const Group& g) {
+     return w;
+ }
+ 
++// Steps (straight) to group i's spawns from the nearest teammate not heading there, or UNREACH.
++int free_mate_dist(int i) {
++    int best = UNREACH;
++    for (const auto& a : S.allies) {
++        const auto id = handle_id(a.ch);
++        int s = 0;
++        while (s < W.team_count && W.slot_ids[s] != id) ++s;
++        if (s >= W.team_count || s >= MAX_SLOTS || s == W.slot || claim_cache[s] == i) continue;
++        for (auto sp : W.groups[i].spawns) best = std::min(best, dist(a.pos, sp));
++    }
++    return best;
++}
++
++// A group with a golem (its hardest camp 100-149 strength) outside the enemy's half: cleared by a crew.
++bool golem_crew_group(int i) {
++    const float h = W.groups[i].hardest();
++    return W.group_side[i] <= 0 && h >= 100.0f && h < 150.0f;
++}
++
+ int pick_group(int current) {
+     const int round = S.round;
+     if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
+@@ -138,7 +157,8 @@ int pick_group(int current) {
+         if (side > 0) mult /= 1.0 + std::min(side, 20) / 20.0;
+         // Clearing takes at least its health over our damage (champion-rounds), except a defeated group: capture only.
+         // With the sqrt(n) share below, n champions clear in a time that weighs hp / (sqrt(n) dps) at least.
+-        const int nb = round < 40 ? 1 : claimants(i) + 1;
++        // A golem group is also scored with one teammate more than head there (below).
++        const int nb = round < 40 ? 1 : claimants(i) + (g.state != 1 && golem_crew_group(i) ? 2 : 1);
+         const double fight = g.state == 1 ? 0.0 : g.hp_left() / (bound_dps * std::sqrt(static_cast<double>(nb)));
+         cands.push_back({value * mult / ((safe_speed ? 1.0 : 0.7) * travel + fight + 5.0), value, i, travel});
+     }
+@@ -228,10 +248,23 @@ int pick_group(int current) {
+             // for. On 00crater all five picked our top wolves at r1, then four left for the middle elk at r4-r7 once
+             // teammates' claims cut the wolves' share, and the rivals' five, back from their own wolves, caught them on it.
+             const int mates = round < 40 ? 0 : others;
+-            for (int n : {mates + 1}) {
++            // A golem group outside the enemy's half is also scored as cleared with one more teammate, the nearest one
++            // not heading here, after waiting for it to arrive; fight_or_approach then gathers until that crew is there.
++            // Alone a champion scored such groups at a quarter of its pick (probe lv5pl: 00quadrants 0.21-0.25 against
++            // 1.0-1.07, 02famine 0.11-0.14 against 0.44), so they were taken only once 3+ teammates had committed; the
++            // rivals kill 4.30 golems a game on 02famine (we 1.10), 1.88 on 00quadrants (0.75). lv5 did this for every
++            // group of strength 100+ (elk pairs too) and lost 10 captures a game.
++            int extra_wait = -1;
++            if (round >= 40 && golem_crew_group(i) && alive_allies() > mates + 1) {
++                const int d = free_mate_dist(i);
++                if (d != UNREACH && d <= travel + 20) extra_wait = std::max(4, d - travel);
++            }
++            for (int n : {mates + 1, mates + 2}) {
++                if (n > mates + 1 && extra_wait < 0) break;
+                 double time = travel * (safe_speed ? 1.0 : 0.7) + clear_time(cs, n, dps, S.max_hp, home == UNREACH ? 30 : home);
+-                if (g.state == 2) time += wait_w * std::max(0, g.respawn_round - round - travel);
+-                time += (n - mates - 1) * 4;  // Waiting for extra teammates.
++                const int respawn_left = g.state == 2 ? std::max(0, g.respawn_round - round - travel) : 0;
++                time += wait_w * respawn_left;
++                if (n > mates + 1) time += std::max(0, extra_wait - respawn_left);  // Waiting for the extra teammate.
+                 // One champion then captures (5 rounds), walks to an altar and tributes.
+                 // A joiner's share counts sqrt(n), not n: champions stay near each other on groups (00crater after
+                 // r150: 0.80 teammates within 6 against the rivals' 1.31, and 62% of the middle camps we wake are lost
+diff --git a/bots/main/src/camp_fight.h b/bots/exp/lv6/src/camp_fight.h
+index cbd28cb..a46051a 100644
+--- a/bots/main/src/camp_fight.h
++++ b/bots/exp/lv6/src/camp_fight.h
+@@ -70,12 +70,15 @@ void fight_or_approach(int gi) {
+     // group life. The count used to restart after every approach step, so a champion waited 25 rounds per step
+     // (platform 00monolith: 10 idle rounds per 100 alive off camps and enemies, the rivals 3.6).
+     if (gi != big_wait_group || g.damaged()) big_wait = 0, big_wait_group = gi;
+-    if (!g.damaged() && g.strength_left() >= 200) {
++    // A golem group picked for a crew (pick_group's planned team) waits the same way for that crew.
++    const int crew = g.strength_left() >= 200 ? std::min(4, alive_allies())
++                   : golem_crew_group(gi) ? std::min(planned_team, alive_allies()) : 1;
++    if (!g.damaged() && crew > 1) {
+         int present = 1;
+         for (const auto& a : S.allies)
+             for (const auto* c : live)
+                 if (dist(a.pos, c->pos) <= 6) { ++present; break; }
+-        if (present < std::min(4, alive_allies()) && big_wait < 25) {
++        if (present < crew && big_wait < 25) {
+             ++big_wait;
+             if (group_field(g).get(S.me) > 5) step_field(group_field(g), g.tiles, 5);
+             ACT("gather");
