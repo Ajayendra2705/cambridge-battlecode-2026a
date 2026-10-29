@@ -1,0 +1,29 @@
+diff -ru bots/exp/rz14/src/bot.cpp bots/exp/rz15/src/bot.cpp
+--- bots/exp/rz14/src/bot.cpp	2026-10-29 09:27:32.418121600 +0530
++++ bots/exp/rz15/src/bot.cpp	2026-10-29 09:47:27.806395400 +0530
+@@ -426,9 +426,15 @@
+         }
+         return;
+     }
++    // Two or more short (enemies within 6 against us and our allies within 5): step back from 4 tiles instead of working
++    // on beside them. With three or more enemies within 6 and at most one ally, at 3-4 tiles from the nearest the rivals
++    // step away in 45-46% of the rounds, ours in 31-32% (sideways 20-23% against 12-13%); ours then stand next to an
++    // enemy in such a spot 19.1 rounds per game against 10.2, and die within 5 rounds after 0.279 of those rounds (0.180;
++    // rz9 on b13p2, b16p, b17p, five a side, `tools/replay/outnumbered.py`).
++    const bool swarmed = enemy_count >= ally_count + 2;
+     bool threatened = false;
+     for (const auto& e : S.enemies)
+-        if (dist(p, e.pos) <= std::max(e.range + 2, e.dps > e.str * 1.15f ? 6 : 0) && !W.enemy_spawn.is_set(e.pos))
++        if (dist(p, e.pos) <= std::max({e.range + 2, swarmed ? 4 : 0, e.dps > e.str * 1.15f ? 6 : 0}) && !W.enemy_spawn.is_set(e.pos))
+             threatened = true;
+     const bool hit_by_enemy = taken > incoming + 1.0f;
+     const bool losing = (sim_me_dies && !winning) || enemy_count > ally_count || enemy_power > ally_power * 0.9f || S.hp < S.max_hp * 0.4f
+@@ -445,7 +451,7 @@
+         const bool healthy = S.hp >= S.max_hp * 0.5f && !hit_by_enemy;
+         // A healthy capturer holds its tile too, until a hit lands: stepping away resets the capture, and the enemy
+         // then takes the group (b9p, dq3 decoded: 2.6 holds per game left with an enemy 5-8 tiles away, the rivals 1.2).
+-        if (healthy && (S.holding || !in_danger(S.me))) {
++        if (healthy && (S.holding || (!in_danger(S.me) && !swarmed))) {
+             // Already out of reach: keep working, staying out of it.
+         } else if (healthy && [&] {
+                        // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target

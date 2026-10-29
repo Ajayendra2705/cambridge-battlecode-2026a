@@ -1,0 +1,61 @@
+diff -ru bots/main/src/bot.cpp bots/exp/rz14/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-29 10:34:16.129543500 +0530
++++ bots/exp/rz14/src/bot.cpp	2026-10-29 09:27:32.418121600 +0530
+@@ -509,7 +509,7 @@
+                 if (t && attack_unit(t->ch)) try_attack_reset_and_hit(t->ch);
+             }
+             if (!at_spawn && flee_dash()) ACT("flee_dash");
+-            if (!at_spawn && !flee_bush()) walk_home();
++            if (!at_spawn && !flee_bush()) walk_home(true);
+             for (const auto& e : S.enemies)
+                 if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
+             write_claim(-1);
+diff -ru bots/main/src/move.h bots/exp/rz14/src/move.h
+--- bots/main/src/move.h	2026-10-29 10:34:16.143610600 +0530
++++ bots/exp/rz14/src/move.h	2026-10-29 09:36:05.230820800 +0530
+@@ -325,7 +325,7 @@
+ int enemy_seen_at = -100;  // Mirrors enemy_seen_round, which is declared later.
+ 
+ // Recall is cancelled by damage, so never start it with an enemy close by: walk instead (top teams do this).
+-bool walk_home();
++bool walk_home(bool away = false);
+ void go_home() {
+     if (stale()) return;
+     bool exposed = S.round - enemy_seen_at <= 3;
+@@ -334,9 +334,14 @@
+     if (!walk_home() && !exposed && !stale()) cambc::self().recall();  // The walk's search can run the turn out of fuel.
+ }
+ 
++int nearest_enemy_dist(vec2 t);
+ // Step toward spawn without crossing an awake camp's reach (a monolith beside the path kept hitting us).
+-// Returns false when the only way down enters a reach and we stay put.
+-bool walk_home() {
++// Returns false when the only way down enters a reach and we stay put. Fleeing (`away`), take the step down that ends
++// farthest from the enemy champions: the closest step to spawn kept the nearest enemy's distance in 29% of the flee
++// rounds with three or more enemies within 6 and at most one ally (probe rz11l). In such rounds ours moved sideways in
++// 22-23% (the rivals 12-13%), stood 2.4-2.6 tiles from the nearest enemy (2.9-3.0) and lost 63-84 health per round
++// (44-50; rz9 on b13p2, b16p, b17p, `tools/replay/outnumbered.py`).
++bool walk_home(bool away) {
+     bitboard reach;
+     reach.clear();
+     for (const auto& c : S.camps) if (c.awake) reach.draw_chebyshev(c.pos, static_cast<float>(c.range));
+@@ -344,13 +349,17 @@
+     if (!reach.is_set(S.me) && cambc::self().can_move()) {
+         const int here = W.spawn_field.get(S.me);
+         vec2 best = S.me;
+-        int best_v = here;
++        int best_v = here, best_gap = -1;
+         for (auto d : DIRS) {
+             vec2 t{S.me.x + d.x, S.me.y + d.y};
+             if (!cm::is_in_bounds(t) || W.terrain.is_set(t) || S.occ.is_set(t)) continue;
+             const int v = W.spawn_field.get(t);
+-            if (v < best_v) best_v = v, best = t;
++            if (v >= here) continue;
++            const int gap = away ? std::min(nearest_enemy_dist(t), 7) : 0;
++            if (gap > best_gap || (gap == best_gap && v < best_v)) best_gap = gap, best_v = v, best = t;
+         }
++        // The step chosen above is only checked against the reach: step_field below takes its own way down.
++        if (away && best != S.me && !reach.is_set(best) && safe_move(best)) return true;
+         if (best != S.me && reach.is_set(best)) {
+             // Detour: any free downhill neighbour outside reach, else wait here (recall when nobody is near).
+             best = S.me;
