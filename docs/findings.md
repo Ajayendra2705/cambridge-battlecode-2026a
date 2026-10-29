@@ -1015,3 +1015,9 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
 - **Fights there** (`decoded.py starts`, to r1000): they start 24.9 champion fights a game, we 14.5; of our 4.0 deaths
   2.84 come in fights they start (theirs in fights we start 0.98). So on these maps the death gap is the fights the
   rivals start (t10's factor, 'Deaths in fights the rivals start'), beside the farming gap.
+- **The opening** (`decoded.py captures --round 300`): by r300 we capture 14.1 groups a game (own half 12.4 for 106
+  gems, middle 1.2 for 44, their half 0.5 for 12), they 18.6 (own 14.2 for 92, middle 2.7 for 107, ours 1.7 for 13):
+  the middle is 63 of the 90 gems they lead by at r300. Per capture, a capturer's rounds since its previous capture
+  are 64.6 (median 51) against 49.9 (42), with 38.9 moves against 28.6 for the same straight hop (14.4 against 15.0
+  tiles); clear and claim times are close (11.9 and 8.2 against 13.7 and 6.8). Their bag at r1000 is 97 against our
+  32, so a likely part of the longer cycle is trips home; that is a question for the next look, not yet measured.
