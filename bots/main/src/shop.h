@@ -79,6 +79,14 @@ int capture_priority(cambc::champion_type t) {
 void shop() {
     auto& me = cambc::self();
     using it = cambc::item_type;
+    // One altar lock (10 gold) once the rivals have tributed 600 gems: before that no channel of theirs can win the game
+    // (dl2; dl1 bought it at the first shop, and its local deaths rose to 115% of main's).
+    try {
+        if (cambc::global_submitted_gems(team::enemy) >= 600 && me.gold_count() >= 10
+            && me.consumables()[cambc::consumable_type::altar_lock].count() == 0)
+            me.buy(cambc::consumable_type::altar_lock);
+    } catch (const cambc::error&) {
+    }
     if (me.gold_count() < 30) return;
     // The Treasure emblem first (gold), then one emblem at a time by its relative gain in fight power (below). The top
     // teams build their bruisers (Heart of Ruin, Marcella, Ryth, Vesper) Bruiser of the main stat: 5 shards of it plus

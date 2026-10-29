@@ -1,4 +1,14 @@
-# Status (updated 2026-10-30 00:08 IST)
+# Status (updated 2026-10-30 00:55 IST)
+
+## Update at 00:55 IST 10-30 (session 86; supersedes the sections below where they differ)
+
+- **Main is dl2** (cm3m + an altar lock against the rivals' game-winning tribute; `abilities.h`, `bot.cpp`, `shop.h`), adopted and submitted at 00:52 as version 1158; cm3m is `bots/pool/cm3m`. dl2 passed its guard rule on b19p against a same-session cm3m base (row dl2): our deaths -0.23 a game, collected 102%, tributed 101%; games lost before r2000 33 to 29.
+- **td1 is N** (row td1): our deaths -0.18 +- 0.40 a game against mi6 on b19p (bar -0.3); guards held.
+- **wn2 is N** (row wn2, the successor of wn1): on b19p the hit rounds while holding a winning bag fell 10 to 5 (bar 30%), the rounds from a winning bag to its tribute start 19.8 to 10.8, guards held. The remaining hits land while the carrier walks. **wd1** (dl2 + wn2) passed its local check but is not adopted, since wn2 failed.
+- **dl1 is N** locally (deaths 115% of main's, bar 110%; the lock was bought at the first shop and shifted every game's item timing); dl2 buys it only once the rivals reach 600.
+- A second session (cambridge-battlecode-45, the one that wrote the 00:08 update) stood down at 00:20 so that only one session gates; it runs nothing.
+- Ranked, the 30 games before 00:30: 15 wins. Several losses were close endgames (00ambush 961-1009, 01islands 810-1002).
+- Next: capture splitting in the endgame (lever c of the handoff: a big winning capture split among the allies on the tiles keeps each channel short; needs `pick_group` to send allies onto a teammate's held group, `targets.h`), and the death gap on b19p (our deaths 6.9 a game to r1000 against the rivals' 3.4).
 
 ## Update at 00:08 IST 10-30 (supersedes the handoff below where they differ)
 

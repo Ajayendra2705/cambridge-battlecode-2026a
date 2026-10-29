@@ -117,6 +117,42 @@ bool dash_next_to(const ChampSnap& target) {
     return false;
 }
 
+// Altar locks (10 gold): a lock cancels the enemy tribute channels at its altar and blocks enemy tributes there until
+// broken with 5 hits; our own team still tributes, and a lock also cancels a channel at an altar holding the rivals'
+// own lock (MECHANICS section 9). dl1 spends one only on a channel that wins the game for the rivals (their tributed
+// gems plus the carrier's bag reach 1000): in 35% of the platform games we lost before r2000 one of ours stood within
+// 6 tiles of that channel's carrier (findings, "Endgame: winning bags and the rivals' last channel"). Within 2 tiles
+// of its altar the lock goes down at once; farther away the altar comes back in `to` for a walk.
+int lock_fail = 0;
+bool deny_channel(vec2& to) {
+    if (lock_fail > 5) return false;
+    auto& me = cambc::self();
+    try {
+        const auto& lk = me.consumables()[cambc::consumable_type::altar_lock];
+        if (lk.count() == 0) return false;
+        const int e_sub = static_cast<int>(cambc::global_submitted_gems(team::enemy));
+        for (const auto& e : S.enemies) {
+            if (e_sub + static_cast<int>(e.gems) < cambc::constants::winning_gems) continue;
+            bool channel = false;
+            try { channel = e.ch.is_submitting_gems(); } catch (const cambc::error&) {}
+            if (!channel) continue;
+            for (auto a : W.altars) {
+                if (dist(e.pos, a) > 1) continue;
+                if (cambc::vision::has_altar_lock(a) && !cambc::vision::altar_lock_at(a).is_enemy()) continue;
+                if (dist(S.me, a) <= 2) {
+                    if (!stale()) lk.use(a);
+                    return false;
+                }
+                to = a;
+                return true;
+            }
+        }
+    } catch (const cambc::error&) {
+        ++lock_fail;
+    }
+    return false;
+}
+
 // Keep the free ward a couple of tiles towards the enemy approach so attackers show up before they reach us.
 void place_ward_forward() {
     if (stale()) return;

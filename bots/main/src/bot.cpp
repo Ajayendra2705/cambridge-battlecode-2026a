@@ -200,6 +200,19 @@ static void play_turn_core() {
     }
     STAGE("enemies");
     place_ward_forward();
+    {
+        // The rivals' game-winning channel within 10 tiles: walk to its altar (the lock goes down once within 2),
+        // hitting whoever is in reach on the way. The game is lost when that channel completes.
+        vec2 to;
+        if (deny_channel(to) && dist(S.me, to) <= 10) {
+            ACT("deny");
+            walk_towards(to);
+            for (const auto& e : S.enemies)
+                if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && attack_unit(e.ch)) break;
+            deny_channel(to);
+            return;
+        }
+    }
     const vec2 p = S.me;
     // Holding a capture: our target's camps are dead and we stand on one of its spawn tiles. The capture takes 5 rounds
     // and resets the round none of us stands there. On b9p (dq3, decoded) we stepped off before the capture 12.1 times
