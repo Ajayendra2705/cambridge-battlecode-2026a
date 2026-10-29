@@ -1123,4 +1123,44 @@ two scratch readers (allies within 6 over alive rounds; deaths by the rivals' dr
   this, as the teams that draft them may simply be stronger.
 - **rz19** (main + rz14's flee step, row rz19) on b19: our deaths 6.76 to 6.24 per game (-0.52 +- 0.41), theirs +0.58,
   collected 97.8%, tributed 97.9%, the same 15 wins; N by its mechanism bar. rz20 (the flee step plus rz17's shooter
-  step) gates on the fresh batch b20 with a target-only rule.
+  step) passed its target-only rule on the fresh batch b20 (our deaths -0.76 +- 0.40) and is main since 14:05.
+
+## Shots, spells and stuns from beyond our reach (rz12 on b19, rz20 on b20, probe rz21l; 10-29 14:40 IST, t10)
+
+Same games as the section above (`rz12_b19@b19`) and rz20's `rz20_b20@b20`, to r1000. New reader
+`tools/replay/poked.py`; `stuns.py`, `focus.py`, `deaths.py`, `decoded.py types` and `assist`, and scratch readers for the
+rest (no-hit deaths, engagement starts, the size of a shot).
+
+- **Deaths without hitting back.** On b19, 1.86 of our 6.44 deaths to champions per game came after the victim hit no
+  champion in its last 10 rounds (theirs 0.16 of 2.64; `deaths.py` counts the same). In those deaths 77% of the hits
+  on the victim in its last 3 rounds came from beyond its own reach (by distance 1 / 2 / 3 / 4: 0.11 / 0.18 / 0.44 /
+  0.25), from Tavi 0.29, Prism 0.22, Marcella (the spell) 0.18, Vesper 0.12, Willow 0.12; by victim Vendetta 0.54,
+  Heart of Ruin 0.50, Vesper 0.42, Marcella 0.22, Varg 0.18 per game. In its last 10 rounds the victim moved level with
+  the nearest enemy 3.1 times (theirs 0.9) and had an enemy champion in its own reach in 0.9 rounds (1.9). On b20 with
+  rz20: 0.94 against 0.48.
+- **Poked: hit from beyond our reach** (a shooter's basic attack or a spell, from the hitter's tile at the round start
+  to the hit's tile, while we hit no champion that round). b19: 20.8 episodes per game against 10.8, and we died within
+  10 rounds after 24% of them (theirs 11%); with three or more enemies within 6, 8.6 per game and 34% (3.5 and 17%).
+  Our melee champions' response over the next 3 rounds (share, then P(dies within 10)): hit 0.30 (0.30), closer 0.17
+  (0.20), level 0.14 (0.21), away 0.28 (0.08); theirs hit 0.43 (0.06), closer 0.10 (0.02), level 0.09 (0.12), away 0.30
+  (0.05). b20 with rz20: 14.2 against 8.5 per game, 19% against 16%.
+- **A single shot is small, so no shooter alone is danger.** One ranged basic hit on our melee champions took 11% of
+  their max health on average (63% of those hits under 10%, 6% over 30%); ours on theirs 7%. The bot marks danger only
+  around an enemy whose own one-round burst reaches 30% of our health (`knowledge.h`), so rival shooters left our
+  champions working inside their reach. rz21 counts the enemies' bursts together.
+- **Stuns.** They stunned our champions 20.6 times per game (Ryth 14.2, Prism 15.3, Tavi 12.1 per game in the games
+  that field them), we stunned theirs 7.2 (Heart of Ruin 4.4, Marcella 3.5); 53% of our deaths had a stun on the
+  victim in its last 6 rounds (theirs 31%). In the 25 five-a-side games where they field a stunner beyond Heart of Ruin
+  and Marcella our deaths were 6.84 per game (3.80 stunned) against 2.76; in the 6 without, 5.67 against 2.50.
+- **Not the choice of target.** When two or more of a side hit champions in a round, all hit one target in 73% of ours
+  and 75% of theirs; but they have 31.2 such rounds a game against our 16.8 (`focus.py`). Next to a teammate under fire
+  (enemy 3-4 tiles away) the mirror types hit as often as theirs (Heart of Ruin 0.04 / 0.10, Marcella 0.15 / 0.18,
+  Vendetta 0.06 / 0.09, Vesper 0.34 / 0.40): their larger share (0.30 against 0.15) is their extra shooters (Prism 0.50,
+  Willow 0.41, Tavi 0.36). Ours moved level more (1-2 tiles away 0.12 against 0.06, 3-4 tiles 0.15 against 0.10).
+- **Our fights go worse at every count.** First hits after 5 quiet rounds, by enemies within 6 against our side within
+  5: ahead, ours 13.4 per game (the hitter died within 10 after 7%, the target after 22%), theirs 23.7 (1%, 34%); even
+  8.8 (12%, 10%) against 10.0 (6%, 19%); behind 7.2 (21%, 7%) against 5.6 (13%, 18%). Hits on carriers of 30+ gems
+  (the `rich` engage) are few: 2.8 per game.
+- **What our poked melee champions are doing** (probe rz21l, local against cand1, cp3, dh3, 48 games): in the turn after
+  the poke `flee` 38%, `pvp` 31%, farming activities 16% (`to_capture`, `fight`, `resp_wait`, `approach`, `tribute`,
+  `bank`, `retreat`). Local pokes are fewer and less deadly (dead within 10 after 12%).

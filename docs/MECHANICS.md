@@ -277,7 +277,7 @@ Bonuses add, so Treasure on Vesper gives +43% (+53% before 2.0.0). [doc] The tie
 ## 13. Fuel and memory
 
 - **Fuel** (Wasmtime instructions, deterministic) [doc] [measured]:
-  - C++ gets 100k per turn, 2× on the first play turn and 10× on the first draft turn.
+  - C++ gets 100k per turn, 2× on the first play turn and 100× on the first draft turn (10× before SDK 4.0.0 and engine 2.0.0; see the engine check at the top).
   - Unused fuel does not carry over.
   - Running out suspends the bot; it **resumes from the same point on its next turn**, so a long computation silently spans several turns.
   - Every SDK accessor is a host call costing about 40 fuel. Printing is expensive.

@@ -1,0 +1,126 @@
+diff -ru bots/main/src/bot.cpp bots/exp/rz22/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-29 14:05:10.253478600 +0530
++++ bots/exp/rz22/src/bot.cpp	2026-10-29 14:44:34.320800600 +0530
+@@ -434,7 +434,7 @@
+     const bool losing = (sim_me_dies && !winning) || enemy_count > ally_count || enemy_power > ally_power * 0.9f || S.hp < S.max_hp * 0.4f
+         || in_kill_range || big_bag;
+     // Not engaging: from here on, moves keep out of enemy reach.
+-    S.avoid_danger = !S.danger.empty();
++    S.avoid_danger = !S.danger_sets.empty();
+     if ((threatened && losing) || (hit_by_enemy && !prey)) {
+         // No rooting spell and no striking dash yet: the branch below may kite or flee, and a rooted champion cannot walk
+         // this turn, nor walk home from where the dash lands (the duel casts everything). cw1 on four panels, to r1000
+diff -ru bots/main/src/knowledge.h bots/exp/rz22/src/knowledge.h
+--- bots/main/src/knowledge.h	2026-10-29 14:05:10.192476800 +0530
++++ bots/exp/rz22/src/knowledge.h	2026-10-29 14:44:32.292690900 +0530
+@@ -176,10 +176,12 @@
+     // Damage spells cannot follow a step, so a caster threatens its spell range; melee threatens a step plus reach.
+     S.danger.clear();
+     S.avoid_danger = false;
++    S.danger_bar = S.hp * (fragile ? 0.15f : 0.3f);
+     for (const auto& e : S.enemies) {
+-        if (W.enemy_spawn.is_set(e.pos) || e.burst < S.hp * (fragile ? 0.15f : 0.3f)) continue;
+-        S.danger.push_back({e.pos, (e.reach > e.range + 1 ? e.reach - 1 : e.range + 1) + (fragile ? 1 : 0)});
++        if (W.enemy_spawn.is_set(e.pos) || e.burst <= 0 || S.danger.size() >= 8) continue;
++        S.danger.push_back({e.pos, (e.reach > e.range + 1 ? e.reach - 1 : e.range + 1) + (fragile ? 1 : 0), e.burst});
+     }
++    find_danger_sets();
+ }
+ 
+ void broadcast_respawn(int group, int respawn_round);
+diff -ru bots/main/src/snapshot.h bots/exp/rz22/src/snapshot.h
+--- bots/main/src/snapshot.h	2026-10-29 14:05:10.235785200 +0530
++++ bots/exp/rz22/src/snapshot.h	2026-10-29 14:44:31.492258400 +0530
+@@ -74,8 +74,16 @@
+     std::vector<CampSnap> camps;  // Live visible camps.
+     std::vector<CampSnap> phantoms;  // Unseen live camps of recently awake groups: they still hit.
+     std::vector<ChampSnap> allies, enemies;
+-    // Tiles where a visible enemy could hit us hard on its next turn, and whether moves should avoid them.
+-    std::vector<std::pair<vec2, int>> danger;
++    // Tiles where the visible enemies could together hit us hard on their next turns (each enemy's reach and burst; a
++    // tile is in danger when the bursts reaching it sum to `danger_bar`), and whether moves should avoid them.
++    struct DangerSrc {
++        vec2 pos;
++        int radius;
++        float burst;
++    };
++    std::vector<DangerSrc> danger;
++    float danger_bar = 0;
++    std::vector<unsigned> danger_sets;  // The minimal sets of `danger` (bit masks) that put tiles in danger.
+     bool avoid_danger = false;
+     // This turn so far: the engine's action flags at the snapshot (champion_state bits), whether we walked (rooting
+     // spells cannot follow a walk) and whether our basic attack was spent (a reset needs a spent attack).
+@@ -124,16 +132,70 @@
+ 
+ bool fragile = false;  // Cassi or Issac: losing either loses both.
+ 
++// Danger counts the enemies together: a lone shooter seldom bursts 30% of our health, but two or three reaching the same
++// tile do. rz12 on the fresh batch b19 (teams 34-60, to r1000, decoded): a single ranged hit on our melee champions took
++// 11% of their max health on average (63% of the hits under 10%), so no rival shooter alone marked danger and our
++// champions worked on inside their reach; hit from beyond their own reach they were 20.8 times per game (the rivals
++// 10.8) and died within 10 rounds after 24% of those (11%), 34% with three or more enemies within 6 (17%).
+ bool in_danger(vec2 t) {
+-    for (const auto& [src, radius] : S.danger)
+-        if (static_cast<int>(t.chebyshev_distance(src)) <= radius) return true;
++    float sum = 0;
++    for (const auto& d : S.danger)
++        if (static_cast<int>(t.chebyshev_distance(d.pos)) <= d.radius && (sum += d.burst) >= S.danger_bar) return true;
+     return false;
+ }
++// Each set of enemies whose bursts sum to the bar threatens the tiles all of them reach: the squares of their reaches
++// (Chebyshev) meet in one rectangle when every two of them meet. A set that holds a smaller such set adds no tile, so
++// only the minimal sets are kept (once per turn, after the snapshot): masks count up, so every subset of a set comes
++// before it. rz21 built a board for every set on each call and ran out of fuel after round 3 58 times in 48 local games
++// (main 6).
++void find_danger_sets() {
++    S.danger_sets.clear();
++    const size_t n = S.danger.size();
++    std::array<unsigned, 8> meet{};
++    for (size_t i = 0; i < n; ++i)
++        for (size_t j = 0; j < n; ++j)
++            if (static_cast<int>(S.danger[i].pos.chebyshev_distance(S.danger[j].pos)) <= S.danger[i].radius + S.danger[j].radius)
++                meet[i] |= 1u << j;
++    for (unsigned m = 1; m < (1u << n); ++m) {
++        bool keep = true;
++        for (const unsigned k : S.danger_sets)
++            if ((k & m) == k) keep = false;
++        float sum = 0;
++        for (size_t i = 0; i < n && keep; ++i)
++            if (m >> i & 1u) {
++                keep = (m & ~meet[i]) == 0;
++                sum += S.danger[i].burst;
++            }
++        if (keep && sum >= S.danger_bar) S.danger_sets.push_back(m);
++    }
++}
+ // The danger tiles as one board, for routing around them.
+ bitboard danger_tiles() {
+     bitboard b;
+     b.clear();
+-    for (const auto& [src, radius] : S.danger) b.draw_chebyshev(src, static_cast<float>(radius));
++    static std::array<bitboard, 8> reach;
++    static bitboard x;
++    unsigned drawn = 0;
++    for (const unsigned m : S.danger_sets) {
++        int first = -1;
++        for (size_t i = 0; i < S.danger.size(); ++i) {
++            if (!(m >> i & 1u)) continue;
++            if (!(drawn >> i & 1u)) {
++                reach[i].clear();
++                reach[i].draw_chebyshev(S.danger[i].pos, static_cast<float>(S.danger[i].radius));
++                drawn |= 1u << i;
++            }
++            if (first < 0) {
++                first = static_cast<int>(i);
++                if (m == 1u << i) break;
++                x.clear();
++                x |= reach[i];
++            } else {
++                x &= reach[i];
++            }
++        }
++        b |= m == 1u << first ? reach[first] : x;
++    }
+     return b;
+ }
+ 

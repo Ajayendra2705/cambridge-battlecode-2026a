@@ -4,7 +4,7 @@ Our C++ bot for [Cambridge Battlecode 2026a](https://2026a.battlecode.co.uk) (`c
 
 **Start here:** `docs/status.md` (where we are and what to do next), then `docs/ARCHITECTURE.md` (how the bot works), then `docs/WORKFLOW.md` (how to test a change).
 
-The ladder bot is `hc2` (`bots/main`, version 761 on 10-26); the Sprint 2 entry was `cp3` (`bots/pool/cp3`, version 691). The next lock is Sprint 3, Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST).
+The ladder bot is `rz20` (`bots/main`, adopted as version 1118 on 10-29, live as 1122 after the 14:47 IST gate chain resubmitted main); the Sprint 2 entry was `cp3` (`bots/pool/cp3`, version 691). The next lock is Sprint 3, Sat 31 Oct 23:59 GMT (Sun 1 Nov 05:29 IST).
 
 ## Layout
 
@@ -57,6 +57,8 @@ bash tools/platform/adopt.sh try1 old_main_name                                #
 | Looking for | Go to |
 |---|---|
 | What to work on next | `docs/status.md`, "Next steps" |
+| Why we play the way we do; the doctrine from postmortems; numbers derived from the rules (reach, time to kill, camp yield, tribute) | `docs/STRATEGY.md` |
+| How other teams solve Battlecode-type games (MIT 2019-2026, UNSW 2026, other bot contests), source by source, and what they agree on | `docs/STUDY.md` |
 | Why the bot does X | `docs/ARCHITECTURE.md` (turn pipeline), then the file named there |
 | An exact rule or number | `docs/MECHANICS.md` |
 | How we compare with the rivals | `docs/findings.md`, then `tools/replay/decoded.py` on a fresh run |
