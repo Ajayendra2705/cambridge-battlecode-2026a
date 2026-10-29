@@ -226,7 +226,7 @@ static void play_turn_core() {
             for (const auto& a : S.allies) if (W.groups[current_target].tiles.is_set(a.pos)) shared = true;
         if (!on) hold_since = -1;
         else if (hold_since < 0 || hold_group != current_target) hold_since = round, hold_group = current_target;
-        S.holding = on && !shared && round - hold_since < 8;
+        S.holding = on && (!shared || split_capture(W.groups[current_target])) && round - hold_since < 8;
     }
     const bool at_spawn = W.ally_spawn.is_set(p);
     if (at_spawn) {

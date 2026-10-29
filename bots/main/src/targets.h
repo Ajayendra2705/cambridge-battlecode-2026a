@@ -101,6 +101,15 @@ double death_mark_weight(const Group& g) {
     return w;
 }
 
+// A captured group whose reward lifts our tributed gems to 1000 is split among every claimant on its tiles (sc1): each
+// share channels in a tenth of its size, and one share is often enough. 02geodes (ranked against atnaM, lost 997-1002):
+// four of ours cleared a 92-gem group, the Heart of Ruin alone captured it (a 10-turn channel), and the rivals won about
+// 3 rounds before it would have completed; with four on the tiles each channel is 3 turns.
+bool split_capture(const Group& g) {
+    return g.state == 1 && g.gems >= 20
+        && cambc::global_submitted_gems(team::ally) + g.gems >= cambc::constants::winning_gems;
+}
+
 int pick_group(int current) {
     const int round = S.round;
     if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
@@ -208,10 +217,11 @@ int pick_group(int current) {
                     for (auto sp : g.spawns) if (dist(e.pos, sp) <= 8) contested = true;
                     if (contested) break;
                 }
-            if (!contested && (better_claim || (others > 0 && i != current))) continue;
+            const bool split = split_capture(g);
+            if (!split && !contested && (better_claim || (others > 0 && i != current))) continue;
             // At most two share a capture: the two with the fewest items stay, so gold reaches the poorest champions
             // (platform lg1: slot order starved Ryth and Marcella, slots 3 and 4, to half the gold of the others).
-            if (others >= 2 && !contested) {
+            if (others >= 2 && !contested && !split) {
                 const int mine_w = slot_wealth_now(W.slot);
                 int poorer = 0;
                 for (int s = 0; s < MAX_SLOTS && s < static_cast<int>(W.slot_ids.size()); ++s) {

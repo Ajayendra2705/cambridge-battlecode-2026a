@@ -1,4 +1,10 @@
-# Status (updated 2026-10-30 00:55 IST)
+# Status (updated 2026-10-30 01:10 IST)
+
+## Update at 01:10 IST 10-30 (session 86)
+
+- **Main is sc1** (dl2 + the split winning capture, `targets.h` and `bot.cpp`), adopted and submitted at 01:09 as version 1161; dl2 is `bots/pool/dl2`. sc1 held its guards on b19p (equal to dl2 to r1000; it acts only at the capture that completes our 1000).
+- **Ladder at 00:57:** rank 76, rating 1926.8 (rank 51: 2008.0, rank 60: 1975.2).
+- **td2 is N** locally (td1's danger rule at the full ratio: our deaths 166 against main's 145); **dl3 is N** (a lock-less stun and hit on the winning carrier never fired in 124 local games).
 
 ## Update at 00:55 IST 10-30 (session 86; supersedes the sections below where they differ)
 
