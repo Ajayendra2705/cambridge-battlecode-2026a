@@ -1004,7 +1004,8 @@ as `bcgp`), decoded in `data/fights/main1029_bcg_bcg`, to r1000. Readers: `mapga
 - **Per map** (10 games each): 00quarry 1 win, 214 against 964 (deaths 6.5 against 2.6); 00vault 1 win, 354 against
   1074 (5.0 against 4.4); 02crossing 0, 713 against 1062 (6.4 against 3.7); 00expanse 0, 750 against 948 (0.7 against
   1.0, so a pure economy gap); 02famine 0, 491 against 660 (1.3 against 2.4).
-- **They capture more of almost every kind** (captures a game, us against them): 00quarry wolf+gem 3.4 against 15.9,
+- **They capture more of almost every kind** (`decoded.py holds`: 38.5 group captures a game to r1000 against 51.7;
+  we leave 4.4 holds uncaptured against 1.8, 2.3 of them with an enemy on or within 4 of the tiles), by kind (captures a game, us against them): 00quarry wolf+gem 3.4 against 15.9,
   gem clusters 4.6 against 11.3, gold 24.2 against 31.2; 00vault wolf+gold 1.6 against 7.0, gem 0.9 against 2.6;
   02crossing elk+gem 8.1 against 12.7, gem clusters 17.2 against 22.4, wolf+gold 1.0 against 6.3 (wolf+gem 13.0
   against 9.2 is ours); 00expanse wolf+gold 3.7 against 8.0, wolf+gem 3.8 against 7.7, elk+gem+gold 7.7 against 10.3;
