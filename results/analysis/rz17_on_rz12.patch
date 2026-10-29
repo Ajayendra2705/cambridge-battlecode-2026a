@@ -1,0 +1,55 @@
+diff -ru bots/main/src/abilities.h bots/exp/rz17/src/abilities.h
+--- bots/main/src/abilities.h	2026-10-29 10:34:16.155626400 +0530
++++ bots/exp/rz17/src/abilities.h	2026-10-29 10:50:22.019217100 +0530
+@@ -420,6 +420,31 @@
+     }
+ }
+ 
++// Walk, reset, shot: a shooter that walked this turn cannot shoot, but the attack reset restores the shot (probe rz5p:
++// 63 of 63 landed). The weakest enemy in reach from the new tile.
++bool reset_shot_after_walk() {
++    if (stale()) return false;
++    auto& me = cambc::self();
++    if (S.range <= 1 || !S.walked || me.can_attack() || !me.can_cast()) return false;
++    const ChampSnap* t = nullptr;
++    for (const auto& e : S.enemies)
++        if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (!t || e.hp < t->hp)) t = &e;
++    if (!t) return false;
++    for (const auto& ab : me.abilities()) {
++        if (!ab.is_attack_reset() || !ab.is_ready()) continue;
++        if (stale()) return false;
++        try {
++            if (ab.use() && attack_unit(t->ch)) {
++                ++n_reset;
++                return true;
++            }
++        } catch (const cambc::error&) {
++        }
++        break;
++    }
++    return false;
++}
++
+ // Every branch of the turn returns early, so an attack can be left unused with something in reach: the audit build
+ // counted about 2,900 such turns per 80 games (840 in enemy fights with an awake camp in reach, 262 with an enemy
+ // champion in reach, the rest while walking, capturing or leaving camps). Spend it at the end of the turn: the weakest
+diff -ru bots/main/src/bot.cpp bots/exp/rz17/src/bot.cpp
+--- bots/main/src/bot.cpp	2026-10-29 10:34:16.129543500 +0530
++++ bots/exp/rz17/src/bot.cpp	2026-10-29 10:49:48.305056100 +0530
+@@ -451,6 +451,16 @@
+                        // Hit before stepping away when the hit is free: melee keeps its move after attacking, and a target
+                        // that cannot reach us cannot answer (b5 ge4: with an enemy within 3 the rivals hit a champion in
+                        // 50% of rounds, we in 35%, and stand idle 12% vs 6%).
++                       // Not for a shooter: its shot costs the step, so it stayed in danger and the melee enemy stepped in.
++                       // It steps out first and shoots with the attack reset. rz12 on b13p2, b16p and b17p, five a side, to
++                       // r1000 (`tools/replay/contacts.py`): our Vesper began a contact while short 2.11 times per game, the
++                       // rivals' 1.10, and 0.97 of ours (theirs 0.34) came right after her shot from 2 tiles; she died within
++                       // 10 rounds after 0.28 of her contacts (theirs 0.22).
++                       if (S.range > 1) {
++                           if (!step_out_of_danger()) return false;
++                           reset_shot_after_walk();
++                           return true;
++                       }
+                        const ChampSnap* t = nullptr;
+                        for (const auto& e : S.enemies)
+                            if (!W.enemy_spawn.is_set(e.pos) && dist(S.me, e.pos) <= S.range && (S.range <= 1 || dist(S.me, e.pos) > e.range)
