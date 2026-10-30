@@ -1391,3 +1391,35 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
   caution games we die 2.84 times a game before r250 and the rivals 1.69 (other games 0.43 against 1.00). 56% of those
   early deaths of ours are in the middle; at the death four or more enemies stand within 6 in 44% (theirs 31%) and none of
   ours in 33% (22%). The victim had 76% of its health ten rounds before and was hitting camps in 19%.
+
+## Leaving does not save champions; five a side and twelve bad maps (session 86, 10-30 16:00-17:20 IST)
+
+Sources: bb2's pinned runs `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p` (150 games, to r1000), the judges of bv1, ow1 and
+rh1 (`data/judge_*.txt`), and our ranked listing (`cambc matches list --team ... --kind ranked --json`, 700 games from 10-29
+17:00 IST, saved as `data/ranked_list.json`). Readers: `tools/replay/caution.py`, `deathfactors.py`, `capkind.py`,
+`decoded.py sources`, `budget.py`, `bysize.py`; scratch `cgold.py`, `vearly.py`, `oppc.py`, `otrace.py`, `rtrace.py`.
+
+- **Walking home from a seen threat does not cut deaths.** bv1 (leave a seen ball) and ow1 (leave when outnumbered in
+  view, once our team dies fast) both missed their deaths targets on 150 games (+0.41 and +0.04 a game) and cut our kills;
+  bv1 grew the massacre games from 20 to 29. In the caution games 56% of our deaths already came while walking home.
+  rh1 (a help call on any lone raider on our half) raised our deaths by 0.65 a game.
+- **Caution games start in the first 100 rounds.** In the 37 caution games we had died 0.5 times by r50 and 1.2 by r100
+  (other games 0.0 and 0.2); the rivals' team gold there is the same as in other games (r300: 1086 against 1087), ours
+  falls behind (875 against 1262). Before r150 we die 1.73 times a game there and the rivals 1.14, in team brawls (three
+  or more enemies within 6 at the first hit in 48% of our deaths, two or more of our allies in 41%). The caution games
+  are spread over the panel's teams (Sheeesh--- 7 of 10, the others 1-3 of 10). Trace (01gold_rush, b19p): our Heart of
+  Ruin kept hitting a middle camp group with three rivals 3-5 tiles off, fled through the camps' reach under the rival
+  Vesper's shots and died at r50; our Vendetta and Vesper then walked in one at a time and died by r60 without a kill.
+- **Five a side is the weak size.** On the panels we won 33 of 90 five-a-side games (3- and 4-pick 32 of 60); ranked since
+  bb2 45 of 100 against 50 of 85. Five a side we collect 792 a game to r1000 against 909 and tribute 620 against 676, with
+  fewer deaths (3.8 against 4.5). By r600 the gap is gem-cluster gems (`decoded.py sources`: 134 against 188 a game; elk,
+  wolf, gold and golem gems level). Pure gem-cluster groups: 3.2 captures a game against 9.4 five a side, 6.9 against
+  12.3 four a side, 13.5 against 20.4 three a side. Both sides hit camps in 18-19% of champion-rounds (`budget.py`).
+  og1 (take a harmless gem group within a 3-tile detour) added five small captures a game locally, but collection stayed
+  level (+0.3%) and deaths rose 28%.
+- **Twelve maps hold a fifth of our ranked losses.** Of 700 ranked games (51.3% won), adgato_gemcombat5 0 of 7,
+  01starvation 1 of 10, 01boss_battle 1 of 9, 00expanse 1 of 8, 00ambush 1 of 7, 02harvest 1 of 7, 01corridors 2 of 10,
+  02famine 2 of 10, 01fracture 2 of 8, 00ribs 4 of 15, 00split 3 of 11, 00vault 2 of 7: 21 of 119 together. On the panels
+  we tribute nothing in our 00ribs and 01boss_battle losses (0 against 985 and 993; 0 against 880 and 627); 00split is lost
+  on its golem groups (214 gems each: 2.6 captures a game against 4.4), 01starvation and adgato_gemcombat5 to massacres
+  (deaths 25/0, 17/2, 12/3, 9/3), and 00expanse, 00ambush, 02harvest and 02famine by close races (we end at 800-990).

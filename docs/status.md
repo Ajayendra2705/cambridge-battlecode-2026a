@@ -1,6 +1,24 @@
-# Status (updated 2026-10-30 15:23 IST)
+# Status (updated 2026-10-30 17:19 IST)
 
-## Update at 15:23 IST 10-30 (session 86; a handoff: a new session can continue from here)
+## Update at 17:19 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (resubmitted after every gate; version 1277 at 16:37). **Ladder at 17:19:** rank 53, 2007.9 (16:08:
+  rank 59, 1989.8; 13:28: rank 73, 1947.8). The user's target is 2100 (about rank 31 at 16:08).
+- **Rejected since 15:23:** bv1, ow1, rh1 on the platform (all raised or kept our deaths; leaving does not save
+  champions), bv2 and ow2-ow5 not gated (descendants of those), og1 locally (gem groups on the way: collection level,
+  deaths +28%). Rows in `docs/experiments.md`; findings section "Leaving does not save champions; five a side and twelve
+  bad maps".
+- **Running:** `data/run_pipe.sh pz1` (task started 17:08 with BASE = bb2's pinned runs): pz1 is Prism for Varg as the
+  fifth pick on 5-pick maps (row pz1: collected +2% pooled, guards deaths +0.3 and tributed 98%). It gates b19p, b20p,
+  b21p one at a time in the :x1-:x2 windows, then writes `data/judge_pz1.txt`. Check `bash tools/platform/procs.sh`.
+- **Where the gaps are now** (findings): five a side we win 37-45% (smaller teams 53-64%) and trail on gem-cluster gems
+  (by r600 134 against 188 a game); twelve maps hold 21 wins in 119 ranked games (00ribs and 01boss_battle: we tribute
+  nothing in our losses; 00split: golem groups; 01starvation and adgato_gemcombat5: massacres).
+- **Machine:** free commit memory runs near 3 GB with the user's other programs open; Git Bash forks fail below that
+  (errno 13) and a decode failed with "paging file too small" (rh1_b21p kept 19 of 50 games). Run local screens with
+  4-6 jobs and not beside a decode.
+
+## Update at 15:23 IST 10-30 (session 86)
 
 - **Main is bb2** (version 1217, resubmitted after every gate). **Ladder at 15:10:** rank 61, 1984.4 (13:28: rank 73,
   1947.8). The user's target is 2100 (rank 40 was about 2055 at 13:28).
