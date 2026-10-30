@@ -1495,3 +1495,16 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
   emblems (𓎼𓃭𓅱𓂋𓇌 𓏏𓅱 𓂋𓄿 on 01starvation and 00galaxy), then Bruiser of strength or health (Rogue Lock Pickers on
   00reverse_spiral: 2-9 Bruiser emblems a champion by r1127, plus Capture and Prospector; their Vesper on 01starvation
   11); ours held Treasure of the main stat and Jungle of health.
+- **Five a side we die more in the same situations, and are stunned more** (bb2 on b22 + b23, the 47 five-a-side games,
+  to r1000; `bysz.py 5 decoded risk|starts|defend`, `bysz.py 5 budget 1000`, `stillstun.py 5`):
+  - Time budget: the same shares walking (34% against 35% with an empty bag) and idle; camp hits 15.5% against 17.3%;
+    dead 7.8% of champion-rounds against 4.7%.
+  - We spend about as many rounds as they do in each state of enemies and allies within 6 and health, but at health above
+    half we die within 10 rounds 2-2.8 times as often (two enemies and no ally: 0.072 against 0.028; three enemies and one
+    ally: 0.113 against 0.040).
+  - They start 36.2 fights a game and we 21.5, with the same numbers within 6 of the target (2.60 against 2.50 for them,
+    2.59 against 2.55 for us); fights they start kill 3.66 of ours a game, fights we start 1.28 of theirs.
+  - After a fight starts on one of our champions at half health or more, it takes no action in 28 rounds a game (theirs
+    12); 58% of ours come right after an enemy cast on it (likely a stun), 36% of theirs. Their fifth pick is a stunner or
+    healer (Ryth in 24 of 47 games, Willow 17, Tavi 15) where ours is Varg (the Varg swaps ry1, ta1, wl1, ry2 and pz1 were
+    all rejected); their Marcella casts her stunning reset 29 times a game to our 24; the other types' cast counts match.
