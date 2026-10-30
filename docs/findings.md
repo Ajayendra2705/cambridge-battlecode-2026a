@@ -1514,3 +1514,8 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
   hitting champions, ours hit one target in 76% (theirs 67%), the lowest-health one in 87% (85%); they have 47% more such
   rounds. With a teammate hit and the nearest enemy 3-4 tiles away our healthy champions stand still in 33% of rounds
   against their 18% and hit in 16% against 26% (`bysz.py 5 decoded assist`), the gap as1 and ja1 targeted (both rejected).
+- **What ib1's items change five a side** (ib1 on b22p + b23p against bb2's runs, the 47 five-a-side games, to r1000):
+  P(death within 10 rounds) at health above half with one enemy within 6 falls to the band's level (no ally 0.016
+  against bb2's 0.024 and their 0.015; one ally 0.011 against 0.016 and 0.009); with two or three enemies it stays 1.6-2.7
+  times theirs. Deaths fall after r300 (r300-500 0.92 against 1.07 a game, r500-1000 2.41 against 2.70), not before
+  (`early2.py`). Middle captures barely move (7.5 against 6.8 a game; theirs 13.6), so the middle gap stays.
