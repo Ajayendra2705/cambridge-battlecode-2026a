@@ -18,9 +18,11 @@
   - `data/run_after4.sh` (task bj0lf9x1q) runs `run_pipe.sh bv1 ow1 bv2 rh1` against bb2's pinned runs: bv1 gated
     14:49-15:11 (its judge decodes now), ow1 gates from 15:21; bv2 and rh1 are parked (`bots/exp/bv2_hold`,
     `bots/exp/rh1_hold`, rows bv2 and rh1), so it skips them, then waits for its judges and exits.
-  - `data/run_after7.sh` (task bzwwisguo) waits for ow1's last gate, then runs `run_pipe.sh ow3 ow2`.
-  - ow4's local screen (`data/local_all70_ow4.log`). If it passes, queue it after ow2 with a waiter like
-    `data/run_after7.sh` (wait for `ow2_b21p@b21p` and no gate chain, then `run_pipe.sh ow4`).
+  - `data/run_after7.sh` (task bzwwisguo) waits for ow1's last gate, then runs `run_pipe.sh ow3 ow2` (ow2 is parked, so
+    this pipe gates ow3 only).
+  - `data/run_after8.sh` (task brgypzssa, started 15:25) waits for ow3's last gate (plus a minute, so the ow3 pipe skips
+    the parked `bots/exp/ow2_hold`), restores ow2 and runs `run_pipe.sh ow4 ow2`. ow4 passed its local screen at 15:25
+    (deaths 997, the lowest of the family).
 - **Next:** judge bv1, ow1, ow3, ow2 by their rows (`data/judge_NAME.txt`; for the ow family also run scratch
   `caution.py` on base and new runs for the mechanism). Adopt a pass with `bash tools/platform/adopt.sh NAME bb2` between
   gates (stop the runners first), then restart the queued runners with `BASE=` the new main's judge runs and amend the
