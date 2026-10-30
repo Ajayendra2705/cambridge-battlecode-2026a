@@ -733,7 +733,7 @@ static void play_turn_core() {
         // Measured trip overhead: with the plain c * tau trip cost (ef1) the b6 bags halved (median about 15) and collection
         // fell 12% by r600 (316 vs 358), while fh2's bags (about 32) lost more on death; tributed by r1000 434 (fh2) vs 411
         // (ef1). A trip also breaks the farming flow (claims, respawn timing), so it costs about 3 x c x tau: bags near 26.
-        const double batch = std::sqrt(2.0 * 3.0 * c * c * tau / (m * h + lambda * c / 5.0));
+        const double batch = std::sqrt(2.0 * 2.0 * c * c * tau / (m * h + lambda * c / 5.0));
         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
             // Give up for a while if the way to the altar makes no progress (blocked or contested).
             // Waiting at a hole edge for the dash is not a blocked way (dh1).

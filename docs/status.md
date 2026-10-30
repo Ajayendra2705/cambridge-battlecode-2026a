@@ -1,4 +1,19 @@
-# Status (updated 2026-10-30 09:11 IST)
+# Status (updated 2026-10-30 10:03 IST)
+
+## Update at 10:03 IST 10-30 (session 86)
+
+- **Main is bb2** (tw13b with tribute bags about 18% smaller: the bank batch's trip-cost factor 2.0 in `bot.cpp`), adopted
+  at 10:01 as version 1217; tw13b is `bots/pool/tw13b`. Over b19p, b20p and b21p against tw13b's pinned runs (150 games, to
+  r1000): tributed +3.0%, collected +1.7%, our deaths -0.35, lost on death -10 a game, win share 0.39 to 0.43. Its judge runs
+  are main's pinned bases now: `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p`.
+- **Ladder at 09:27:** rank 59, rating 1981.0.
+- **Running since 10:03:** `data/run_cands2.sh` (once, in the background, BASE = bb2's runs): bb15, lv15, ww2p, ms1, rh1, dr0p in
+  that order, three gates each, judges in `data/judge_NAME.txt`; rules in the rows (amended at 10:02, before any game: all
+  rebuilt on bb2). bb15 is the next bag dose (factor 1.5); lv15 counts gold 0.15 gem from r300 (pure gem-cluster groups:
+  we capture 6.0 a game, the rivals 11.9, `tools/replay/capkind.py`).
+- **To adopt between gates:** stop the runner while no gate runs (TaskStop, then `kill` its bash process, which survives),
+  adopt, and restart the runner with the remaining names; `adopt.sh` refuses while a gate runs.
+
 
 ## Update at 09:11 IST 10-30 (session 86)
 
