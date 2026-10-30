@@ -1387,3 +1387,7 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
   against 156; scratch `cautdraft.py`): the rivals field Tavi in 36% of the caution games against 15% of the rest, Ren 12%
   against 6%, Prism 19% against 8%, Willow 38% against 28%, Marcella 97% against 86%; Heart of Ruin 50% against 75% and
   Vendetta 50% against 63%. With a Tavi on their side 47% of games become caution games (all games: 27%).
+- **Fast-dying games start with lost middle brawls** (same 214 games, scratch `earlyd.py`, deaths before r250): in the
+  caution games we die 2.84 times a game before r250 and the rivals 1.69 (other games 0.43 against 1.00). 56% of those
+  early deaths of ours are in the middle; at the death four or more enemies stand within 6 in 44% (theirs 31%) and none of
+  ours in 33% (22%). The victim had 76% of its health ten rounds before and was hitting camps in 19%.
