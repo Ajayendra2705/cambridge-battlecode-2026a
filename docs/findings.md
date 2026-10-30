@@ -1576,3 +1576,18 @@ Sources: bb2's pinned runs on b22, b23, b24 (five a side 75 games) and b25 (thre
   less. Health is also what lets the band's Vesper keep shooting.
 - **Ranked by team size** (our newest 200 ranked games, 10:10-16:40 IST): three a side 15 of 33 won, four 36 of 54, five
   52 of 113.
+
+## Pinned panels, team sizes and the Vesper build (session 86, 10-30 23:30 to 10-31 01:21 IST)
+
+- **A pinned panel replays exactly.** `main_b24p@b24p` (00:21 IST) and `main_b25p@b25p` (00:32) gave the games of
+  `bb2_b24@b24` (20:16) and `bb2_b25@b25` (21:03) to the last gem: same wins, gems and deaths. A base run on a pinned
+  panel is never stale, and a fresh one only spends quota.
+- **b22p, b23p and b24p mix team sizes** (`data/map_sizes.json`; 00ribs, 02crossing and adgato_gemcombat5 are 5-pick maps
+  and were missing from it): over the three, 78 games three a side (with b25p), 40 four a side and 82 five a side.
+  `tools/replay/sizecond.py` rebuilds a size-conditional variant's games exactly from two runs.
+- **vp3's Vesper build (Jungle of strength after Treasure) by size against bb2:** five a side 82 games, tributed +4.3%,
+  deaths -0.43 +- 0.29; four a side 40 games, deaths +0.75 +- 0.66, tributed level; three a side 78 games, level. On the
+  fresh five-a-side panel b26p (ranks 45-49) vp3c (that build five a side only) tributed -2.5% +- 2.9% with deaths level:
+  the five-a-side gain did not repeat.
+- **Ranked, newest 100 games (to 01:00 IST 10-31):** 44 won; three a side 10 of 19, four 13 of 31, five 21 of 50.
+  02guardians 0 of 5 with 16 of our deaths a game, nearly all to champions (9-24 a game against their 0-5).
