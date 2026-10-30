@@ -1,4 +1,20 @@
-# Status (updated 2026-10-31 02:18 IST)
+# Status (updated 2026-10-31 02:52 IST)
+
+## Update at 02:52 IST 10-31 (session 86)
+
+- **The user's goals (02:4x IST):** ladder 2100 *and* 375 of 420 wins on the local screen (all 70 maps against cand1, cp3
+  and dh3, both sides; bb2 has 332); the end goal is a bot that wins the tournament.
+- **Local games replay exactly.** main's run `multi-023931` (02:39) gave bb2's 24 big-map games of 08:35 to the gem, so a
+  variant is compared game by game with bb2's run `multi-083529` (scratch `lpair.py BASEDIR exp.bb2 NEWDIR exp.X`); a
+  one-line change still flips about 50 games each way (chaos), so read collected and deaths by team size, not the win
+  count alone.
+- **Where bb2 loses locally:** 88 losses, 66 five a side; 61 are economy losses (deaths within 3; the old bots collect
+  1047 a game to our 858 in them), 27 fight losses (our deaths 9.1 against 3.7).
+- **Verdicts since 02:18:** tb1 N (three-a-side bags), mq3 N (three-a-side Marcella: deaths -0.42 but tributed -7.7%),
+  wt1 and wt2 N (middle respawn waits; collected level locally), sn1 N locally (327 wins) but five a side collected +4.1%
+  with level deaths, so **sn5** (sn1 five a side only) is gating on b26p from 02:51 (row sn5; adopt on a pass).
+- **Running:** `data/run_after12.sh` (re-reads `data/queue12.txt`; stop it with `procs.sh` + `kill` when done), local
+  screen of dm0 (no death marks in the pick).
 
 ## Update at 02:18 IST 10-31 (session 86; handoff, the session hit its usage limit)
 
