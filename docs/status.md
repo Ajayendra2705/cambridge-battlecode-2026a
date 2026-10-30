@@ -1,6 +1,21 @@
-# Status (updated 2026-10-31 00:04 IST)
+# Status (updated 2026-10-31 00:49 IST)
 
-## Update at 00:04 IST 10-31 (session 86; a handoff: a new session can continue from here)
+## Update at 00:49 IST 10-31 (session 86; a handoff: a new session can continue from here)
+
+- **Ladder at 00:40:** rank 68, 1967.3 (bb2 keeps losing rating: 2045 at 18:54, 1983 at 23:45).
+- **Pinned panels replay exactly.** `main_b24p@b24p` (00:21) and `main_b25p@b25p` (00:32) gave bb2's games of 20:16 and
+  21:03 to the last gem, so a fresh base on a pinned panel is never needed. b22p, b23p and b24p mix three-, four- and
+  five-a-side maps (`data/map_sizes.json`, three 5-pick maps added: 00ribs, 02crossing, adgato_gemcombat5).
+- **`tools/replay/sizecond.py`** rebuilds a size-conditional variant's games from two runs without a gate. vp3's Vesper
+  build helps only five a side (82 games: tributed +4.3%, deaths -0.43 +- 0.29); three and four a side it does nothing or
+  harm. vp3c (that build five a side only) failed its rule on the mixed panels (b22p + b24p tributed +2.56%, bar +3%).
+- **Running:** `data/run_after11.sh` with `data/queue11.txt`: `vp3c_b26p@b26p` (row vp3c6, on the new five-a-side panel
+  b26, pinned to `main_b26@b26`, bb2 19 of 50), then `vg1_b26p@b26p` (row vg1). Judge vp3c6 by its row as soon as its
+  decode is in (`pooled.py main_b26@b26 vp3c_b26p@b26p`); on a pass adopt vp3c at once in a gap (`touch data/hold_gates`,
+  wait for no `gatechain`, `bash tools/platform/adopt.sh vp3c bb2`, `rm data/hold_gates`), then judge vg1 against
+  `vp3c_b26p@b26p`.
+
+## Update at 00:04 IST 10-31 (session 86; superseded above where they differ)
 
 - **Ladder at 23:45:** rank 64, 1982.7 (`data/ladder_now*.json`). Main is still bb2 (resubmitted after every gate).
 - **Verdicts since 23:11:** hd1 N, vp3r N (r600 farming -0.8% against +3%; rows). vp3 five a side looked better on all
