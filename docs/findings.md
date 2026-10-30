@@ -1371,3 +1371,9 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
   ball (four or the whole team within 4 of one) seen within 10 in the 30 rounds before only 1 (bv2's rule). Of the 60,
   the first outnumbered view came 3 or more rounds before the contact in 33, and the victim had walked toward the enemies
   in 24; bv1's ball condition held at that first view in 11.
+- **The massacre rivals travel in threes, and even our winning counts die** (rk1030, scratch `meet.py`; a meeting is the
+  first enemy coming into view, within 8 and 3+ tiles off, after a round with none, keyed by enemies within 8 against our
+  side within 6). In the 9 massacres the rivals met one of ours with three or more of theirs within 6 50 times a game (we
+  18). Our death within 20 rounds after a meeting with one enemy in view: alone 0.09 (theirs 0.03), with one teammate
+  0.11 (0.03), with two 0.09 (0.01). In the other 55 games the rates match (0.02-0.03 for us, 0.03-0.06 for them). So in
+  massacres the one enemy in view is the front of a group: ow1's outnumbered rule fires only once the rest is in view.
