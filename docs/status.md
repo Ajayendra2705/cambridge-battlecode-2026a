@@ -1,4 +1,36 @@
-# Status (updated 2026-10-30 05:24 IST)
+# Status (updated 2026-10-30 06:30 IST)
+
+## Update at 06:30 IST 10-30 (session 86)
+
+- **Main is tw13b** (mi8 + `TRAVEL_W` = 1.3 in `targets.h`), adopted at 06:26 as version 1190; mi8 is `bots/pool/mi8`.
+  Pooled over b19p and b20p (100 games, to r1000): collected +6.4%, our deaths -0.22, tributed +4.5%; wins 21 and 17 of
+  50 (mi8 12 and 18). The predicted mechanism (shorter hops between captures) did not show: the gain is real on the
+  metric but unexplained.
+- **td1m N** (our deaths +0.03 pooled; bar -0.3). **dl6 N.**
+- **Running since 06:29:** `data/run_w5.sh` (started once, in the background): main on the new panel `b21` (five teams
+  ranked 41-48, the band of the 2050 target), pins it as `b21p`, then mi8 on `b21p`; writes `data/judge_b21.txt`
+  (tw13b against mi8 on current neighbours, recorded, not judged). Later variants then have three pinned bases:
+  `tw13b_b19p@b19p`, `tw13b_b20p@b20p`, `tw13b_b21@b21`.
+- **Local screening is weak at this effect size.** Ten one-constant variants of tw13b on all 70 maps (420 games each):
+  wins spread 301-333 and deaths 1025-1185 around tw13b's own 333 / 1025, so one run's spread is about 12 wins and 5%
+  deaths; none passed (rows gd50 / dm40 / fu100 / sq03 / sq07, cs10 / ww2 / tw145, sq03b / gw40 / gw15). Use local runs to
+  reject harmful changes, not to rank small ones.
+
+## Update at 05:47 IST 10-30 (session 86)
+
+- **Ladder at 05:26:** rank 69, rating 1946.3 (rank 50 is 2012.1, rank 40 2061.8). Target set by the user: 2050.
+- **dl6 N** (row dl6): the rivals' big channels near one of ours still complete 84% (main 86%, bar 68%); the lock rarely
+  fires. Folders `exp/dl6` and `exp/dl6m` deleted.
+- **w3 chain running since 05:36** (`data/run_w3.sh`, started once in the background; it now waits for 10 free groups
+  before its first gate). `tw13b_b19p`: 21 of 50 wins against main's 12, our gems 34699 against 31090, our deaths 375
+  against 446. Then `td1m_b20p` and `tw13b_b20p`; the runner writes `data/judge_tw13b.txt` and `data/judge_td1m.txt`.
+  `td1m_b19p` alone (`data/judge_td1m_b19p.txt`): our deaths -0.20 +- 0.32, collected 96.9%.
+- **Local runs are cheap:** `multi.py` plays 420 games (all 70 maps, cand1, cp3, dh3, both sides) in about 5 minutes per
+  candidate with `--jobs 11`, and takes several candidates in one call (one build of the pool). On all 70 maps tw13b
+  (copy `exp/tw13c`) beats main (copy, deleted) by 11 wins, -2.5% deaths, +1.7% collected (`data/local_all70_m8a_tw13c.log`).
+- **Running locally:** five one-constant variants built on tw13b (row gd50 / dm40 / fu100 / sq03 / sq07), judged against
+  tw13c's 420 games. A variant that passes goes to b19p and b20p with tw13b's pinned runs as the base, once tw13b is
+  adopted.
 
 ## Update at 05:24 IST 10-30 (session 86)
 

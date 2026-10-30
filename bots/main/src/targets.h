@@ -110,6 +110,10 @@ bool split_capture(const Group& g) {
         && cambc::global_submitted_gems(team::ally) + g.gems >= cambc::constants::winning_gems;
 }
 
+// tw13: the walk to a group weighs this much in its score (was 1). Our capturer hops 16.8 tiles between captures in
+// quiet games against the rivals' 14.2, with 52 moves against 41 (dl4 on b19p + b20p).
+constexpr double TRAVEL_W = 1.3;
+
 int pick_group(int current) {
     const int round = S.round;
     if (blocked_until.empty()) blocked_until.assign(W.groups.size(), -1);
@@ -149,7 +153,7 @@ int pick_group(int current) {
         // With the sqrt(n) share below, n champions clear in a time that weighs hp / (sqrt(n) dps) at least.
         const int nb = round < 40 ? 1 : claimants(i) + 1;
         const double fight = g.state == 1 ? 0.0 : g.hp_left() / (bound_dps * std::sqrt(static_cast<double>(nb)));
-        cands.push_back({value * mult / ((safe_speed ? 1.0 : 0.7) * travel + fight + 5.0), value, i, travel});
+        cands.push_back({value * mult / ((safe_speed ? 1.0 : 0.7) * TRAVEL_W * travel + fight + 5.0), value, i, travel});
     }
     std::sort(cands.begin(), cands.end(), [](const Cand& a, const Cand& b) { return a.ub > b.ub; });
     for (const auto& cand : cands) {
@@ -231,12 +235,12 @@ int pick_group(int current) {
                 }
                 if (poorer >= 2) continue;
             }
-            score = value / (travel + 5.0 + g.bank_cost * bank_share(g));
+            score = value / (TRAVEL_W * travel + 5.0 + g.bank_cost * bank_share(g));
         } else if (standoff(g)) {
             const float spell = my_spell_dps();
             if (spell <= 0) continue;
             const int n = others + 1;
-            double time = travel + g.hp_left() / (spell * n);
+            double time = TRAVEL_W * travel + g.hp_left() / (spell * n);
             if (g.state == 2) time += wait_w * std::max(0, g.respawn_round - round - travel);
             score = value / (time * n + 5 + g.bank_cost * 0.5 * bank_share(g));
             score_n = n;
@@ -252,7 +256,7 @@ int pick_group(int current) {
             // teammates' claims cut the wolves' share, and the rivals' five, back from their own wolves, caught them on it.
             const int mates = round < 40 ? 0 : others;
             for (int n : {mates + 1}) {
-                double time = travel * (safe_speed ? 1.0 : 0.7) + clear_time(cs, n, dps, S.max_hp, home == UNREACH ? 30 : home);
+                double time = TRAVEL_W * travel * (safe_speed ? 1.0 : 0.7) + clear_time(cs, n, dps, S.max_hp, home == UNREACH ? 30 : home);
                 if (g.state == 2) time += wait_w * std::max(0, g.respawn_round - round - travel);
                 time += (n - mates - 1) * 4;  // Waiting for extra teammates.
                 // One champion then captures (5 rounds), walks to an altar and tributes.
