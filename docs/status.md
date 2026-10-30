@@ -1,4 +1,28 @@
-# Status (updated 2026-10-30 10:03 IST)
+# Status (updated 2026-10-30 11:20 IST)
+
+## Update at 11:20 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (version 1217, adopted 10:01). Each gate resubmits main when it ends; the last chain resubmitted it as
+  version 1229 at 11:08. **Ladder at 11:05:** rank 62, 1979.1 (10:23: rank 57, 1992.1; the dip came while the test bots
+  bb15 and lv15 were live during their gates). Target 2050 (rank 40 was 2054.7).
+- **bb15 N** (bags at factor 1.5): tributed -5.7%, collected 95.8%, our deaths +0.33 (row bb15). **vw1 N locally**
+  (Vesper keeps her captures, shards counted half: deaths 1129 against the bar 1125).
+- **Running:** `data/run_cands2.sh` (task started 10:03 with BASE = bb2's pinned runs) is decoding lv15 (raw 20, 22, 22 of 50
+  against bb2's 20, 21, 24); it writes `data/judge_lv15.txt`, then finds the other names parked and exits. The parked
+  folders are `bots/exp/ww2p_hold`, `ms1_hold`, `rh1_hold`, `dr0p_hold` (renamed at 11:03 to reorder the queue).
+- **Next, once that runner has exited** (check `bash tools/platform/procs.sh`):
+  1. Judge lv15 by its row's rule (collected +2%; guards deaths +0.3, tributed 98%); record it; delete or adopt
+     (`bash tools/platform/adopt.sh lv15 bb2`, then rebuild the queued candidates on the new main and amend their rows).
+  2. Rename the parked folders back (`mv bots/exp/ms1_hold bots/exp/ms1`, and so on).
+  3. Start one runner in the background: `BASE="bb2_b19p@b19p bb2_b20p@b20p bb2_b21p@b21p" bash data/run_cands2.sh ms1 vw2
+     dr0p ww2p rh1` (BASE changes if lv15 is adopted: its judge runs become the pinned bases).
+- **vw2** (Vesper's shards count three quarters in the capture claims) passed its local screen and is queued after ms1.
+  Its cause, and today's other measures, are in `docs/findings.md`, "The rivals' Vesper farms, ours hands her groups
+  over": the largest gap by champion type is the Vesper (296 gems a game against our 164), our Vesper hands 3.7 of the
+  groups she clears to teammates by r600 (`tools/replay/handoffs.py`); 20 of 150 games are massacres, none won.
+- **Local screens:** read collected and lost on death without 01boss-battle (one game there can collect 16,590 gems).
+  Check that the summary shows 420 games: at 10:50 the disk was full and a screen silently lost 48 games
+  (`docs/WORKFLOW.md`, local quirks); 12 GB were freed at 11:02.
 
 ## Update at 10:03 IST 10-30 (session 86)
 

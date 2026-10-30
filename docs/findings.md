@@ -1295,3 +1295,34 @@ did `mi8_b20p` (03:53) and `mi8g_b20p` (04:55) (18 of 50, 36240 against 41487, d
 panel the base therefore needs no fresh run in the same session: any earlier run of the same bot on that panel is the
 same set of games, as long as the engine and the pinned opponents do not change. Each variant then costs 10 groups per
 panel instead of 20. Non-pinned panels still need a same-session base (the opponents change their bots).
+
+## The rivals' Vesper farms, ours hands her groups over; massacres; 01boss-battle skews local screens (session 86, 10-30 11:12 IST)
+
+Main = bb2 on its pinned runs `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p` (150 games), to r1000 unless noted.
+
+- **Deaths are no longer the gap.** By round band our deaths per game are level with or below the rivals' (r0-100 0.41
+  against 0.46, r500-1000 2.16 against 2.57). Collected 742 against 833 and tributed 576 against 632 remain. By the camp
+  type last hit (`decoded.py sources`): gem clusters 266 against 308, elks 225 against 254, monoliths 9 against 36; gold
+  clusters 109 against 96. Team gold is ours by 8% at r1000 (5324 against 4917): we still trade gems for gold.
+- **The gap by champion type is the Vesper** (`decoded.py types`, `champs`): their Vesper collects 296 gems a game against
+  our 164, holds 1080 camp gold at r600 against our 704 (level at r200: 266 against 232), and deals 166 damage a round to
+  camps against our 120 at r1000, about her 38% more strength (bruiser strength 6.5 emblems a Vesper at r1000, plus
+  Monster, Jungle, Prospector and Capture of strength; ours builds Durability and Jungle of health). The other shared
+  types are level (Heart of Ruin 154 against 146 gems, Marcella 232 against 215, Vendetta 149 against 158).
+- **Our Vesper hands her groups over** (`tools/replay/handoffs.py`, to r600): she is the top hitter on 8.0 groups a game and
+  a teammate captures 3.7 of them (401 gold); she takes 2.2 (286). The rivals' Vesper hands 1.6 and takes 3.1 a game she
+  plays. Our claim rules give a dead group to the claimant with the fewest shards. Counting Vesper's shards at half (vw1)
+  moved locally about 650 gold a game to her from the other four, whose deaths rose; at three quarters (vw2) 270 gold.
+- **Own-half small gem groups** (`capkind.py --permap gem:own`): on some maps the rivals take their own half's pure gem
+  groups three to ten times as often as we take the mirror ones (00gemfight 6.3 against 24.8 a game, 02fields 2.5 against
+  21.5, 02arena 2.0 against 13.6, 00gem_fields 7.3 against 21.7, 01shortcut 0 against 13); in all, 2.9 against 5.4 a game.
+  On 00lost_world the rivals park in the centre ring of eleven small gem groups (57-75 captures by r600) after winning
+  the opening fight at the left edge, while we farm our own corner groups and never go back.
+- **Massacres** (`deathfactors.py`): 20 of the 150 games (our deaths minus theirs 6 or more), none won; our deaths 13.0
+  against 2.6, team gold at r300 744 against 1261 (in the 115 even games 1241 against 1038, deaths 2.17 against 5.37,
+  63 wins). In them 52% of our deaths come in flight, 75% after the killer was in view for 11-30 rounds, 44% with no
+  teammate within 6; Marcella is the killer in 59%. Opening fights (deaths to r120) are even on average: we win 34 and
+  lose 27 of them, and win 59% and 19% of those games.
+- **01boss-battle skews local screens.** Its boss pays thousands of gems, so one local game can collect 16,590 gems and
+  lose 14,668 on death. In the vw2 screen it alone raised collected from 1037 to 1138 a game and lost on death from 36 to
+  125 (bb2's screen: 1037 and 35 without it, 1070 and 59 with it). Read local collected and lost without 01boss-battle.
