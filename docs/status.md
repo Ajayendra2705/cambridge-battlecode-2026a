@@ -19,9 +19,10 @@
     candidate's decode and judge run in the background while the next one gates, so the platform does not idle; its
     judges add `steals.py`. It gates cs1 only (ba1 was renamed bv1) and exits after cs1's judge.
   - `data/run_after4.sh` (task bj0lf9x1q, started 14:47; replaces `run_after3.sh`) waits for cs1's last gate, restores
-    rh1, then runs `run_pipe.sh bv1 ow1 bv2 rh1` (bv1 passed its local screen at 14:08, bv2 at 14:21). ow1 (caution once
-    our team dies fast: leave when outnumbered in view) is on its local screen (`data/local_all70_ow1.log`); if it fails,
-    delete `bots/exp/ow1` before bv1's gates end and the pipe skips it.
+    rh1, then runs `run_pipe.sh bv1 ow1 bv2 rh1` (bv1 passed its local screen at 14:08). ow1 (caution once our team dies
+    fast: leave when outnumbered in view) passed its local screen at 14:50. bv2 is parked as `bots/exp/bv2_hold` (row
+    bv2), so the pipe skips it. ow2 (ow1 plus target avoidance under caution) is on its local screen
+    (`data/local_all70_ow2.log`); if it passes, gate it after rh1 with a new runner.
 - **Next:** judge cs1 (steals by `tools/replay/steals.py`),
   bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
   `bash tools/platform/adopt.sh NAME bb2` between gates (stop both runners first), rebuild the queued candidates on the new
