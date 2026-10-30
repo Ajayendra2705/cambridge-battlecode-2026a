@@ -20,8 +20,8 @@
     `bots/exp/rh1_hold`, rows bv2 and rh1), so it skips them, then waits for its judges and exits.
   - `data/run_after7.sh` (task bzwwisguo) waits for ow1's last gate, then runs `run_pipe.sh ow3 ow2` (ow2 is parked, so
     this pipe gates ow3 only).
-  - `data/run_after8.sh` (task brgypzssa, started 15:25) waits for ow3's last gate (plus a minute, so the ow3 pipe skips
-    the parked `bots/exp/ow2_hold`), restores ow2 and runs `run_pipe.sh ow4 ow2`. ow4 passed its local screen at 15:25
+  - `data/run_after8.sh` (task brgypzssa, started 15:24) waits for ow3's last gate (plus a minute, so the ow3 pipe skips
+    the parked `bots/exp/ow2_hold`), restores ow2 and runs `run_pipe.sh ow4 ow2`. ow4 passed its local screen at 15:24
     (deaths 997, the lowest of the family).
 - **Next:** judge bv1, ow1, ow3, ow2 by their rows (`data/judge_NAME.txt`; for the ow family also run scratch
   `caution.py` on base and new runs for the mechanism). Adopt a pass with `bash tools/platform/adopt.sh NAME bb2` between
