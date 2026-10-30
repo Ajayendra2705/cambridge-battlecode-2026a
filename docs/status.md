@@ -1,4 +1,19 @@
-# Status (updated 2026-10-30 21:23 IST)
+# Status (updated 2026-10-30 21:56 IST)
+
+## Update at 21:56 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2.** Rejected since 21:23: s3p (collected +3.1% against +5%), d3m (their deaths minus ours +2.18 a game,
+  far past its bar, but collected 94.2% and tributed 92.3% against 97%: Marcella wins three-a-side fights and farms
+  slower than Vendetta; a lead if the farming loss can be removed).
+- **Running** (check `bash tools/platform/procs.sh`; one chain at a time):
+  1. `data/run_after5.sh`: vp1 on b22p (done, 11 of 50, bb2 12) and b23p (gating since 21:52). Judge by row vp1
+     (`decoded.py types` for Vesper's damage, `pooled.py bb2_b22@b22 vp1_b22p@b22p bb2_b23@b23 vp1_b23p@b23p`).
+     vp2 (milder) is gated only if vp1 passes its damage target and fails only the deaths guard.
+  2. `data/run_after6.sh`: then mgc1 on b22p and b23p (row mgc1: cluster-only groups skip the death discounts;
+     target: middle cluster-only gems by r600 +30%, `tools/replay/gclass.py 600 0`).
+- **Measured tonight** (findings and rows): five a side the band takes 3.7 middle gem-cluster groups by r600 to our 1.0;
+  our Heart of Ruin dies within 10 rounds after 9% of its engaging dashes at 80%+ health, theirs after 1% (same counts,
+  targets and numbers); fights are started on our champions 1.7 times as often and we hit back less (`decoded.py defend`).
 
 ## Update at 21:23 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
