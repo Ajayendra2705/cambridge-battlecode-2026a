@@ -1541,3 +1541,38 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
   traces, their champions hit our Heart at once, while ours next to their Heart often hit nothing for 4-6 rounds.
   `decoded.py defend`: fights are started on our champions 27.9 times a game against 16.6 on theirs, and in the next 6
   rounds ours hit a champion in 23-37% of rounds by type, theirs 34-47%.
+
+## Where the time and the deaths go (session 86, 10-30 22:00-23:11 IST)
+
+Sources: bb2's pinned runs on b22, b23, b24 (five a side 75 games) and b25 (three a side), to r600 unless stated; readers
+`tools/replay/capcycle.py`, `tools/replay/stateact.py`, `decoded.py risk|shots|champs|captures|items`, `waste.py`; scratch
+`quietecon.py`, `timeuse.py`, `responder.py`, `supporter.py`, `opening5.py`.
+
+- **The death gap is there before items differ.** To r300, at health above half, P(death within 10 rounds) is 0.083
+  against 0.040 with two enemies and no ally within 6, and 0.090 against 0.040 with three enemies and one ally.
+- **Near enemies but out of reach, ours drift.** With 1-3 enemies within 6 (health above half) ours make a move that
+  neither closes nor opens the distance in 13-20% of rounds (the band 6-9%) and stand idle in 16-25% (11-16%); ours hit
+  champions in 9-22% (13-36%). When ours hit a champion with two or more enemies near they die within 10 rounds 2-4 times
+  as often. With an enemy in basic reach both sides hit in about 80% of rounds (`decoded.py shots`), so the gap is outside
+  reach.
+- **Between captures we walk more, away from enemies.** Our capture cycle is 80 rounds against 61 (same straight hop,
+  12.6 tiles; same share of intervals with a tribute, 0.33 against 0.32). Per interval: dead 4.6 against 2.5 rounds,
+  camp hits 15.6 against 11.3, moves 42.5 against 32.8, of which 33.7 against 25.8 with no enemy within 6, idle 14.1
+  against 11.6. The extra walking is not near enemies; its cause (target switches, walks to groups a teammate captures,
+  bank detours) is not measured yet.
+- **Three a side we lose the economy even without fights.** In the 43 three-a-side games where both sides died 0-2 times
+  by r600 we collected 328 against 387 and tributed 229 against 331. Our champions hit camps more (Heart of Ruin 27% of
+  rounds against 19%), the team's camp damage is level (38.5k against 37.6k), but gems per 1000 own-capture damage are 7.8
+  against 8.9 and gold 2006 against 2395; their Vesper hits camps for 145 a round alone to our 99 and makes 16.4 capture
+  events to our 10.9. Five a side in quiet games: 399 against 429.
+- **Their Vesper is a gold carry.** Five a side by r600 their Vesper makes 10.8 capture events for 1055 camp gold, ours 6.9
+  for 637; at r600 she holds 2.55 Bruiser-strength emblems and 2120 max health (ours 1986) and dies 0.55 times a game by
+  r1000 (ours 1.31). Their Marcella too: 11.9 events, 812 gold (ours 7.3, 567).
+- **Heart of Ruin dives:** when ours lands, our allies within 6 hit camps in 8% of rounds at 2 tiles or less (theirs 1%)
+  and close in 16% against 25%; when theirs lands on us, our defenders at 2 tiles or less hit it as often as theirs do
+  (50% against 52%).
+- **vp3's bigger Vesper hits farm, not fight.** Her median hit 70 to 95 raised collection by r600 by 3.8% and team camp
+  damage by 3.4%, but her kills fell from 0.60 to 0.39 a game and her champion damage by 7%: with less health she shoots
+  less. Health is also what lets the band's Vesper keep shooting.
+- **Ranked by team size** (our newest 200 ranked games, 10:10-16:40 IST): three a side 15 of 33 won, four 36 of 54, five
+  52 of 113.

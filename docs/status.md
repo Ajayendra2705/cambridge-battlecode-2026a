@@ -1,4 +1,37 @@
-# Status (updated 2026-10-30 21:56 IST)
+# Status (updated 2026-10-30 23:11 IST)
+
+## Handoff at 23:11 IST 10-30 (session 86 ends here on the user's request; a new session continues from this section)
+
+- **Main is bb2** (resubmitted by every gate; v1319 at 22:56). **Ladder at 22:14:** rank 52, 2008.6
+  (`data/ladder_now_*.json`). Sprint 3 lock: Sun 1 Nov 05:29 IST. The user's goal: 2100.
+- **Judged since 21:56** (rows in `docs/experiments.md`): vp1 **N** (Vesper damage -11%, deaths +0.37), vp2 not gated,
+  mgc1 **N** (middle cluster gems +16% against +30%, deaths +0.74), vp3 **N** on its rule (Vesper damage -6.6%, her
+  deaths +0.16 against +0.15) but the best lead of the night: 34 of 100 won against bb2's 27, collected by r600 +3.8%,
+  tributed to r1000 +2.2%. Folders vp1, vp2, mgc1 deleted; `bots/exp/vp3` kept for vp3r.
+- **Running** (check `bash tools/platform/procs.sh`; never start a second chain; do not edit a running runner script):
+  1. `data/run_after8.sh`: hd1 on b22p (gating since 23:04) then b23p; decodes in the background.
+  2. `data/run_after10.sh`: after (1), vp3 on b24p and b25p (row **vp3r**), then vc1 on b22p and b23p (row **vc1**).
+     `data/run_after9.sh` was stopped before it gated anything (replaced by run_after10).
+- **How to judge** (rules are in the rows, written before the games):
+  - hd1: `decoded.py types data/fights/hd1_b22p_b22p data/fights/hd1_b23p_b23p` (Heart of Ruin deaths down 0.2 from
+    1.48; its champion damage at least 2359) and `pooled.py bb2_b22@b22 hd1_b22p@b22p bb2_b23@b23 hd1_b23p@b23p`
+    (our deaths at most +0.1; collected and tributed at least 98%). Locally its Heart damage fell 30%: watch that guard.
+  - vp3r: `decoded.py gems --round 600 data/fights/vp3_b24p_b24p data/fights/vp3_b25p_b25p` (collected by r600 at least
+    370 against 359) and `pooled.py bb2_b24@b24 vp3_b24p@b24p bb2_b25@b25 vp3_b25p@b25p` (deaths at most +0.2; collected
+    and tributed at least 99%). **If it passes, adopt at once** in a gap between gates: `bash tools/platform/adopt.sh vp3
+    bb2` (it refuses while a gate runs), then update `docs/lineage.md` and this file, and check main is live.
+  - vc1: `decoded.py champs` on vc1's two runs (Vesper camp gold by r600 at least 796 against 637), `waste.py 600` (team
+    gold from captures at least 1890), `pooled.py` guards (deaths at most +0.2; collected and tributed at least 98%).
+    Its local screen had deaths +21%, so its deaths guard is at risk.
+- **Next levers** (`docs/findings.md`, "Where the time and the deaths go"):
+  1. If vp3 is adopted: keep Vesper's health while she gains strength (the band's Vesper: Bruiser of strength, 2120 max
+     health), for example Bruiser of strength in place of Power for a shooter, and pair it with vc1's gold if vc1 holds.
+  2. Travel waste: per capture we walk 33.7 rounds with no enemy within 6 against the band's 25.8
+     (`tools/replay/capcycle.py`). Find the cause locally first (target switches, walks to groups a teammate captures,
+     bank detours) with the bot's own `A` and `R` log lines.
+  3. Out-of-reach drift near enemies (`tools/replay/stateact.py`): ours move level or idle in a third of the rounds with
+     enemies within 6, the band in a fifth; the death gap is there already by r300.
+- Uncommitted on purpose: never add `alk_home();,+40p` or `image.png`.
 
 ## Update at 21:56 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
