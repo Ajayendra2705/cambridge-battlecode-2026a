@@ -1,4 +1,22 @@
-# Status (updated 2026-10-30 18:12 IST)
+# Status (updated 2026-10-30 19:13 IST)
+
+## Update at 19:13 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (resubmitted after every gate). **Ladder:** rank 42, 2045.1 at 18:54 (17:46: rank 51, 2014.3). The
+  user's target is 2100.
+- **Panels: only teams rated above us** (the user's rule of 17:50, restated in the session). `b22p` (base `bb2_b22@b22`, 12 of 50) and the
+  new `b23p` (new team(4), :3, ひななー, SALUTE TO TUNG, 剑桥夜爬者; base `bb2_b23@b23`, 15 of 50). b19p and b20p now hold
+  teams at or below our rating (Sheeesh---, SquidProxyLovers, test4, HBH): no longer used.
+- **Rejected:** dn1 (giant-bag games 12 against 12), cy1 (Prism carry; local screen 145 of 420 wins against 332).
+- **Running** (check `bash tools/platform/procs.sh`): `data/run_pipe3.sh` (task started 19:08) gates ib1 and gw10 on
+  b22p then b23p and decodes each run; `data/run_after_hg2.sh` then gates hg2 the same way. Rules are in the rows; judge
+  by hand with `pooled.py bb2_b22@b22 X_b22p@b22p bb2_b23@b23 X_b23p@b23p` and the scratch readers named in the rows
+  (`waste.py`, `early2.py`; copies in `results/analysis/` once used for a verdict).
+- **Measured against the band above us** (b22 + b23 base, 100 games): we collect 596 to r1000 against 791 and win 27%;
+  even with level deaths by r300 we won 5 of 31. To r600 they deal 4% more camp damage and take 16% more gems per
+  damage (gold per damage level); their builds are Bruiser and Jungle of the main stat; our deaths in r100-300 are 1.12
+  a game against 0.69.
+
 
 ## Update at 18:12 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
