@@ -1,4 +1,22 @@
-# Status (updated 2026-10-30 06:59 IST)
+# Status (updated 2026-10-30 08:30 IST)
+
+## Update at 08:30 IST 10-30 (session 86)
+
+- **Ladder at 08:23:** rank 68, rating 1953.5 (06:48: 62, 1974.3). Rank 50 is 2011.0, rank 40 2056.6. Main is tw13b; each
+  chain ends by resubmitting it (version 1204 at 08:03).
+- **N on the platform:** lv3t (collected +1.7%, bar +2%; the rivals gained more) and ry2 (our deaths +0.17, target -0.3;
+  their deaths -0.33, guard -0.3). Ryth raised the stuns we land from 7.7 to 12.5 a game and saved none of our champions.
+- **Where the gem gap is** (main's 150 pinned games, to r1000, `decoded.py captures`, `lives`): captures 40.3 against
+  46.1 a game. Our half level (391 gems against their 382 on theirs); middle 224 against 276; raids 37 against 62. The
+  rivals hit 4.8 of our home groups first a game (median 25 rounds after the group comes up), we hit 2.3 of theirs. Our
+  capturer's cycle is 85.5 rounds against 70.7, the hop 13.3 tiles against 12.2.
+- **Local screens:** three bars of about one run's spread each reject about half of neutral changes, and local results
+  have not predicted platform ones. tw16p (`TRAVEL_W` 1.6) failed its screen by 3 gems of 1078, so it now goes to the
+  platform as tw16q under a rule written first. New local screens use bars of about two run spreads (wins at least main -
+  24, deaths at most main x 1.10, collected at least main x 0.95), written before the run.
+- **Running since 08:30:** `data/run_w8.sh` (once, in the background): tw16q on b19p, b20p, b21p; writes
+  `data/judge_tw16q.txt` (rule in row tw16q).
+
 
 ## Update at 06:59 IST 10-30 (session 86)
 
@@ -10,7 +28,7 @@
   tw13b) on b19p, b20p, b21p; writes `data/judge_lv3t.txt` (rule in row lv3t). Local screen: collected +4.8%, wins and
   deaths level.
 - **Queued: ry2** (Ryth for Varg on 5-pick maps; row ry2, rule written; built as `exp/rf1`, renamed because an ML-era row
-  rf1 exists). Local fault screen clean. Its runner `data/run_w7.sh` (started 07:07, once) waits for any chain and for 10
+  rf1 exists). Local fault screen clean. Its runner `data/run_w7.sh` (started 07:05, once) waits for any chain and for 10
   free groups before each of its three gates, then writes `data/judge_ry2.txt`.
 - **N:** ww05 (wins -44 locally), fu100, ww2, gw15 (gold weight 0.15: deaths +29%).
 
