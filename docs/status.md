@@ -1,4 +1,21 @@
-# Status (updated 2026-10-30 19:13 IST)
+# Status (updated 2026-10-30 20:09 IST)
+
+## Update at 20:09 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (resubmitted after every gate). **Ladder at 19:40:** rank 49, 2011.8 (ladder `data/ladder_1030c.jsonl`);
+  2100 is about rank 33. Last 40 ranked games: 16 won; 8 losses had 9-24 of our deaths (gold snowballs, findings).
+- **Rejected:** ib1 on its rule (collected +2.3% against +3%; but deaths -0.48 ± 0.22 a game, five a side -0.8 to -0.9,
+  tributed +3.6%), gw10 (gems per camp damage +10% to r600, collected +0.1% to r1000). ib2 not gated (needed ib1).
+- **Queued** (check `bash tools/platform/procs.sh`; one chain at a time):
+  1. `data/run_after_hg2.sh`: hg2 on b22p (11 of 50, decoding), then b23p.
+  2. `data/run_after2.sh` (started with `NEWP=b24 GATES="exp/ib1:b24p exp/s3p:b22p exp/s3p:b23p"`): base `bb2_b24@b24`
+     on the new panel b24 (jazz, BattleCats, SkuBap, estrogen :3, Nameless; ranks 30-44, all above us), pin as b24p,
+     then ib1 on b24p (row ib1r: judged on deaths, target -0.3 a game), then s3p on b22p and b23p.
+- **Ready:** ib3 (ib1 + Treasure of health for melee types; local screen passes), gated only if ib1r passes and ib1 is
+  adopted (`bash tools/platform/adopt.sh ib1 bb2` in a gap between gates).
+- **Measured five a side** (findings): own-half captures level, middle 6.8 against 13.1 a game; same time budget except
+  dead rounds (7.8% against 4.7%); in the same local situation we die 2-2.8 times as often; they start 36 fights a game
+  to our 22 and stun us about four times as often.
 
 ## Update at 19:13 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
