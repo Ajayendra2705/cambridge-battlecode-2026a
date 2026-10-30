@@ -1454,3 +1454,27 @@ since 10-29 17:00) and the ranked listings of the top 10 teams. Readers: `decode
   their Heart of Ruin and Vendetta hold 1690 and 1830 health (Prospector, Jungle and Bruiser emblems of health), ours 870
   (Treasure first; ours die more and so hold less). Across b22, 10 of 50 games are massacres (our deaths minus theirs 6+;
   1 won; team gold at r300 680 against 1296); in them two thirds of our deaths come while we are even or outnumber them.
+
+## The band above us: more small captures, Prospector and Bruiser builds (session 86, 10-30 18:40-19:23 IST)
+
+Sources: bb2's base runs on the two panels of teams rated above us, `bb2_b22@b22` and `bb2_b23@b23` (100 games, ten teams
+ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay/waste.py`, `clears.py`, `early2.py`,
+`handoff2.py`, `byteam.py`, `budget.py`, `decoded.py items`, `captures`, `sources`.
+
+- **We win 27 of 100; the economy decides even when the fights do not.** We collect 596 gems a game to r1000 against
+  791 and tribute 456 against 654. By opponent, ひななー collected 1042 against our 589 with deaths level (5 and 5) and
+  took 154 gems a game from our deaths (we 64); Let's LARP again 768 against 562 with fewer deaths than ours (4 and 3).
+  With our deaths by r300 level with theirs we won 5 of 31; with 3+ more 1 of 14; with 2+ fewer 9 of 14.
+- **Same time budget, 28% more captures.** Both sides hit camps in 19% of champion-rounds to r300 and walk about 45%
+  (`budget.py`). To r1000 they made 50 captures a game against our 39, with about the same claim time (9 rounds) and
+  hand-offs (`handoff2.py`). To r600 they dealt 4% more camp damage (40.4k against 37.4k a game) and took 390 gems and
+  2100 gold against 306 and 1890: 16% more gems per camp damage, gold per damage level (`waste.py`). In Let's LARP
+  again's and Jupiter's games they took 1.7 and 1.5 times our captures of groups under 200 health and cleared alone in
+  70% of their captures (we 51-53%; 3+ hitters 6-10% against our 21-25%, `clears.py`).
+- **Their builds: Prospector first, then Bruiser and Jungle of the main stat.** At r250 their Vesper holds 0.45
+  Prospector-strength emblems, their Heart of Ruin and Vendetta Prospector-health shards (0.37, 0.34), their Ryth and Tavi
+  Prospector shards (0.59, 0.77); ours hold Treasure (0.34-0.68 emblems). At r600 their Vesper holds 2.77 Bruiser-strength
+  emblems and no Power (ours 1.05 Power, 0.45 Bruiser), their Marcella 1.01 Bruiser-focus (ours 1.35 Power-focus), and every
+  type holds Jungle of the main stat (0.44-0.66) where ours hold Jungle of health (0.57-0.80). Tested as ib1 and ib2.
+- **Early deaths:** rounds 100-300 cost us 1.12 deaths a game against their 0.69 (r0-100 level, 0.35 and 0.31). Tested
+  as hg2 (hold before a middle group they hold).
