@@ -1383,3 +1383,7 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
   669. In the other 113 games we won 58; deaths 2.0 against 4.6; collected 830 against 827; tributed 665 against 620. So
   outside those games our economy is level with the panel's rivals, and a quarter of the games decide the gap. The
   trigger selects on deaths, so the gems follow partly by construction; the size of that group is the finding.
+- **Stunners mark the fast-dying games** (bb2's 150 pinned games plus the 64 ranked games of rk1030, 58 caution games
+  against 156; scratch `cautdraft.py`): the rivals field Tavi in 36% of the caution games against 15% of the rest, Ren 12%
+  against 6%, Prism 19% against 8%, Willow 38% against 28%, Marcella 97% against 86%; Heart of Ruin 50% against 75% and
+  Vendetta 50% against 63%. With a Tavi on their side 47% of games become caution games (all games: 27%).
