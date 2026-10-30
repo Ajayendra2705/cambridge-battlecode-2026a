@@ -22,11 +22,10 @@
     rh1, then runs `run_pipe.sh bv1 ow1 bv2 rh1` (bv1 passed its local screen at 14:08). ow1 (caution once our team dies
     fast: leave when outnumbered in view) passed its local screen at 14:50. bv2 is parked as `bots/exp/bv2_hold` (row
     bv2), so the pipe skips it.
-  - `data/run_after5.sh` (task bix1z3esp, started 15:01) waits for rh1's last gate, then runs `run_pipe.sh ow2` (ow2 =
-    ow1 plus target avoidance under caution; passed its local screen at 15:01). If ow1 is adopted before ow2's first
-    gate, stop it and restart it with `BASE=` ow1's judge runs (and amend row ow2).
-  - `data/run_after6.sh` (task b5e9mcys3, started 15:11) waits for ow2's last gate, then runs `run_pipe.sh ow3` (ow3 = ow2
-    with a wider leave rule under caution; passed its local screen at 15:11). Same restart rule if main changes first.
+  - `data/run_after7.sh` (task bzwwisguo, started 15:16; replaces `run_after5.sh` and `run_after6.sh`) waits for ow1's
+    last gate, then runs `run_pipe.sh ow3 ow2` (ow3 and ow2 passed their local screens at 15:11 and 15:01). rh1 is parked
+    as `bots/exp/rh1_hold` (row rh1), so the bv1 pipe skips it. If main changes before ow3's first gate, restart the runner
+    with `BASE=` the new main's judge runs and amend rows ow3 and ow2.
 - **Ladder at 15:10:** rank 61, 1984.4 (13:28: rank 73, 1947.8), since test bots stay off the ranked sets.
 - **Next:** judge cs1 (steals by `tools/replay/steals.py`),
   bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
