@@ -1,4 +1,23 @@
-# Status (updated 2026-10-31 02:52 IST)
+# Status (updated 2026-10-31 05:01 IST)
+
+## Update at 05:01 IST 10-31 (session 88)
+
+- **Ladder at 04:34:** rank 67, 1967.9 (`data/ladder_now_*.json`); 2100 is rank 32-33. Main is still bb2 (every gate
+  resubmits it).
+- **Verdicts since 02:52** (rows in `docs/experiments.md`): sn5 **N** (b26p collected -3.9%), sd5 and dm0 **N** locally,
+  kb5 **N** (b28p tributed +2.5% against +3%), kb5r **N** (b26p tributed -5.9%), mz1 **N** (b28p tributed -5.2%), bz1p
+  and cz1 **N** locally against the pack testbed bz0 (`bots/exp/bz0`: main with every champion scoring groups as if
+  alone, fights counted lost only above 1.3 times our power, help called with any number of enemies; main beats it 55 of
+  84 on its maps).
+- **New panels:** b29 (five a side, ranks 50-61 at 03:28): `main_b29@b29` 15 of 50, pinned as **b29p**; b28p (ranks
+  41-49) documented in `results/panels/README.md`.
+- **Where the five-a-side gap sits** (`docs/findings.md`, "Where the five-a-side gap sits against ranks 41-61"): half the
+  tributed gap is bags lost to kills; camp work is level; our victims start contacts with fewer allies near and the
+  rivals bring more champions during the contact; every one of our types dies 2-3 times as often as theirs.
+- **Running:** `data/run_after12.sh` (queue `data/queue12.txt`): **ci1** (Cassi & Issac for Varg five a side, row ci1) on
+  b29p. Its local screen (`data/runs/multi-045456`, 252 five-pick games, 4 minutes at 8 jobs): wins 186 to 172, collected
+  +1.9%, deaths 2.80 to 4.56 (the pair dies together, 1.14 times a game each); no fault.
+- **Local screens are fast:** 252 games take about 4 minutes at `--jobs 8`, so screen widely before gating.
 
 ## Update at 02:52 IST 10-31 (session 86)
 

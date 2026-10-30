@@ -1591,3 +1591,37 @@ Sources: bb2's pinned runs on b22, b23, b24 (five a side 75 games) and b25 (thre
   the five-a-side gain did not repeat.
 - **Ranked, newest 100 games (to 01:00 IST 10-31):** 44 won; three a side 10 of 19, four 13 of 31, five 21 of 50.
   02guardians 0 of 5 with 16 of our deaths a game, nearly all to champions (9-24 a game against their 0-5).
+
+## Where the five-a-side gap sits against ranks 41-61 (bb2 on b28 and b29, 100 games to r1000; 10-31 05:00 IST)
+
+Scratch readers in the session scratchpad (`timeuse.py`, `campdmg.py`, `capbonus.py`, `capdeny.py`, `massacre.py`,
+`shoptrips.py`); the rest from `decoded.py`, `capcycle.py`, `waste.py`, `cohesion.py`, `mapgap.py`.
+
+- **The tributed gap is half deaths.** By r1000 we tribute 578 a game against 711 and collect 721 against 829. Gems lost
+  on death are 61 against 28, so kills move about 66 of the 133: the killer takes the bag. Group captures are close:
+  654 gems against 690 (own half 396 against 339, middle 245 against 311, the other half 13 against 40).
+- **Camp work is level.** In r300-1000 both teams hit camps in about 495 champion-rounds a game and deal 46k against 45k
+  camp damage (93 against 89 a hit round); shop trips match (recalls 5.4 against 5.3 a champion-game, walk-out to the next
+  camp hit 28 against 32 rounds). Where the time goes differs: in r300-1000 we spend 1917 champion-rounds in our own half,
+  792 in the middle and 91 in theirs; they 1729, 1068 and 248. Prospector adds about 1.4% to their captures.
+- **Deaths start level and end outnumbered.** Walking back from each death while an enemy stays within 8: at the start of
+  that contact our victims had 1.65-1.90 allies and 1.45-1.61 enemies within 8, at the death 1.3-1.5 allies and 2.9-3.7
+  enemies; their victims started with 2.10-2.30 allies and ended with 1.8-2.2 allies against 1.9-2.9 of ours. We die
+  1.88 times a game in our own half (they 1.19), 2.85 in the middle (2.29) and 0.41 in theirs (0.72). Cohesion (allies
+  within 6, `cohesion.py`) is 1.38 against 1.72, and the gap widens late (r600-1000: 1.09 against 1.49).
+- **Every one of our types dies 2-3 times as often as theirs** (b29, `decoded.py types`): Heart of Ruin 1.38 against
+  0.60, Marcella 0.90 against 0.36, Vesper 0.90 against 0.33, Vendetta 1.20 against 0.67, our Varg 1.24; their extra
+  picks die most (Cassi & Issac 1.76 each, Tavi 1.55, Willow 1.50). Their Heart of Ruin holds 2527 max health at r1000
+  (Bruiser of health) against our 1646. Our dying Heart of Ruin typically dashes into two visible enemies with one or two
+  allies, and three more arrive within two rounds.
+- **They start the fights:** 38.1 a game against our 20.1 (`decoded.py fights`); their champion damage is 16.9k against
+  12.2k.
+- **Losses come in two kinds.** On b29 (15 of 50 won) about 11 losses are massacres (our deaths minus theirs 6 or more by
+  r1000) and about 16 are quiet economy losses (three deaths or fewer each side), mostly where the rivals take the
+  middle: on 00split, 02harvest and 02cuts (21 games) we capture 33.0 own-half groups to their 31.0 but 10.1 middle groups
+  to their 14.7 (272 gems against 380). 00road_of_riches (0 of 4 over b28 and b29) is the worst map: they hunt us near
+  our spawn (our deaths 8.5 a game against 2.0), alone against 3-5.
+- **By the rivals' fifth pick** (b26, b28, b29): we won 10 of 35 against Cassi & Issac teams, 26 of 65 against Ryth
+  teams, 15 of 40 against Tavi teams.
+- **Close finishes are rare.** Of b29's 35 losses only 02geodes ended with our tributed plus bags above 1000 (949 + 103
+  against 952): banking at the end is not the gap.
