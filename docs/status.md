@@ -1,4 +1,21 @@
-# Status (updated 2026-10-30 08:30 IST)
+# Status (updated 2026-10-30 09:11 IST)
+
+## Update at 09:11 IST 10-30 (session 86)
+
+- **Ladder at 09:01:** rank 64, rating 1966.6 (08:23: 68, 1953.5).
+- **tw16q N** (`TRAVEL_W` 1.6): collected +0.0%, our deaths +0.31. **rd1 N** on its local screen (raids on the enemy half
+  only near fresh sightings: deaths +30%).
+- **Platform queue** (one runner at a time; each gate resubmits main when it ends):
+  - `data/run_cands.sh bb2 rd1 dr0p` (started 08:46; rd1 skipped): bb2 (smaller tribute bags, factor tributed), then dr0p
+    (no recent-death discount on contested groups, factor collected). bb2 on b19p: 20 of 50, gems +4.4% (raw).
+  - `data/run_after.sh ww2p ms1` waits for it, then runs `run_cands.sh ww2p ms1`: ww2p (middle respawn waits count
+    twice) and ms1 (Monster emblem in the shop formula; local screen running, its folder is deleted if it fails).
+  - Rules are in the rows; judges land in `data/judge_NAME.txt`.
+- **New measures** (main's 150 pinned games, to r1000): champions idle by dead middle groups 108 champion-rounds a game
+  against the rivals' 53 (`tools/replay/waits.py`); camp hits take 19.4 champion-rounds per group killed against 17.1, and
+  the rivals carry Monster emblems (Vesper 0.50 at r600), we none; our home visits 35.1 a game against 41.8 (shop trips are
+  not the gap); fuel exhaustion after round 30 about 1 a game.
+
 
 ## Update at 08:30 IST 10-30 (session 86)
 
