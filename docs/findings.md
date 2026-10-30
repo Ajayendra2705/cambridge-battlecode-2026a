@@ -1326,3 +1326,34 @@ Main = bb2 on its pinned runs `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p` 
 - **01boss-battle skews local screens.** Its boss pays thousands of gems, so one local game can collect 16,590 gems and
   lose 14,668 on death. In the vw2 screen it alone raised collected from 1037 to 1138 a game and lost on death from 36 to
   125 (bb2's screen: 1037 and 35 without it, 1070 and 59 with it). Read local collected and lost without 01boss-battle.
+
+## Ranked massacres are enemy balls; test bots on the ladder; steals (session 86, 10-30 14:00 IST)
+
+Sources: our 64 newest ranked games of 10-30 decoded in `data/fights/rk1030` (downloaded with `tools/replay/qmaps.py`, index
+built from the ranked listing), main = bb2's pinned runs `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p` (150 games), to
+r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratch `balls.py`, `mtrace.py`, `rk_drafts.py`.
+
+- **All ranked losses with a death gap are lost games, and they are 22% of ranked games.** Of the 64: 9 massacres (our
+  deaths minus theirs 6 or more by r1000) and 5 mixed (3-5), none won; 50 even games, 30 won (60%). In the 60 ranked games
+  to 13:30, 14 were massacres; the rivals' champion damage in them was 1.8 times ours (48.4k against 27.4k) and their gold
+  2.8 times (`rk_drafts.py`).
+- **They start early, in the middle, in a first life.** In the 9 massacres our deaths by r300 are 3.8 a game against 1.8
+  (even games 0.9 against 1.6): 91% in a champion's first life, 68% in the middle, 79% begun while we outnumbered at the
+  contact's start, 76% with 4+ enemies within 6 during the contact, 74% with 3+ killers.
+- **The rivals move as one ball.** Rounds r50-600 with four or more rivals within 4 of one of them and one of ours within 8
+  of it: 15% in ranked massacres, 5% in even games (bb2's panels: 14% and 5%). Our own team is such a ball in 7% of
+  massacre rounds against 13% in even games (panels 5% and 19%). Trace (adgato_gemcombat4 against shoutout MAPS,
+  `mtrace.py`): the five rivals stay within 2-3 tiles of each other from r40 and park at a middle group; our Varg, Heart
+  of Ruin, Vesper and Vendetta walk up one at a time at full health, keep working while the ball stands 6-7 tiles off,
+  and die in its reach; the Heart of Ruin returns 20 rounds after its respawn and dies there again. Tested as ba1.
+- **Test bots on the ladder lost more.** Ranked sets are created every 10 minutes at :x0:05 and play out within a minute.
+  Each gate submits the bot under test for 3-6 minutes, so 23 of the 80 ranked sets of 10-30 to 13:50 were played by a
+  test bot: 51 wins in 115 games (44%), against 154 in 285 (54%) for the sets played by main. Since 13:51 `gateq.sh`
+  uploads a test bot only from :x0:25 to :x2:59, so the ranked sets are played by main.
+- **Steals** (`steals.py`, bb2's panels): the rivals captured 1.45 of our kills a game (36 gems, 145 gold), we 0.82 of theirs
+  (21, 94). At the kills they stole one of theirs was within 6 of our nearest champion in 80%; our nearest was on the
+  tiles 3 rounds later in 23% against 65% for the kills we kept. Groups where we dealt half the damage or more and the
+  rivals captured: 1.63 a game (42 gems, 166 gold) against their 0.97 (32, 112). Tested as cs1.
+- **Willow games are level on deaths now** (bb2's panels, scratch `willow.py`): with a rival Willow our deaths 5.51 a game
+  against their 5.66 (47 games, 18 won); without Willow or Tavi 3.78 against 4.20 (94, 42 won). The 10-29 gap (5.23
+  against 3.41) is gone, so the fight simulation's missing heals were not tested.

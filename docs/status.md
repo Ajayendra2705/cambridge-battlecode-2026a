@@ -1,4 +1,27 @@
-# Status (updated 2026-10-30 11:20 IST)
+# Status (updated 2026-10-30 14:02 IST)
+
+## Update at 14:02 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (version 1217, resubmitted after every gate; 1253 at 13:56). **Ladder at 13:28:** rank 73, 1947.8 (11:05:
+  rank 62, 1979.1). The user's target is now 2100 (rank 40 was about 2055 at 13:28).
+- **Rejected since 11:20:** ms1, vw2, dr0p on the platform (dr0p: our deaths +0.74, collected -4.0); jm1 on its local
+  screen. Rows in `docs/experiments.md`.
+- **Test bots no longer play ranked sets.** Ranked sets start every 10 minutes at :x0:05; today 23 of 80 sets were played by
+  the bot under test (44% won against main's 54%). Since 13:51 `tools/platform/gateq.sh` uploads a test bot only from
+  :x0:25 to :x2:59 (`NO_RANKED_WINDOW=1` skips the wait).
+- **The largest loss factor is enemy balls** (`docs/findings.md`, "Ranked massacres are enemy balls"): 14 of our 64 newest
+  ranked games had a death gap of 3+ and none was won; the rivals move as one ball of four or five and our champions walk
+  up one at a time. ba1 (enemy-ball avoidance) is on its local screen (`data/local_all70_ba1.log`, started 14:00).
+- **Running:**
+  - `data/run_cands2.sh ms1 vw2 dr0p ww2p rh1` (task b7d66z612): decoding ww2p, then writes `data/judge_ww2p.txt` and exits
+    (rh1 is parked as `bots/exp/rh1_hold`).
+  - `data/run_after2.sh` (task b2wagbb40) waits for it, restores rh1, then runs `run_cands2.sh cs1 ba1 rh1` with bb2's
+    pinned runs as BASE. If ba1 fails its local screen, delete `bots/exp/ba1` before its turn and it is skipped.
+- **Next:** judge ww2p (collected +2%; guards deaths +0.3, tributed 98%), then cs1 (steals by `tools/replay/steals.py`),
+  ba1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
+  `bash tools/platform/adopt.sh NAME bb2` between gates (stop both runners first), rebuild the queued candidates on the new
+  main and amend their rows before any game.
+
 
 ## Update at 11:20 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
