@@ -15,9 +15,9 @@
 - **Running:**
   - `data/run_cands2.sh ms1 vw2 dr0p ww2p rh1` exited at 14:30 after ww2p's judge. **ww2p N** (14:32): collected +0.4%
     (target +2%), our deaths +0.31 (guard 0.3).
-  - `data/run_pipe.sh cs1 ba1` (task byr7502nm, started 14:11, BASE = bb2's pinned runs): like `run_cands2.sh`, but each
-    candidate's decode and judge run in the background while the next one gates, so the platform does not idle; its
-    judges add `steals.py`. It gates cs1 only (ba1 was renamed bv1) and exits after cs1's judge.
+  - `data/run_pipe.sh` (BASE = bb2's pinned runs): like `run_cands2.sh`, but each candidate's decode and judge run in the
+    background while the next one gates, so the platform does not idle; its judges add `steals.py`. **cs1 N** (15:21):
+    steals 1.45 to 1.36 a game (target 1.15).
   - `data/run_after4.sh` (task bj0lf9x1q, started 14:47; replaces `run_after3.sh`) waits for cs1's last gate, restores
     rh1, then runs `run_pipe.sh bv1 ow1 bv2 rh1` (bv1 passed its local screen at 14:08). ow1 (caution once our team dies
     fast: leave when outnumbered in view) passed its local screen at 14:50. bv2 is parked as `bots/exp/bv2_hold` (row
@@ -27,8 +27,7 @@
     as `bots/exp/rh1_hold` (row rh1), so the bv1 pipe skips it. If main changes before ow3's first gate, restart the runner
     with `BASE=` the new main's judge runs and amend rows ow3 and ow2.
 - **Ladder at 15:10:** rank 61, 1984.4 (13:28: rank 73, 1947.8), since test bots stay off the ranked sets.
-- **Next:** judge cs1 (steals by `tools/replay/steals.py`),
-  bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
+- **Next:** judge bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
   `bash tools/platform/adopt.sh NAME bb2` between gates (stop both runners first), rebuild the queued candidates on the new
   main and amend their rows before any game.
 
