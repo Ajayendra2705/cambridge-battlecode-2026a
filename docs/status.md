@@ -2,7 +2,7 @@
 
 ## Update at 02:52 IST 10-31 (session 86)
 
-- **The user's goals (02:4x IST):** ladder 2100 *and* 375 of 420 wins on the local screen (all 70 maps against cand1, cp3
+- **The user's goals (stated between 02:41 and 02:51 IST):** ladder 2100 *and* 375 of 420 wins on the local screen (all 70 maps against cand1, cp3
   and dh3, both sides; bb2 has 332); the end goal is a bot that wins the tournament.
 - **Local games replay exactly.** main's run `multi-023931` (02:39) gave bb2's 24 big-map games of 08:35 to the gem, so a
   variant is compared game by game with bb2's run `multi-083529` (scratch `lpair.py BASEDIR exp.bb2 NEWDIR exp.X`); a
