@@ -1528,3 +1528,16 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
   (`decoded.py shots`), so the damage gap (4339 against 3233 a game) is the size of the shot. Our shop formula weighs a
   health emblem by health growth over max health with a first-emblem bonus (Jungle +0.15, Durability +0.11), which beats
   any strength emblem for her after Treasure. ib1 (Jungle of the main stat on every type) raised her median from 70 to 90.
+- **Five a side the gem gap is middle gem clusters** (bb2 on b22-b24, 75 five-a-side games, to r600;
+  `tools/replay/gclass.py 600 5`): gems gained on cluster-only groups in the middle 81 a game for the band (3.7 gains)
+  against our 33 (1.0); in our own half 26 against 24; mixed groups (wolves, elks) 311 against 295. `decoded.py sources`
+  agrees: gems after a gem-cluster hit 202 against 105, elk 143 against 145, wolf 77 against 84. Both sides hit camps
+  about 600 times a game by r600. A cluster has 120 health and no strength.
+- **Our Heart of Ruin dies after its engaging dashes** (same games; scratch readers on slot-1 ground casts that land
+  within 3 of an enemy and nearer than before): 2.57 a game at 80%+ health for us, 2.95 for them, with the same targets'
+  health, numbers within 6 and kill rate (0.09 against 0.12 within 5 rounds), yet our Heart dies within 10 rounds after
+  9.3% of them, theirs after 0.9%; it loses 129 health in the next 3 rounds against their 93, also at base health
+  (1000-1099 max: 7.7% against 2.0%). hb1's extra health did not change Heart deaths (1.50 against 1.48 a game). In
+  traces, their champions hit our Heart at once, while ours next to their Heart often hit nothing for 4-6 rounds.
+  `decoded.py defend`: fights are started on our champions 27.9 times a game against 16.6 on theirs, and in the next 6
+  rounds ours hit a champion in 23-37% of rounds by type, theirs 34-47%.
