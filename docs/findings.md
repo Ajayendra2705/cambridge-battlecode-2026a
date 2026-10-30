@@ -1357,3 +1357,17 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
 - **Willow games are level on deaths now** (bb2's panels, scratch `willow.py`): with a rival Willow our deaths 5.51 a game
   against their 5.66 (47 games, 18 won); without Willow or Tavi 3.78 against 4.20 (94, 42 won). The 10-29 gap (5.23
   against 3.41) is gone, so the fight simulation's missing heals were not tested.
+- **In massacres every meeting is deadlier for us, whatever the count** (rk1030, 64 ranked games to r1000, scratch
+  `ovview.py`; an episode starts when a champion off its spawn has two or more enemies within 8, more than its own side
+  within 6, the nearest 3+ away). In the 9 massacres (death gap 6+) ours had 70 episodes a game and died within 20 rounds
+  after 20% of them; the rivals 43 and 5%. By count: one of ours against two 0.15 (theirs 0.02), two against three 0.27
+  (0.02). In the other 55 games the two sides match: 47 episodes each, 9% against 11%. So the massacre opponents win
+  fights at any count, and fewer meetings, not better counts, is the lever. Three or more of our deaths by r200 marked 5
+  of the 9 massacres and 1 other game; four by r300, 5 and 2; four by r400, all 9 and 8 others (scratch `early.py`).
+  Tested as ow1.
+- **Enemies just out of view rarely explain a surprise** (rk1030, scratch `ghosts.py`, `warn.py`): of our 111 deaths to
+  r1000 in massacres, 60 began (first enemy within 4) already outnumbered in view and 23 began level and ended
+  outnumbered. Of those 23, a memory of each enemy seen within 8 in the 12 rounds before would have flagged 6, and a
+  ball (four or the whole team within 4 of one) seen within 10 in the 30 rounds before only 1 (bv2's rule). Of the 60,
+  the first outnumbered view came 3 or more rounds before the contact in 33, and the victim had walked toward the enemies
+  in 24; bv1's ball condition held at that first view in 11.
