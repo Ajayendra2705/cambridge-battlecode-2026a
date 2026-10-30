@@ -12,9 +12,12 @@
   deaths at most +0.2, collected at least 99%; then confirmed pooled with the b22p pair (`vp4_b22p`, `main_b22p`). vp4
   itself has an adoption rule against the fresh bases on b24p + b25p (row vp4); if vp4 passes outright, adopt vp4.
 - **Runner:** `data/run_after11.sh` (started 23:43, background) gates vp4 on b24p (done 23:57: 20 of 50, deaths 270 against
-  vp3's 273 and bb2's 307) and b25p, then the lines of `data/queue11.txt` (`main:b24p`, `main:b25p`, `exp/vp4:b22p`,
-  `main:b22p`; re-read before each gate, `#` skips a line), decoding each in the background. The quota (50 groups a
-  rolling hour, 10 a gate) holds each gate until 40 or fewer are used: about one gate every 12 minutes.
+  vp3's 273 and bb2's 307) and b25p (from 00:11), then the lines of `data/queue11.txt` (`main:b24p`, `main:b25p`,
+  `main:b22p`, then `#exp/vp4c:b22p` and `#exp/vp3c:b22p`: remove the `#` of the one vp4's rule picks; the file is re-read
+  before each gate), decoding each in the background. The quota (50 groups a rolling hour, 10 a gate) holds each gate
+  until 40 or fewer are used: about one gate every 12 minutes.
+- **vp3c** (`bots/exp/vp3c`, row vp3c): vp3's build five a side only; local screen passes (`multi-000617`). vp4's own
+  rule picks between vp3c and vp4c (vp4 on b24p: Vesper's deaths 1.00 to 1.04 against vp3's, her damage 4223 to 3603).
 - **Adopting in a gap:** `touch data/hold_gates` (the runner then starts no new gate), wait until `procs.sh` shows no
   `gatechain`, run `bash tools/platform/adopt.sh vp4c bb2`, then `rm data/hold_gates`. After the adoption a `main:` line
   in the queue would play vp4c, not bb2: replace `main:b22p` by a copy of bb2 (`cp -r bots/pool/bb2 bots/exp/bb2r`,
