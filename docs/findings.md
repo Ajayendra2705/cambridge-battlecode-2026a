@@ -1377,3 +1377,9 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
   18). Our death within 20 rounds after a meeting with one enemy in view: alone 0.09 (theirs 0.03), with one teammate
   0.11 (0.03), with two 0.09 (0.01). In the other 55 games the rates match (0.02-0.03 for us, 0.03-0.06 for them). So in
   massacres the one enemy in view is the front of a group: ow1's outnumbered rule fires only once the rest is in view.
+- **The whole economy gap sits in the games where we die fast** (bb2's 150 pinned games, b19p + b20p + b21p, to r1000;
+  scratch `caution.py`). ow1's trigger (our deaths at least 3 + one per 100 rounds after r200, at some round to r1000)
+  holds in 37 games: we won 7; our deaths 11.1 a game against their 5.9; collected 472 against 852; tributed 305 against
+  669. In the other 113 games we won 58; deaths 2.0 against 4.6; collected 830 against 827; tributed 665 against 620. So
+  outside those games our economy is level with the panel's rivals, and a quarter of the games decide the gap. The
+  trigger selects on deaths, so the gems follow partly by construction; the size of that group is the finding.
