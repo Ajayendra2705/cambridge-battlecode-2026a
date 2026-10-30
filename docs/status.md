@@ -12,6 +12,10 @@
   1. `data/run_after8.sh`: hd1 on b22p (gating since 23:04) then b23p; decodes in the background.
   2. `data/run_after10.sh`: after (1), vp3 on b24p and b25p (row **vp3r**), then vc1 on b22p and b23p (row **vc1**).
      `data/run_after9.sh` was stopped before it gated anything (replaced by run_after10).
+  3. A gate submits the variant it tests. If these runners died with the old session (none listed by `procs.sh`), first
+     make sure main (bb2) is the submitted bot (the last line of `data/chain_cands.log` should be a resubmit of main;
+     else resubmit main as `gateq.sh` does), then restart the missing gates with one new runner like `run_after10.sh`
+     (`run_pipe3.sh` skips decodes already done; drop a gate already in `results/gate.log`).
 - **How to judge** (rules are in the rows, written before the games):
   - hd1: `decoded.py types data/fights/hd1_b22p_b22p data/fights/hd1_b23p_b23p` (Heart of Ruin deaths down 0.2 from
     1.48; its champion damage at least 2359) and `pooled.py bb2_b22@b22 hd1_b22p@b22p bb2_b23@b23 hd1_b23p@b23p`
