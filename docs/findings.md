@@ -1519,3 +1519,12 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
   against bb2's 0.024 and their 0.015; one ally 0.011 against 0.016 and 0.009); with two or three enemies it stays 1.6-2.7
   times theirs. Deaths fall after r300 (r300-500 0.92 against 1.07 a game, r500-1000 2.41 against 2.70), not before
   (`early2.py`). Middle captures barely move (7.5 against 6.8 a game; theirs 13.6), so the middle gap stays.
+- **Our Vesper buys health, theirs strength** (bb2 on b22 + b23, all 100 games, to r1000; `tools/replay/perhit.py`, the
+  damage of a lone hit on a champion): our Vesper's median basic hit is 65 at r0-299, 70 at r300-599 and 135 from r600;
+  the band's 65, 112 and 182 (five a side on b22-b24 the same: 70 against 110 at r300-599). The other types' hits match
+  (Heart of Ruin, Marcella's spell; Vendetta within 15%). At r400 (`decoded.py items`) ours holds Jungle of health 0.70 and
+  Durability 0.57 emblems against about 1.4 strength emblems; theirs about 2.3 strength emblems (Bruiser 0.67, Jungle 0.53,
+  Treasure 0.42, Prospector 0.39) and 1517 max health to our 1683. Both fire about 24 shots a game five a side
+  (`decoded.py shots`), so the damage gap (4339 against 3233 a game) is the size of the shot. Our shop formula weighs a
+  health emblem by health growth over max health with a first-emblem bonus (Jungle +0.15, Durability +0.11), which beats
+  any strength emblem for her after Treasure. ib1 (Jungle of the main stat on every type) raised her median from 70 to 90.

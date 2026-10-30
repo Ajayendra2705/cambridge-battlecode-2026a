@@ -1,4 +1,20 @@
-# Status (updated 2026-10-30 20:26 IST)
+# Status (updated 2026-10-30 21:23 IST)
+
+## Update at 21:23 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (resubmitted after every gate). **Ladder at 20:52:** rank 53, 2009.3 (`data/ladder_1030d.jsonl`;
+  rank 30 is 2111.9, rank 40 2067.4); the user reported 2000 a little later. Last 30 ranked games: 14 won.
+- **Rejected:** ib1r (deaths +0.16 on b24p), hb1 (deaths -0.16 against -0.3; tributed 97.9%). ib2 and ib3 not gated.
+- **Running** (check `bash tools/platform/procs.sh`; one chain at a time):
+  1. `data/run_after4.sh`: base `bb2_b25@b25` on the three-pick panel b25 (gating since 21:04), pin as b25p, then s3p
+     and d3m on b25p. Judge each by its row (`pooled.py bb2_b25@b25 s3p_b25p@b25p`, and d3m the same).
+  2. `data/run_after5.sh`: when (1) is done, vp1 on b22p and b23p (row vp1; base `bb2_b22@b22`, `bb2_b23@b23`).
+- **New lever, vp1** (findings, "Our Vesper buys health"): our Vesper's lone basic hit stays at a median of 70 from r0 to
+  r600 while the band's goes 65 to 112 (b22 + b23, `tools/replay/perhit.py`), because after Treasure she buys Jungle of
+  health and Durability. vp1 gives a shooter Jungle of strength and no Durability. Target: her champion damage +15%.
+- **Against the band by team size** (bb2 on b22-b24): three a side 1 of 28 won, four a side 21 of 40, five a side 19 of
+  82. Five a side the rounds spent in each local state (enemies and allies within 6, health) match theirs, yet we die
+  about twice as often in each.
 
 ## Update at 20:26 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
