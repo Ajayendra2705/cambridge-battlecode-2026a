@@ -25,6 +25,9 @@
   - `data/run_after5.sh` (task bix1z3esp, started 15:01) waits for rh1's last gate, then runs `run_pipe.sh ow2` (ow2 =
     ow1 plus target avoidance under caution; passed its local screen at 15:01). If ow1 is adopted before ow2's first
     gate, stop it and restart it with `BASE=` ow1's judge runs (and amend row ow2).
+  - `data/run_after6.sh` (task b5e9mcys3, started 15:11) waits for ow2's last gate, then runs `run_pipe.sh ow3` (ow3 = ow2
+    with a wider leave rule under caution; passed its local screen at 15:11). Same restart rule if main changes first.
+- **Ladder at 15:10:** rank 61, 1984.4 (13:28: rank 73, 1947.8), since test bots stay off the ranked sets.
 - **Next:** judge cs1 (steals by `tools/replay/steals.py`),
   bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
   `bash tools/platform/adopt.sh NAME bb2` between gates (stop both runners first), rebuild the queued candidates on the new
