@@ -1,6 +1,20 @@
-# Status (updated 2026-10-30 06:30 IST)
+# Status (updated 2026-10-30 07:00 IST)
 
-## Update at 06:30 IST 10-30 (session 86)
+## Update at 07:00 IST 10-30 (session 86)
+
+- **Ladder at 06:48:** rank 62, rating 1974.3 (05:26: 69, 1946.3); tw13b on the ladder since 06:26 (version 1190, resubmitted
+  as 1192 by the w5 chain).
+- **tw13b confirmed on the fresh panel b21** (`data/judge_b21.txt`): against mi8 pinned to the same opponents, collected
+  +7.0%, tributed +12.5%, our deaths -0.18.
+- **Running since 06:59:** `data/run_w6.sh` (once, in the background): lv3t (near own-side gem clusters x1.6, rebuilt on
+  tw13b) on b19p, b20p, b21p; writes `data/judge_lv3t.txt` (rule in row lv3t). Local screen: collected +4.8%, wins and
+  deaths level.
+- **Next: rf1** (Ryth for Varg on 5-pick maps; row rf1, rule written). Its runner `data/run_w7.sh` waits for any chain
+  and for 10 free groups before each of its three gates. Start it once the local fault screen
+  (`data/local_all70_rf1.log`) shows no bot fault.
+- **N:** ww05 (wins -44 locally), fu100, ww2, gw15 (gold weight 0.15: deaths +29%).
+
+## Update at 06:29 IST 10-30 (session 86)
 
 - **Main is tw13b** (mi8 + `TRAVEL_W` = 1.3 in `targets.h`), adopted at 06:26 as version 1190; mi8 is `bots/pool/mi8`.
   Pooled over b19p and b20p (100 games, to r1000): collected +6.4%, our deaths -0.22, tributed +4.5%; wins 21 and 17 of
