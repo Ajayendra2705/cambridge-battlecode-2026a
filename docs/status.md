@@ -1,36 +1,31 @@
-# Status (updated 2026-10-30 14:02 IST)
+# Status (updated 2026-10-30 15:23 IST)
 
-## Update at 14:02 IST 10-30 (session 86; a handoff: a new session can continue from here)
+## Update at 15:23 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
-- **Main is bb2** (version 1217, resubmitted after every gate; 1253 at 13:56). **Ladder at 13:28:** rank 73, 1947.8 (11:05:
-  rank 62, 1979.1). The user's target is now 2100 (rank 40 was about 2055 at 13:28).
-- **Rejected since 11:20:** ms1, vw2, dr0p on the platform (dr0p: our deaths +0.74, collected -4.0); jm1 on its local
-  screen. Rows in `docs/experiments.md`.
-- **Test bots no longer play ranked sets.** Ranked sets start every 10 minutes at :x0:05; today 23 of 80 sets were played by
-  the bot under test (44% won against main's 54%). Since 13:51 `tools/platform/gateq.sh` uploads a test bot only from
-  :x1:00 to :x2:59 (`NO_RANKED_WINDOW=1` skips the wait).
-- **The largest loss factor is enemy balls** (`docs/findings.md`, "Ranked massacres are enemy balls"): 14 of our 64 newest
-  ranked games had a death gap of 3+ and none was won; the rivals move as one ball of four or five and our champions walk
-  up one at a time. bv1 (enemy-ball avoidance; first named ba1, a name already used on 10-26) passed its local screen (`data/local_all70_bv1.log`); bv2 (bv1 plus a remembered ball in the fight decision) passed its local screen at 14:21.
-- **Running:**
-  - `data/run_cands2.sh ms1 vw2 dr0p ww2p rh1` exited at 14:30 after ww2p's judge. **ww2p N** (14:32): collected +0.4%
-    (target +2%), our deaths +0.31 (guard 0.3).
-  - `data/run_pipe.sh` (BASE = bb2's pinned runs): like `run_cands2.sh`, but each candidate's decode and judge run in the
-    background while the next one gates, so the platform does not idle; its judges add `steals.py`. **cs1 N** (15:21):
-    steals 1.45 to 1.36 a game (target 1.15).
-  - `data/run_after4.sh` (task bj0lf9x1q, started 14:47; replaces `run_after3.sh`) waits for cs1's last gate, restores
-    rh1, then runs `run_pipe.sh bv1 ow1 bv2 rh1` (bv1 passed its local screen at 14:08). ow1 (caution once our team dies
-    fast: leave when outnumbered in view) passed its local screen at 14:50. bv2 is parked as `bots/exp/bv2_hold` (row
-    bv2), so the pipe skips it.
-  - `data/run_after7.sh` (task bzwwisguo, started 15:16; replaces `run_after5.sh` and `run_after6.sh`) waits for ow1's
-    last gate, then runs `run_pipe.sh ow3 ow2` (ow3 and ow2 passed their local screens at 15:11 and 15:01). rh1 is parked
-    as `bots/exp/rh1_hold` (row rh1), so the bv1 pipe skips it. If main changes before ow3's first gate, restart the runner
-    with `BASE=` the new main's judge runs and amend rows ow3 and ow2.
-- **Ladder at 15:10:** rank 61, 1984.4 (13:28: rank 73, 1947.8), since test bots stay off the ranked sets.
-- **Next:** judge bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
-  `bash tools/platform/adopt.sh NAME bb2` between gates (stop both runners first), rebuild the queued candidates on the new
-  main and amend their rows before any game.
-
+- **Main is bb2** (version 1217, resubmitted after every gate). **Ladder at 15:10:** rank 61, 1984.4 (13:28: rank 73,
+  1947.8). The user's target is 2100 (rank 40 was about 2055 at 13:28).
+- **Rejected today since 11:20:** ms1, vw2, dr0p, ww2p, cs1 on the platform; jm1 on its local screen. Rows in
+  `docs/experiments.md`.
+- **Test bots no longer play ranked sets.** Since 13:51 `tools/platform/gateq.sh` uploads a test bot only from :x1:00 to
+  :x2:59 (ranked sets start at :x0:05 and last about a minute); before that 23 of 80 sets were played by the bot under test.
+- **The whole economy gap sits in the games where we die fast** (`docs/findings.md`, session 86 section): on bb2's 150
+  pinned games, the 37 where our deaths reach 3 + one per 100 rounds after r200 were won 7 times (deaths 11.1 against 5.9,
+  collected 472 against 852); in the other 113 we won 58 with collection level (830 against 827). In those games the
+  rivals travel in threes and win fights at any count. The ow family acts there: ow1 (under that trigger, leave when
+  outnumbered in view), ow2 (ow1 plus target avoidance), ow3 (ow2 plus leaving a lone enemy when we are one or two), ow4
+  (ow3 with an earlier trigger, 2 + one per 100 rounds after r100). bv1 (enemy-ball avoidance) is the older attempt.
+- **Running (one gate at a time, each in the :x1-:x2 window):**
+  - `data/run_after4.sh` (task bj0lf9x1q) runs `run_pipe.sh bv1 ow1 bv2 rh1` against bb2's pinned runs: bv1 gated
+    14:49-15:11 (its judge decodes now), ow1 gates from 15:21; bv2 and rh1 are parked (`bots/exp/bv2_hold`,
+    `bots/exp/rh1_hold`, rows bv2 and rh1), so it skips them, then waits for its judges and exits.
+  - `data/run_after7.sh` (task bzwwisguo) waits for ow1's last gate, then runs `run_pipe.sh ow3 ow2`.
+  - ow4's local screen (`data/local_all70_ow4.log`). If it passes, queue it after ow2 with a waiter like
+    `data/run_after7.sh` (wait for `ow2_b21p@b21p` and no gate chain, then `run_pipe.sh ow4`).
+- **Next:** judge bv1, ow1, ow3, ow2 by their rows (`data/judge_NAME.txt`; for the ow family also run scratch
+  `caution.py` on base and new runs for the mechanism). Adopt a pass with `bash tools/platform/adopt.sh NAME bb2` between
+  gates (stop the runners first), then restart the queued runners with `BASE=` the new main's judge runs and amend the
+  queued rows before any of their games. If two ow variants pass, adopt the one with the larger deaths cut whose guards
+  hold.
 
 ## Update at 11:20 IST 10-30 (session 86; a handoff: a new session can continue from here)
 
