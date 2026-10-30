@@ -1,4 +1,13 @@
-# Status (updated 2026-10-30 23:11 IST)
+# Status (updated 2026-10-30 23:25 IST)
+
+## Session 87 (from 23:14 IST 10-30)
+
+- **Ladder at 23:15:** rank 60, 1986.9 (`data/ladder_2318_p*.json`; 2100 is rank 30-31). The user's goal: 2100 by 02:00
+  IST 10-31. About 15 ranked sets (5 games each) remain before then; reaching it needs about 14 of them won, while bb2
+  wins 50% of ranked games (200 of the 400 since 10:00 IST: three a side 36 of 75, four 64 of 102, five 100 of 223;
+  `data/ranked_2320*.json`). The rating fell 21.8 from 22:14 to 23:15 with 2 of 6 sets won.
+- **Plan:** the runners of the 23:11 handoff keep going (hd1 b23p, then vp3r on b24p and b25p, then vc1). Judge each by
+  its row as soon as its decode is done, and adopt a pass at once in a gap between gates, so it plays the most ranked sets.
 
 ## Handoff at 23:11 IST 10-30 (session 86 ends here on the user's request; a new session continues from this section)
 
