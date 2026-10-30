@@ -1478,3 +1478,20 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
   type holds Jungle of the main stat (0.44-0.66) where ours hold Jungle of health (0.57-0.80). Tested as ib1 and ib2.
 - **Early deaths:** rounds 100-300 cost us 1.12 deaths a game against their 0.69 (r0-100 level, 0.35 and 0.31). Tested
   as hg2 (hold before a middle group they hold).
+- **Five a side the gap is the middle, not our own half** (bb2 on b22 + b23, the 47 decoded five-a-side games, to r1000,
+  `decoded.py captures` and `lives` on those games only): captures in our own half 30.0 a game (373 gems) against their
+  30.6 (371) in theirs, but in the middle 6.8 (151 gems) against 13.1 (308) and in the other side's half 1.5 against 4.5.
+  Of the 21.3 middle group lives a game they hit first 12.7 times and we 7.8, at the same delay after the group comes up
+  (median 15-16 rounds); steals are rare (0.9 by us, 1.2 by them). So they reach more middle groups, and do not take them
+  from us in fights. Their capture cycle is 75 rounds a capturer (moves 47) against our 98 (60). Removing our death
+  discount on contested groups (dr0p, 10-30) sent us back to the middle and cost +0.74 deaths a game with no more gems, so
+  the middle follows fight strength.
+- **ib1's items cut five-a-side deaths most** (`bysize.py`): five a side our deaths fell from 5.08 to 4.19 (b22p) and from
+  6.56 to 5.78 (b23p); three and four a side they moved by less than 0.4.
+- **Blowout losses are gold snowballs** (our last 40 ranked games before 19:50 IST on 10-30, 16 won; `ranked.py`,
+  summaries in `data/summaries/`): 8 losses with 9-24 of our deaths, spread over every champion (e.g. 00reverse_spiral
+  against Rogue Lock Pickers, 24 deaths to 1). In three of them the opponent earned 2.4k-7.2k gold against our 0.9k-2.5k
+  (1.6 to 7.9 times ours). At the end their champions held Durability of health, Treasure of health and Jungle of strength
+  emblems (𓎼𓃭𓅱𓂋𓇌 𓏏𓅱 𓂋𓄿 on 01starvation and 00galaxy), then Bruiser of strength or health (Rogue Lock Pickers on
+  00reverse_spiral: 2-9 Bruiser emblems a champion by r1127, plus Capture and Prospector; their Vesper on 01starvation
+  11); ours held Treasure of the main stat and Jungle of health.
