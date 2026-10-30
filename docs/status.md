@@ -8,17 +8,20 @@
   screen. Rows in `docs/experiments.md`.
 - **Test bots no longer play ranked sets.** Ranked sets start every 10 minutes at :x0:05; today 23 of 80 sets were played by
   the bot under test (44% won against main's 54%). Since 13:51 `tools/platform/gateq.sh` uploads a test bot only from
-  :x0:25 to :x2:59 (`NO_RANKED_WINDOW=1` skips the wait).
+  :x1:00 to :x2:59 (`NO_RANKED_WINDOW=1` skips the wait).
 - **The largest loss factor is enemy balls** (`docs/findings.md`, "Ranked massacres are enemy balls"): 14 of our 64 newest
   ranked games had a death gap of 3+ and none was won; the rivals move as one ball of four or five and our champions walk
-  up one at a time. ba1 (enemy-ball avoidance) is on its local screen (`data/local_all70_ba1.log`, started 14:00).
+  up one at a time. bv1 (enemy-ball avoidance; first named ba1, a name already used on 10-26) passed its local screen (`data/local_all70_bv1.log`); bv2 (bv1 plus a remembered ball in the fight decision) passed its local screen at 14:21.
 - **Running:**
-  - `data/run_cands2.sh ms1 vw2 dr0p ww2p rh1` (task b7d66z612): decoding ww2p, then writes `data/judge_ww2p.txt` and exits
-    (rh1 is parked as `bots/exp/rh1_hold`).
-  - `data/run_after2.sh` (task b2wagbb40) waits for it, restores rh1, then runs `run_cands2.sh cs1 ba1 rh1` with bb2's
-    pinned runs as BASE. If ba1 fails its local screen, delete `bots/exp/ba1` before its turn and it is skipped.
-- **Next:** judge ww2p (collected +2%; guards deaths +0.3, tributed 98%), then cs1 (steals by `tools/replay/steals.py`),
-  ba1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
+  - `data/run_cands2.sh ms1 vw2 dr0p ww2p rh1` exited at 14:30 after ww2p's judge. **ww2p N** (14:32): collected +0.4%
+    (target +2%), our deaths +0.31 (guard 0.3).
+  - `data/run_pipe.sh cs1 ba1` (task byr7502nm, started 14:11, BASE = bb2's pinned runs): like `run_cands2.sh`, but each
+    candidate's decode and judge run in the background while the next one gates, so the platform does not idle; its
+    judges add `steals.py`. It gates cs1 only (ba1 was renamed bv1) and exits after cs1's judge.
+  - `data/run_after3.sh` (task bnzb0j924, started 14:20) waits for cs1's last gate and for the ww2p runner's exit, restores
+    rh1, then runs `run_pipe.sh bv1 bv2 rh1` (bv1 passed its local screen at 14:08, bv2 at 14:21).
+- **Next:** judge cs1 (steals by `tools/replay/steals.py`),
+  bv1 (our deaths -0.3; guards collected and tributed 98%), rh1, each by its row. Adopt with
   `bash tools/platform/adopt.sh NAME bb2` between gates (stop both runners first), rebuild the queued candidates on the new
   main and amend their rows before any game.
 

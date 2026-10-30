@@ -1345,11 +1345,11 @@ r1000. Readers: `tools/replay/deathfactors.py`, `tools/replay/steals.py`; scratc
   massacre rounds against 13% in even games (panels 5% and 19%). Trace (adgato_gemcombat4 against shoutout MAPS,
   `mtrace.py`): the five rivals stay within 2-3 tiles of each other from r40 and park at a middle group; our Varg, Heart
   of Ruin, Vesper and Vendetta walk up one at a time at full health, keep working while the ball stands 6-7 tiles off,
-  and die in its reach; the Heart of Ruin returns 20 rounds after its respawn and dies there again. Tested as ba1.
+  and die in its reach; the Heart of Ruin returns 20 rounds after its respawn and dies there again. Tested as bv1.
 - **Test bots on the ladder lost more.** Ranked sets are created every 10 minutes at :x0:05 and play out within a minute.
   Each gate submits the bot under test for 3-6 minutes, so 23 of the 80 ranked sets of 10-30 to 13:50 were played by a
   test bot: 51 wins in 115 games (44%), against 154 in 285 (54%) for the sets played by main. Since 13:51 `gateq.sh`
-  uploads a test bot only from :x0:25 to :x2:59, so the ranked sets are played by main.
+  uploads a test bot only from :x1:00 to :x2:59 (of 400 ranked games 375 were created at :x0:00-:x0:09, 20 at :x0:10-:x0:49 and 5 at :x2:0x; each finishes 30-90 seconds after its creation), so the ranked sets are played by main.
 - **Steals** (`steals.py`, bb2's panels): the rivals captured 1.45 of our kills a game (36 gems, 145 gold), we 0.82 of theirs
   (21, 94). At the kills they stole one of theirs was within 6 of our nearest champion in 80%; our nearest was on the
   tiles 3 rounds later in 23% against 65% for the kills we kept. Groups where we dealt half the damage or more and the
