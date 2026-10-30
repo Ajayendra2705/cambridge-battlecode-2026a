@@ -1,6 +1,22 @@
-# Status (updated 2026-10-30 17:19 IST)
+# Status (updated 2026-10-30 18:12 IST)
 
-## Update at 17:19 IST 10-30 (session 86; a handoff: a new session can continue from here)
+## Update at 18:12 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (resubmitted after every gate; version 1283 at 17:49). **Ladder at 17:46:** rank 51, 2014.3. The
+  user's target is 2100 (rank 30-31). Measured gap: ranked since 10:00 we won 45% against teams rated 2000-2050 and 1 of
+  5 above 2050; on the new panel b22 (ranks 20-39) bb2 won 12 of 50 (findings, "Hoarders and giant channels").
+- **The user's rule (17:50): test only against teams better than us.** New panel `b22` (procless, Let's LARP again,
+  Jupiter, Rogue Lock Pickers, 0xDEADBEEF; 2066-2162), pinned as `b22p` to `bb2_b22@b22`, which is its exact base.
+  b19p and b20p keep 4 of 5 teams above us; b21p has two below (1988-1990), so new candidates gate on b20p, b22p, b19p
+  (`data/run_pipe2.sh`, panels and bases as parameters).
+- **pz1 N** (17:18-17:49; collected -3.7%): our Prism banks and stays weak. SilverSamurai's Prism hoards instead.
+- **Running:** `data/run_pipe2.sh dn1` (task started 18:08 with `PANELS="b20p b22p b19p"`, `BASE="bb2_b20p@b20p
+  bb2_b22@b22 bb2_b19p@b19p"`): dn1 denies giant channels (row dn1: altar watch after seeing a hoarder, lock bought then,
+  locks and stuns on channels of 800+ total or 300+ gems). It writes `data/judge_dn1.txt`.
+- **Next:** judge dn1 by its row. Where the band above us beats us: massacres (a fifth of b22's games) and economy in
+  the even games (10 of 31 won); procless out-fights us at every count.
+
+## Update at 17:19 IST 10-30 (session 86)
 
 - **Main is bb2** (resubmitted after every gate; version 1277 at 16:37). **Ladder at 17:19:** rank 53, 2007.9 (16:08:
   rank 59, 1989.8; 13:28: rank 73, 1947.8). The user's target is 2100 (about rank 31 at 16:08).

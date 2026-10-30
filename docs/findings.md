@@ -1423,3 +1423,34 @@ rh1 (`data/judge_*.txt`), and our ranked listing (`cambc matches list --team ...
   we tribute nothing in our 00ribs and 01boss_battle losses (0 against 985 and 993; 0 against 880 and 627); 00split is lost
   on its golem groups (214 gems each: 2.6 captures a game against 4.4), 01starvation and adgato_gemcombat5 to massacres
   (deaths 25/0, 17/2, 12/3, 9/3), and 00expanse, 00ambush, 02harvest and 02famine by close races (we end at 800-990).
+
+## Hoarders and giant channels; the band above us (session 86, 10-30 17:30-18:15 IST)
+
+Sources: bb2's pinned runs `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p` (150 games, to r1000), pz1's runs on the same
+panels, the new panel `b22` (five teams ranked 20-39, 2066-2162 at 17:46; base `bb2_b22@b22`), our ranked listing (735 games
+since 10-29 17:00) and the ranked listings of the top 10 teams. Readers: `decoded.py types`, `champs`, `starts`, `items`,
+`byteam.py`, `deathfactors.py`, `deathspots.py`; scratch `prismbag.py`, `teamtrib.py`, `carry.py`, `chan.py`, `bigtrib.py`.
+
+- **SilverSamurai hoards in its Prism.** On b20p (10 games) their Prism collects 781 gems a game to r1000 (our whole team
+  742) and never tributes before the end: 0 bag drops while alive, mean bag 300-470, then one channel of 887-1157 gems
+  (bag / 10 turns, 89-116 turns; gems captured during the channel join it). Their other four hit camps beside her and
+  capture nothing (0 gems each); their Willow stays within 3 tiles of her in 70-80% of rounds. Her focus grows 1.5 a gem,
+  so at 500 gems her damage spell deals about 1250 and her area spell 830: camp damage 218 a round of hitting (ours at
+  most 115). We won 3 of 10. In 00monolith our five stood 20-47 tiles from her during her 75-turn final channel, and none
+  held an altar lock: we buy one only once the rivals have tributed 600, which a hoarder never does before the end.
+- **Giant bags decide a tenth of the panel games.** In 16 of bb2's 150 games a rival ended with a bag of 300+ or tributed
+  300+ at once; we lost 14. Besides SilverSamurai (8 games) they are the guard maps (01boss_battle, 02guardians: the altar
+  opens late and the first long channel wins) and two single channels of 235-330. dn1 (row dn1) acts on these.
+- **Our Prism is not their Prism.** pz1 (Prism for Varg, five a side) collected 118 gems a game with 1.09 deaths (Varg 155,
+  0.89): ours banks like the other four. Team collection fell 3.7%.
+- **The top 10 draft the meta we draft.** Five a side: Heart of Ruin, Marcella, Vendetta, Vesper plus one of Ryth (four
+  teams), Tavi (Mite, hello), Cassi and Issac (prism best girl, Intercontinental Fish) or Ren (Ad Astra). prism best girl
+  (rank 1) plays Vesper, Vendetta, Heart of Ruin, Cassi and Issac on four-pick maps too. None of the top 10 hoards.
+- **The band above us is far above us.** Ranked since 10:00 IST on 10-30, by the opponent's rating at 17:46: under 1950 we
+  won 24 of 40, 1950-2000 63 of 115, 2000-2050 29 of 65, 2050-2100 1 of 5. On b22 bb2 won 12 of 50: procless (2162) 1 of
+  10 (deaths 8 against 2 a game, collected 429 against 917), Rogue Lock Pickers 1 of 10, Jupiter 3, 0xDEADBEEF 3, Let's
+  LARP again 4. procless starts 42 champion fights a game (we 28), outnumbered in 48% of them, and wins them: in the fights
+  it starts we lose 4.4 champions a game and it loses 0.7, though more of ours stand within 6 (2.47 against 2.00). At r400
+  their Heart of Ruin and Vendetta hold 1690 and 1830 health (Prospector, Jungle and Bruiser emblems of health), ours 870
+  (Treasure first; ours die more and so hold less). Across b22, 10 of 50 games are massacres (our deaths minus theirs 6+;
+  1 won; team gold at r300 680 against 1296); in them two thirds of our deaths come while we are even or outnumber them.
