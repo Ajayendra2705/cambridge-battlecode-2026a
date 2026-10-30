@@ -1,4 +1,16 @@
-# Status (updated 2026-10-30 20:09 IST)
+# Status (updated 2026-10-30 20:26 IST)
+
+## Update at 20:26 IST 10-30 (session 86; a handoff: a new session can continue from here)
+
+- **Main is bb2** (v1297 live at 20:16). hg2 **N** (stopped after b22p: collected -10%, deaths +0.38).
+- **Running** (check `bash tools/platform/procs.sh`; one chain at a time):
+  1. `data/run_after2.sh`: base `bb2_b24@b24` done (14 of 50; pinned as b24p), now ib1 on b24p (started 20:22).
+  2. `data/run_after3.sh`: when (1) is done, applies row ib1r's rule (`data/judge_ib1r.txt`). Pass: runs
+     `adopt.sh ib1 bb2` at once (no gate runs then) and gates ib3 on b22p and b23p (base ib1's runs). Fail: gates hb1
+     there (base bb2's runs). Then s3p on b22p and b23p. Judge ib3 / hb1 / s3p by hand by their rows.
+  After an adoption: update `docs/lineage.md`, this file and the ib1r row; check `submissions list` shows main live.
+- **Ruled out tonight** (findings): our gold is not idle (unspent lower than theirs; item value 9% lower from income);
+  focus fire is level; assist and join-when-ahead were already rejected (as1, ja1); Varg swaps rejected five times.
 
 ## Update at 20:09 IST 10-30 (session 86; a handoff: a new session can continue from here)
 

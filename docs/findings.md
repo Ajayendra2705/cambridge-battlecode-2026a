@@ -1508,3 +1508,9 @@ ranked 20-39, 2072-2175 at 18:25), to r1000 unless noted. Readers: `tools/replay
     12); 58% of ours come right after an enemy cast on it (likely a stun), 36% of theirs. Their fifth pick is a stunner or
     healer (Ryth in 24 of 47 games, Willow 17, Tavi 15) where ours is Varg (the Varg swaps ry1, ta1, wl1, ry2 and pz1 were
     all rejected); their Marcella casts her stunning reset 29 times a game to our 24; the other types' cast counts match.
+- **Not the cause five a side** (same 47 games, scratch reads of the decoded rows): unspent gold per champion is lower
+  than theirs (42 against 57 at r400-600), so gold does not sit idle; our items are worth 9% less (431 against 475 gold
+  at r400-600, 687 against 758 at r600-800) from lower income. Focus fire is level: in rounds with two or more of a side
+  hitting champions, ours hit one target in 76% (theirs 67%), the lowest-health one in 87% (85%); they have 47% more such
+  rounds. With a teammate hit and the nearest enemy 3-4 tiles away our healthy champions stand still in 33% of rounds
+  against their 18% and hit in 16% against 26% (`bysz.py 5 decoded assist`), the gap as1 and ja1 targeted (both rejected).
