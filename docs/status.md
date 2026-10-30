@@ -9,9 +9,9 @@
 - **Running since 06:59:** `data/run_w6.sh` (once, in the background): lv3t (near own-side gem clusters x1.6, rebuilt on
   tw13b) on b19p, b20p, b21p; writes `data/judge_lv3t.txt` (rule in row lv3t). Local screen: collected +4.8%, wins and
   deaths level.
-- **Next: rf1** (Ryth for Varg on 5-pick maps; row rf1, rule written). Its runner `data/run_w7.sh` waits for any chain
-  and for 10 free groups before each of its three gates. Start it once the local fault screen
-  (`data/local_all70_rf1.log`) shows no bot fault.
+- **Queued: ry2** (Ryth for Varg on 5-pick maps; row ry2, rule written; built as `exp/rf1`, renamed because an ML-era row
+  rf1 exists). Local fault screen clean. Its runner `data/run_w7.sh` (started 07:07, once) waits for any chain and for 10
+  free groups before each of its three gates, then writes `data/judge_ry2.txt`.
 - **N:** ww05 (wins -44 locally), fu100, ww2, gw15 (gold weight 0.15: deaths +29%).
 
 ## Update at 06:29 IST 10-30 (session 86)
