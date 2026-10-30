@@ -2,7 +2,7 @@
 
 ## Update at 00:48 IST 10-31 (session 86; a handoff: a new session can continue from here)
 
-- **Ladder at 00:39:** rank 68, 1967.3 (bb2 keeps losing rating: 2045 at 18:54, 1983 at 23:45).
+- **Ladder read between 00:38 and 00:42:** rank 68, 1967.3 (bb2 keeps losing rating: 2045 at 18:54, 1983 at 23:45).
 - **Pinned panels replay exactly.** `main_b24p@b24p` (00:21) and `main_b25p@b25p` (00:32) gave bb2's games of 20:16 and
   21:03 to the last gem, so a fresh base on a pinned panel is never needed. b22p, b23p and b24p mix three-, four- and
   five-a-side maps (`data/map_sizes.json`, three 5-pick maps added: 00ribs, 02crossing, adgato_gemcombat5).
