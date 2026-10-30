@@ -1,4 +1,24 @@
-# Status (updated 2026-10-30 23:25 IST)
+# Status (updated 2026-10-31 00:04 IST)
+
+## Update at 00:04 IST 10-31 (session 86; a handoff: a new session can continue from here)
+
+- **Ladder at 23:45:** rank 64, 1982.7 (`data/ladder_now*.json`). Main is still bb2 (resubmitted after every gate).
+- **Verdicts since 23:11:** hd1 N, vp3r N (r600 farming -0.8% against +3%; rows). vp3 five a side looked better on all
+  three panels (win share 0.37 against 0.27 over 150 games, tributed +3.9%) and worse three a side (12 against 17 on b25p),
+  against bases from 19:00-21:00.
+- **Candidate: vp4c** (`bots/exp/vp4c`): vp4's shooter build (Jungle of the main stat after Treasure, no Power) five a
+  side only; three and four a side it builds as bb2. Local screen passes (`multi-235644`, no fault). Its rule (row vp4c)
+  judges it from vp4's five-a-side run against a fresh bb2 base: `vp4_b24p@b24p` against `main_b24p@b24p`, tributed +3%,
+  deaths at most +0.2, collected at least 99%; then confirmed pooled with the b22p pair (`vp4_b22p`, `main_b22p`). vp4
+  itself has an adoption rule against the fresh bases on b24p + b25p (row vp4); if vp4 passes outright, adopt vp4.
+- **Runner:** `data/run_after11.sh` (started 23:43, background) gates vp4 on b24p (done 23:57: 20 of 50, deaths 270 against
+  vp3's 273 and bb2's 307) and b25p, then the lines of `data/queue11.txt` (`main:b24p`, `main:b25p`, `exp/vp4:b22p`,
+  `main:b22p`; re-read before each gate, `#` skips a line), decoding each in the background. The quota (50 groups a
+  rolling hour, 10 a gate) holds each gate until 40 or fewer are used: about one gate every 12 minutes.
+- **Adopting in a gap:** `touch data/hold_gates` (the runner then starts no new gate), wait until `procs.sh` shows no
+  `gatechain`, run `bash tools/platform/adopt.sh vp4c bb2`, then `rm data/hold_gates`. After the adoption a `main:` line
+  in the queue would play vp4c, not bb2: replace `main:b22p` by a copy of bb2 (`cp -r bots/pool/bb2 bots/exp/bb2r`,
+  line `exp/bb2r:b22p`) before it is due.
 
 ## Session 87 (from 23:14 IST 10-30)
 
