@@ -1,4 +1,23 @@
-# Status (updated 2026-10-31 00:48 IST)
+# Status (updated 2026-10-31 02:18 IST)
+
+## Update at 02:18 IST 10-31 (session 86; handoff, the session hit its usage limit)
+
+- **Ladder read at 02:07:** rank 71, 1959.0 (`data/ladder_now.jsonl`). Main is still bb2 (every gate resubmits it).
+- **Verdicts since 00:48** (rows in `docs/experiments.md`): vg1 **N** (b26p tributed -4.6% against bb2), vc1 **N** (b26p +
+  b25p tributed -5.2%; Vesper's gold rose, the team's gems fell), hy1 **N** locally (deaths), bb3 **N** five a side (b26p
+  tributed -12.2%, collected -10.1%: smaller bags hurt five a side), bb4 dropped, tb2 not gated. bb2's own gain over tw13b
+  was three and four a side (`sizecond.py` on b19p-b21p), but bb3 three a side came out flat raw (b25p gems 31923
+  against 32220): judge tb1 from `bb3_b25p@b25p` once `data/decode_bb3_b25p.log` is done.
+- **Running:** `data/run_after12.sh` (queue `data/queue12.txt`) gates **mq3** (3-pick draft Heart, Vesper, Marcella;
+  row mq3) on b25p from about 02:15, then waits for new queue lines: stop it with `tools/platform/procs.sh` and `kill`
+  once mq3 is decoded. mq3's local fault screen writes `data/local_all70_mq3.log` (check its run with the scratch
+  `ltypes.py`; a fault voids the gate).
+- **Next:** judge mq3 by its row; on a pass adopt it in a gap (`touch data/hold_gates`, wait for no `gatechain`,
+  `bash tools/platform/adopt.sh mq3 bb2`, `rm data/hold_gates`). Panel b27 (four a side, ranks 40-45) is written but has
+  no base run (`main:b27`); the rivals' four-a-side drafts match ours. Five a side the rivals field Ryth in 82 of 132
+  games where we field Varg (ry1 and ry2 were rejected earlier).
+- **Disk:** C: was full at 01:36 and local screens lost games; old `data/runs` folders were deleted. Check `df -h /c`
+  before a local run.
 
 ## Update at 00:48 IST 10-31 (session 86; a handoff: a new session can continue from here)
 
