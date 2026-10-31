@@ -1910,3 +1910,33 @@ Question from the team at 17:00: are we still beating v1287, the version live wh
   exhausted turns a game, 4.5 of them in the setup rounds 1-3 (the rivals 10.8-35.4).
 - **Ranked by team size over 600 games** (`data/ourmaps_1031.txt` with `data/map_sizes.json`): three a side 51 of 104,
   four 77 of 144, five 161 of 352. The 100-game sample `rk1031` (5 of 15 three a side) overstated the small-map gap.
+
+## Where the collection gap sits, and what is level (session 90, 10-31 18:55-19:35 IST)
+
+Source: bb2 on b30 + b31 (100 five-a-side games against ranks 46-64, to r1000 unless marked); readers `decoded.py`,
+`vtime.py`, `typebag.py`, `dashes.py`, `closeout.py`, `lockopp.py`, scratch `bytype.py`, `casts.py`, `sib.py`.
+
+- **Without a rival Prism the gap is wide.** In the 87 games without one the rivals tributed 419 by r600 against our
+  319 and 710 against 576 by r1000, with bags level (64 against 62 at r600). In the 13 Prism games we out-tributed them
+  (637 against 209 by r1000; their Prism carried 651) and won 6.
+- **Every type of theirs collects more, Vesper most** (`vtime.py`, non-Prism games, gems to r600): Heart of Ruin 82
+  against our 69, Marcella 118 against 106, Vendetta 83 against 74, Vesper 152 against 88; gems per gain are level
+  (17-21) and they make more gains. Each of ours had a teammate within 3 in 283-309 of 600 rounds, theirs 240-264.
+- **Team captures are level; the middle and the far half are not** (`decoded.py captures`): 41.3 against 42.4 a game;
+  own half 30.6 (454 gems) against 29.4 (448), middle 8.7 (194) against 9.4 (232), the other half 2.0 (28) against
+  3.6 (53). Per capturer a capture cycle takes 90 rounds (median 64) against 79 (56), with 54.6 moves against 49.9 for
+  the same straight hop (14.5 against 15.0). We clear faster (17.3 rounds against 22.8). Team gold is level (2937
+  against 2977 at r600); camp kills by r300 are level.
+- **Our melee die carrying gems** (`typebag.py`): with an enemy within 4 our melee (Heart of Ruin, Marcella, Varg,
+  Vendetta) carry 11.3 gems, theirs 7.5; our melee lose 45.1 gems a game on death (12.4 a death), theirs 22.4 (6.7).
+  Their Heart of Ruin, Ryth and Vendetta die with 2.4-3.6 gems, ours with 8.1-11.7; all our gems lost on death 53.4
+  against 29.5, which the killers take. Tribute starts per type are level (3.8-4.9 a game). Row mbk1 tests smaller
+  melee bags.
+- **Level, so not the cause:** dashes (`dashes.py`: 64-86 a game per dash type both sides, 7.5-10 per 100 alive rounds,
+  70-80% with no enemy within 8), casts per slot with a camp hit (Vesper's reset 32 against 30 a game), holds of a
+  captured group's tiles (45.9 against 47.8 a game, left early 4.6 against 5.5), unspent gold (ours lower: 53 against
+  74 per champion at r600-799), the close-out of a win in hand (we lost 1 of 47, they 7 of 60), channels we break by
+  walking off (none: the bot returns at once while channelling; `lockopp.py`'s "moved" are unseen causes).
+- **Noise on these panels** (scratch `sib.py`, `baserank.stats` over every bot decoded on b30p + b31p): pooled collected
+  bb2 740, dc1 726, eg1 750, lk1 740, lx1 723, op1 748, rd0 738, ve1r 756; wins 47, 45, 43, 48, 42, 42, 42, 40. Near-null
+  variants span about 30 gems, so a collected bar under +3% sits inside the noise (ve1r met its +2% by 0.05).

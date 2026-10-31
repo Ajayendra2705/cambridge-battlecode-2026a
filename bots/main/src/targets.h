@@ -126,6 +126,7 @@ int pick_group(int current) {
     // Fastest our damage can take a group down, for the bound: its health over our best damage per round.
     const double bound_dps = std::max({1.0, static_cast<double>(dps), static_cast<double>(my_spell_dps())});
     const bool solo = solo_phase();
+    const bool vesper_solo = W.team_count >= 5 && cambc::self().champion_name() == cambc::champion_type::vesper_vale;
     double best = 0, current_score = 0;
     int best_i = -1, best_n = 1, current_n = 1;
     // Fuel: big_world and road_of_riches ran out of fuel 200-380 times per game in this loop. Score every group's
@@ -263,7 +264,11 @@ int pick_group(int current) {
                 // A joiner's share counts sqrt(n), not n: champions stay near each other on groups (00crater after
                 // r150: 0.80 teammates within 6 against the rivals' 1.31, and 62% of the middle camps we wake are lost
                 // once they arrive, against 26% for the top teams, who keep 3 at a camp where we keep 2).
-                const double sc = value / (time * std::sqrt(static_cast<double>(n)) + 5 + g.bank_cost * 0.5 * bank_share(g));
+                // ve1: five a side our Vesper counts a joiner's share as n, so she farms groups of her own (b30 + b31 to
+                // r600: the rivals' Vesper 7.1 captures for 152 gems, ours 5.0 for 91, with a teammate within 3 in 241
+                // rounds against our 299; the other four types capture alike).
+                const double share = vesper_solo ? static_cast<double>(n) : std::sqrt(static_cast<double>(n));
+                const double sc = value / (time * share + 5 + g.bank_cost * 0.5 * bank_share(g));
                 if (sc > score) score = sc, score_n = n;
             }
         }

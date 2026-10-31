@@ -1,4 +1,22 @@
-# Status (updated 2026-10-31 18:41 IST)
+# Status (updated 2026-10-31 20:06 IST)
+
+## Update at 20:06 IST 10-31 (session 90)
+
+- **Main is vx1** (adopted 19:56, version 1420; bb2 to `bots/pool/bb2`): bb2 plus a farming Vesper five a side (her
+  joiner's share counts n) with Capture of strength as her second emblem. Against bb2 on b30p + b31p (100 paired games):
+  collected +3.7%, tributed +3.5%, our deaths -0.23, their deaths +0.80; the best of the nine bots decoded there (row
+  vx1, `docs/lineage.md`). Ladder at 19:05: rank 72, 1966.8 (`data/ladder_1031_1905.json`). Sprint 3 lock: Sun 1 Nov
+  05:29 IST; keep main submitted.
+- **ve1r N** (19:10, by judgment): its +2% collected bar was met by 0.05 inside the noise of null variants, with Vesper's
+  gems flat. vx1 (ve1r plus the Capture emblem) passed its own rule.
+- **Gap** (`docs/findings.md`, "Where the collection gap sits, and what is level"): team captures are level; the rivals
+  take more in the middle and our half, every type of theirs collects more, our champions sit beside teammates more,
+  and our melee die carrying twice the gems (45 against 22 a game).
+- **Queued** (`data/queue12.txt`; rules in the rows): sq75 (bb2-based, judged against bb2: share n^0.75 five a side;
+  b30p 19 and b31p 28 of 50, decoding), then sq100 (on vx1: every type's share n five a side) and mbk1 (on vx1: melee
+  bank smaller bags), each on b30p and b31p against vx1's runs. Gates take 8-13 min; the quota allows about 5 an hour.
+- **Runner:** `data/run_after12.sh` (PID 16708) gates the lines of `data/queue12.txt` and decodes each run. Stop gating
+  by about 04:30 and check that main is the active submission.
 
 ## Update at 18:41 IST 10-31 (session 90)
 

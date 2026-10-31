@@ -109,14 +109,20 @@ void shop() {
     const it bruis = focus ? it::bruiser_shard_of_focus : it::bruiser_shard_of_strength;
     const it dur = it::durability_shard_of_health;
     const it jun = it::jungle_shard_of_health;
+    const it cap = it::capture_shard_of_strength;
+    const bool vesper5 = W.team_count >= 5 && me.champion_name() == cambc::champion_type::vesper_vale;
     for (int guard = 0; guard < 20; ++guard) {
         const auto counts = me.item_count();
         it choice = treasure;
         const auto e0 = treasure.result();
         if (e0 && counts[*e0] > 0) {
             bool in_progress = false;
-            for (it x : {power, bruis, dur, jun})
+            for (it x : {power, bruis, dur, jun, cap})
                 if (counts[x] > 0 && counts[x] < 5) choice = x, in_progress = true;
+            // vx1: five a side our Vesper's second emblem is Capture of strength (a capture she starts takes 3 turns,
+            // not 5): the rivals' Vesper holds 0.64 of them at r600 on b30 + b31 and farms groups of her own (ve1r).
+            const auto ec = cap.result();
+            if (!in_progress && vesper5 && ec && counts[*ec] == 0) choice = cap, in_progress = true;
             if (!in_progress) {
                 // Live stats: the snapshot's strength is stale after a purchase in this loop, and while dead.
                 const float str = std::max(1.0f, me.strength());
