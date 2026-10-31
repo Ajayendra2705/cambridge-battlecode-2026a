@@ -68,3 +68,5 @@ bash tools/platform/adopt.sh try1 old_main_name                                #
 | Platform results of a run | `results/gate.log` + `tools/platform/rcmp.py` |
 | The teams and maps of a panel | `results/panels/README.md` |
 | Old bot source | `bots/pool/NAME`, or `git checkout archive/pre-cleanup -- bots/NAME` |
+| The Sprint 3 candidates (vx1, cmb1, cmb2, bot_10) and how to submit one | `docs/status.md`, top section |
+| The teammate's bot bot_10: how it works, its review findings, its fix variants | `docs/bot_10.md`, `tools/variant/b10_ideas.py` |

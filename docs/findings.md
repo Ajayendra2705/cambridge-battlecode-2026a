@@ -2009,3 +2009,36 @@ games, rows fin1 and fin1c).
   keeps vx1: over the whole game (190 paired games) margin +29.6 +- 24.9, win share 0.45 to 0.49 (+0.04 +- 0.04); in
   the 177 games where vx1's units diverged first, 28 losses turned to wins and 21 wins to losses (b36, the 10-31
   evening neighbours: 7 to 1). vx1 changes five-a-side play from about r40, so no game is identical there.
+
+## The teammate's bot and two programs in one (session 91, 11-01 02:43-04:25 IST)
+
+Source: `bots/pool/bot_10` (the teammate chejibt001's bot; their team cheji bt was rank 51, 2043.5, at 02:34 IST, we
+were 74), local runs `data/runs/multi-025140` (bot_10 against vx1), `multi-030914` (cmb1's screen), the cja run
+(`data/local_cja_3v3.log`) and the platform gates of cmb1 (rows cmb1, cmb2, cja).
+
+- **By team size.** Head to head against vx1 (all 70 maps, both sides) bot_10 won 87 of 140: three a side 12 of 24,
+  four a side 18 of 32, five a side 57 of 84 (margin -30, +186 and +175 a game). Against our pool (cand1, cp3, dh3)
+  with its log off: three a side 59 of 72 (vx1 60), four a side 77 of 96 (vx1 87), five a side 205 of 252 (vx1 180).
+  So bot_10 is much the stronger five-a-side bot, vx1 the better four-a-side bot against our pool, and the two are
+  level three a side.
+- **Two bots in one program.** Each champion runs its own copy of the program, so a program can pick its bot once
+  from the team size (`cambc::draft::team_size()` in the draft) and every champion of the team picks the same one.
+  bot_10's files sit in `src/cj/` inside `namespace cjb` (its `main` renamed `run`); the build compiles `src/**/*.cpp`
+  (`cmake/CMakeLists.txt`, `GLOB_RECURSE`), and quoted includes resolve in the including file's folder, so the two
+  bots' same-named files (`bot.h`, `draft.cpp`, ...) do not clash. Checks: three a side cmb1 against vx1 mirrors
+  exactly (00anvil 998-958 and 958-998), five a side it drafts as bot_10; 560 screen games, no bot fault.
+- **On the platform it plays a different game.** cmb1 (bot_10 four and five a side) against vx1 on three panels of
+  teams above us, same session (b37, b32p, b36p; 140 paired games over the whole game, `data/judge_cmb1_all.txt`): 85
+  against 72 wins, margin +62.4 +- 48.4, win share 0.51 to 0.61. It fights more: our deaths 4.96 to 5.94 a game, the
+  rivals' 7.11 to 9.27, our hit rounds +23 +- 9. It loses less on death (our lost 152 to 84) and the rivals collect
+  113 +- 57 and tribute 44 +- 28 gems less, while our own collected is level (-23 +- 64). Where our units diverged
+  first (`whofirst.py`), 34 losses turned to wins and 21 wins to losses. Four a side alone (b32p, 30 games) it is
+  inside the noise: margin +65 +- 132, 20 against 17 wins.
+- **bot_10 runs out of fuel more often** (8.1 and 7.8 events a game on the five-a-side panels b37 and b36p against
+  vx1's 6.7 on b37), mostly in rounds 1-3 (world init on the first turn) and after round 30. A turn that runs out
+  resumes on the next turn, so this costs turns, not faults: no bot fault in 140 games.
+- **Four a side it is a wash in wins.** On a fourth panel (b33p, teams ranked 57-68, 30 four-a-side games) cmb1 and
+  vx1 both won 22 of 50, and four a side over b32p and b33p (60 games) the win share went 0.48 to 0.53 (+0.05 +- 0.08),
+  flips 10 to 9, while the margin went up 91 +- 88 and both sides died 2-3 more times a game. Five a side is where
+  bot_10 helps (b37 + b36p: margin +75 +- 62, flips 27 to 17). Over all four panels (190 games): margin +64.6 +- 40.3,
+  win share 0.49 to 0.56.

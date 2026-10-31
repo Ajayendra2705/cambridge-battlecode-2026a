@@ -1,4 +1,57 @@
-# Status (updated 2026-11-01 02:12 IST)
+# Status (updated 2026-11-01 04:22 IST)
+
+## Update at 04:22 IST 11-01 (session 91): the Sprint 3 choice is the teammate's
+
+The bot live at 05:29 IST (Sun 1 Nov) is the tournament bot. The user asked that the teammate (chejibt001) pick it, so
+nothing below has been adopted: **main is still vx1**, live as version 1467 (76,154 bytes), which is also the Sprint 3
+entry (`cambc submissions list --json` at 04:11). A read-only watcher (`data/watch_subs.sh`, log
+`data/watch_subs.log`) records the active version and the Sprint 3 entry every 4 minutes until 05:20; it submits
+nothing. No gate runs, and none may run before the lock: gates submit bots.
+
+| Candidate | Folder | What it is | Local | Platform (three panels of teams above us, same session) |
+|---|---|---|---|---|
+| vx1 | `bots/main` | our bot, live as 1467 | pool screen 327 of 420 | b37 21 of 50, b32p 26 of 50, b36p 25 of 40, b33p 22 of 50: 94 of 190 |
+| **cmb1** | `bots/pool/cmb1` | vx1 three a side; bot_10 (log off) four and five a side | pool screen 342 of 420; 85 of 140 head to head with vx1 | b37 28, b32p 29, b36p 28, b33p 22: **107 of 190**; passes its rule |
+| cmb2 | `bots/pool/cmb2` | vx1 three and four a side; bot_10 (log off) five a side | pool screen 352 of 420 | cmb1's five-a-side games plus vx1's three and four a side (82 of 140 by count on the first three panels); passes too |
+| bot_10 | `bots/pool/bot_10` | the teammate's bot as given (team cheji bt, ladder rank 51) | 87 of 140 head to head with vx1 | not gated by us; **its compact log is on** (`BOT_LOGC 1`, `src/common.h`) |
+
+**cmb1 against its rule** (written 03:09, before any game; row cmb1): **passes.** Over the 140 paired games (whole game,
+`pooled.py --round 2000`, `data/judge_cmb1_all.txt`): margin +62.4 +- 48.4, win share 0.51 to 0.61. In the 118 games
+where our units diverged first (`whofirst.py`): 34 losses turned to wins, 21 wins to losses. Guards: no bot fault in 140
+games; the 20 three-a-side games of b32p are identical to vx1's. It fights more: deaths +0.98 a game for us and +2.16
+for the rivals, our gems lost on death 152 to 84, the rivals' collected -113 +- 57.
+
+**A fourth panel** (row cmb1q, rule written 03:49): vx1 and then cmb1 on the three- and four-a-side panel b33p, 22 of
+50 each. Over all four panels (190 paired games): margin +64.6 +- 40.3, win share 0.49 to 0.56 (+0.07 +- 0.04), flips
+where our units diverged first 37 to 26.
+
+**cmb1 or cmb2** (rules written 03:19 and 03:49, rows cmb2 and cmb1q): four a side over b32p and b33p (60 games) the
+whole-game margin is +91.4 +- 88.4, at least 0, so the rule names cmb1. But four a side the wins are level (0.48 to
+0.53, flips 10 to 9) and both sides die about 2-3 more times a game. cmb2 differs from cmb1 only four a side, so it is
+the safer pick there; five a side is where bot_10 clearly helps.
+
+The agent's recommendation, by the rules written before the results: **cmb1** (cmb2 if the teammate prefers vx1's
+four-a-side game), if the rules question below is settled. Otherwise keep vx1, which is live now and needs no action.
+
+Notes for the choice:
+- Three a side bot_10 and vx1 are level (row cja), so cmb1 and cmb2 keep vx1 there.
+- bot_10 runs out of fuel more often (about 8 events a game on the five-a-side panels against vx1's 6.7), mostly in
+  rounds 1-3 and after 30. A turn that runs out resumes on the next turn, so it costs turns, not faults.
+- Its weak maps locally (against 12 pool bots): 01boss-battle 7 of 24 (vx1 10), 01yellow-brick-road 14 (vx1 18).
+- The teammate's own notes and 15 untested bot_10 fix variants are in `docs/bot_10.md` (`tools/variant/b10_ideas.py`).
+- **Rules:** cheji bt is a separate team on the ladder (rank 51 at 02:34). If chejibt001 is still a member of that
+  team, a bot that contains its code, submitted by our team, may break the competition's rules on teams and shared
+  code. Check the rules, and that chejibt001 has left cheji bt, before submitting cmb1, cmb2 or bot_10.
+
+To submit one (a version takes 1 to 11 minutes to compile; submit well before 05:29):
+
+```
+powershell -File tools/cambc.ps1 submit pool/cmb1        # or pool/cmb2, pool/bot_10, main
+powershell -File tools/cambc.ps1 submissions list --json # active and upcomingTournament.submission must name it
+```
+
+Bundle sizes: vx1 76,154 bytes; cmb1 143,007. A version that fails to compile leaves the previous one active, so check
+its status field. cmb1 was live twice tonight as a gate upload (1462 and 1464) and compiled both times.
 
 ## Update at 02:12 IST 11-01 (session 91): main reverted to vx1, the Sprint 3 submission
 
