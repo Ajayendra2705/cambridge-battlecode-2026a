@@ -1,4 +1,25 @@
-# Status (updated 2026-10-31 08:12 IST)
+# Status (updated 2026-10-31 09:08 IST)
+
+## Update at 09:08 IST 10-31 (session 88; a handoff: a new session can continue from here)
+
+- **Main is still bb2** (every gate resubmits it; version 1373 at 09:06). Ladder: rank 65, 1979.4 at 08:07.
+- **Verdicts since 08:12** (rows in `docs/experiments.md`, all on b28p against `main_b28@b28`, 50 games to r1000):
+  pp1 **N** (prey up to 8 tiles: the rivals' deaths -0.78, ours +0.46, tributed -7.1%), pp2 **N** (edge 0.05 when we
+  outnumber: our deaths +0.64, theirs +0.06), pp3 not gated, ls1 **N** (trade in even fights: our deaths +0.52,
+  tributed -7.8%), sw1 **N** (no chase out of reach while working a camp: collected -5.5%, camp-hit rounds -7.5).
+  tv1 (Tavi for Varg) played 16 of 50 with our deaths up 49 (raw); its judge runs (`data/decode_tv1_b28p.log`).
+- **Pattern:** 9 of the 10 variants judged since 05:01 score below bb2 on b28p (tributed -2.5% to -10%); behaviour in
+  both directions (more fighting or less, chasing or staying) loses. bb2 sits at a local optimum against ranks 41-61;
+  the measured gaps left are the draft's fight openings (`docs/findings.md`, "Fight openings against ranks 41-61") and
+  the middle (we die there 67% more often per champion-round; deaths by region in `opendeaths.py`, scratch).
+- **Running:** `data/run_after12.sh` (PID 16708; queue `data/queue12.txt`) gates **sw2** (keep working under threat
+  below half health), **fr1** (focus calls answered within 4 tiles), **hx1** (help calls into the middle) on b28p, then
+  waits for new lines. Rules in their rows; passers go to b29p against `main_b29@b29`.
+- **Quota:** 50 match groups per rolling hour, 10 per gate: about 5 gates an hour; a gate plays in 4-10 minutes and its
+  decode takes about 5 more.
+- **Disk:** C: was full at 08:17 (287 MB); old `data/runs` folders were deleted (kept: `multi-083529`, bb2's local
+  screen, and `multi-023931`). Check `df -h /c` before local runs; `data/summaries` (6 GB) and `data/fights` (3 GB) are
+  the next candidates for cleanup.
 
 ## Update at 08:12 IST 10-31 (session 88)
 
