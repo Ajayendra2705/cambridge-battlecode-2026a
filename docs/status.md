@@ -1,4 +1,17 @@
-# Status (updated 2026-10-31 14:56 IST)
+# Status (updated 2026-10-31 17:20 IST)
+
+## Update at 17:20 IST 10-31 (session 90)
+
+- **Main is bb2**, live as version 1401 (resubmitted by the dc1 gate at 15:44). Ladder at 15:12: rank 74, 1961.4
+  (`data/ladder_1512.json`). Sprint 3 lock: Sun 1 Nov 05:29 IST.
+- **Verdicts:** eg1 **N** (close-out of a win in hand: median 46 to 38 rounds, -17% against -25%, and 5 wins in hand
+  lost against 1), dc1 **N** (deny call in shared bytes 5-6: the rivals lost 1 of 13 games with a long winning
+  channel against the bar of 3; the decisive channels ran out of every champion's sight). Both folders deleted.
+- **Not a regression** (`docs/findings.md`, "Is the bot worse than when we reached 2045?"): v1287, live at the 2045.1
+  reading on 10-30 18:54, is bb2 with the same 75,799-byte bundle as v1401; bb2 played 580 of our 600 ranked games
+  since 10-30 18:40 and won 48%, gate variants 20. The rating fell while rank 40 rose 25 points: the field moved.
+- **Tools:** `tools/replay/winchan.py` (long winning channels and how many were broken), `closeout.py`.
+- **Runner:** `data/run_after12.sh` (PID 16708) waits for lines in `data/queue12.txt`.
 
 ## Update at 14:56 IST 10-31 (session 90)
 

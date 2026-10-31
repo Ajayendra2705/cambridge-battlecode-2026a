@@ -1847,3 +1847,35 @@ Source: our newest 100 ranked matches at 14:15 IST (50 won), 97 decoded in `data
 - **Worst maps over 600 ranked games** (`tools/platform/ourmaps.py 6`, `data/ourmaps_1031.txt`): 00lost_world 1 of 12,
   00expanse 1 of 9, 00contest 1 of 7 (0 of 6 as side b), 00great_wall, 02geodes and 01boss_battle 1 of 6; overall 289 of
   600.
+
+## Is the bot worse than when we reached 2045? (session 90, 10-31 17:00-17:20 IST)
+
+Question from the team at 17:00: are we still beating v1287, the version live when we reached 2045?
+
+- **v1287 is bb2, the current main.** `bots/main` has not changed since 10-30 10:03 (bb2, version 1217). Every main
+  resubmission since then has the same 75,799-byte bundle (1217 ... 1287 ... 1401, `cambc submissions list --json`;
+  `--before N` pages back). The gate variants are 75,900-76,732 bytes. v1287 was uploaded at 18:25 IST on 10-30, after
+  the dn1 gate, and was live at the 2045.1 reading (18:54).
+- **Ranked games by the live version** at each game's creation time (exact upload times from the submission list): of
+  our 600 ranked games from 10-30 18:40 to 10-31 14:30, bb2 played 580 and won 278 (48%). Gate variants played 20
+  (v1392, v1332, v1318) and won 11: `gateq.sh` uploads a test bot only at :x1-:x2, so the ranked sets at :x0:05 nearly
+  always meet main. Win rate per 4-hour window: 40%, 47%, 46%, 53%, 47%, 52%.
+- **The rating fell with the same bot:** 2045.1 at 18:54 (10-30), 1983 at 23:45, 1957.5 at 04:00, 1992.8 at 09:28,
+  1961.4 at 15:12 (rank 74). Over the same day the rating at rank 40 rose from 2042.2 to 2067.4. The field is moving
+  up and our bot is not; 2045 was a peak, not a level that a regression lost.
+- **No side or size fault:** side a 49% of 290, side b 48% of 310; five a side 45-46% (352 games), four 52-55%, three
+  56% (a) and 42% (b) of 52 each.
+- **Altar locks** (summaries of 170 games, b30 + b31 base and `rk1031`): the rivals buy 6.7 locks and 2.8 teleport
+  crystals a game, we buy 3.1 locks and no crystals (crystals were tested: tp1, tp2, tpe, tpd). We hit enemy locks 13.5
+  times a game (decoded attacks without a unit target; 79% at middle altars) in 3.4 episodes a game; in 82% of them
+  the tribute started within 40 rounds (median 5 rounds after the first hit), and 23 of 676 episodes ended in our
+  champion's death (2.6 gems a game). The rivals' locks cost us little.
+- **Collection decides the long games.** Games ending r1000-1499: in our 42 wins we collected 149 / 357 / 670 gems by
+  r300 / r600 / r900 against 121 / 284 / 499; in our 48 losses 123 / 294 / 508 against 135 / 358 / 694. The gap is
+  already there at r300 either way.
+- **Unspent gold and health** (b30 + b31, to r1000): our unspent gold is lower all game (r600 203 against 319), and the
+  rivals' living champions hold about 10% more maximum health at r200-r300 (5838 against 5328 at r200), level from r600.
+- **Every code change re-rolls the games.** The bot's searches are budgeted by `fuel_remaining()` (`move.h`,
+  `targets.h`, `bot.cpp`), so a few added instructions change early decisions: dc1 locally differed from bb2 in 76 of
+  420 games, on 01elk-arena against cp3 from round 4. Pinned panels pair game by game only identical binaries; a
+  variant's 100 games are close to a fresh draw (on b30p + b31p the base won 47, five variants 42-48).
