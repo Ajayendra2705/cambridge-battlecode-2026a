@@ -1848,7 +1848,7 @@ Source: our newest 100 ranked matches at 14:15 IST (50 won), 97 decoded in `data
   00expanse 1 of 9, 00contest 1 of 7 (0 of 6 as side b), 00great_wall, 02geodes and 01boss_battle 1 of 6; overall 289 of
   600.
 
-## Is the bot worse than when we reached 2045? (session 90, 10-31 17:00-17:20 IST)
+## Is the bot worse than when we reached 2045? (session 90, 10-31 17:00-17:17 IST)
 
 Question from the team at 17:00: are we still beating v1287, the version live when we reached 2045?
 
