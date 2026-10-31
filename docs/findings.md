@@ -2004,3 +2004,8 @@ games, rows fin1 and fin1c).
 - So whole-game wins can be judged when the opponent's play was identical up to our change: opponent uploads, the
   reason wins are not judged, then show up as opponent-first divergences and can be set apart. A rule for an endgame
   change (a wait, a give-up, a bank) should pool to the whole game, not to r1000.
+- The same check of vx1 against bb2 (b30p, b31p, b35p and b36: bb2's runs `main_b30@b30`, `main_b31@b31`,
+  `bb2r_b35p@b35p`, `bb2r_b36@b36` against vx1's `vx1_b30p@b30p`, `vx1_b31p@b31p`, `main_b35@b35`, `main_b36@b36`)
+  keeps vx1: over the whole game (190 paired games) margin +29.6 +- 24.9, win share 0.45 to 0.49 (+0.04 +- 0.04); in
+  the 177 games where vx1's units diverged first, 28 losses turned to wins and 21 wins to losses (b36, the 10-31
+  evening neighbours: 7 to 1). vx1 changes five-a-side play from about r40, so no game is identical there.
