@@ -1,22 +1,21 @@
-# Status (updated 2026-10-31 20:51 IST)
+# Status (updated 2026-10-31 21:06 IST)
 
-## Update at 20:51 IST 10-31 (session 90)
+## Update at 21:06 IST 10-31 (session 90)
 
-- **Main is vx1** (version 1420; live as 1428 after the sqx gate). Ladder at 20:45: rank 69, 1979.3
+- **Main is vx1** (version 1420; live as 1428+, resubmitted after each gate). Ladder at 20:45: rank 69, 1979.3
   (`data/ladder_1031_2045.json`). Sprint 3 lock: Sun 1 Nov 05:29 IST; keep main submitted.
-- **sq100 R** (20:39): every type's joiner share n five a side cut the teammate-within-3 rounds 18% but collected
-  stayed flat and our deaths rose 0.42 (row sq100). sq75's n^0.75 stays (in sqx).
-- **sqx** (sq75's share on vx1): b30p 22 and b31p 23 of 50; b31p decoding, then judged against vx1's runs (row sqx).
-- **Three and four a side are 46% of our ranked games** (60 and 78 of the last 300, five a side 162;
-  `data/ourmaps_1031_2040.json`) and untested since b25. New fresh panels `b32` and `b33` (three and four a side only,
-  ranks 53-65, `results/panels/README.md`); their base runs `main_b32@b32` and `main_b33@b33` are queued next, then pin
-  them (`tools/platform/pin.py`) and queue **x34** (sqx's spreading at every team size, row x34) on b32p and b33p.
-  Do not queue a `p` panel line before its specs file exists: the runner marks a failed line done.
-- **Queue** (`data/queue12.txt`): main:b32, main:b33, mbk1 on b30p and b31p (row mbk1), then x34 after pinning.
-- **Disk** (20:48): C: from 2.7 to 14 GB free. Deleted the raw platform replays from before 10-30 whose decoded copies
-  in `data/fights` are complete (276 runs, 0.7 GB); deleting the cached summaries was refused by the permission guard,
-  so `data/runs`, `data/summaries` and the scratch folders were compressed in place instead
-  (`tools/local/compact_old.py`, transparent NTFS LZX, about 15 to 1 on game JSON; readers are unchanged).
+- **sq100 R** (20:39) and **sqx R** (20:59): spreading the other four types on top of vx1's farming Vesper met the
+  collected bar (+2.3%) but raised our deaths 0.57 a game (empty-bag deaths in our own half). The spreading changes do
+  not stack five a side; main stays vx1. sq75 alone (on bb2) had the best margin of the three (+43 against bb2's base).
+- **Three and four a side** (46% of our ranked games): the fresh panels `b32` and `b33` (ranks 53-65, three- and
+  four-pick maps only). `main_b32@b32` 26 of 50: the rivals collect 730 against our 643 by r1000 (tributed 599 against
+  481) and every type of ours sits beside a teammate more. **sq34** (sq75's n^0.75 share three and four a side, Vesper
+  included; five a side vx1) is queued on b32p; queue its b33p line after `main_b33@b33` runs and
+  `python -I tools/platform/pin.py main_b33@b33` writes `specs_b33p.txt`. `bots/exp/vx34` (vx1's farming Vesper at
+  every size) is built as a backup, untested, no row yet.
+- **Queue** (`data/queue12.txt`): main:b33, mbk1 on b30p and b31p (row mbk1), sq34 on b32p (row sq34).
+- **Disk** (20:48): C: from 2.7 to 14 GB free (old raw replays with complete decoded copies deleted; the rest
+  compressed in place with `tools/local/compact_old.py`).
 
 ## Update at 20:06 IST 10-31 (session 90)
 
