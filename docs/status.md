@@ -11,6 +11,10 @@
   (`bash tools/replay/decode_run.sh hx1_b28p@b28p 6`), judge (`python -I tools/replay/pooled.py main_b28@b28
   hx1_b28p@b28p`) by hx1's row (target our deaths -0.3 a game; guards collected and tributed at least 98%), record it,
   and delete `bots/exp/hx1`. A passer goes to b29p against `main_b29@b29`.
+- **hx1's games ended at 10:06 IST and the chain resubmitted main (version 1379).** Raw: 19 of 50, our gems 37523
+  against 44853, deaths 320 against 204 (base 20, 37896 against 44571, 323 against 212), so our deaths fell by
+  only 0.06 a game against the -0.3 target; the runner decodes it (`data/decode_hx1_b28p.log`) and the judge and
+  the row are still to do. The queue is empty; the runner waits for new lines.
 - **Verdicts since 09:08** (rows in `docs/experiments.md`): tv1 **N** (Tavi for Varg: tributed -4.7%, our deaths +1.12),
   sw2 **N** (collected -0.8%; guards held), fr1 **N** (focus calls within reach: collected -3.2%, the rivals' deaths
   -0.70, tributed 97.0%).
