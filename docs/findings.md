@@ -1904,7 +1904,8 @@ Question from the team at 17:00: are we still beating v1287, the version live wh
   against 2828). Our Vesper hits camps in more rounds (137 against 123) and has a teammate within 3 in 299 rounds
   against 241: she clears with the others while theirs farms groups of her own. To r1000: 249 gems against 150
   (`decoded.py types`). Her builds were tested many times (vp1-vp4, vp3c, vg1, vc1); the solo pick (ve1) never reached
-  the platform. Row ve1r tests it.
+  the platform. Row ve1r tests it. Whose captures her camp hits feed (`tools/replay/vhits.py`, to r600): ours 137
+  hit rounds a game, 40% her own captures, 52% teammates', 4% the enemy's; theirs 123, 60% and 31%.
 - **Fuel is not a factor now** (`tools/replay/fuel_events.py main_b30@b30 main_b31@b31`): no bot fault, 5.6-7.0
   exhausted turns a game, 4.5 of them in the setup rounds 1-3 (the rivals 10.8-35.4).
 - **Ranked by team size over 600 games** (`data/ourmaps_1031.txt` with `data/map_sizes.json`): three a side 51 of 104,

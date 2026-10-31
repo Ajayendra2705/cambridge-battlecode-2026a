@@ -1,4 +1,18 @@
-# Status (updated 2026-10-31 17:17 IST)
+# Status (updated 2026-10-31 18:41 IST)
+
+## Update at 18:41 IST 10-31 (session 90)
+
+- **Main is bb2**, live as version 1407 (resubmitted by the lx1 gate at 18:39). Ladder at 17:40: rank 77, 1957.3
+  (`data/ladder_1740_p4.json`). Sprint 3 lock: Sun 1 Nov 05:29 IST.
+- **lk1w N** (17:59): the lock walk-off fix on our worst maps; zero-tribute guard-map games 17 of 40 as the base (01boss_battle
+  unaffected), guards held, margin +20 +- 12.
+- **lx1** (lock denial of any visible rival channel; row lx1): gated on b30p (18:13) and b31p (18:26); the locks fire
+  (rival 50+ channels broken by our locks 0.02 to 0.12 a game on b30p) but the effect is small; judged when b31p is decoded.
+- **The collection gap is Vesper** (`docs/findings.md`, "Channel denial, close losses and Vesper's farming"): their
+  Vesper 152 gems by r600 against ours 91, her hits feed her own captures 60% against ours 40%. **ve1r** (Vesper scores
+  shared groups with share n: she farms her own) gates on b30p from 18:39, then b31p; **vx1** (ve1r plus a Capture emblem
+  as her second) is queued after it. Rules in the rows.
+- **Runner:** `data/run_after12.sh` (PID 16708) gates the lines of `data/queue12.txt` and decodes each run.
 
 ## Update at 17:17 IST 10-31 (session 90)
 
