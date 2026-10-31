@@ -1,6 +1,13 @@
-# Status (updated 2026-11-01 02:02 IST)
+# Status (updated 2026-11-01 02:12 IST)
 
-## Update at 02:02 IST 11-01 (session 91): main reverted to vx1, the Sprint 3 submission
+## Update at 02:12 IST 11-01 (session 91): main reverted to vx1, the Sprint 3 submission
+
+- **Confirmed at 02:11:** `cambc submissions list --json` shows active and selected 1456 (76,154 bytes, vx1), and the
+  Sprint 3 entry names 1456. Ladder at 02:11: rank 71, 1962.7 (`data/ladder_1101_0212_p3.json`), from 65, 1991.4 at
+  01:28 (fin1 was live in between). The gate runner `data/run_after12.sh` is stopped; no gate runs.
+- **For later rules:** judge a change that acts late in the game (a wait, a give-up, a bank) over the whole game, not
+  to r1000. Whole-game wins can be judged with `tools/replay/whofirst.py`: games the opponent played identically until
+  our change acted carry no opponent-upload noise.
 
 - **Main is vx1 again** (version 1456, uploaded 02:00 with `adopt.sh vx1r fin1`, a copy of `bots/pool/vx1`; source
   equal to main before fin1; bundle 76,154 bytes). The Sprint 3 entry names version 1456. fin1 is `bots/pool/fin1`.
