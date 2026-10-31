@@ -24,6 +24,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `lmaps.py RUNDIR...` (env `CAND=exp.x`) | Local losses by map and opponent, with margin and deaths per game; `CAND` keeps one candidate's games. |
 | `lcurve.py FILE.json...` | One local game's curves: collected and tributed gems per side at rounds 100-2000. |
 | `mapopen.py RUNDIR CAND [N]` | Per map: wins and both sides' gems collected by r100, r300, r600 (means), the N maps with the largest r600 gap first: where a candidate's opening or farming trails the local pool. |
+| `compact_old.py DIR...` | Disk space without deleting: transparent NTFS compression (WOF, LZX) of the files older than an hour under each DIR (`data/runs`, `data/summaries`, scratch folders); readers see the same bytes, game JSON shrinks about 15 to 1 (10-31: C: from 2.7 to 11 GB free). Skips `.gz`, `.zip`, `.wasm`, `.tmp*`. |
 
 ## platform/ (unranked games on the website; quota 50 match groups an hour, see `docs/WORKFLOW.md`, "Platform quirks")
 
