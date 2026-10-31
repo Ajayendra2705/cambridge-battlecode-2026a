@@ -1940,3 +1940,25 @@ Source: bb2 on b30 + b31 (100 five-a-side games against ranks 46-64, to r1000 un
 - **Noise on these panels** (scratch `sib.py`, `baserank.stats` over every bot decoded on b30p + b31p): pooled collected
   bb2 740, dc1 726, eg1 750, lk1 740, lx1 723, op1 748, rd0 738, ve1r 756; wins 47, 45, 43, 48, 42, 42, 42, 40. Near-null
   variants span about 30 gems, so a collected bar under +3% sits inside the noise (ve1r met its +2% by 0.05).
+
+## The five-a-side drop after vx1, the quiet panel and the close races (session 90, 10-31 21:30-22:34 IST)
+
+Source: our ranked games from `cambc matches list` (`data/ourmaps_now.json`, 300 games) with the live version placed
+by the `cambc submissions list` status times (scratch `byver.py`); the summaries of those games; `main_b36@b36` against
+`bb2r_b36@b36`; `main_b35@b35` (`vtime.py`, `decoded.py gems`); ranked replays in `data/fights/bk1031` (scratch
+`race.py`).
+
+- **Ranked five a side fell after vx1 went live** (19:56): 7 of 32 games (vx1 5 of 18, its gate variants 2 of 14)
+  against 51 of 99 under bb2 from 13:30; three and four a side, played as bb2, 10 of 18. In the 30 five-a-side games
+  with summaries our deaths were 6.47 a game against 5.08, our collected 798 against 932 and the rivals' 1063 against
+  861. The paired check did not reproduce it: on b36 (the five teams that beat us, run back to back) vx1 won 25 of 40
+  and bb2 19 of 40, with vx1's deaths 3.20 against 3.38, tributed 613 against 589 and collected 781 against 795 (row
+  bb2r). Variants live during gates won about as often as main all day (72 of 150 against 122 of 250).
+- **Quiet five-a-side maps against teams above us** (b35, vx1, 50 games): collected 435 against 461 by r600 and 811
+  against 893 by r1000, deaths near zero. Their Marcella 150 gems by r600 against ours 110 (23.5 gems a gain against
+  18.9, gold 965 against 796); their Vesper 127 against 97 (ours farms alone: teammate within 3 in 169 rounds against
+  288). Our Heart of Ruin, Varg and Vendetta sit beside a teammate in 297-313 rounds, theirs 212-257.
+- **Close races lost at the end.** 02famine against OneTap: at r1600 we had 728 tributed and 229 gems in bags against
+  their 922; lost 928 to 971+. 01yellow_brick_road against shoutout MAPS: 998 against 1000 at r1286. 00rushbait_v2
+  against dromedaries: 865 tributed and 88 carried when they won at r936. An endgame sweep (every bag banks once the
+  enemy has 800) was tested long ago (es1, es2, dr7) and did not help.
