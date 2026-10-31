@@ -1,4 +1,21 @@
-# Status (updated 2026-10-31 21:53 IST)
+# Status (updated 2026-11-01 01:13 IST)
+
+## Update at 01:13 IST 11-01 (session 91): fin1 is main and the Sprint 3 submission
+
+- **Main is fin1** (adopted 01:12 with `adopt.sh fin1 vx1`, version 1455; vx1 to `bots/pool/vx1`). Sprint 3 lock: Sun 1
+  Nov 05:29 IST; the platform's upcoming-tournament entry already names version 1455. fin1 = vx1 plus two banking fixes
+  tested on 10-31: lk1w (in tribute range of an altar the bank walk gives up after 25 stalled turns, not 6) and gf2 (on
+  02guardians the altar field leads to the dead guard's tile). Row fin1, `docs/lineage.md`.
+- **How it was chosen** (no new ideas): of the changes not in main, only these two had a measured gain on their own
+  targets against 10-30+ opponents and touched parts vx1 does not. Left out: s3p (sq34 contradicts it), op1 (inside the
+  noise, same branch as vx1), ib1 (retest failed), sq75 (sqx: does not stack with vx1), dm0 (local only).
+- **Result:** local screen 331 of 420 (vx1 327), no bot fault; worst maps locally 68 against 64 wins of 120. Platform,
+  140 paired games to r1000 against vx1's runs on b30p, b31p and b36p (b36 pinned by hand as `b36p`): margin +0.60 +-
+  9.55 (target up: met by the letter, level in fact), deaths +0.01, collected 101.3%, tributed 100.6%; short lock
+  episodes with no tribute after 0.49 to 0.25 a game; win share 0.52 to 0.49 (recorded, not judged). fin2 (vx1 plus gf2
+  only, the prepared fallback) was not gated.
+- **Gating is over for Sprint 3.** `data/hold_gates` is in place and every line of `data/queue12.txt` starts with "#",
+  so the runner `data/run_after12.sh` starts nothing; keep it that way until after 05:29.
 
 ## Update at 21:53 IST 10-31 (session 90)
 

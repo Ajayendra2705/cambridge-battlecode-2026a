@@ -306,6 +306,39 @@ int pick_group(int current) {
     return best_i;
 }
 
+// Guarded altars (02guardians: the altar's only free neighbours are two guard monoliths' tiles). Once one guard is dead
+// and another lives, the altar field leads to the dead guards' tiles only. Through every guard tile, our carriers walked
+// to the live guard, rocked beside it (step_field's local search steps back, the next field step returns) until the
+// bank stall gave up for 40 rounds, and came back (ranked 02guardians, 16 decoded games to 10-31: in 5 we never
+// tributed while the rivals tributed through the dead guard's tile; 2efd9c71 carried 888 gems and tributed none).
+void refresh_altar_field() {
+    if (W.altar_guards.empty()) return;
+    static int last_key = 0;  // 0: the plain field init_world built.
+    bitboard live;
+    int key = 0, bit = 1, tiles = 0, open = 0;
+    for (int gi : W.altar_guards) {
+        const auto& g = W.groups[gi];
+        for (size_t i = 0; i < g.spawns.size() && i < g.hp.size(); ++i) {
+            bool beside = false;
+            for (auto a : W.altars) if (dist(g.spawns[i], a) <= 1) beside = true;
+            if (!beside) continue;
+            ++tiles;
+            if (g.state == 0 && g.hp[i] > 0) live.set(g.spawns[i]), key |= bit;
+            else ++open;
+            bit <<= 1;
+        }
+    }
+    // One guard tile (boss_battle): the field already leads only there.
+    if (tiles < 2) return;
+    const bool mixed = open > 0 && open < tiles;
+    if (!mixed) key = 0;  // All live (banking blocked) or all dead: the plain field.
+    if (key == last_key || cambc::fuel_remaining() < field_cost + 15000) return;
+    last_key = key;
+    compute_field(W.altar_field, cm::altars(), mixed ? W.route_terrain | live : W.route_terrain);
+    bank_best = UNREACH;
+    bank_stall = 0;
+}
+
 // A defeated group nearby that nobody is capturing yet: one champion stays to capture it.
 bool bank_gems() {
     if (stale()) return true;  // Stale turn: act no more.
