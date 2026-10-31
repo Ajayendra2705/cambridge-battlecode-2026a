@@ -1997,7 +1997,7 @@ games, rows fin1 and fin1c).
   win share 0.50 to 0.47 (-0.03 +- 0.01). lk1w's harm (the 25-turn wait at a blocked altar) sits in the endgame, where
   a long wait can lose a close race, which an r1000 window does not see.
 - Platform games are deterministic: 143 of the 240 games are identical in both runs. Comparing the decoded games round
-  by round, the first round where any unit differs shows which side changed first. In 84 games our units diverged
+  by round (`tools/replay/whofirst.py`), the first round where any unit differs shows which side changed first. In 84 games our units diverged
   first (the opponent had played identically until fin1 acted). Of these, 10 turned from win to loss and 2 from loss
   to win (sign test p = 0.039). The 13 games where the opponent diverged first, or both sides in the same round, all
   kept their result.
