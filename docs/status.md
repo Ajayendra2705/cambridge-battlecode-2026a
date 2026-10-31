@@ -3,7 +3,8 @@
 ## Update at 01:13 IST 11-01 (session 91): fin1 is main and the Sprint 3 submission
 
 - **Main is fin1** (adopted 01:12 with `adopt.sh fin1 vx1`, version 1455; vx1 to `bots/pool/vx1`). Sprint 3 lock: Sun 1
-  Nov 05:29 IST; the platform's upcoming-tournament entry already names version 1455. fin1 = vx1 plus two banking fixes
+  Nov 05:29 IST. `cambc submissions list --json` at 01:19: active and selected 1455 (bundle 76,941 bytes; vx1's was
+  76,154), and the Sprint 3 entry names version 1455. fin1 = vx1 plus two banking fixes
   tested on 10-31: lk1w (in tribute range of an altar the bank walk gives up after 25 stalled turns, not 6) and gf2 (on
   02guardians the altar field leads to the dead guard's tile). Row fin1, `docs/lineage.md`.
 - **How it was chosen** (no new ideas): of the changes not in main, only these two had a measured gain on their own
