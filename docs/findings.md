@@ -1706,3 +1706,144 @@ Scratch readers in the session scratchpad: `topdrafts.py` (ladder JSON plus `cam
 - **00road_of_riches (1 win in 7 decoded games):** our champions die in the middle (5-10 tiles from both starts) alone
   against two to four (at the death 0-1 allies within 6), most of them carrying 20-60 gems; up to 13 deaths a game by
   r1000 against the rivals' 0-3.
+
+## The band at our level: level deaths, a gem gap (bb2 on b30 + b31, ranks 46-64; session 89, 10-31 10:20-10:52 IST)
+
+Sources: `main_b30@b30` and `main_b31@b31` (100 five-a-side games, ten teams ranked 46-64 at 10:06, to r1000), decoded
+in `data/fights/main_b30_b30` and `main_b31_b31`; `decoded.py`, `capkind.py`, `groupkind.py`, `steals.py`, `capcycle.py`,
+`mapgap.py`. Our ranked games since 01:30 IST (260, `data/ranked_1031a.json` joined with `data/ladder_1006.jsonl`):
+74 of 160 won against ranks 51-67 and 40 of 80 against ranks 69-85, so the rating is decided in this band.
+
+- **Deaths are level, gems are not.** b30: deaths 4.72 a game each; collected 737 against 842 by r1000, tributed 554
+  against 700. Level at r150 (86 against 82), behind from r300 (190 against 201) and most in r300-600 (430 against 501).
+  Gems lost on death 69 against 38: with equal deaths our victims carry about twice the bag (14.7 gems against 8.1).
+- **By group kind to r1000** (`capkind.py`): they capture more pure gem-cluster groups (7.3 a game, 136 gems, against
+  5.0 and 101) and we more pure gold-cluster groups (8.7 against 7.7); team gold is level (r600 2937 against 2977). To
+  r600 the gem gap is spread: own-half clusters -13, middle clusters -8.7, middle elk -10.8, middle golem -8.2, the other
+  half -11.5, wolves +6.
+- **The middle gem fields.** On 00lost_world (2 games) the rivals captured middle gem-cluster groups 58 times a game
+  (837 gems, r200-447) against our 10.5 (181, r76-341), with our deaths 4.5 against 1.0; on adgato_gemcombat5 10.7
+  against 4.7 middle gem captures. We were there first and left once it was contested.
+- **Steals:** they capture 1.33 of our kills a game (31 gems, 156 gold), we 0.85 of theirs (17 gems); in the stolen ones
+  our nearest champion stood 1 tile from the group at the kill and the stealer 3, and ours was on the tiles 3 rounds
+  later in 14% (kept kills 66%). Holds of a defeated group's tiles end alike (captured 41.3 against 42.3 a game).
+- **Per type** (`decoded.py types`): their Vesper collects 249 gems a game, ours 150, with the same champion damage (3403
+  against 3440) and fewer deaths (0.55 against 0.64); the other types are level (Marcella 188 against 173, Heart of Ruin
+  113 against 138, Vendetta 138 against 139, our Varg 141 against their Ryth 121).
+- **Time per capture** (`capcycle.py`, to r600): 27.1 captures a game against 28.1; the capturer's cycle 81.2 rounds
+  against 72.4 (dead 3.6 against 2.2, hitting camps 16.8 against 14.4, moving 44.5 against 41.4, idle 14.0 against 12.0).
+- **Fuel is no factor:** our turns ran out of fuel 2.3 times a game after round 3 (theirs 23).
+- **Items at r600:** our Vesper (2152 max health) and Marcella (2011) are tankier than theirs (1889, 1827); their Vesper
+  holds 2.49 Bruiser-strength emblems plus Capture and Prospector ones.
+
+## The opening: five together on 4-gem groups (local, bb2 against cand1, cp3, dh3; 10-31 10:00-10:30 IST)
+
+- bb2 collects less than the old bots by r100 on 02treasure-box (47 against 101), 00lost-world (32 against 91),
+  01corridors (8 against 39), 01big-world (15 against 49), 02cuts (22 against 51) and 02fields (22 against 37), from
+  `data/runs/multi-083529` (scratch `mapopen.py`); over all 420 games it collects more by r100 (55.9 against 40.9).
+- A bisect over the ladder bots against cp3 on those maps (`data/local_bisect_open.log`, `data/runs/multi-100657`, 16
+  games each) puts the drops at sq2 (01big-world r100 56 to 26, 02fields 54 to 28) and tw13b (02fields 46 to 21,
+  02treasure-box 69 to 41).
+- A probe printing each target change: before r40 every champion scores as if alone (sq2's opening), so after the first
+  capture (about r20) all five walk together to one 4-gem group after another (02fields: g0, g2, g5, g3 by r40;
+  02treasure-box likewise), and at r40 they switch together; on 01big-world all five left for one far 41-gem group at
+  r40-43 and captured nothing until r107.
+- On the platform the opening is not where we trail the band (b30 r150: 86 against 82), and op1 (the as-if-alone opening
+  ends with the first group) moved b30p's r300 collection by -2 (row op1).
+
+## Ranked losses by kind, guarded altars and the worst maps (session 90, 10-31 13:15-14:00 IST)
+
+Sources: the 403 ranked games of 10-30/31 with cached summaries (`data/ranked_1031a.json`, `data/summaries/`), the
+decoded guard-map games in `data/fights/q_guard`, and bb2's decoded panel games. Scratch readers (session scratchpad):
+`rlosses.py`, `guardtl.py`, `guardtrace.py`, `lwzone.py`, `postrace.py`.
+
+- **Loss kinds** (a massacre: we die 6 or more times more than they do; bank: we collected at least 90% of their gems;
+  econ: the rest): 193 wins, 119 econ losses, 67 massacres, 24 bank losses. In econ losses deaths are level (4.6 against
+  5.3 a game) but the rivals collect 1.10 gems a round against our 0.68; in massacres we die 15.9 times against 3.7. In
+  bank losses (two races to 1000 with few deaths) we held enough at the end to win in 7 of 24: 01the_farm (three of
+  them; its altars are 20-35 tiles from where we farm, so bags grow to 260-320), 00expanse twice, 02crossing, 02famine.
+- **Win rate by team size:** three a side 36 of 73 (0.49), four 54 of 99 (0.55), five 103 of 231 (0.45).
+- **Results by an opponent champion's presence** are flat (0.48-0.49 won) for Marcella, Vesper, Heart of Ruin,
+  Vendetta and Ryth; lower with Cassi and Issac (0.41 won, 0.25 massacres, 64 games) and Prism (0.28, 0.40, 25 games).
+- **Guarded altars never banked.** 01boss_battle: in 5 of 6 decoded ranked games we tributed nothing while carrying up
+  to 3236 gems; the altar (25,20) has one free neighbour, the guard monolith's tile (24,20), so after the guard dies the
+  two teams fight over one tile, and the rivals hold it (game 28ca6268: their Vendetta, Heart, Marcella and Vesper
+  stood on it in turn from r841; our Marcella got on at r913 with 369 gems and died there by r929). 02guardians: in 5
+  of 13 summarised games we tributed nothing; in four of the decoded losses the rivals killed a guard (0 hits of ours)
+  and tributed through its tile while we did not start a channel in the next 130-250 rounds (gf2's cause). By map,
+  tributed over collected: 01boss_battle 0.00 against the rivals' 0.28, 02guardians 0.36 against 0.62,
+  adgato_gemcombat5 0.44 against 0.77.
+- **Maps where we farm far slower with deaths level or better** (ranked, collected per round, us against them):
+  01yellow_brick_road 0.49 against 1.24 (6 games, 0 won, deaths 4.5 against 4.5; on the pinned panels the same map is
+  close, 320 against 361 by r600 in 9 games, so the ranked gap is mostly the ruliad's three games), 00lost_world 0.84
+  against 1.75 (9 games, 2 won, deaths 5.9 against 8.1), 01concentrated_wealth 0.47 against 0.85, 00rows 0.56 against
+  0.99.
+- **00lost_world is decided by the centre.** Its corridor (rows 14-16) runs between the halves and is entered only at
+  its two ends, inside a monolith's reach (1,15) on the left and a golem's (33,15) on the right; it holds the centre
+  altar and about a dozen gem-cluster groups. In bb2's 8 decoded panel games (all lost) the rivals spend 1089
+  champion-rounds a game of rounds 100-600 in its centre (x 13-23) against our 93, and we spend 1519 in our own half
+  against their 481. To r600 they make 66 captures a game (63 in the middle, 907 gems) against our 25 (213 gems), with
+  a capture cycle of 29 rounds and 4-tile hops against our 76 and 10. Both teams rush the corridor's left end at the
+  start; we lose that first fight (deaths by r150 2.2 against 1.0, collected 59 against 190), then farm our half's far
+  side and bank at the (33,1) altar while they farm and bank in the centre.
+
+## Stuns, idle time, rocking and gem density at our level (bb2 on b30 + b31, ranks 46-64; session 90, 10-31 morning)
+
+All to r1000 over bb2's 100 games on b30 and b31 unless noted, us against them.
+
+- **Base numbers:** deaths 4.29 against 4.40; collected 740 against 832; tributed 584 against 645; lost on death 53
+  against 30.
+- **Stuns** (`stuns.py`): we land 7.7 a game (Heart of Ruin 4.6, Marcella 3.1), they land 17.5 (Ryth 9.5 in the 80
+  games it played, Cassi 6.3, Prism 4.6). 47% of our deaths had a stun on the victim in its last 6 rounds, 27% of
+  theirs. ry2 (Ryth for Varg) raised ours to 12.5 a game without fewer deaths.
+- **Damage** (`damage.py`): per-type damage and hit shares are level with the band; we are outnumbered in contact more
+  often (Heart of Ruin 29% of its contact rounds against their Heart's 19%).
+- **Captures** (`clears.py`): 41.3 against 42.4 a game; solo clears 41% against 48%. Gems per capture: groups of
+  200-500 health 4.8 against 7.0, under 200 health 4.5 against 5.8: they take gem clusters, we take gold clusters
+  (gold counts 0.25 gem before r1400, `camps.h`; lv1, lv15 and gw10 lowered it without a platform gain).
+- **Idle stretches** (scratch `still.py`): ours about 181 champion-rounds a game, theirs 79, mostly respawn waits (81
+  against 40); cw1 and ce4 showed shorter waits are no lever.
+- **Two-tile rocking** (`tools/replay/osc.py`): ours 15 champion-rounds a game, theirs more (with under 20 gems and no
+  enemy near: 16.4 against 4.1). On the guard maps, rocking runs with 20+ gems are 7.5 a game against 6.2.
+- **Loiter windows** (`tools/replay/loiter.py`, 250 games): ours 0.43 a game, theirs 0.77: no gap.
+- **Respawn blocks** (`tools/replay/blockwait.py`, 514 bb2 games): blocked rounds 14.7 against 13.8 a game, idle
+  teammate-rounds 8.8 against 4.5. The local 01boss-battle freeze (gf1 row) is rare on the platform.
+- **Channels near enemies** (`decoded.py channels`): with an enemy champion within 4 during the channel we complete 61%
+  of bags over 30 (1.68 a game), they 83% (1.43); per-turn break rate with one enemy within 10 of the altar 0.011
+  against 0.004.
+- **Turn use** (audit probe au19, local): almost no caught engine error, unused attack or unused spell; walks stall in
+  0.3% of turns (row au19).
+
+## Our newest 100 ranked games: parity, massacres and the close-out (session 90, 10-31 14:15-15:05 IST)
+
+Source: our newest 100 ranked matches at 14:15 IST (50 won), 97 decoded in `data/fights/rk1031` (`index.txt` from
+`cambc matches list --json`); readers `decoded.py gems/types/items`, `deathfactors.py rk1031` (`data/df_rk1031.txt`),
+`closeout.py`, `winbag.py`, `idle.py`.
+
+- **On average we are level with the teams we meet.** To r1000: collected 714 against 711, tributed 600 against 595,
+  lost on death 36 against 44, deaths 3.7 against 4.4; idle time level (`idle.py`: waits 8.0 against 7.5 per 100
+  alive rounds); home visits while alive 36 against 43 a game (scratch `homevisits.py`). The opponents mostly play our
+  own four (Marcella 85 of 97 games, Vesper 81, Heart of Ruin 73, Vendetta 68) with Ryth as the fifth (52).
+- **The losses split by deaths.** By r1000 death difference: 9 massacres (ours minus theirs 6+, 0 won; deaths 14.4
+  against 3.8, team gold at r300 740 against 1408; 54% of our deaths in our own half, 57% while fleeing), 14 mixed
+  (3-5, 2 won), 74 even (46 won, 62%). Massacre maps: one each of 00packs, 01gold_rush, 02arena, 01hooks,
+  01concentrated_wealth, 01starfish, adgato_gemcombat2, 00contest, 00ribs. Deaths within 60 rounds of a respawn are
+  rare on both sides (0.32 against 0.37 a game).
+- **By game length:** games ended before r1000 we won 20 of 29; r1000-1499 20 of 50 (in those losses tributed level at
+  r300, 217 against 270 at r600, 384 against 549 at r900); r1500-1998 7 of 16.
+- **Close-out:** from the first round our tributed gems plus our bags reach 1000 ("win in hand") to the game end took
+  us 52 rounds (median) against the rivals' 28; we lost 6 of 53 such games, they 7 of 55. Single winning bags are
+  closed as fast as theirs (`winbag.py`: 14.4 rounds to the first tribute start against 17.1), so the slow part is the
+  team: 00rushbait_v2 held 924 tributed and 126 in four bags of 22-46 (none enough alone) for 40 rounds until the
+  rivals' 423-gem Prism channel won; 00monolith's Vesper carried 256 at 751 tributed for 110 rounds and passed two
+  altars (the bank walk avoids enemy reach); 02treasure_box sat at 980 for 140 rounds while our Heart of Ruin carried
+  61 around the one enemy-held altar and died; on 01broken_curve our Heart of Ruin held 200 at 947 beside an altar, its
+  channel was cancelled (a rival lock or stun) and it fled. On b30 + b31 (bb2's base runs) we lost 1 of 47 wins in
+  hand (median 46 rounds), they 7 of 60 (38). Row eg1 tests the fix.
+- **Per type** (`decoded.py types`, to r1000): the rivals' Vesper collects 252 gems a game against ours 160 and deals
+  5053 champion damage against 3959 (their build at r600: 2.21 Bruiser-strength emblems; ours Durability-health 1.15,
+  Power-strength 1.07); our Marcella, Heart of Ruin and Vendetta each collect 15-20 more than theirs. Item builds of
+  this kind were tested many times (vb1, ib1, ib1r, vp1-vp4, vg1): none passed.
+- **Worst maps over 600 ranked games** (`tools/platform/ourmaps.py 6`, `data/ourmaps_1031.txt`): 00lost_world 1 of 12,
+  00expanse 1 of 9, 00contest 1 of 7 (0 of 6 as side b), 00great_wall, 02geodes and 01boss_battle 1 of 6; overall 289 of
+  600.

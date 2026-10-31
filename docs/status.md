@@ -1,4 +1,27 @@
-# Status (updated 2026-10-31 10:34 IST)
+# Status (updated 2026-10-31 14:56 IST)
+
+## Update at 14:56 IST 10-31 (session 90)
+
+- **Main is still bb2** (version 1393, resubmitted by the gf2 gate at 14:30). Ladder at 13:35: rank 71, 1965.4
+  (`data/ladder_now.txt`); 2100 is about rank 33. Sprint 3 deadline: Sun 1 Nov 05:29 IST (v1391 was the selection
+  shown at 13:58; whatever is submitted then enters the tournament).
+- **Verdicts this session** (rows in `docs/experiments.md`): au19 (audit probe, never shipped: 20 caught errors in 140
+  games, no turn-use bug), gf2 **N** (guarded-altar walk on 02guardians: tributed +10.9% against +15%, delay -24%
+  against -33%).
+- **New panel `wk` / `wkp`** (`results/panels/specs_wk.txt`, `specs_wkp.txt`): the 20 teams ranked 50-69 at 13:35 on
+  our five worst maps (02guardians, 01boss_battle, 00lost_world, 01concentrated_wealth, 01yellow_brick_road), 100
+  games; base `main_wk@wk` 33 of 100 (lost_world 5 of 20, the others 7 of 20).
+- **Ranked picture** (our newest 100 ranked games, 50 won, decoded in `data/fights/rk1031`): to r1000 we are level
+  with the rivals on average (collected 714 against 711, tributed 600 against 595, deaths 3.7 against 4.4). The
+  losses split into 9 massacres (0 won, deaths 14.4 against 3.8, most of ours in our own half while fleeing) and 14
+  mixed games (2 won); in the 74 even games we win 62% (`deathfactors.py rk1031`, `data/df_rk1031.txt`). Wins per
+  map over 600 ranked games (`data/ourmaps_1031.txt`): worst 00lost_world 1/12, 00expanse 1/9, 00contest 1/7.
+- **Close-out gap** (`tools/replay/closeout.py`, new): from the first round our tributed gems plus our bags reach
+  1000 to the game end takes us 52 rounds (median) against the rivals' 28; we lost 6 of 53 such games (00rushbait_v2:
+  924 tributed and 126 in four small bags, none enough alone; 00monolith: a 256-gem winning bag kept off two altars by
+  enemy reach for 110 rounds). **eg1** (close out a win in hand, team bags included, through enemy reach) is in its
+  local fault screen; its rule (panels b30p + b31p) is in its row.
+
 
 ## Update at 10:34 IST 10-31 (session 89)
 
