@@ -1,4 +1,27 @@
-# Status (updated 2026-10-31 09:54 IST)
+# Status (updated 2026-10-31 10:34 IST)
+
+## Update at 10:34 IST 10-31 (session 89)
+
+- **Main is still bb2** (version 1379, resubmitted after the hx1 gate at 10:06). Ladder at 10:06: rank 68, 1975.2
+  (`data/ladder_1006.jsonl`); 2100 is rank 33 now (Noobot 2099.7).
+- **hx1 N** (help calls in the middle; row hx1): our deaths +0.02 +- 0.25 against the -0.3 target, guards held.
+- **Fresh panels b30p and b31p** (`results/panels/README.md`): five-a-side maps, ten teams ranked 46-64 at 10:06, none in
+  b26, b28 or b29, pinned to bb2's base runs `main_b30@b30` (23 of 50) and `main_b31@b31` (24 of 50). Against these teams
+  deaths are level (b30 303 against 312, b31 233 against 268) and the gap is gems: on b30 we collect 737 against 842 by
+  r1000, level at r150 (86 against 82), behind from r300 (190 against 201; r600 430 against 501). By group kind
+  (`capkind.py`, b30 + b31, to r1000) they capture more pure gem-cluster groups (7.3 against 5.0 a game: 136 gems against
+  101) and we more pure gold-cluster groups (8.7 against 7.7) with team gold level; they steal 1.33 of our kills a game
+  (31 gems) and we 0.85 of theirs (17 gems; `steals.py`).
+- **Local opening finding:** bb2 trails the old bots by r100 on 02treasure-box, 00lost-world, 01corridors, 01big-world,
+  02cuts and 02fields; a bisect over the ladder bots (`data/local_bisect_open.log`) puts the drop at sq2 and tw13b, and a
+  probe showed why: before r40 all five score groups as if alone, so after the first capture they walk together to one
+  4-gem group after another, and at r40 they switch together to one far group. **op1** (the as-if-alone opening ends with
+  the first group; row op1) passed its local screen (collected +2.4%, five a side +3.4%, deaths +0.07, 330 wins against
+  332) and gates on b30p (from 10:32) and b31p; its rule (collected +3%, deaths at most +0.3, tributed 98%) is in the
+  row. op0 (no as-if-alone opening at all) lost 24 local wins: not gated.
+- **Runner:** `data/run_after12.sh` (PID 16708) is alive and gates the lines of `data/queue12.txt` (decodes run
+  beside it). Disk: C: has 4.4 GB free; `data/summaries` holds 5 GB of match summaries cached on 10-30 (deletion needs the
+  user's approval in this session).
 
 ## Update at 09:54 IST 10-31 (session 88; a handoff: a new session continues from here)
 
