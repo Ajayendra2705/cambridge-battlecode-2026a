@@ -1,4 +1,25 @@
-# Status (updated 2026-10-31 21:05 IST)
+# Status (updated 2026-10-31 21:53 IST)
+
+## Update at 21:53 IST 10-31 (session 90)
+
+- **Ladder at 21:33: rank 77, 1951.1** (`data/ladder_now.json`), down from 69 (1979.3) at 20:45. Main is vx1 (live as
+  1428 between gates). Sprint 3 lock: Sun 1 Nov 05:29 IST.
+- **Five a side collapsed after vx1 went live** (19:56): ranked five-a-side games 7 of 32 since then (vx1 itself 5 of
+  18; the vx1-based gate variants 2 of 14), against 51 of 99 under bb2 from 13:30 to 19:56. Three and four a side, where
+  vx1 plays as bb2, 10 of 18. In those five-a-side games our deaths were 6.47 a game against 5.08 under bb2 and our
+  collected 798 against 932; every type of ours is worse. On the pinned panels b30p + b31p vx1 had matched bb2, so the
+  check runs against today's neighbours: **row bb2r**, `main_b36@b36` (vx1) and `bb2r_b36@b36` (bb2) back to back on the
+  fresh five-a-side panel b36 (the five teams that beat us after 19:56). Rule: keep vx1 only if it collects at least
+  bb2's and dies at most 0.3 a game more; otherwise revert main to bb2.
+- **qs1b** (bb2 plus spread when quiet five a side: a champion with no enemy seen for 40 rounds counts a joiner's share
+  as n) won 344 of 420 locally (bb2 332), quiet maps 45 of 60 (36), their r1000 collection +5.0%, no fault. qs1 (the same
+  on vx1) also 344. qs1b gates next: b35 (quiet panel) pinned from `bb2r_b35`, and b30p + b31p against bb2's runs.
+- **mbk1 R** (21:51): the melee bag in contact did not move (12.5 against 12.5), deaths +0.42.
+- **qs2b** (qs1b's quiet spread at every team size) is on the local screen.
+- **Queue** (`data/queue12.txt`): bb2r:b36 (running), bb2r:b35p, qs1b:b35p, qs1b:b30p, qs1b:b31p, qs1:b35p, qs1:b30p,
+  qs1:b31p, sq34:b32p, sq34:b33p. Done: `main_b35@b35` (vx1 on the quiet panel, 20 of 50; pinned as b35p at 21:55) and
+  `main_b36@b36` (vx1, 25 of 40).
+
 
 ## Update at 21:05 IST 10-31 (session 90)
 
