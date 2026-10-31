@@ -1663,3 +1663,22 @@ Sources: `main_b28@b28` and `main_b29@b29`, decoded (`data/fights/main_b28_b28`,
   in 11% (theirs 7%); dashes were spent in the 8 rounds before in 47-53% of fight starts for both sides.
 - **Cassi & Issac** (ci1 on b29p, ci2 on b28p, 100 games against the same bases): tributed level (+0.2 +- 23.7 a game),
   collected +2.8%, gems lost on death +25.5 a game; the pair dies 1.74 times a game each, as the rivals' pair.
+
+## Fight openings against ranks 41-61: the rivals open twice as many, mostly with types we do not draft (10-31 08:17 IST)
+
+Source: `tools/replay/fs_firsthit.py` on `main_b28@b28` and `main_b29@b29` (bb2, 100 five-a-side games, to r1000; output
+saved in `data/fs_firsthit_bb2_b28b29.txt`). A fight start is the first hit between two champions after 15 quiet rounds.
+
+- The rivals open 35.9 fights a game, we 18.5; their victims die within 10 rounds in 24%, ours in 16%. By distance at
+  the round start: 2 tiles 4.24 against 6.53, 3 tiles 5.46 against 9.86, 4 tiles 5.08 against 12.46, 5 tiles 2.54
+  against 5.64. Their openings on our champions that walked the round before: 23.58 a game (ours on theirs 12.73); on
+  champions hitting a camp 2.67 (ours 0.68).
+- Type for type our openers match theirs: Vesper 6.09 against 6.24, Vendetta 2.07 against 2.09, Marcella 6.27 against
+  7.62, Heart of Ruin 2.47 against 3.96. The rest of the gap is the types we never draft: Tavi 5.18, Cassi 2.84, Willow
+  2.75, Ryth 1.83, Prism 1.79 and Issac 1.10 openings a game (15.5 together), against our Varg's 1.60. Ranged spells
+  open 7.01 of their fights and none of ours.
+- **Leaving the camps loses the fights too** (platform, b28p against `main_b28@b28`, 50 games each, to r1000): a prey up
+  to 8 tiles away when we outnumber around it (pp1) cut our camp-hit rounds by 12.8 a game and the rivals' deaths by 0.78
+  (+-0.26) while ours rose 0.46; a higher engage bar (ft7p) cut the rivals' deaths by 0.28; walking home from enemy balls
+  (bv1, 10-30, b19p-b21p) raised our deaths by 0.41 and cut theirs by 0.44. Our kills come where our champions already
+  work, so the next variants keep them on their camps (sw1, sw2, ls1).
