@@ -1962,3 +1962,13 @@ by the `cambc submissions list` status times (scratch `byver.py`); the summaries
   their 922; lost 928 to 971+. 01yellow_brick_road against shoutout MAPS: 998 against 1000 at r1286. 00rushbait_v2
   against dromedaries: 865 tributed and 88 carried when they won at r936. An endgame sweep (every bag banks once the
   enemy has 800) was tested long ago (es1, es2, dr7) and did not help.
+
+## The teammate's drunk bot (11-01 00:01 IST)
+
+A teammate's repository `cambc-2026-drunk-bot/` (a separate C++ bot line, switches in `common.hpp`, its own ideas
+ledger in `notes/IDEAS_LEDGER.md`). Its live build (`configs/v72.override.hpp`) against our main (vx1), all 70 maps
+both sides locally (`data/runs/multi-235814`, `data/local_h2h_dk72.log`): vx1 won 106 of 140, margin +300 a game.
+Their ledger agrees with ours on several points: copying a top team's item builds (Jungle first) lost 28-44 of 420,
+tighter pull-back and refusing target switches raised deaths, and an endgame "everyone banks" rule lost. Their one
+ladder gain was per-map opening tables (`maptable70.hpp`), which do not port to our target code before the lock.
+
