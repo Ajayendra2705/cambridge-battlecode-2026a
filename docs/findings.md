@@ -1296,6 +1296,11 @@ panel the base therefore needs no fresh run in the same session: any earlier run
 same set of games, as long as the engine and the pinned opponents do not change. Each variant then costs 10 groups per
 panel instead of 20. Non-pinned panels still need a same-session base (the opponents change their bots).
 
+Still exact seven hours later (10-31 09:47 IST): bb2 gated on b28p at 09:43 (`main_b28p@b28p`) gave the raw result of
+its 02:58 run on b28 (`main_b28@b28`: 20 of 50, our gems 37896 against 44571, deaths 323 against 212). The check was
+run because none of the 13 variants gated on b28p since 03:17 (kb5 to fr1) passed its rule; the base is exact, so
+those verdicts stand.
+
 ## The rivals' Vesper farms, ours hands her groups over; massacres; 01boss-battle skews local screens (session 86, 10-30 11:12 IST)
 
 Main = bb2 on its pinned runs `bb2_b19p@b19p`, `bb2_b20p@b20p`, `bb2_b21p@b21p` (150 games), to r1000 unless noted.
@@ -1682,3 +1687,22 @@ saved in `data/fs_firsthit_bb2_b28b29.txt`). A fight start is the first hit betw
   (+-0.26) while ours rose 0.46; a higher engage bar (ft7p) cut the rivals' deaths by 0.28; walking home from enemy balls
   (bv1, 10-30, b19p-b21p) raised our deaths by 0.41 and cut theirs by 0.44. Our kills come where our champions already
   work, so the next variants keep them on their camps (sw1, sw2, ls1).
+
+## Top-20 drafts, carriers in contact and 00road_of_riches (session 88, 10-31 09:20-09:54 IST)
+
+Scratch readers in the session scratchpad: `topdrafts.py` (ladder JSON plus `cambc matches list --team`), `bagtrig.py`,
+`bagcontact.py`, `mapdeaths.py`, `lcurve.py` (local result files).
+
+- **The top 20 field our team with Ryth for Varg.** Their last 8 ranked games each (about 110 five-pick games, 09:45):
+  Heart of Ruin, Marcella, Ryth, Vendetta, Vesper 25 times, Marcella, Ryth, Tavi, Vendetta, Vesper 9, Heart of Ruin,
+  Marcella, Tavi, Vendetta, Vesper 6; Varg appears in about 10. Rank 1 (2603) plays Cassi & Issac, Heart of Ruin,
+  Marcella, Vendetta, Willow. Ryth for our Varg was gated three times (ry1, dq4, ry2) and never paid.
+- **Carriers in contact act as the rivals' do** (bb2 on b28 + b29, 100 games, to r1000). Episodes with a bag of 15+ and
+  an enemy champion within 8 for 3+ rounds: ours 13.2 a game, theirs 11.8, bags about 43 both. In the next 10 rounds
+  both sides move in 62-65% of rounds, hit camps 8-9%, hit champions 7-8%, and are nearer an altar after 10 rounds in
+  45-47%. The outcome differs: within 40 rounds we die in 10% and tribute in 38%, they die in 5% and tribute in 54%; our
+  altar is 7.5 tiles off at the start, theirs 5.8. Our deaths with a bag of 10+ (1.55 a game, theirs 0.75) follow about
+  29 rounds of contact. So the bag losses come from the fights, not from the banking decision.
+- **00road_of_riches (1 win in 7 decoded games):** our champions die in the middle (5-10 tiles from both starts) alone
+  against two to four (at the death 0-1 allies within 6), most of them carrying 20-60 gems; up to 13 deaths a game by
+  r1000 against the rivals' 0-3.

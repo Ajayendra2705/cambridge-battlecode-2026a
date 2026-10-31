@@ -1,4 +1,36 @@
-# Status (updated 2026-10-31 09:08 IST)
+# Status (updated 2026-10-31 09:54 IST)
+
+## Update at 09:54 IST 10-31 (session 88; a handoff: a new session continues from here)
+
+- **Main is still bb2.** Every gate resubmits it (version 1377 at 09:35); the base check `main:b28p` (09:43) submitted
+  bb2 itself. Ladder: rank 61, 1992.8 at 09:28 (rank 65, 1979.4 at 08:07). 2100 is about rank 30-35 (rank 22 was 2192).
+- **In flight:** `data/run_after12.sh` (PID 16708) started **hx1** on b28p at 09:53 (help calls into the middle; rule in
+  its row). Nothing else is queued in `data/queue12.txt`, so after hx1 the runner waits for new lines. If the runner died
+  with the old session: once hx1's games end, check that `data/chain_cands.log` ends with "Submitted bot version" after
+  the hx1 gate; if not, run `powershell -File tools/cambc.ps1 submit main`. Then decode
+  (`bash tools/replay/decode_run.sh hx1_b28p@b28p 6`), judge (`python -I tools/replay/pooled.py main_b28@b28
+  hx1_b28p@b28p`) by hx1's row (target our deaths -0.3 a game; guards collected and tributed at least 98%), record it,
+  and delete `bots/exp/hx1`. A passer goes to b29p against `main_b29@b29`.
+- **Verdicts since 09:08** (rows in `docs/experiments.md`): tv1 **N** (Tavi for Varg: tributed -4.7%, our deaths +1.12),
+  sw2 **N** (collected -0.8%; guards held), fr1 **N** (focus calls within reach: collected -3.2%, the rivals' deaths
+  -0.70, tributed 97.0%).
+- **The base is exact:** bb2 on b28p at 09:43 repeated its 02:58 run on b28 game for game (20 of 50, gems 37896 against
+  44571, deaths 323 against 212; `docs/findings.md`, "Pinned panels are deterministic"). None of the 13 variants gated
+  on b28p since 03:17 (kb5 to fr1) passed: small behaviour, item and draft changes around bb2 no longer find gains on
+  this panel.
+- **Measured this morning** (`docs/findings.md`, "Top-20 drafts, carriers in contact and 00road_of_riches"): the top 20
+  field Heart of Ruin, Marcella, Ryth, Vendetta, Vesper most (Ryth for our Varg; Ryth already failed three times: ry1,
+  dq4, ry2); our carriers in contact with an enemy act as the rivals' do, so banking is not the gap; on
+  00road_of_riches (1 win of 7) our champions die alone against two to four in the middle, most carrying 20-60 gems.
+- **Suggested next steps:** (1) the ladder moved (we are rank 61; b28 and b29 were ranks 41-61 at 05:00): build fresh
+  pinned panels of teams ranked just above us now, run bb2 once on each as the base, and test there; (2) aim at the
+  measured five-a-side gap (gang-ups: our deaths with 3+ hitters 2.30 a game against 0.83) with new mechanisms rather
+  than more doses of the tested ones; (3) local: bb2 wins 332 of 420 (`data/runs/multi-083529`); 36 of its 88 losses
+  are quiet economy races (01big-world, 00expanse, 02harvest, 02geodes, 02cuts, 02famine, 02uncharted-lands), where the
+  old bots collect faster from the opening (01big-world against cp3 at r600: 340 against 426).
+- **Quota:** 50 match groups per rolling hour, 10 per gate (about 5 gates an hour). **Sprint 3 lock:** Sun 1 Nov 05:29
+  IST: the bot submitted then is the tournament bot, so make sure main is submitted well before it.
+
 
 ## Update at 09:08 IST 10-31 (session 88; a handoff: a new session can continue from here)
 
