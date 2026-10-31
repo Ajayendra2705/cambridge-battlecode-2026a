@@ -85,48 +85,93 @@ bot_10 matches the 3.0.x rules: golems, the reworked Heart of Ruin, 120-HP clust
 
 ## 3. Ideas to test
 
-Make the variants with `python -I tools/variant/b10_ideas.py` (all of them; or name some). Each is `bots/pool/bot_10`
-plus one change, with the log off. **`b10n` (log off, nothing else) is the base for every comparison.** All five were
-made and syntax-checked here (no errors); there are six with `b10lki`.
+Make the variants with `python -I tools/variant/b10_ideas.py` (all of them, or name some). Each is `bots/pool/bot_10`
+with one change and the log off. **`b10n` (log off, nothing else) is the base for every comparison.** All eleven were
+made and syntax-checked here, with no errors. They are ordered by strength of evidence: ports of changes main measured
+first, then ideas from the 2.0.0 rules, then removals of things main tried and rejected.
 
-| Variant | Change | Why | Measure |
+| Variant | Change | Evidence | Measure |
 | --- | --- | --- | --- |
-| `b10n` | log off | Base; also the fair version of bot_10 to compare with main | Is bot_10 competitive at all (b10n against `pool/vx1`, locally first) |
-| `b10cap` | Capture emblem: 2nd on Heart of Ruin (health), 4th on Vesper and Vendetta (strength) | 2 rounds saved per capture, and less time on a contested tile | Captures per game, collected gems by r1000, deaths while capturing |
-| `b10home` | Home emblem after the core emblems on Heart of Ruin, Vesper, Vendetta, Marcella, Willow | Recall 5 → 3 on every healing and shop trip (spawn heals fully in one round) | Rounds spent recalling, collected by r1000 |
-| `b10lock` | `P_LOCKS 1` (an existing bot_10 switch) | Carry one lock and lock contested or enemy-side altars we tribute at; 2.0.0 locks take 5 hits | Enemy tributes at locked altars, our lock placements |
-| `b10lki` | Lock-interrupt: buy one lock on spawn (10 gold); when a visible enemy is tributing at an altar within 2 tiles, place it there (new `Bot::lock_interrupt`, called after `see_units`; `P_LOCKS` stays 0) | Placing a lock cancels enemy tribute channels and blocks new ones until 5 hits (`docs/MECHANICS.md` §9). The killer takes the whole bag anyway, so a cancelled big tribute is a large swing; main's dl2 acts on the same rule | Enemy tributes cancelled, gems they bank after our lock |
+| `b10n` | Log off, nothing else | Base. The team ships no logging bots | b10n against main locally: faults, fuel, economy |
+| `b10cc` | Carrier caution: with 30+ gems (`loaded`, fight.cpp:616) never engage, skip the hold, assist, join and skirmish branches (fight.cpp:785, 828, 864, 895), and count any fight as lost (901, 904) | Main's cc2: gems lost on death 141 → 80 a game, deaths −0.4, tributed +58 (`docs/lineage.md`). bot_10 only raises a carrier's engage bar to 0.45 (fight.cpp:663) | Gems lost on death, deaths, tributed by r1000 |
+| `b10sq` | `choose_task` scores a group by value / √n instead of value / n (farm.cpp:490) | Main's sq2 counts a joiner's share as √n (`docs/lineage.md`). bot_10 spreads out: it joins a taken harmless group only when the owner needs longer than its own walk (farm.cpp:483-485) | Deaths, champions caught alone, collected |
+| `b10d4` | Four a side: Willow → Vesper Vale | Main's four-pick lineup (Heart, Vesper, Marcella, Vendetta) won 11 of 26 four-pick maps against 5-6 (`bots/main/src/draft.cpp` comment, dq2m) | Four-pick maps only |
+| `b10lki` | Lock-interrupt: buy one lock on spawn (10 gold); when a visible enemy is tributing at an altar within 2 tiles, place it there (new `Bot::lock_interrupt`, called after `see_units`; `P_LOCKS` stays 0) | Placing a lock cancels enemy tribute channels and blocks new ones until 5 hits (`docs/MECHANICS.md` §9). The killer takes the whole bag anyway, so a cancelled big tribute is a large swing; main's dl2 acts on the same rule | Enemy tributes cancelled, their gems banked after our lock |
+| `b10cap` | Capture emblem: 2nd on Heart of Ruin (health), 4th on Vesper and Vendetta (strength) | Engine 2.0.0: team capture 5 → 3 turns. Main gives its five-a-side Vesper Capture of strength as her second emblem (`bots/main/src/shop.h:112-124`) | Captures per game, collected by r1000, deaths while capturing |
+| `b10home` | Home emblem after the core emblems on Heart, Vesper, Vendetta, Marcella, Willow | Recall 5 → 3 on every healing and shop trip; spawn heals fully in one round | Rounds spent recalling, collected by r1000 |
 | `b10bag` | `P_TRIB_GEMS` 60 → 48 | A killer takes the whole bag (`docs/MECHANICS.md`, "Tribute often"), and a tribute takes only ceil(0.1 × gems) rounds; main's bb2 gained from bags about 18% smaller | Gems lost on death, tributed by r1000 |
+| `b10lock` | `P_LOCKS 1` (an existing bot_10 switch) | Lock contested or enemy-side altars we tribute at; 2.0.0 locks take 5 hits | Enemy tributes at our locked altars |
+| `b10notp` | Teleport shortcuts off (`P_TP_SHORTCUT 0`; island travel still uses crystals) | Main's four shortcut tries (tp1, tp2, tpe, tpd) were rejected, net 0 or worse (`docs/experiments.md`) | Walk rounds on wall maps, collected |
+| `b10noend` | No bank-everything sweep at 850 tributed (`P_END_TRIB` 2000; banking a winning bag stays) | Main's sweeps es1, es2 and dr7 were neutral or rejected (`docs/experiments.md`) | Close games, gems carried at the end |
 
-Larger ideas, no variant yet, in rough order of expected value:
+## 4. Compared with main (vx1)
 
-1. **Draft for 2.0.0.** Re-pick with the nerfs and buffs above, and let the draft look at team size and the map (the SDK
-   serves `camp_groups()` during the draft). Risky: some bot_10 logic is champion-specific (Willow support, Marcella
-   routing, Heart of Ruin's dash), so a new lineup needs a breakage check first.
-2. **Walk in to interrupt.** `b10lki` only locks when a champion is already within 2 of the altar. A tribute of g gems
+These come from a design comparison of the two bots. Each point below was checked against the source or the docs named.
+
+* **Lineup.** Main plays Heart of Ruin, Vesper, Marcella, Vendetta and Varg four and five a side, and Heart, Vendetta,
+  Vesper three a side. On a three-pick map with no gold camps it plays Heart, Vesper, Marcella (`bots/main/src/draft.cpp`,
+  nm2). bot_10 has no Varg, takes Willow, and leaves Vesper out four a side.
+* **Groups.** Main counts a joiner's share as √n (sq2). bot_10 counts 1/n, which spreads the team.
+* **Carriers.** Main's carrier with 30+ gems never engages (cc2). bot_10's carrier still holds, assists and skirmishes.
+* **Endgame.** Main locks the rivals' game-winning tribute (dl2), chases the winning carrier (dl4), and splits a winning
+  capture (sc1). bot_10 has none of these.
+* **Robustness.** Main skips any action that follows a search when the round has moved on or fuel is under 1,000
+  (`stale()`, `bots/main/src/snapshot.h:203`, from fd2z). bot_10 has no such guard and logs every turn.
+
+**bot_10 ideas worth testing in main:**
+1. **Willow as an escort.** bot_10's Willow follows the nearest working ally, Marcella first (`P_SUPPORT`,
+   `try_support`). Main's wl1 (Willow for Varg) was N: "52 more deaths in 60 games; Willow's 700 health farms alone". The
+   follow rule addresses exactly that.
+2. **Capture plus recall.** When it is going home anyway (below 60% health, 150+ gold, or off the mainland) and no enemy
+   is in view, bot_10 starts the recall on the capture tile. The 5-round capture completes during the 5-round recall
+   (farm.cpp:599-603).
+3. **Tribute from a dead guard's tile** on walled-in altars (bot.cpp:474-561). This is the idea behind gf2. fin2 (vx1
+   plus gf2 alone) was prepared but never gated (`docs/status.md`).
+4. **Spreading against area stuns** while an enemy area spell is ready (`P_SPREAD`), and aiming Heart of Ruin's dash at
+   the most enemies (`P_HOR_AOE`).
+
+## 5. Larger ideas (no variant yet)
+
+1. **Draft for 2.0.0, five a side.** Willow (bot_10) or Varg (main) is the open question. Let the draft also read the map
+   (the SDK serves `camp_groups()` during the draft), as main's nm2 does. Some bot_10 logic is champion-specific (Willow
+   support, Marcella routing, Heart of Ruin's dash), so a new lineup needs a breakage check first.
+2. **Stale-round guard.** Port main's `stale()`: skip an action when `round_number()` changed during the turn or fuel is
+   under 1,000. It touches every action site.
+3. **Walk in to interrupt.** `b10lki` only locks when a champion is already within 2 of the altar. A tribute of g gems
    lasts ceil(0.1 × g) rounds (6 for a 60-gem bag), so a champion 3-4 tiles away could still step in and lock in time.
-   That needs a movement goal (tiles within 2 of the altar) and a check that the walk beats the channel.
-3. **Draft-time precompute.** Use the 100×-fuel draft turn to analyse the map (group distances, islands, gates, the
-   opening) and pass a compact result to every champion through the 1,024 bytes of draft memory, so no first turn is
-   lost on big maps.
-4. **Share enemy sightings.** All 8 bytes are taken, and nothing tells allies where enemies are. Packing the per-ally
-   slots tighter could free a byte or two for the last enemy carrier seen (position and round).
+4. **Draft-time precompute.** Use the 100×-fuel draft turn to analyse the map (group distances, islands, gates, the
+   opening). Pass a compact result through the 1,024 bytes of draft memory, so no champion loses its first turn on a
+   big map (bot.cpp:787).
+5. **Share enemy sightings.** All 8 bytes are taken, and nothing tells allies where enemies are. Packing the per-ally
+   slots tighter could free a byte or two for the last enemy carrier seen.
 
-## 4. Benchmark commands
+## 6. Benchmark commands
 
-On the team machine (`README.md` quickstart; local runs do not submit anything):
+On the team machine. Local runs submit nothing. Write the decision rule in `docs/experiments.md` first. Local results
+judge faults, fuel and economy, not fights, items or the draft (`docs/WORKFLOW.md`).
 
 ```
-python -I tools/variant/b10_ideas.py                                   # make b10n, b10cap, b10home, b10lock, b10lki, b10bag
-powershell -File tools/cambc.ps1 build exp/b10n --release              # compile check, same for the others
-python -I tools/local/multi.py exp/b10n --pool pool/vx1 --jobs 6       # bot_10 (log off) against main's source
-python -I tools/local/multi.py exp/b10cap --pool pool/vx1 --jobs 6     # then each idea, compared with b10n's run
+python -I tools/variant/b10_ideas.py                                         # all variants into bots/exp/
+powershell -File tools/cambc.ps1 build exp/b10n --release                    # compile check, same for the others
+python -I tools/local/multi.py exp/b10n --pool main --jobs 6 --keep          # head to head with main
+python -I tools/local/audit_errors.py data/runs/multi-HHMMSS                 # bot errors, turns out of fuel
+python -I tools/local/multi.py main,exp/b10n --pool pool/cand1,pool/cp3,pool/dh3 --jobs 6   # common-opponent screen
+python -I tools/local/lpair.py data/runs/multi-HHMMSS main data/runs/multi-HHMMSS exp.b10n
+python -I tools/local/coll_at.py data/runs/multi-HHMMSS 300 600 1000
+python -I tools/local/multi.py exp/b10cc --pool pool/cand1,pool/cp3,pool/dh3 --jobs 6        # then each idea, against b10n's run
 ```
 
-Item, draft and fight changes need the platform (`docs/WORKFLOW.md`), and only after the Sprint 3 lock.
+Notes:
+* `audit_errors.py` and `ltypes.py` add up every candidate in a run folder, so give them a folder with one candidate.
+* Use `--jobs 11` only with 2 GB or more of free RAM.
+* Delete the `bots/exp/` folders once their rows are written.
 
-## 5. Open questions
+Item, draft and fight changes need the platform, and only after the Sprint 3 lock.
+
+## 7. Open questions
 
 * bot_10 already assumes the killer takes the bag (bot.cpp:926, "gems are theirs if I die there"), which matches
-  `docs/MECHANICS.md`. Its bank threshold of 60 was tuned under 3.0.x and is worth re-checking (`b10bag`).
-* The farming and fight audits of bot_10 (`farm.cpp`, `fight.cpp`) are in progress. Their findings will be added here.
+  `docs/MECHANICS.md`. Its bank threshold of 60 was tuned under 3.0.x (`b10bag`).
+* bot_10's tank rotation keeps non-tanks farther from damaging camps than the tank (farm.cpp). It relies on camps
+  breaking distance ties toward the lowest id, which `docs/MECHANICS.md` does not confirm; probe that before relying on it.
+* The farming and fight audits (`farm.cpp`, `fight.cpp`) are in progress. Their findings will be added here.
