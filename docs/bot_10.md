@@ -86,13 +86,20 @@ bot_10 matches the 3.0.x rules: golems, the reworked Heart of Ruin, 120-HP clust
 ## 3. Ideas to test
 
 Make the variants with `python -I tools/variant/b10_ideas.py` (all of them, or name some). Each is `bots/pool/bot_10`
-with one change and the log off. **`b10n` (log off, nothing else) is the base for every comparison.** All eleven were
-made and syntax-checked here, with no errors. They are ordered by strength of evidence: ports of changes main measured
-first, then ideas from the 2.0.0 rules, then removals of things main tried and rejected.
+with one change and the log off. **`b10n` (log off, nothing else) is the base for every comparison.** All fifteen were
+made and syntax-checked here, with no errors. They come in four groups:
+* fixes of bugs found in the code review (section 5)
+* ports of changes main measured
+* ideas from the 2.0.0 rules
+* removals of things main tried and rejected
 
 | Variant | Change | Evidence | Measure |
 | --- | --- | --- | --- |
 | `b10n` | Log off, nothing else | Base. The team ships no logging bots | b10n against main locally: faults, fuel, economy |
+| `b10cd` | Capture detection counts only a group whose engine state is Respawning (bot.cpp:825) | Bug: any gold or gem gain on a group tile that is not Alive counted as our capture, so a kill during a contested capture (100 gold plus the bag) dropped the task and told the team the group was respawning | Captures lost after a kill on the tile, claim time |
+| `b10shot` | Ranged champions shoot after stepping into range (fight.cpp:772, 821, 856, 890) | Bug: the engage, hold, assist and join branches walk in and then call `hit()` for melee only, so Vesper and Willow walk into range and do not shoot that turn | Ranged hits per game, kills |
+| `b10hor` | Heart of Ruin keeps its shield while its landing dash is ready and the target is within 3 (fight.cpp:49) | Bug-like: slot 0 (shield) fires first whenever it is hurt or within 2 and under 95% health, so the landing stun waits a turn | Heart of Ruin stuns and landings per game, its deaths |
+| `b10keep` | Never cancel our own tribute (recall cancelling unchanged; bot.cpp:869) | Only a stun, a lock or death breaks a tribute. The team measured channels as safe (death mid-channel 0.03-0.12 a game, 4-7% broken) and found cancelling has nothing to win (`docs/findings.md`, "Tribute channels are safe") | Tributes started against completed, gems lost on death |
 | `b10cc` | Carrier caution: with 30+ gems (`loaded`, fight.cpp:616) never engage, skip the hold, assist, join and skirmish branches (fight.cpp:785, 828, 864, 895), and count any fight as lost (901, 904) | Main's cc2: gems lost on death 141 → 80 a game, deaths −0.4, tributed +58 (`docs/lineage.md`). bot_10 only raises a carrier's engage bar to 0.45 (fight.cpp:663) | Gems lost on death, deaths, tributed by r1000 |
 | `b10sq` | `choose_task` scores a group by value / √n instead of value / n (farm.cpp:490) | Main's sq2 counts a joiner's share as √n (`docs/lineage.md`). bot_10 spreads out: it joins a taken harmless group only when the owner needs longer than its own walk (farm.cpp:483-485) | Deaths, champions caught alone, collected |
 | `b10d4` | Four a side: Willow → Vesper Vale | Main's four-pick lineup (Heart, Vesper, Marcella, Vendetta) won 11 of 26 four-pick maps against 5-6 (`bots/main/src/draft.cpp` comment, dq2m) | Four-pick maps only |
@@ -130,7 +137,59 @@ These come from a design comparison of the two bots. Each point below was checke
 4. **Spreading against area stuns** while an enemy area spell is ready (`P_SPREAD`), and aiming Heart of Ruin's dash at
    the most enemies (`P_HOR_AOE`).
 
-## 5. Larger ideas (no variant yet)
+## 5. Code review findings
+
+Two read-only reviews of `farm.cpp` and `fight.cpp`, checked against `docs/MECHANICS.md`. Items marked **(checked)**
+were re-read in the code for this file. The others are the reviews' reading, with their line references, and need a
+look before anyone builds on them.
+
+**Economy**
+* **(checked) A kill on a capture tile counts as our capture** (bot.cpp:821-831): see `b10cd`.
+* **(checked) Crystals assume a carry limit above 1** (`P_CRYSTALS 2`, `P_TP_CRYSTALS 3`; the limit is 1). Also,
+  `move_to` runs the teleport shortcut on any field (bot.cpp:673-677), including the walk to an island's launch tile and
+  to a jump altar. A hop can therefore spend the only crystal before the jump that needs it, and the champion walks home
+  for another. `b10notp` removes the shortcut.
+* **(checked) Sleeping camps count as danger.** `World::camp_dps_on` (world.h:126-134) counts every living camp in
+  reach, awake or not, although sleeping camps do not attack. So gated tributes are refused (bot.cpp:480-482) and gate
+  queue tiles dropped (556) beside a sleeping guard.
+* **(checked) Allies' Jungle emblems are ignored.** `camp_taken_mult` is 1.0 for every ally (farm.cpp:68-70, "allies'
+  items are unknown"), although every plan buys Jungle first. Planning around an ally tank overrates its camp damage by
+  43%. Visible allies' `item_count()` is readable.
+* **(checked) The capture state is read but never used** (world.cpp:287-288). There is no logic to deny or steal an
+  enemy capture, and no contest awareness.
+* **(checked) Jungle is counted twice in the chip reserve** (farm.cpp:422 and 440). A Jungle holder keeps 0.49 of the
+  reserve instead of 0.7, a one-line fix.
+* Sieges can target a group the enemy already took unseen. Members then wait at a respawning group (farm.cpp:271,
+  837-841), and neither the "captured" nor the "stalled" end condition fires (234, 249). The wait can last up to a
+  monolith's 150-round respawn (timeout 300).
+* Trip triggers ignore camp fights: tribute below 45% health with 8+ gems at any distance (bot.cpp:496), and shop trips
+  at 150 gold below 60% (1041). Both are tested before `farm()`, so a tank or chipper can walk off mid-fight.
+* Captures yield to allies just passing (farm.cpp:581-584, 618). `P_CAP_FIX` covers only one branch (625).
+* Sieges wait for the leader's own max health (farm.cpp:265-266), probably late against rivals who kill the
+  boss_battle guards at r536-681 (`docs/findings.md`).
+
+**Fights**
+* **(checked) Ranged champions walk into range and do not shoot** (fight.cpp:772, 821, 856, 890): see `b10shot`.
+* **(checked) Heart of Ruin shields before its stun-dash** (fight.cpp:49): see `b10hor`.
+* **(checked) Kill shots add up every ready ability** (fight.cpp:639-649), but a champion casts once per turn. `killable`
+  then skips the outcome check and chase discipline (756), so the bot dives for kills it cannot make. Fix: count one cast
+  per path and use `ability::damage_amount(target)`.
+* **(checked) Dead enemies linger.** `emem` entries re-enter `near` for up to 3 rounds after a kill (fight.cpp:513-516),
+  so a dead enemy's burst can flip a won fight into a retreat.
+* **(checked) `P_FLEE` is dead code.** With `P_CONTACT 1`, line 904 overwrites 901.
+* **(checked) bot_10 cancels its own tributes when enemies close in** (bot.cpp:857-880): see `b10keep`.
+* The fight simulation (fight.cpp:383-594) has no stuns, healing or mitigation (Durability, live shields, Heart of
+  Ruin's passive, Ren's retaliation).
+* Some hard-coded multipliers are wrong or missing:
+  * Ren lacks its 1.1 × Focus stun damage.
+  * Stellar's and Prism's area spells are missing.
+  * The Marcella and Ryth bursts count two casts in one turn.
+  * `burst_reach` gives Heart of Ruin, Vendetta and Issac 3, but walk + dash + hit reaches 4.
+* An adjacent Marcella casts her nuke before attacking (`hit()`), so her stunning reset never follows, even on an
+  enemy channelling a tribute.
+* Allies at 20-35% health count as fighters (fight.cpp:554) although they retreat below 35%.
+
+## 6. Larger ideas (no variant yet)
 
 1. **Draft for 2.0.0, five a side.** Willow (bot_10) or Varg (main) is the open question. Let the draft also read the map
    (the SDK serves `camp_groups()` during the draft), as main's nm2 does. Some bot_10 logic is champion-specific (Willow
@@ -145,7 +204,7 @@ These come from a design comparison of the two bots. Each point below was checke
 5. **Share enemy sightings.** All 8 bytes are taken, and nothing tells allies where enemies are. Packing the per-ally
    slots tighter could free a byte or two for the last enemy carrier seen.
 
-## 6. Benchmark commands
+## 7. Benchmark commands
 
 On the team machine. Local runs submit nothing. Write the decision rule in `docs/experiments.md` first. Local results
 judge faults, fuel and economy, not fights, items or the draft (`docs/WORKFLOW.md`).
@@ -168,10 +227,9 @@ Notes:
 
 Item, draft and fight changes need the platform, and only after the Sprint 3 lock.
 
-## 7. Open questions
+## 8. Open questions
 
 * bot_10 already assumes the killer takes the bag (bot.cpp:926, "gems are theirs if I die there"), which matches
   `docs/MECHANICS.md`. Its bank threshold of 60 was tuned under 3.0.x (`b10bag`).
 * bot_10's tank rotation keeps non-tanks farther from damaging camps than the tank (farm.cpp). It relies on camps
   breaking distance ties toward the lowest id, which `docs/MECHANICS.md` does not confirm; probe that before relying on it.
-* The farming and fight audits (`farm.cpp`, `fight.cpp`) are in progress. Their findings will be added here.

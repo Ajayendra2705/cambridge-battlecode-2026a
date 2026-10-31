@@ -47,6 +47,22 @@ bool Bot::lock_interrupt() {
 
 void Bot::shop() {'''
 
+# Fight sites that walk towards a target and then let only melee champions hit (fight.cpp engage, hold, assist, join).
+_TAIL = ('            try_cast_on_enemy(*tgt);\n'
+         '            bitboard goals;\n'
+         '            goals.clear();\n'
+         '            goals.draw_chebyshev(tgt->pos, static_cast<float>(range));\n'
+         '            goals &= ~*world().blocked;\n'
+         '            spread_goals(goals, near);\n'
+         '            move_to(goals, nullptr, false);\n'
+         '            if (!ranged && !hit()) hit_any();')
+_SHOT_SITES = [
+    '        if (!ranged || td > range) move_to(goals, nullptr, false);\n        if (!ranged && !hit()) hit_any();',
+    '                move_to(goals, nullptr, false);\n                if (!ranged && !hit()) hit_any();',
+    '            if (ranged && hit_any()) { act = "assist_near"; return true; }\n' + _TAIL,
+    '            if (ranged && hit_any()) return true;\n' + _TAIL,
+]
+
 VARIANTS = {
     # Base for comparisons: bot_10 as sent, with the per-turn log off (the team ships no logging bots).
     'b10n': [],
@@ -64,6 +80,26 @@ VARIANTS = {
     # Smaller tribute bags: bank at 48 gems instead of 60 (tribute takes ceil(0.1 x gems) rounds, so banking is
     # cheap; main's bb2 gained from bags about 18% smaller).
     'b10bag': [('params.h', '#define P_TRIB_GEMS 60', '#define P_TRIB_GEMS 48')],
+    # Capture detection fix: a gold or gem gain while standing on a group counted as our capture whenever the group was
+    # not Alive, so a kill (100 gold plus the victim's bag) during a contested capture dropped the task and told the
+    # team the group was respawning. observe() runs just before, so require the engine state Respawning.
+    'b10cd': [('bot.cpp', '        if (W.groups[static_cast<std::size_t>(gid)].state != GState::Alive) {',
+               '        if (W.groups[static_cast<std::size_t>(gid)].state == GState::Respawning) {')],
+    # Heart of Ruin stun-dashes before shielding: slot 0 (shield) fired first whenever it was hurt or within 2 and under
+    # 95% health, which delayed the landing stun. Skip the shield while a landing dash is ready and the target within 3.
+    'b10hor': [('fight.cpp',
+                '            } else if (k == ability_kind::shield && (hurt || d <= 2) && me.health() < me.max_health() * 0.95f) {',
+                '            } else if (k == ability_kind::shield && (hurt || d <= 2) && me.health() < me.max_health() * 0.95f &&\n'
+                '                       !(ahas[1 - s] && akind[1 - s] == ability_kind::dash && amod[1 - s] > 0 && d >= 1 && d <= 3 &&\n'
+                '                         abs[1 - s].cooldown() == 0)) {')],
+    # Ranged champions shoot after stepping into range: the engage, hold, assist and join branches walk towards the
+    # target and then call hit() for melee champions only, so Vesper and Willow walked in without shooting.
+    'b10shot': [('fight.cpp', site, site.replace('if (!ranged && !hit()) hit_any();', 'if (!hit()) hit_any();'))
+                for site in _SHOT_SITES],
+    # Keep our tribute channels: only a stun, a lock or death breaks a tribute, and the team found that cancelling
+    # channels has nothing to win (docs/findings.md, "Tribute channels are safe"). Recall cancelling is unchanged.
+    'b10keep': [('bot.cpp', '        bool abort = closest <= 2 || (closest <= 4 && hurt);',
+                 '        bool abort = !submitting && (closest <= 2 || (closest <= 4 && hurt));')],
     # Teleport shortcuts off (P_TP_SHORTCUT): main's four teleport-shortcut tries (tp1, tp2, tpe, tpd) were rejected,
     # net 0 or worse. Island maps still use crystals (world().any_island).
     'b10notp': [('params.h', '#define P_TP_SHORTCUT 1', '#define P_TP_SHORTCUT 0')],
