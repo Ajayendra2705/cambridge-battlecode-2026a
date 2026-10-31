@@ -664,6 +664,7 @@ def cmd_gold(dirs, rounds):
                 for c in r['c']: A[(R, s, who(c['t'], us))] += gold_held(meta, c)
         # Camp kills to the first round, credited to the side that hit the camp last.
         types = {int(k): v for k, v in meta.get('camps', {}).items()}
+        for s in (size, 'all'): K[(s, 'games')] += 1  # every game counts its kills to the round or its end
         last, prev = {}, None
         for r in rows:
             if r['r'] > rounds[0]: break
@@ -686,9 +687,9 @@ def cmd_gold(dirs, rounds):
             u, t = A[(R, s, 'us')] / ng, A[(R, s, 'them')] / ng
             line += f'  {s} ({ng}): {u:.0f} / {t:.0f} ({u / max(1, t):.2f})'
         print(line)
-    print(f'camp kills per game to r{rounds[0]} (side that hit last), with their gold and gems')
+    print(f'camp kills per game to r{rounds[0]} or the game end (side that hit last), with their gold and gems')
     for s in ('all', '3', '4', '5'):
-        ng = N[(rounds[0], s)]
+        ng = K[(s, 'games')]  # was N (games reaching the round): kills of shorter games inflated r600 / r1000
         if not ng: continue
         line = f'  size {s:3}'
         for k in ('wolf', 'elk', 'gem', 'gold', 'golem', 'monolith'):
