@@ -1963,7 +1963,7 @@ by the `cambc submissions list` status times (scratch `byver.py`); the summaries
   against dromedaries: 865 tributed and 88 carried when they won at r936. An endgame sweep (every bag banks once the
   enemy has 800) was tested long ago (es1, es2, dr7) and did not help.
 
-## The teammate's drunk bot (11-01 00:01 IST)
+## The teammate's drunk bot (11-01 00:00 IST)
 
 A teammate's repository `cambc-2026-drunk-bot/` (a separate C++ bot line, switches in `common.hpp`, its own ideas
 ledger in `notes/IDEAS_LEDGER.md`). Its live build (`configs/v72.override.hpp`) against our main (vx1), all 70 maps
