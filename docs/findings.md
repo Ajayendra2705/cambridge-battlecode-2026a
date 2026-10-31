@@ -1879,3 +1879,33 @@ Question from the team at 17:00: are we still beating v1287, the version live wh
   `targets.h`, `bot.cpp`), so a few added instructions change early decisions: dc1 locally differed from bb2 in 76 of
   420 games, on 01elk-arena against cp3 from round 4. Pinned panels pair game by game only identical binaries; a
   variant's 100 games are close to a fresh draw (on b30p + b31p the base won 47, five variants 42-48).
+
+## Channel denial, close losses and Vesper's farming (session 90, 10-31 17:40-18:35 IST)
+
+- **The rivals deny our channels; we do not deny theirs** (`tools/replay/lockopp.py`, bb2 on b30 + b31, 100 games to
+  r1000). With one of their champions within 2 tiles of our altar during a channel of 30+ gems, 33% of our channels
+  completed; with one of ours that near theirs, 64% did (0.55 such channels a game, 57 gems). Their locks broke 0.10 of
+  our 50+ gem channels a game, ours 0.01 of theirs; they also cast on 20% of our channellers with an enemy within 4,
+  we on 11% of theirs (`decoded.py channels`). Per channel turn with one enemy within 10 of the altar our channels break
+  at 0.0112, theirs at 0.0043. Our deny code (`deny_channel`) acts only on a channel that wins the game, and our
+  champions carried a lock only once the rivals had tributed 600. Row lx1 tests a lock on any visible channel.
+- **After a rival lock breaks our channel** the carrier banks a median 65 rounds later (0.14 a game), dies first in 0.03
+  and the game ends first in 0.04 (scratch `lockafter.py`).
+- **Close ranked losses** (`data/fights/rk1031`, the 28 losses with level deaths): 8 ended within about 120 gems. Two
+  were lost to a hoarding Prism with a win in hand of ours: 01broken_curve (947 tributed and our Heart of Ruin's 200-gem
+  channel at r1027-1044, stunned by their Heart; their Prism had carried 177-284 gems for 200 rounds and won with one
+  28-turn channel at r1067) and 00rushbait_v2 (we reached 924-970 with four bags of 22-58, none enough alone until
+  r1272; their Prism carried 299-423 gems from r1000 and won with a 29-turn channel at (15,1); the Tribute emblem cuts
+  a channel by a third). We held no lock in either (bought only after their 600). Games where a rival held 300+ gems:
+  0 of 6 won on rk1031, 6 of 14 on b30 + b31.
+- **The whole collection gap is Vesper** (`tools/replay/vtime.py`, b30 + b31 to r600): their Vesper makes 7.1 gem
+  gains for 152 gems and 1056 gold, ours 5.0 for 91 and 748; their other four types capture as ours do (Heart 4.5 and
+  4.0 gains, Marcella 5.2 and 5.0, Vendetta 4.5 and 4.2, Ryth 4.2 and our Varg 4.8), and team gold is level (2936
+  against 2828). Our Vesper hits camps in more rounds (137 against 123) and has a teammate within 3 in 299 rounds
+  against 241: she clears with the others while theirs farms groups of her own. To r1000: 249 gems against 150
+  (`decoded.py types`). Her builds were tested many times (vp1-vp4, vp3c, vg1, vc1); the solo pick (ve1) never reached
+  the platform. Row ve1r tests it.
+- **Fuel is not a factor now** (`tools/replay/fuel_events.py main_b30@b30 main_b31@b31`): no bot fault, 5.6-7.0
+  exhausted turns a game, 4.5 of them in the setup rounds 1-3 (the rivals 10.8-35.4).
+- **Ranked by team size over 600 games** (`data/ourmaps_1031.txt` with `data/map_sizes.json`): three a side 51 of 104,
+  four 77 of 144, five 161 of 352. The 100-game sample `rk1031` (5 of 15 three a side) overstated the small-map gap.
