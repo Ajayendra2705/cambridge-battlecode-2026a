@@ -1972,3 +1972,35 @@ Their ledger agrees with ours on several points: copying a top team's item build
 tighter pull-back and refusing target switches raised deaths, and an endgame "everyone banks" rule lost. Their one
 ladder gain was per-map opening tables (`maptable70.hpp`), which do not port to our target code before the lock.
 
+## Ranked results by team size after vx1: the field moved (session 91, 11-01 01:25 IST)
+
+Source: our newest 200 ranked games (`python -I tools/platform/ourmaps.py 2 data/ourmaps_1101_0130.json`, 18:30 IST
+10-31 to 01:20 IST 11-01), split at vx1's adoption (19:56) and fin1's (01:12) by creation time; team size from the
+draft length.
+
+- **Under vx1** (19:56-01:12): five a side 38 of 94 (40%), four a side 19 of 33, three a side 14 of 23. **Under bb2**
+  (18:30-19:56, the newest 45 games before vx1): five a side 14 of 27, four 6 of 7, three 10 of 11.
+- vx1 plays three and four a side exactly as bb2, and there our wins still fell from 16 of 18 to 33 of 56. So the
+  field moved around 20:00 IST (teams uploading for the lock), and the five-a-side fall (52% to 40%) needs no vx1
+  cause. The paired checks (b36, b30p + b31p) stay the evidence; they favour vx1 over bb2.
+- The ladder still rose: rank 65, 1991.4 at 01:28 IST 11-01 (`cambc ladder --json --page 3`), from rank 77, 1951.1
+  at 21:33.
+
+
+## fin1: level to r1000, behind over whole games (session 91, 11-01 01:50-02:00 IST)
+
+Source: fin1's five pinned panels against vx1's runs on the same panels (b30p, b31p, b36p, b32p, b33p; 240 paired
+games, rows fin1 and fin1c).
+
+- To r1000 (`pooled.py`) fin1 and vx1 are level: margin +0.6 +- 9.6 five a side, -6.2 +- 18.0 three and four a side.
+  Over the whole game (`pooled.py --round 2000`) fin1 is behind: margin -18.1 +- 12.4, our tributed -10.9 +- 8.3,
+  win share 0.50 to 0.47 (-0.03 +- 0.01). lk1w's harm (the 25-turn wait at a blocked altar) sits in the endgame, where
+  a long wait can lose a close race, which an r1000 window does not see.
+- Platform games are deterministic: 143 of the 240 games are identical in both runs. Comparing the decoded games round
+  by round, the first round where any unit differs shows which side changed first. In 84 games our units diverged
+  first (the opponent had played identically until fin1 acted). Of these, 10 turned from win to loss and 2 from loss
+  to win (sign test p = 0.039). The 13 games where the opponent diverged first, or both sides in the same round, all
+  kept their result.
+- So whole-game wins can be judged when the opponent's play was identical up to our change: opponent uploads, the
+  reason wins are not judged, then show up as opponent-first divergences and can be set apart. A rule for an endgame
+  change (a wait, a give-up, a bank) should pool to the whole game, not to r1000.

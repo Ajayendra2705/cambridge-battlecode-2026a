@@ -1,6 +1,18 @@
-# Status (updated 2026-11-01 01:13 IST)
+# Status (updated 2026-11-01 02:02 IST)
 
-## Update at 01:13 IST 11-01 (session 91): fin1 is main and the Sprint 3 submission
+## Update at 02:02 IST 11-01 (session 91): main reverted to vx1, the Sprint 3 submission
+
+- **Main is vx1 again** (version 1456, uploaded 02:00 with `adopt.sh vx1r fin1`, a copy of `bots/pool/vx1`; source
+  equal to main before fin1; bundle 76,154 bytes). The Sprint 3 entry names version 1456. fin1 is `bots/pool/fin1`.
+- **Why:** fin1 passed its rule (to r1000) and the three- and four-a-side check fin1c by the letter, but over whole
+  games it lost games vx1 won. On its five pinned panels (240 paired games) it is level to r1000 and behind over the
+  whole game (margin -18.1 +- 12.4, win share 0.50 to 0.47). In the 84 games where fin1's units diverged first (the
+  opponent had played identically until fin1 acted), 10 wins turned to losses and 2 losses to wins (p = 0.039); ten of
+  the twelve are not on 02guardians, so lk1w's 25-turn altar wait made them. Rows fin1 and fin1c, `docs/findings.md`.
+- **Before 05:29:** confirm with `cambc submissions list --json` that the active version is 1456 (76,154 bytes) and the
+  Sprint 3 entry names it. A teammate's upload would replace it. `data/hold_gates` stays until after the lock.
+
+## Update at 01:13 IST 11-01 (session 91): fin1 is main and the Sprint 3 submission (superseded at 02:00)
 
 - **Main is fin1** (adopted 01:12 with `adopt.sh fin1 vx1`, version 1455; vx1 to `bots/pool/vx1`). Sprint 3 lock: Sun 1
   Nov 05:29 IST. `cambc submissions list --json` at 01:19: active and selected 1455 (bundle 76,941 bytes; vx1's was

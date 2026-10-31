@@ -174,7 +174,6 @@ static void play_turn_core() {
     update_knowledge();
     build_phantoms();
     read_broadcast();
-    refresh_altar_field();
     record_sightings();
     record_death_ctx();
     // No call when three or more enemies stand within 6: helpers come from up to 14 tiles, one at a time, and feed the
@@ -738,14 +737,8 @@ static void play_turn_core() {
         if ((gems >= batch && S.round >= bank_blocked_until && !S.holding) || endgame) {
             // Give up for a while if the way to the altar makes no progress (blocked or contested).
             // Waiting at a hole edge for the dash is not a blocked way (dh1).
-            // In tribute range the walk is done: hitting an enemy lock (5 hits) or waiting to channel is progress, so the
-            // give-up comes much later there (lk1; ranked 01boss_battle: our Marcella hit the lock on the only open altar
-            // tile 4 times, gave up and left; wk panel: 10 of 20 boss_battle games and 7 of 20 on 02guardians without a
-            // tribute, 150 lock breaks in 100 games ended short).
-            bool at_altar = false;
-            for (auto a : W.altars) if (dist(p, a) <= cambc::constants::submit_gems_range) at_altar = true;
             if (altar_d < bank_best) bank_best = altar_d, bank_stall = 0;
-            else if (!hole_ahead(W.altar_field, altar_d) && ++bank_stall > (at_altar ? 25 : 6))
+            else if (!hole_ahead(W.altar_field, altar_d) && ++bank_stall > 6)
                 bank_blocked_until = S.round + 40, bank_best = UNREACH, bank_stall = 0;
             write_claim(-1);
             ACT("bank");
