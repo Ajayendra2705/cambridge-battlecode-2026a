@@ -1,11 +1,12 @@
 """Deaths to enemy champions in detail, us vs them, to round R: the situation K rounds before the death.
-usage: python -I tools/replay/deaths.py R DIR... 
+usage: python -I tools/replay/deaths.py R DIR...  (env TYPE=heart: only that champion type's deaths, both sides)
 Per death: health share K rounds before, enemies / allies within 6 then, zone, bag, the dead champion's hits on
 champions and its moves away from the nearest enemy over the last K rounds, and the killer side's count within 6 at death."""
 import collections, os, sys
 sys.path.insert(0, os.path.join(os.getcwd(), 'tools', 'replay'))
 import decoded as D
 R, K = int(sys.argv[1]), 10
+TYPE = os.environ.get('TYPE')
 A = collections.Counter(); ng = 0; tot = collections.Counter()
 def near(row, i, team, d=6):
     c = row['c'][i]
@@ -28,6 +29,7 @@ for us, res, mp, meta, rows in D.games(sys.argv[2:]):
             c0 = rows[max(0, k - 1 - K)]
             me = c0['c'][i]
             if not me['a'] or 'x' not in me: continue
+            if TYPE and D.NAMES[me['ty']] != TYPE: continue
             w = D.who(me['t'], us)
             tot[w] += 1
             hp = me['hp'] / me['mhp']
