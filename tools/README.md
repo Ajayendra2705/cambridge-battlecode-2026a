@@ -57,7 +57,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `mkvar.py BASE NAME [FILE OLD NEW]...` | Copy `bots/BASE` to `bots/NAME` (use `exp/NAME`) with exact-once text substitutions. |
 | `mklog.py BOT` | Add the per-turn combat log (`V` lines, source `combat_log.cpp`). Logging bots are named `...l` and never go on the ladder. |
 | `mklock.py BOT [--keep N] [--enemy-only] [--cancel] [--debug]` | Add altar-lock buying and placing. |
-| `b10_ideas.py [NAME...]` | Make the bot_10 idea variants in `bots/exp/` from `bots/pool/bot_10` (all of them without names): `b10n` (log off, the base), `b10lock`, `b10bag`, `b10cap`, `b10home`, one factor each. Rationale in `docs/bot_10.md`. |
+| `b10_ideas.py [NAME...]` | Make the bot_10 idea variants in `bots/exp/` from `bots/pool/bot_10` (all of them without names): `b10n` (log off, the base), `b10lock`, `b10bag`, `b10cap`, `b10home`, `b10lki`, one factor each. Rationale in `docs/bot_10.md`. |
 | `addrow.py AFTER ROW` / `setcells.py NAME PLATFORM VERDICT` | Edit `docs/experiments.md` keeping its CRLF endings: insert a row after the row whose first cell is AFTER; set the platform and verdict cells of the row whose first cell is NAME (empty string keeps a cell, a verdict starting with `+` is appended). The name must be unique in the file. |
 
 ## replay/ (analyse platform games)

@@ -87,7 +87,7 @@ bot_10 matches the 3.0.x rules: golems, the reworked Heart of Ruin, 120-HP clust
 
 Make the variants with `python -I tools/variant/b10_ideas.py` (all of them; or name some). Each is `bots/pool/bot_10`
 plus one change, with the log off. **`b10n` (log off, nothing else) is the base for every comparison.** All five were
-made and syntax-checked here (no errors).
+made and syntax-checked here (no errors); there are six with `b10lki`.
 
 | Variant | Change | Why | Measure |
 | --- | --- | --- | --- |
@@ -95,6 +95,7 @@ made and syntax-checked here (no errors).
 | `b10cap` | Capture emblem: 2nd on Heart of Ruin (health), 4th on Vesper and Vendetta (strength) | 2 rounds saved per capture, and less time on a contested tile | Captures per game, collected gems by r1000, deaths while capturing |
 | `b10home` | Home emblem after the core emblems on Heart of Ruin, Vesper, Vendetta, Marcella, Willow | Recall 5 → 3 on every healing and shop trip (spawn heals fully in one round) | Rounds spent recalling, collected by r1000 |
 | `b10lock` | `P_LOCKS 1` (an existing bot_10 switch) | Carry one lock and lock contested or enemy-side altars we tribute at; 2.0.0 locks take 5 hits | Enemy tributes at locked altars, our lock placements |
+| `b10lki` | Lock-interrupt: buy one lock on spawn (10 gold); when a visible enemy is tributing at an altar within 2 tiles, place it there (new `Bot::lock_interrupt`, called after `see_units`; `P_LOCKS` stays 0) | Placing a lock cancels enemy tribute channels and blocks new ones until 5 hits (`docs/MECHANICS.md` §9). The killer takes the whole bag anyway, so a cancelled big tribute is a large swing; main's dl2 acts on the same rule | Enemy tributes cancelled, gems they bank after our lock |
 | `b10bag` | `P_TRIB_GEMS` 60 → 48 | A killer takes the whole bag (`docs/MECHANICS.md`, "Tribute often"), and a tribute takes only ceil(0.1 × gems) rounds; main's bb2 gained from bags about 18% smaller | Gems lost on death, tributed by r1000 |
 
 Larger ideas, no variant yet, in rough order of expected value:
@@ -102,11 +103,9 @@ Larger ideas, no variant yet, in rough order of expected value:
 1. **Draft for 2.0.0.** Re-pick with the nerfs and buffs above, and let the draft look at team size and the map (the SDK
    serves `camp_groups()` during the draft). Risky: some bot_10 logic is champion-specific (Willow support, Marcella
    routing, Heart of Ruin's dash), so a new lineup needs a breakage check first.
-2. **Interrupt enemy tributes with a lock.** Placing a lock on an altar within 2 tiles cancels the enemy tribute channels
-   there and blocks new ones until 5 hits break it (`docs/MECHANICS.md` §9). The killer takes the whole bag anyway, so
-   cancelling a big tribute is worth a lot. bot_10 only locks altars it tributes at itself. Main's dl2 locks against the
-   rivals' game-winning tribute; bot_10 would need the same trigger (a visible enemy channelling at an altar within 2 of
-   a champion who carries a lock). `tools/variant/mklock.py` targets main's code, not bot_10's.
+2. **Walk in to interrupt.** `b10lki` only locks when a champion is already within 2 of the altar. A tribute of g gems
+   lasts ceil(0.1 × g) rounds (6 for a 60-gem bag), so a champion 3-4 tiles away could still step in and lock in time.
+   That needs a movement goal (tiles within 2 of the altar) and a check that the walk beats the channel.
 3. **Draft-time precompute.** Use the 100×-fuel draft turn to analyse the map (group distances, islands, gates, the
    opening) and pass a compact result to every champion through the 1,024 bytes of draft memory, so no first turn is
    lost on big maps.
@@ -118,7 +117,7 @@ Larger ideas, no variant yet, in rough order of expected value:
 On the team machine (`README.md` quickstart; local runs do not submit anything):
 
 ```
-python -I tools/variant/b10_ideas.py                                   # make b10n, b10cap, b10home, b10lock, b10bag
+python -I tools/variant/b10_ideas.py                                   # make b10n, b10cap, b10home, b10lock, b10lki, b10bag
 powershell -File tools/cambc.ps1 build exp/b10n --release              # compile check, same for the others
 python -I tools/local/multi.py exp/b10n --pool pool/vx1 --jobs 6       # bot_10 (log off) against main's source
 python -I tools/local/multi.py exp/b10cap --pool pool/vx1 --jobs 6     # then each idea, compared with b10n's run
