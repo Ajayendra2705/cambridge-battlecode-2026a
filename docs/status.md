@@ -5,6 +5,9 @@
 - **Confirmed at 02:11:** `cambc submissions list --json` shows active and selected 1456 (76,154 bytes, vx1), and the
   Sprint 3 entry names 1456. Ladder at 02:11: rank 71, 1962.7 (`data/ladder_1101_0212_p3.json`), from 65, 1991.4 at
   01:28 (fin1 was live in between). The gate runner `data/run_after12.sh` is stopped; no gate runs.
+- **Repo (02:28):** one branch, `master` (default), at the current state; work and push there. The old working
+  branch `batch-loop-2026-10-24` and `h3/cloud-1028` were merged and deleted. The unmerged `h2/cloud-1028` and
+  `mic_mlmodels---ml` are kept as tags `archive/h2-cloud-1028` and `archive/mic-mlmodels-ml`. PR #4 is closed.
 - **For later rules:** judge a change that acts late in the game (a wait, a give-up, a bank) over the whole game, not
   to r1000. Whole-game wins can be judged with `tools/replay/whofirst.py`: games the opponent played identically until
   our change acted carry no opponent-upload noise.
