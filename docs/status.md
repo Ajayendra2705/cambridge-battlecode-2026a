@@ -1,4 +1,29 @@
-# Status (updated 2026-11-01 04:22 IST)
+# Status (updated 2026-11-01 04:28 IST)
+
+## Update at 04:28 IST 11-01 (session 91, local branch `night-1101`, not pushed)
+
+- **The teammate made the Sprint 3 choice:** version 1468 (66,903 bytes, note "v428 baseline 1 Nov", uploaded from
+  another team member's account at 04:19 IST) is active since 04:25 and is the Sprint 3 entry (`cambc submissions list
+  --json` at 04:28). Its size is about bot_10's (cmb1 minus vx1). It is not overridden: no gate runs after 04:08, and
+  the watcher `data/watch_subs.sh` only reads.
+- Local only from here: the bot_10 variant screen (rows b10n to b10d4, `tools/local/lscreen.py`).
+- **User (recorded 04:36 IST):** "Now a team is merged ... Keep all test on local till i give out the next information for this.
+  let them iterate on platform for some time. You dont do it until I say so." So no gates, uploads or platform tests
+  from this side until the user says so; the merged team's other members iterate on the platform. (This also settles
+  the rules caveat above: cheji bt and our team are now one team.)
+- **Three bots now** (user, after 04:36: "One more member bamboo has uploaded his code ... I want the best of all
+  worlds now"): vx1 (`bots/main`), bot_10 (`bots/pool/bot_10`; b10n with its log off) and bamboo8 (`bots/bamboo8`,
+  branch `Bamboo8`, Bamboo Teahouse G3, platform v1469). Local results so far (rows bamboo8, cmb3, vx1fa, b10fa, cmb4):
+  - Per size against the common pool (cand1, cp3, dh3): three a side vx1 60 of 72, bot_10 59, bamboo8 55; four a side
+    vx1 87 of 96, bamboo8 82, bot_10 80; five a side bot_10 210 of 252, bamboo8 193, vx1 180. The pick rule (written
+    before the games) gives cmb2's assignment: vx1 three and four a side, bot_10 five a side.
+  - Head to head bamboo8 beats vx1 (83 of 140; four a side 20 of 32) and is level with bot_10 (71 of 140).
+  - bamboo8's allocator in vx1 (vx1fa) cuts turns out of fuel from 1.16 to 0.47 a game with no loss; in bot_10 (b10fa)
+    it fails the collected guard (97.8%).
+  - The 15 bot_10 fix variants: none of the economy ones hits its target; b10hor and b10cap pass the screen (fight and
+    item changes, for the platform); b10shot never acts.
+  - cmb4 (vx1 three, bamboo8 four, bot_10 five a side, one program, `tools/variant/nsbot.py`) is on the local screen.
+  Nothing of this is submitted: platform tests wait for the user.
 
 ## Update at 04:22 IST 11-01 (session 91): the Sprint 3 choice is the teammate's
 

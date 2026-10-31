@@ -20,6 +20,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `probe_lines.py RUNDIR PREFIX TAG` | Mechanism probes: prints our side's stdout lines that start with TAG from every replay of PREFIX (e.g. `exp.fw2l`) in a `multi.py --keep` run, each prefixed with map and side. A probe is a copy of a variant (never shipped) that prints one tagged line per turn where its mechanism should act; read the lines to check the change does what it was meant to before its gate. |
 | `allmaps.txt` | All 70 platform map names (default `--maps` of `multi.py` and `rr.py`; 40 until 10-26). `maps40.txt` is the first 40 (quick-pool numbers before 10-26), `newmaps.txt` the 30 added later. |
 | `lpair.py BASEDIR BASECAND NEWDIR NEWCAND` | Pairs two `multi.py` runs game by game (local games replay exactly): flips (L->W, W->L), wins, collected and deaths by team size (`data/map_sizes.json`), and the maps that flipped. CAND as in the file names (`exp.bb2`, `pool.cw1`, `main`). |
+| `lscreen.py RUNDIR BASECAND [ROUND]` | Paired screen of every candidate of one `multi.py` run against a base candidate of the same run (same pool bot, map and side): mean difference and standard error of wins, final margin, collected and tributed by ROUND (default 1000), the rivals' tributed, deaths, kills, gems lost on death and camp clears, plus our bot faults. Made for the bot_10 variant screen (11-01). |
 | `ltypes.py RUNDIR` | Per champion type on our side of a `multi.py` run: deaths, kills, champion damage done and taken, gems collected, and the bot faults (`diagnostics.botFaults`) over every game in the folder (all candidates together). |
 | `lmaps.py RUNDIR...` (env `CAND=exp.x`) | Local losses by map and opponent, with margin and deaths per game; `CAND` keeps one candidate's games. |
 | `lcurve.py FILE.json...` | One local game's curves: collected and tributed gems per side at rounds 100-2000. |
@@ -55,6 +56,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | Tool | Use |
 |---|---|
 | `mkvar.py BASE NAME [FILE OLD NEW]...` | Copy `bots/BASE` to `bots/NAME` (use `exp/NAME`) with exact-once text substitutions. |
+| `nsbot.py SRC DEST SUB NS [NAME ...]` | Copies bot SRC into `bots/DEST/src/SUB/` inside `namespace NS` (includes hoisted, `main` renamed `run`, a global operator new file left unwrapped and dropped from main), so one program can hold several bots and pick one by team size (cmb1, cmb3, cmb4). NAME: the bot's own functions it calls as `::NAME`, requalified to `::NS::NAME`. |
 | `mklog.py BOT` | Add the per-turn combat log (`V` lines, source `combat_log.cpp`). Logging bots are named `...l` and never go on the ladder. |
 | `mklock.py BOT [--keep N] [--enemy-only] [--cancel] [--debug]` | Add altar-lock buying and placing. |
 | `b10_ideas.py [NAME...]` | Make the bot_10 idea variants in `bots/exp/` from `bots/pool/bot_10` (all of them without names): `b10n` (log off, the base), then the fixes `b10cd`, `b10shot`, `b10hor`, `b10keep` and the ideas `b10cc`, `b10sq`, `b10d4`, `b10lki`, `b10cap`, `b10home`, `b10bag`, `b10lock`, `b10notp`, `b10noend`, one factor each. Rationale in `docs/bot_10.md`. |
