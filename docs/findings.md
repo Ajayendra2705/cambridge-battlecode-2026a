@@ -1625,3 +1625,41 @@ Scratch readers in the session scratchpad (`timeuse.py`, `campdmg.py`, `capbonus
   teams, 15 of 40 against Tavi teams.
 - **Close finishes are rare.** Of b29's 35 losses only 02geodes ended with our tributed plus bags above 1000 (949 + 103
   against 952): banking at the end is not the gap.
+
+## How our champions die against ranks 41-61 (bb2 on b28 and b29, 100 five-a-side games to r1000; 10-31 07:44 IST)
+
+Sources: `main_b28@b28` and `main_b29@b29`, decoded (`data/fights/main_b28_b28`, `main_b29_b29`); readers on
+`decoded.py`'s helpers (scratch `outmeet.py`, `whocap.py`; `tools/replay/repeat.py`, `decoded.py channels`).
+
+- **Gang-ups carry the death gap.** Our deaths 5.14 a game, theirs 4.20. By distinct enemy hitters in the victim's last
+  10 rounds (0 / 1 / 2 / 3 / 4+): ours 0.07 / 1.37 / 1.40 / 1.32 / 0.98, theirs 0.91 / 1.50 / 0.96 / 0.60 / 0.23. In our
+  deaths with three or more hitters (2.30 a game, theirs 0.83) the victim had 1.30 allies and 3.51 enemies within 6 at the
+  first hit (theirs 2.18 and 3.57), 82% health, and 1.36 of them a game were in the middle.
+- **Outnumbered meetings** (off the start area, 2+ enemies within 8 and more of them than of us within 6, after 10 rounds
+  without): ours 16.7 a game, dying within 20 rounds after 18.3%; theirs 12.4 and 12.0%. At the same nearest-enemy
+  distance we take about twice the hits in the next 5 rounds (5-8 tiles: 1.32 against 0.66; 3-4 tiles: 2.73 against
+  1.51) and the gap to the nearest enemy grows less (3-4 tiles, after 5 rounds: +0.19 against +0.76). The first three
+  rounds' moves are close (away 28% against 35%, sideways 18% against 13%, toward 21% against 22%, standing 28% against
+  26%), so the difference is mostly the chasers: the rivals press an outnumbered target harder than we do.
+- **Full packs.** Share of champion-rounds off the start area with all four teammates within 6: r0-40 ours 0.48 against
+  0.58, r40-80 0.16 against 0.32, r80-120 0.11 against 0.22, r200-300 0.08 against 0.17, r600-1000 0.03 against 0.11.
+  Other team counts are close. Our deaths r0-100 0.46 a game against their 0.12; r0-150 0.57 (0.51 to champions, with
+  3.75 enemies and 1.58 allies within 6) against 0.44 (0.29; 1.91 and 1.59).
+- **Caught farming.** Deaths where the victim was hitting a camp when the first enemy hit landed: ours 0.49 a game, theirs
+  0.10. In the 5 rounds before that hit an enemy stood within 8 in 4.9 of them and two or more in 3.9, while the victim
+  hit the camp 3.7 times; at the hit 2.86 enemies and 1.10 allies within 6 (theirs 2.80 and 2.40). pa1 (10-27) stopped
+  such camp fights against packs and lost 8% of tributed.
+- **Walk-out deaths.** Deaths 21-50 rounds after the champion was last on its start tiles: ours 1.01 a game, theirs 0.67,
+  at a home distance of 13 with 2.93 enemies and 1.38 allies within 6 (theirs 2.09 and 2.00).
+- **Our Vesper's hits feed teammates' captures.** Of the groups our Vesper hit to r600, she captured 4.0 a game (50.5 of
+  her hits) and a teammate 6.6 (83.8 hits); the rivals' Vesper 5.9 and 3.3. In 4.0 of those 6.6 she stood within 2 of the
+  group when the teammate's capture began, so the gold-spread claim rule moved them (Marcella 2.1, Varg 1.6, Heart of
+  Ruin 1.5, Vendetta 1.4). Her gold held at r300 / r600: 314 / 687 against the rivals' 473 / 1114, with team gold level
+  (1149 / 2721 against 1153 / 2792). vc1 and vg1 (10-30, 10-31) gave her those captures and lost 5% of tributed.
+- **Channels.** Our bags of 30+ with an enemy within 4 during the channel complete in 69% (1.49 a game), theirs in 80%;
+  an enemy cast on our channeler in 23% of those, ours on theirs in 2%. Bags over 100: 0.6 a game, 77% completed against
+  0.9 and 97%.
+- **Ability timing is level.** At a fight's start our Marcella's damage spell was spent on a camp in the 8 rounds before
+  in 11% (theirs 7%); dashes were spent in the 8 rounds before in 47-53% of fight starts for both sides.
+- **Cassi & Issac** (ci1 on b29p, ci2 on b28p, 100 games against the same bases): tributed level (+0.2 +- 23.7 a game),
+  collected +2.8%, gems lost on death +25.5 a game; the pair dies 1.74 times a game each, as the rivals' pair.

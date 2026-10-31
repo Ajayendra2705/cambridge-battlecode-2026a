@@ -1,4 +1,20 @@
-# Status (updated 2026-10-31 05:01 IST)
+# Status (updated 2026-10-31 08:12 IST)
+
+## Update at 08:12 IST 10-31 (session 88)
+
+- **Ladder:** rank 60, 1989.7 at 07:2x; rank 65, 1979.4 at 08:07 (`data/ladder_now_*.json`). 2100 is about rank 33.
+  Main is still bb2 (every gate resubmits it; version 1361 at 07:54).
+- **Verdicts since 05:01** (rows in `docs/experiments.md`): ci1 **N** (b29p deaths +2.02), ci2 **N** (ci1's draft on b28p,
+  tributed -5.8%), op100 **N** (five together to r100: tributed -10.3%, deaths +0.56), ft7p **N** (higher engage bar: our
+  deaths +0.16, theirs -0.28), rn1 **N** (Ren for Varg five a side: deaths -0.32 but collected 95.8%, tributed -3.3%).
+- **New finding** (`docs/findings.md`, "How our champions die against ranks 41-61"): gang-ups of 3+ hitters carry the
+  death gap (2.30 a game against 0.83); in outnumbered meetings our champions take about twice the hits the rivals' take
+  from us, so the rivals press harder; bv1 and ft7p (less fighting) cut the rivals' deaths more than ours.
+- **Running:** `data/run_after12.sh` (queue `data/queue12.txt`) gates the pressing family on b28p, each against
+  `main_b28@b28`: **pp1** (prey up to 8 tiles when we outnumber around it; from 08:05), **pp2** (fight-simulation edge
+  0.05 when we outnumber), **pp3** (both), **ls1** (no power-ratio retreat in even, healthy fights). Rules in their rows:
+  factor kills, target the rivals' deaths +0.3, guards our deaths at most +0.3 and tributed 98%; passers go to b29p
+  (stage 2, against `main_b29@b29`); among several passers the largest rise in the rivals' deaths is adopted.
 
 ## Update at 05:01 IST 10-31 (session 88)
 
