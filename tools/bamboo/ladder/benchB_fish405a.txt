@@ -1,0 +1,4 @@
+1890540d-1ffc-4847-adbf-d0d08772f268 01gold_rush,00gemfight,00ribs,02the_pond,01starvation --sides b,a,b,a,b
+1890540d-1ffc-4847-adbf-d0d08772f268 adgato_gemcombat3,01yellow_brick_road,01starvation,00interlock,01elk_arena --sides a,b,a,b,a
+1890540d-1ffc-4847-adbf-d0d08772f268 02gift_wrapping,01the_farm,00collision,01hooks,adgato_gemcombat5 --sides b,a,b,a,b
+1890540d-1ffc-4847-adbf-d0d08772f268 01yellow_brick_road,00monolith,02treasure_box,adgato_gemcombat4,00expanse --sides a,b,a,b,a

@@ -1,0 +1,4 @@
+1890540d-1ffc-4847-adbf-d0d08772f268 00great_wall,00reverse_spiral,00monolith,00stampede,01gold_rush --sides a,b,a,b,a
+1890540d-1ffc-4847-adbf-d0d08772f268 02gift_wrapping,00fragment,01concentrated_wealth,00stampede,00ambush --sides b,a,b,a,b
+1890540d-1ffc-4847-adbf-d0d08772f268 00contest,02fields,00collision,00swirl,00split --sides a,b,a,b,a
+1890540d-1ffc-4847-adbf-d0d08772f268 adgato_gemcombat5,00great_wall,00galaxy,adgato_gemcombat3,01shortcut --sides b,a,b,a,b

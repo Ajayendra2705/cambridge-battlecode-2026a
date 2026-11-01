@@ -1,0 +1,4 @@
+1890540d-1ffc-4847-adbf-d0d08772f268 02cuts,00split,00collision,00ribs,01big_world --sides b,a,b,a,b
+1890540d-1ffc-4847-adbf-d0d08772f268 00packs,00lost_world,02cuts,02uncharted_lands,00breadcrumbs --sides a,b,a,b,a
+1890540d-1ffc-4847-adbf-d0d08772f268 02the_pack,02fields,02arena,00corners,01big_world --sides b,a,b,a,b
+1890540d-1ffc-4847-adbf-d0d08772f268 01gold_rush,00gemfight,00ribs,02the_pond,01starvation --sides a,b,a,b,a

@@ -1,0 +1,1 @@
+1890540d-1ffc-4847-adbf-d0d08772f268 00corners,00contest,01elk_arena,01starvation,01big_world --sides a,b,a,b,a

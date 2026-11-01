@@ -1,0 +1,4 @@
+1890540d-1ffc-4847-adbf-d0d08772f268 02tangle,01boss_battle,02the_pack,02gift_wrapping,00road_of_riches --sides a,b,a,b,a
+1890540d-1ffc-4847-adbf-d0d08772f268 00gem_fields,01shortcut,01the_farm,01starfish,01hooks --sides b,a,b,a,b
+1890540d-1ffc-4847-adbf-d0d08772f268 02fields,00ambush,00the_line,01shortcut,01islands --sides a,b,a,b,a
+1890540d-1ffc-4847-adbf-d0d08772f268 01islands,adgato_gemcombat5,00packs,01shortcut,01yellow_brick_road --sides b,a,b,a,b
