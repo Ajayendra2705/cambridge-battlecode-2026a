@@ -2180,3 +2180,23 @@ others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head dedupli
   had made 1472 live again, so the base is 1472): 1478 32 of 90, 1472 28; L->W 12, W->L 8 for 1478, margin +64 a
   game; five a side far 8 of 22 against 6, near 14 of 31 against 12. Pooled with b38p (where the base was 1479): 36
   against 19, sign test p = 0.03 (`results/analysis/rule_1478_b39.md`).
+
+## Three a side against ranks 18-38: the Bamboo bot farms as a pack (session 92, 11-01 20:20-20:40 IST)
+
+Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 19:55, ten three-a-side games each,
+89 decoded), readers `decoded.py`, `cohesion.py`, scratch `cohmap.py` (per map shared camp hits).
+
+- **1478 wins 29 of 90 three a side.** To r1000 it collects 511 gems against 682 and tributes 439 against 584;
+  deaths are level (4.4 against 4.2). The 17 ranked three-a-side games of 1472 against teams above us gave the same
+  picture (473 against 701).
+- **The gap is captures, not fights:** 38.4 group captures a game against 59.4 (own half 24.5 against 34.4, middle 9.0
+  against 17.4). A capturer's cycle is 64 rounds (median 37) against 44 (29), with 36.8 moves against 23.9 for the
+  same straight hop (9.5 against 9.0). Gem clusters give 112 gems a game by r600 against 181.
+- **Our three farm together.** Per camp-hit round a teammate hits the same group 60% of the time against 31% (r0-150
+  74% against 50%, r600-1000 still 48% against 23%); a champion has no ally within 6 in 21% of its rounds against
+  40%. It is the same at every size (ranked games of 1472 against teams above: four a side 58% against 39%, five a
+  side 81% against 47%), but three a side it costs the most: five a side the collection is near level (795 against
+  859). Per map the shared share is 51-73% on ten of the twelve maps (00breadcrumbs 2%, adgato_gemcombat1 24%).
+- **The other two bots draft like the teams above:** vx1 and bot_10 pick Heart of Ruin, Vendetta and Vesper three a
+  side (locally hy3v 66 of 72 games, hy3b 72 of 72), the Bamboo bot Marcella, Ryth and Vesper. Locally against the
+  pool, vx1 three a side makes 15.8 more captures a game than the Bamboo bot and bot_10 5.7 more (rows hy3v, hy3b).

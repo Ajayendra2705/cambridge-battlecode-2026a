@@ -20,7 +20,9 @@ ver() {
 import json, sys
 s = sys.stdin.read()
 d = json.loads(s[s.index('{'):])
-print((d.get('active') or {}).get('version', 0), d['submissions'][0]['version'])" 2>/dev/null
+print((d.get('active') or {}).get('version', 0), d['submissions'][0]['version'])" 2>/dev/null | tr -d '\r'
+  # Windows python ends the line in CRLF: without the tr, "1482\r" fails the -gt test after an upload and the gate
+  # waits for ever (11-01 20:22, hy3v_b40p).
 }
 select_wait() {  # select version $1 and wait until it is the active one
   until "$C" submissions activate "$1" > /dev/null 2>&1 && [ "$(ver | cut -d' ' -f1)" = "$1" ]; do sleep 15; done
