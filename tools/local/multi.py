@@ -18,6 +18,9 @@ ap.add_argument('--maps', default=open(os.path.join(ROOT, 'tools', 'local', 'all
 ap.add_argument('--jobs', type=int, default=16)
 ap.add_argument('--keep', action='store_true', help='keep .repl26a replays (deleted by default to save disk)')
 ap.add_argument('--from', dest='src', help='summarise an existing run folder (same CANDS/--pool/--maps) without playing')
+ap.add_argument('--fuel', type=int, help='fuel per turn (run-batch --fuel-quantum; default: the engine default, as on '
+                'the platform). A value near the default, such as 99500, replays every pairing on a slightly different '
+                'path: a stand-in for a new seed, since local games are otherwise deterministic')
 args = ap.parse_args()
 cands, pool, maps = args.cands.split(','), args.pool.split(','), args.maps.split(',')
 
@@ -41,8 +44,8 @@ for c in cands:
                 jobs.append((c, us, name))
 if not args.src:
     open(os.path.join(out, 'matches.txt'), 'w').write('\n'.join(rows) + '\n')
-    subprocess.run([CAMBC, 'run-batch', os.path.join(out, 'matches.txt'), '--jobs', str(args.jobs), '--release'], cwd=ROOT,
-                   capture_output=True, text=True)
+    subprocess.run([CAMBC, 'run-batch', os.path.join(out, 'matches.txt'), '--jobs', str(args.jobs), '--release']
+                   + (['--fuel-quantum', str(args.fuel)] if args.fuel else []), cwd=ROOT, capture_output=True, text=True)
 
 res = collections.defaultdict(collections.Counter)
 for c, us, name in jobs:
