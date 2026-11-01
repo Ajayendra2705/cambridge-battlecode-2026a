@@ -2124,3 +2124,24 @@ others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head dedupli
   at 08:10): the Sprint 3 bot against vx1 104 of 160, 0.650 +- 0.061 (the pick is supported), against bot_10 90 of
   160, 0.562 +- 0.063 (level). So per size the head to head agrees with the pool-based picks of cmb7: vx1 and the
   Sprint 3 bot are level three a side, the Sprint 3 bot leads four a side, bot_10 leads five a side.
+
+## 1472 on the ladder, the draft question and the three-a-side round robin (session 91, 11-01 13:05-13:45 IST)
+
+- **Which bot played a ranked game** is visible in our draft order: the Bamboo line (1471-1473) opens with picks
+  (11, 1) five a side and (6, 1) three and four a side; the bot_10 line (1470, 1474-1476) opens (11, 6), and (11, 2)
+  three a side (platform pick ids: 0 Ryth, 1 Vesper, 2 Vendetta, 3 Cassi and Issac, 4 Stellar, 5 Prism, 6 Marcella,
+  7 Willow, 8 Ren, 9 Varg, 10 Tavi, 11 Heart of Ruin). Bamboo-line games since 23:23 UTC 10-31 (180,
+  `data/ourmaps_1101_1310.json`): against teams rated above us (2050 at 13:35) 3 a side 5 of 17, 4 a side 7 of 20,
+  5 a side 28 of 58; against teams below 5 of 8, 17 of 23, 37 of 54. bot_10-line games in the same span: 7 of 8,
+  8 of 18, 17 of 34 (different hours, so different opponents).
+- **Drafts explain little after rating** (`tools/platform/ladgames.py` + `draftelo.py`, 5,325 ranked games of the top
+  100 teams since 10-30): result minus the Elo expectation of the side that drafted a champion the other did not is
+  within about two standard errors of zero for every champion except Prism (+0.09 to +0.16 at each size), which a
+  few teams (SilverSamurai, BBL, :3) drive and which rating lag on rising teams would also produce. Heart of Ruin:
+  -0.012 +- 0.026 three a side, -0.042 +- 0.023 four a side, +0.017 +- 0.017 five a side. The common five-pick draft
+  above us (Ryth, Vesper, Vendetta, Marcella, Heart; 1,944 sides) scores -0.001 +- 0.011; 1472's four-pick draft
+  (Ryth, Vesper, Marcella, Willow) +0.087 +- 0.055. So 1472's weak three and four a side record against teams above us
+  is play, not the draft.
+- **Three a side round robin** of vx1, the Sprint 3 bot, bamboo8 and bot_10 over five fuel values (120 games a pair,
+  `results/analysis/h2h_fuel_1101.md`): every pair within about one standard error of even; the Sprint 3 bot has the
+  best mean share (0.567). cmb7 keeps vx1 three a side by the rule written before the run.

@@ -64,6 +64,25 @@ Result: vx1 against bamboo458sf 56 of 120, 0.467 +- 0.077 (level): cmb7 stays as
 Result: bamboo458sf against vx1 104 of 160, 0.650 +- 0.061 (supports the pick); against bot_10 90 of 160, 0.562 +-
 0.063 (level). Runs `multi-081059` to `-081316`; default games `multi-062416`.
 
+## Three a side, round robin of four bots (13:05 IST)
+
+> Rule (written 13:06 IST 11-01, before any game; local only, a measurement). Bots: main (vx1, cmb7's three-a-side
+> part), bamboo458sf (1472), bamboo8, exp/b10n. All pairs, 12 three-a-side maps, both sides, fuel default + 99000 /
+> 99500 / 100500 / 101000 (120 games a pairing). cmb7's three-a-side part switches from vx1 to bot X only if X beats
+> vx1 head to head by more than one se and X's mean share against the other two is not below vx1's by more than one se.
+
+Result (row bot's share against the column bot, se over 24 (map, side) clusters):
+
+| | vx1 | bamboo458sf | bamboo8 | b10n | mean |
+|---|---|---|---|---|---|
+| vx1 | - | 0.467 +- 0.077 | 0.492 +- 0.076 | 0.517 +- 0.089 | 0.492 |
+| bamboo458sf | 0.533 +- 0.077 | - | 0.600 +- 0.071 | 0.567 +- 0.093 | 0.567 |
+| bamboo8 | 0.508 +- 0.076 | 0.400 +- 0.071 | - | 0.633 +- 0.085 | 0.514 |
+| b10n | 0.483 +- 0.089 | 0.433 +- 0.093 | 0.367 +- 0.085 | - | 0.428 |
+
+No bot beats vx1 by more than one se, so cmb7 keeps vx1 three a side. bamboo458sf has the best mean, within noise.
+Runs `multi-130546`, `-131027`, `-131455`, `-131957`, `-132443` (fuel 0, 99000, 99500, 100500, 101000).
+
 ## Standard error
 
 Each (map, side) cluster's mean over its fuel values is one observation; the share is the mean of the cluster means

@@ -51,6 +51,8 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `waitrun.sh RUN` | Block until every group of a run has finished. |
 | `ranked.py [limit]` | Our recent ranked matches. |
 | `ourmaps.py PAGES OUT.json` | Our ranked games on engine 2.0.0, 100 a page, newest first, into OUT.json (map, side, result, opponent, time, drafts); prints wins per map, worst first. The maps of `docs/findings.md`, "Why we lose: maps, fights and items" (`data/tmp_ourranked.json`, 10-28 04:58). |
+| `ladgames.py LADDER.json OUT.json [PAGES]` | Ranked games of every team on a ladder file (`cambc ladder --page N --limit 25 --json`, pages joined into one list), PAGES pages of 100 per team, deduplicated: map, time and per team name, side, result and draft picks. 11-01: 5,325 games of the top 100 teams in about 5 minutes. |
+| `draftelo.py LADGAMES.json LADDER.json [SINCE]` | Which picks beat their Elo expectation, per team size: for each game side with both teams on the ladder file, result minus the Elo expectation from current ratings; mean residual of the side that drafted a champion the other did not, and of each full draft with 20+ sides. Rising teams (ratings lag) inflate their drafts, so read it as a screen. |
 | `eligible.py LADDER_JSONL RANKS` | Teams that can be scheduled (bot on the current engine). Retries listings that come back empty (HTTP 429). |
 | `mkpanel.py [--size N] SEED TEAM_ID...` | Panel specs for a list of teams: blocks of 4 teams, each block covering all 40 maps (two seeded 5-map windows per team), our side alternating a/b. Output goes to `results/panels/specs_NAME.txt`. `--size N` deals only maps of N champions a side (`data/map_sizes.json`), e.g. the five-a-side panel b26. |
 
