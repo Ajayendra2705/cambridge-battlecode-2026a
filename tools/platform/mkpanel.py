@@ -1,4 +1,4 @@
-"""Write panel specs: python -I tools/platform/mkpanel.py [--size N] SEED TEAM_ID... > results/panels/specs_NAME.txt
+"""Write panel specs: python -I tools/platform/mkpanel.py [--size N] [--maxsd N] SEED TEAM_ID... > results/panels/specs_NAME.txt
 
 Teams go in blocks of 4. In each block the pool maps (every map in maps/: 40 until 10-26, the platform's 70 since) are
 shuffled (seeded) and dealt as two 5-map windows per team, so each team plays 10 different maps and a block covers 40 of
@@ -8,6 +8,8 @@ import json, os, random, sys
 args = sys.argv[1:]
 size = None
 if args[0] == '--size': size, args = int(args[1]), args[2:]
+maxsd = None  # --maxsd N: only maps whose spawn walk (data/map_features.json sd) is under N, e.g. 61 for 1478's near maps
+if args[0] == '--maxsd': maxsd, args = int(args[1]), args[2:]
 seed, teams = int(args[0]), args[1:]
 pool = sorted(m[:-7].replace('-', '_') for m in os.listdir(os.path.join(os.path.dirname(__file__), '..', '..', 'maps')) if m.endswith('.map26a'))
 specs = []
@@ -16,6 +18,9 @@ specs = []
 if size:
     sizes = json.load(open(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'map_sizes.json'), encoding='utf-8'))
     pool = [m for m in pool if sizes.get(m) == size]
+if maxsd:
+    feats = {r['map'].replace('-', '_'): r for r in json.load(open(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'map_features.json'), encoding='utf-8'))}
+    pool = [m for m in pool if m in feats and feats[m]['sd'] is not None and 0 <= feats[m]['sd'] < maxsd]
 # A pool too small for a block (under 40 maps, e.g. the 12 three-a-side maps) is shuffled again for every team, so each
 # team still gets two full 5-map windows (11-01).
 if len(pool) < 40:

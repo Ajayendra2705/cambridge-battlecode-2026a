@@ -2238,3 +2238,36 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   0.04, tributed +1.4 +- 2.5. Most of the gain is on 00anvil (five of six changed games better, 200-gem monolith
   bags banked instead of looped). The loops cost little on average: about one game in eight changes, and the result
   of about one in ninety.
+
+## Five a side on near maps: weaker camp hits, and 00monolith (session 92, 11-02 01:30-02:45 IST)
+
+- **Where the games are.** Of our 225 ranked games since 1478 went live (to 01:37 IST 11-02,
+  `data/ranked_1102_0137.json`), 146 were five a side (65%; 71 won), 46 four a side (24 won), 33 three a side (15).
+- **Five a side on near maps is the weak cell** (`l1478_b38@b38`, nine teams ranked 21-45): 9 of 26 won, against 16
+  of 30 on far maps five a side (bot_10) and 8 of 19 four a side near. To r1000 in the 26 games: gems collected 705
+  against 828; group captures 33.5 against 46.7, the gap in our own half (17.9 against 30.1) and late (r750-1000: 4.4
+  against 9.8); deaths level (6.9 each).
+- **Camp time is level, camp damage is not** (`tools/replay/campdmg.py --size 5 --near`): camp-hit champion-rounds
+  794 against 811, camp health taken 60.9k against 80.8k, so 76.6 per champion-round against 99.7. We stack more
+  (2.26 hitters per camp-round against 1.50) and our lone hits are weaker (89 against 128). By champion, lone hits:
+  our Willow 70, Heart of Ruin 57, Vesper 115, Marcella 119, Ryth 115; theirs Vendetta 177 (drafted in every game),
+  Vesper 180, Ryth 134, Marcella 115, Heart of Ruin 62. On far maps (bot_10, which drafts Vendetta) the gap is small:
+  82.3 against 86.6 per champion-round, our Vendetta 162 a hit against their 124. Four a side near: 71.3 against
+  84.2, lone hits 93 against 99, so there the gap is the stacking.
+- **Gold.** Team gold five a side (all maps, `decoded.py gold`): 0.90 of theirs at r300, 0.85 at r600, 0.76 at r1000.
+  Their Vesper earns 911 camp gold to r600 against our 587 (`decoded.py champs`, all sizes) and completes her first
+  emblem at r201 (Prospector of strength in half the games) against ours at r286 (Treasure of strength in 57%;
+  `emblemorder.py vesper`).
+- **Vendetta in Willow's place fails locally** (dv5, five a side near maps against pool/cp3 and pool/bot_10, 24 games):
+  deaths 102 to 162, wins 18 to 14, collected 984 to 888 a game; four a side (bd2) it also lost locally. Willow's
+  healing probably matters more to the Bamboo bot than the damage gained.
+- **The worst ranked maps by part** (`results/analysis/rule_route.md`, `tools/local/routemaps.py`, 16 local games per
+  map and bot against eight pool bots): bot_10 is far better than the Bamboo bot on 00monolith (14 of 16 against 8;
+  ranked, the Bamboo bot won 0 of 12 there), and better without clearing the bar of 5 wins on 01yellow_brick_road
+  (9 against 5), 01boss_battle (12 against 10, margin +695 against +217) and adgato_gemcombat5 (14 against 13). On
+  the far maps bot_10 plays, the Bamboo bot is worse (00expanse 8 against 12, 01big_world 4 against 13, 01fracture 4
+  against 8), so their ranked losses do not come from the routing. 01elk_arena belongs to Bamboo (13 against 6).
+- **hym** (hy1 with 00monolith routed to bot_10, found by width, height and spawn walk) locally: 00monolith 4 of 16
+  to 14 of 16, every game on the other 50 x 50 maps unchanged.
+- **A platform group must hold five different maps** (HTTP 400 "Choose exactly five different maps"), so a one-map
+  panel gives one game of that map per group.

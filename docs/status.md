@@ -1,4 +1,25 @@
-# Status (updated Mon, Nov  2, 2026 12:55 AM IST)
+# Status (updated Mon, Nov  2, 2026 02:45 AM IST)
+
+## Note at 02:45 IST 11-02 (session 92, branch `night-1101`)
+
+- **Live bot: 1478**, selected and pinned (restored 02:24 IST after dv5's upload 1487 was cancelled). Ladder at 02:45:
+  rank 44, 2077.5 (`data/ladder_1102_0245.json`).
+- **New rule (user, 02:25): a variant goes to the platform only after it passes its local screen** (CLAUDE.md,
+  `docs/WORKFLOW.md`).
+- **Factor: five a side on near maps** (65% of ranked games are five a side; the Bamboo bot's near maps are the weak
+  cell: 9 of 26 won on `l1478_b38`). Our camp hits are weaker (76.6 camp health per champion-round against 99.7,
+  `tools/replay/campdmg.py`) and our gold falls behind (0.76 of theirs by r1000). Findings: "Five a side on near
+  maps: weaker camp hits, and 00monolith".
+  1. dv5 (Vendetta in Willow's place five a side, `kFifthPick = 4`): failed locally (deaths +2.5 a game, wins 18 to
+     14 of 24); its gate was stopped before any game. Row R. The base run `hy1_b41@b41` (41 of 90, five-a-side near
+     panel) and its pinned panel b41p remain for the next variant of this factor.
+  2. **hym** (00monolith routed to bot_10; ranked 0 of 12 there with the Bamboo bot): passed its local bar (00monolith
+     4 of 16 to 14 of 16, other maps unchanged). **Running on the platform** (`data/run_hym.sh`, started 02:43):
+     hy1 (1484) on panel m42 (18 teams ranked 35-53, one 00monolith game each plus four other maps), then hym on
+     m42p; judge `data/judge_hym.txt` (`tools/platform/mapcmp.py`). Rule: `results/analysis/rule_route.md`.
+- Next candidates for the factor (each needs a local pass first): Vesper's emblem line toward the rivals' (Prospector
+  of strength first; their Vesper lands 180 a camp hit against our 115), and less stacking five a side.
+- trB proposal (tribute restart loops) still waits for the user's decision (note below).
 
 ## Note at 00:55 IST 11-02 (session 92, branch `night-1101`)
 

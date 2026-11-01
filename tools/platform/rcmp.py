@@ -53,12 +53,15 @@ for new in news:
     down = [k for k in keys if B[k][0] and not N[k][0]]
     better = sum(N[k][1] > B[k][1] for k in keys)
     worse = sum(N[k][1] < B[k][1] for k in keys)
-    dm = sum(N[k][1] - B[k][1] for k in keys)
+    ds = [N[k][1] - B[k][1] for k in keys]
+    dm = sum(ds)
+    # standard error of the per-game margin difference (rule guards such as rule_dv5_b41.md judge the margin by it)
+    se = math.sqrt(sum((d - dm / len(ds)) ** 2 for d in ds) / (len(ds) - 1) / len(ds)) if len(ds) > 1 else 0
     n = better + worse
     z = (better - worse) / math.sqrt(n) if n else 0
     p = math.erfc(abs(z) / math.sqrt(2))
     print(f'{new}: {len(keys)} shared games | wins {sum(N[k][0] for k in keys)} vs base {sum(B[k][0] for k in keys)} | '
-          f'L->W {len(up)} W->L {len(down)} | margin diff {dm:+d} ({dm / max(1, len(keys)):+.0f}/game) | '
+          f'L->W {len(up)} W->L {len(down)} | margin diff {dm:+d} ({dm / max(1, len(keys)):+.0f} +- {se:.0f}/game) | '
           f'better {better} worse {worse} p={p:.3f}')
     print('  up:', ' '.join(f'{k[0][:10]}/{k[1][2:12]}' for k in up))
     print('  down:', ' '.join(f'{k[0][:10]}/{k[1][2:12]}' for k in down))
