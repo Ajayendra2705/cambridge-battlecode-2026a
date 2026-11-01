@@ -1,4 +1,12 @@
-# Status (updated 2026-11-01 08:12 IST)
+# Status (updated 2026-11-01 13:10 IST)
+
+## Note at 13:10 IST 11-01 (read only)
+
+`cambc submissions list --json` at 13:01 shows **1472 active again** (321,687 bytes, `bots/bamboo458sf`, the Sprint 3
+bot); 1475 (the teammate's v519) and 1476 (uploaded 09:10 IST) are inactive. Wherever the 08:12 section below says the
+live bot is 1475, read 1472. cmb7 head to head (140 games each, `multi-070127`): 66 against 1472, 72 against bot_10
+(b10n), 73 against bamboo8, 91 against vx1, 108-125 against the pool. Level with the three teams' bots, ahead of ours.
+Local work continues on the weakest part: three a side (10 of 24 against 1472).
 
 ## Update at 08:12 IST 11-01 (session 91, local branch `night-1101`, not pushed): best of all worlds, locally
 
