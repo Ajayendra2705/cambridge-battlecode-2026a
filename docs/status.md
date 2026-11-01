@@ -50,6 +50,13 @@ would choose between cmb7 and cmb8.
 above us (`tools/platform/gatechain.sh`; batch panels of 40-90 games), with the rule written first: target the
 five-a-side win share, guard three a side. Then the platform-only parts (vx1sf, b10sf, b10hor, b10cap) one at a time.
 
+**Hazard before any gate:** `bots/main` is still vx1, but the team's live bot is 1472 (`bots/bamboo458sf`).
+`tools/platform/gateq.sh` (under `gatechain.sh`) treats `main` as the bot already on the platform: a `main` plan line
+plays without an upload, so it would measure 1472 under vx1's name, and after every gate it resubmits `bots/main`,
+which would replace the team's 1472 with vx1. So first agree with the team which bot is the base and put it in
+`bots/main` (for 1472: a copy of `bots/bamboo458sf`), or resubmit `bamboo458sf` by hand after the chain and use an
+explicit bot name, not `main`, for the base line.
+
 ## Update at 04:28 IST 11-01 (session 91, local branch `night-1101`, not pushed)
 
 - **The teammate made the Sprint 3 choice:** version 1468 (66,903 bytes, note "v428 baseline 1 Nov", uploaded from
