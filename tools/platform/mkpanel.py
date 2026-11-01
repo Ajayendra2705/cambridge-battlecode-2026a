@@ -16,6 +16,16 @@ specs = []
 if size:
     sizes = json.load(open(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'map_sizes.json'), encoding='utf-8'))
     pool = [m for m in pool if sizes.get(m) == size]
+# A pool too small for a block (under 40 maps, e.g. the 12 three-a-side maps) is shuffled again for every team, so each
+# team still gets two full 5-map windows (11-01).
+if len(pool) < 40:
+    for i, t in enumerate(teams):
+        maps = pool[:]
+        random.Random(seed * 100 + i).shuffle(maps)
+        specs.append(f"{t}:{','.join(maps[0:5])}:a,b,a,b,a")
+        specs.append(f"{t}:{','.join(maps[5:10])}:b,a,b,a,b")
+    print(' '.join(specs))
+    sys.exit()
 for b in range(0, len(teams), 4):
     maps = pool[:]
     random.Random(seed * 100 + b).shuffle(maps)
