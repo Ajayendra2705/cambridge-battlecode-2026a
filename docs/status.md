@@ -1,10 +1,13 @@
-# Status (updated 2026-11-01 07:53 IST)
+# Status (updated 2026-11-01 08:12 IST)
 
-## Update at 07:53 IST 11-01 (session 91, local branch `night-1101`, not pushed): best of all worlds, locally
+## Update at 08:12 IST 11-01 (session 91, local branch `night-1101`, not pushed): best of all worlds, locally
 
 Platform tests stay off until the user says so (04:36). Everything below is local and nothing was submitted. At 06:50
-`cambc submissions list --json` showed 1472 (`bots/bamboo458sf`, the Sprint 3 bot) still active, no newer upload and no
-upcoming tournament.
+`cambc submissions list --json` showed 1472 (`bots/bamboo458sf`, the Sprint 3 bot) still active. **At 08:12 the team's
+live bot is 1475** (69,252 bytes, uploaded 07:36 IST, note "v519 spawns<45 apart: pack opening to r120 + Ryth for
+Vendetta at 5 (v484)"): the teammate's bot_10 line, newer than our `bots/exp/b10n` (bot_10 as of 02:34 IST). Its
+source is not on origin, so cmb7's five-a-side part is the older bot_10; with v519's source, `src/cj` of cmb7 can be
+replaced the same way (`nsbot.py SRC exp/NAME cj cjb`).
 
 **Bots compared** (all on all 70 maps against cand1, cp3, dh3 and each other; facts in `docs/findings.md`, "Three teams'
 bots in one program, locally"): vx1 (`bots/main`), b10n (bot_10 with its log off, `bots/exp/b10n`), bamboo8 (v1469)
@@ -23,7 +26,8 @@ and Bamboo's #458 line, pushed to branch `Bamboo8` at 10:25 AEDT and merged here
 **cmb7** (`bots/pool/cmb7`; vx1, the Sprint 3 bot and bot_10 by size in one program, `tools/variant/nsbot.py`) plays
 each size as its part (within one standard error per size), with no fault in 980 games. Against the Sprint 3 bot alone
 it gains +0.091 +- 0.027 a game five a side and gives back -0.069 +- 0.053 three a side (head to head 66 of 140). It is
-the candidate for the platform when the user allows; it would replace the team's 1472 only with the team's agreement.
+the candidate for the platform when the user allows; it would replace the team's live bot only with the team's
+agreement.
 Caution: the five-a-side gain rests mostly on our local pool, which understates the Bamboo bots five a side. On the
 ladder 1472 won 30 of 52 five-a-side games (58%) while the team rose to rank 44 (2057.3 at 07:55), where vx1 had won
 21 of 59 (36%). Head to head over five fuel values (`multi.py --fuel`, 420 games a pairing) bot_10 beats 1472 0.560 +-
@@ -52,12 +56,13 @@ would choose between cmb7 and cmb8.
 above us (`tools/platform/gatechain.sh`; batch panels of 40-90 games), with the rule written first: target the
 five-a-side win share, guard three a side. Then the platform-only parts (vx1sf, b10sf, b10hor, b10cap) one at a time.
 
-**Hazard before any gate:** `bots/main` is still vx1, but the team's live bot is 1472 (`bots/bamboo458sf`).
+**Hazard before any gate:** `bots/main` is still vx1, but the team's live bot is 1475 (the teammate's v519, not in
+this repo; 1472 = `bots/bamboo458sf` before it).
 `tools/platform/gateq.sh` (under `gatechain.sh`) treats `main` as the bot already on the platform: a `main` plan line
-plays without an upload, so it would measure 1472 under vx1's name, and after every gate it resubmits `bots/main`,
-which would replace the team's 1472 with vx1. So first agree with the team which bot is the base and put it in
-`bots/main` (for 1472: a copy of `bots/bamboo458sf`), or resubmit `bamboo458sf` by hand after the chain and use an
-explicit bot name, not `main`, for the base line.
+plays without an upload, so it would measure the live bot under vx1's name, and after every gate it resubmits
+`bots/main`, which would replace the team's live bot with vx1. So first agree with the team which bot is the base and
+put it in `bots/main` (for 1475 that needs the teammate's source), or resubmit the team's bot by hand after the chain
+and use an explicit bot name, not `main`, for the base line.
 
 ## Update at 04:28 IST 11-01 (session 91, local branch `night-1101`, not pushed)
 
