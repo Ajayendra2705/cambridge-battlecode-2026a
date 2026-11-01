@@ -59,6 +59,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 |---|---|
 | `mkvar.py BASE NAME [FILE OLD NEW]...` | Copy `bots/BASE` to `bots/NAME` (use `exp/NAME`) with exact-once text substitutions. |
 | `nsbot.py SRC DEST SUB NS [NAME ...]` | Copies bot SRC into `bots/DEST/src/SUB/` inside `namespace NS` (includes hoisted, `main` renamed `run`, a global operator new file left unwrapped and dropped from main), so one program can hold several bots and pick one by team size (cmb1, cmb3, cmb4). NAME: the bot's own functions it calls as `::NAME`, requalified to `::NS::NAME`. |
+| `mkcmb.sh NAME BAMBOO_BOT [FRAME]` | Makes `bots/exp/NAME` from cmb7's frame (default `pool/cmb7`) with another Bamboo bot four a side (`nsbot.py` into `src/bb`, namespace `bbt`; its own `fastalloc.h` dropped for the frame's switch). `mkcmb.sh x bamboo458sf` reproduces cmb7 file for file. |
 | `mklog.py BOT` | Add the per-turn combat log (`V` lines, source `combat_log.cpp`). Logging bots are named `...l` and never go on the ladder. |
 | `mklock.py BOT [--keep N] [--enemy-only] [--cancel] [--debug]` | Add altar-lock buying and placing. |
 | `b10_ideas.py [NAME...]` | Make the bot_10 idea variants in `bots/exp/` from `bots/pool/bot_10` (all of them without names): `b10n` (log off, the base), then the fixes `b10cd`, `b10shot`, `b10hor`, `b10keep` and the ideas `b10cc`, `b10sq`, `b10d4`, `b10lki`, `b10cap`, `b10home`, `b10bag`, `b10lock`, `b10notp`, `b10noend`, one factor each. Rationale in `docs/bot_10.md`. |
