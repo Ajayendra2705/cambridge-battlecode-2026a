@@ -32,7 +32,8 @@ Caution: the five-a-side gain rests mostly on our local pool, which understates 
 ladder 1472 won 30 of 52 five-a-side games (58%) while the team rose to rank 44 (2057.3 at 07:55), where vx1 had won
 21 of 59 (36%). Head to head over five fuel values (`multi.py --fuel`, 420 games a pairing) bot_10 beats 1472 0.560 +-
 0.041 five a side and is level with bamboo8 (0.524 +- 0.041); three a side vx1 and 1472 are level (0.467 +- 0.077, 120
-games). So the local evidence keeps cmb7 as built; only the platform can settle the size of the gain.
+games), and four a side 1472 beats vx1 0.650 +- 0.061 and is level with bot_10 (0.562 +- 0.063, 160 games). So the
+local evidence keeps cmb7 as built; only the platform can settle the size of the gain.
 
 **cmb8** (`bots/exp/cmb8`) is cmb7 with bb458c four a side (below): on the 16 four-a-side maps it halves the fuel
 exhaustions of cmb7 (27.1 to 13.7 a game) with wins level (-0.018 +- 0.035), no fault in 224 games. To make it from

@@ -2120,3 +2120,7 @@ others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head dedupli
   bamboo8 is the stronger Bamboo bot there (it beat the Sprint 3 bot 49 of 84).
 - **Three a side head to head over five fuel values** (120 games, `multi-080809` to `-080908`; rule written at
   08:02): vx1 against the Sprint 3 bot 56 of 120, 0.467 +- 0.077, level. So cmb7 keeps vx1 three a side.
+- **Four a side head to head over five fuel values** (160 games a pairing, `multi-081059` to `-081316`; rule written
+  at 08:10): the Sprint 3 bot against vx1 104 of 160, 0.650 +- 0.061 (the pick is supported), against bot_10 90 of
+  160, 0.562 +- 0.063 (level). So per size the head to head agrees with the pool-based picks of cmb7: vx1 and the
+  Sprint 3 bot are level three a side, the Sprint 3 bot leads four a side, bot_10 leads five a side.
