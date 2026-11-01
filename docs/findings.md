@@ -2145,3 +2145,38 @@ others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head dedupli
 - **Three a side round robin** of vx1, the Sprint 3 bot, bamboo8 and bot_10 over five fuel values (120 games a pair,
   `results/analysis/h2h_fuel_1101.md`): every pair within about one standard error of even; the Sprint 3 bot has the
   best mean share (0.567). cmb7 keeps vx1 three a side by the rule written before the run.
+
+## bot_10 on far maps: the team's hybrid 1478 against 1479 (session 91, 11-01 15:40-16:35 IST)
+
+- **The live bot changed under a gate.** A teammate made 1479 ("Bamboo v1472 + pre-started recall + field-first
+  guards + wait-avoid 30") live at 15:41:28 IST, 17 seconds after the gate `l1472_b38p` started; its games and a
+  second run `l1479_b38p` (15:53, 1479 live throughout) came out identical in all 90 games (result, margin and gems).
+  So the whole first run was 1479, and the pinned panel repeats games exactly, as known since 10-25. `gateq_live.sh`
+  now leaves a selection made by someone else in place instead of restoring over it.
+- **1478 against 1479 on b38p** (nine teams ranked 21-45, opponents pinned; `rcmp.py`): 1478 43 of 90, 1479 30;
+  1479 against 1478 L->W 11, W->L 24 (sign test p = 0.04), margin -59 a game.
+- **1478's rule, read from its drafts** (`data/picks_l1478_b38.json`): bot_10's draft on every map whose spawn walking
+  distance (`data/map_features.json`, `sd`) is 61 or more, Bamboo's on the rest; the b38 maps split exactly between sd
+  60 (adgato_gemcombat4, Bamboo) and 63 (01islands, bot_10). 22 of the 70 maps are far: 20 five a side, 2 four a side
+  (00rows, 01shortcut), none three a side.
+- **Where 1478 gains** (b38p): five a side on far maps 16 of 30 against 1479's 6; five a side on near maps 9 of 26
+  for both; four a side 10 of 21 against 12; three a side (1472 in both, 1479's flags on) 8 of 13 against 3.
+- **The local head to head agrees** (bot_10 against the Sprint 3 bot five a side over five fuel values, runs
+  `multi-080001` to `-080556`): bot_10 wins 133 of 160 games on far maps (0.83) and 58 of 176 on near ones (0.33).
+  Per map, bot_10 loses most near maps (exceptions: 00stampede sd 55 8 of 8, 00monolith sd 49 6 of 8) and wins
+  almost every far one. So bot_10 belongs on far maps only; cmb7's bot_10 on every five-a-side map gives away the
+  near ones.
+- **1479's flags locally** (r1479, the bot rebuilt from its note, against bamboo458sf over the same 420 games): wins
+  -0.08 +- 0.05 three a side, -0.09 +- 0.05 four a side, +0.04 +- 0.03 five a side.
+- **Economy changes do not carry over** (e_c3 on bb458c, e_c4 on r1479): `kElkBonus` 1.0, `kTravelWeight` 1.4 and
+  `kLookahead` 0.5 raise captures by 2.8-3.7 a game on either base, but collected gems by +27 +- 16 on bb458c and
+  -14 +- 19 on r1479: more small groups, not more gems.
+- **Our own copy of the hybrid** (`bots/exp/hy1`): the cmb7 frame with only two parts, bamboo458sf (`src/bb`) near and
+  b10n (`src/cj`) far, chosen before the draft by a walking search from our spawn region around walls, holes, altars
+  and the enemy spawn (`main.cpp`). A probe build (hy1p) printed the walk on all 70 maps: the far/near split equals
+  `sd >= 61` on every map (the walk equals sd on 67 maps). Its source zip is 390.0 KB against 1478's 389.8 KB, so
+  1478 probably holds this bot_10 (b10n-sized; v519 and v531 are 2-3 KB larger).
+- **1478 against 1472 on a second panel** (b39: nine other teams rated above us, ranks 22-39 at 16:03; a teammate
+  had made 1472 live again, so the base is 1472): 1478 32 of 90, 1472 28; L->W 12, W->L 8 for 1478, margin +64 a
+  game; five a side far 8 of 22 against 6, near 14 of 31 against 12. Pooled with b38p (where the base was 1479): 36
+  against 19, sign test p = 0.03 (`results/analysis/rule_1478_b39.md`).

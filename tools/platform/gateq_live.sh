@@ -5,7 +5,8 @@
 # GATE_PANEL), but it never uploads bots/main. BOT "live" plays the version selected now (no upload); BOT "vN" selects
 # platform version N for the gate (no upload); any other BOT is uploaded, then selected. Before the games start it waits
 # until the bot under test is the active version (an upload compiles in about 1.5 minutes); after the games it selects
-# GATE_RESTORE (the team's live bot) and waits until that is active again. Selecting a version pins the selection, so a
+# GATE_RESTORE (the team's live bot) and waits until that is active again, unless someone else selected a version during
+# the games (theirs then stays live; a "live" gate never selects). Selecting a version pins the selection, so a
 # later upload does not go live by itself; this script selects every upload it makes. Each gate's versions go to
 # data/gate_live.log, with a WARNING when the active version changed during the games (someone else uploaded or
 # selected: the run is then void). With QWAIT=N it first waits for N free unranked groups, so an upload is not left on
@@ -54,7 +55,12 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   bash tools/platform/gate.sh "$bot" nosubmit "$run" 2>&1 | tail -3
   read -r act1 new1 < <(ver)
   log "$run done active=$act1 newest=$new1"
-  [ "$act1" = "$want" ] || log "WARNING: active version changed during $run ($want -> $act1): run void"
-  select_wait "$restore"
-  log "restored $restore"
+  # Restore only what this gate changed: if someone else selected a version during the games, theirs stays live
+  # (on 11-01 a teammate made 1479 live during a "live" gate, and the restore would have put 1472 back over it).
+  if [ "$act1" != "$want" ]; then
+    log "WARNING: active version changed during $run ($want -> $act1): run void; $act1 stays live"
+  elif [ "$bot" != live ]; then
+    select_wait "$restore"
+    log "restored $restore"
+  fi
 done

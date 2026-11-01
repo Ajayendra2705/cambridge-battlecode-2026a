@@ -1,4 +1,22 @@
-# Status (updated Sun, Nov  1, 2026  3:35:25 PM IST)
+# Status (updated Sun, Nov  1, 2026  5:12:05 PM IST)
+
+## Note at 17:12 IST 11-01 (session 91, local branch `night-1101`, not pushed; paused at the user's request)
+
+- **Live bot: 1472**, selected again by a teammate (after 1479 from 15:41). Ladder at 17:12: rank 49. Nothing of ours
+  was uploaded today; every gate selected platform versions and put the previous live version back.
+- **Best evidence: 1478 ("Bamboo v1472 + bot_10 on far maps") beats the live bots** against teams above us. On b38p
+  (ranks 21-45) 43 of 90 against 1479's 30; on b39p (ranks 22-39, other teams) 32 of 90 against 1472's 28; pooled
+  flips 36 against 19, p = 0.03 (`results/analysis/rule_1478_b39.md`). The gain is bot_10 on far maps five a side
+  (spawn walk 61+). It passes the rule written before b39, but it was not selected: a teammate chose 1472, so the switch
+  waits for the team (`cambc submissions activate 1478`).
+- **hy1** (`bots/exp/hy1`): our own copy of 1478's rule (bamboo458sf near, b10n far, picked before the draft by a
+  spawn walk that matches `sd >= 61` on all 70 maps). Next: the identity check `hy1_b38q` (four pinned b38p groups,
+  `results/panels/specs_b38q.txt`; identical games to 1478 would prove the copy), then improvements on top of it.
+- **Rejected today (local):** e_c3 / e_c4 (three economy constants: more captures, not more gems on 1479), e_cs,
+  e_sp3, e_sp15, e_op60. 1479's own flags (r1479) trail 1472 three and four a side locally.
+- **Tool change:** `tools/platform/gateq_live.sh` restores only what its gate changed (a selection made by someone
+  else during the games stays live; a "live" gate never selects).
+
 
 ## Note at 15:35 IST 11-01 (session 91, local branch `night-1101`, not pushed)
 
