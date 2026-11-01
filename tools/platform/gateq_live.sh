@@ -6,8 +6,10 @@
 # platform version N for the gate (no upload); any other BOT is uploaded, then selected. Before the games start it waits
 # until the bot under test is the active version (an upload compiles in about 1.5 minutes); after the games it selects
 # GATE_RESTORE (the team's live bot) and waits until that is active again, unless someone else selected a version during
-# the games (theirs then stays live; a "live" gate never selects). Selecting a version pins the selection, so a
-# later upload does not go live by itself; this script selects every upload it makes. Each gate's versions go to
+# the games (theirs then stays live; a "live" gate never selects). An upload takes the selection (`selected` is the
+# new version, `pinned` false) and goes live by itself once it compiles, so uploads too wait for the ranked window, and
+# a second gate of the same code should select the version (`vN`) instead of uploading it again. Selecting another
+# version while an upload is still queued cancels that upload (1486, 11-01 22:33). Each gate's versions go to
 # data/gate_live.log, with a WARNING when the active version changed during the games (someone else uploaded or
 # selected: the run is then void). With QWAIT=N it first waits for N free unranked groups, so an upload is not left on
 # the ladder while gate.sh waits for quota. Run it through gatechain.sh with GATE_Q=gateq_live.sh.
@@ -24,8 +26,12 @@ print((d.get('active') or {}).get('version', 0), d['submissions'][0]['version'])
   # Windows python ends the line in CRLF: without the tr, "1482\r" fails the -gt test after an upload and the gate
   # waits for ever (11-01 20:22, hy3v_b40p).
 }
-select_wait() {  # select version $1 and wait until it is the active one
-  until "$C" submissions activate "$1" > /dev/null 2>&1 && [ "$(ver | cut -d' ' -f1)" = "$1" ]; do sleep 15; done
+select_wait() {  # select version $1 and wait until it is the active one; the first refusal goes to the log
+  local n=0 out
+  until out=$("$C" submissions activate "$1" 2>&1) && [ "$(ver | cut -d' ' -f1)" = "$1" ]; do
+    n=$((n + 1)); [ $n -eq 1 ] && log "select $1 waits: $(echo "$out" | tail -1 | tr -d '\r')"
+    sleep 15
+  done
 }
 log() { echo "$(date '+%m-%d %H:%M:%S') $*" | tee -a data/gate_live.log; }
 window() {  # as gateq.sh: ranked sets start at :x0:05; change the active bot only from :x1:00 to :x2:59
@@ -45,15 +51,14 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   elif [[ "$bot" =~ ^v[0-9]+$ ]]; then
     want=${bot#v}; window; select_wait "$want"
   else
+    window  # the upload goes live by itself once it compiles (about 1.5 minutes)
     out=$(powershell -File tools/cambc.ps1 submit "$bot" -n "test $run" 2>&1 | tail -1); echo "$out"
     if ! echo "$out" | grep -q Submitted; then
       { echo "$bot $run"; cat data/gate_queue.txt; } > data/gate_queue.tmp && mv data/gate_queue.tmp data/gate_queue.txt
       log "$run upload failed: $out"; sleep 90; continue
     fi
     until read -r a n < <(ver) && [ -n "$n" ] && [ "$n" -gt "$new0" ]; do sleep 10; done
-    # Wait for the window after the compile, not before the upload: an upload made in the window compiled about
-    # 1.5 minutes later, and the games then ran into the next ranked set (hy3b_b40p, 21:14-21:23 IST 11-01).
-    want=$n; window; select_wait "$want"
+    want=$n; select_wait "$want"
   fi
   log "$run start bot=$bot version=$want (was active $act0, newest $new0)"
   bash tools/platform/gate.sh "$bot" nosubmit "$run" 2>&1 | tail -3

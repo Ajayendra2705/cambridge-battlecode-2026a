@@ -3,14 +3,17 @@
 rounds it lasted, and the bag's fate within 150 rounds of its end (banked: the score rose by 90% of the bag while the
 bag emptied; died; dropped; open at the game's end; other).
 
-usage: python -I tools/replay/loops.py DIR...   (decoded folders; made for rows trA and trB, 11-01)
+usage: python -I tools/replay/loops.py [--list] DIR...   (decoded folders; made for rows trA and trB, 11-01)
+--list also prints, per game with a loop of ours, the map, result, final scores and each of our episodes.
 """
 import collections, os, sys
 sys.path.insert(0, os.path.join(os.getcwd(), 'tools', 'replay'))
 import decoded as D
 C = collections.Counter(); ng = 0; bysize = collections.Counter()
-for us, res, mp, meta, rows in D.games(sys.argv[1:]):
+LIST = '--list' in sys.argv
+for us, res, mp, meta, rows in D.games([a for a in sys.argv[1:] if a != '--list']):
     ng += 1
+    mine = []  # our episodes: (first round, last round, bag, fate)
     n = len(rows[0]['c'])
     last_start = {}
     episode = {}
@@ -39,9 +42,14 @@ for us, res, mp, meta, rows in D.games(sys.argv[1:]):
                         if me.get('g', 0) < ep[2] * 0.5:
                             fate = 'banked' if q['sg'][me['t']] - rows[ep[3]]['sg'][me['t']] >= ep[2] * 0.9 else 'dropped'; break
                     C[(w, 'fate ' + fate)] += 1
+                    if w == 'us': mine.append((ep[0], ep[1], ep[2], fate))
             last_start[i] = (r['r'], turns, g)
     for i, ep in episode.items():
         w = D.who(rows[0]['c'][i]['t'], us); C[(w, 'episodes')] += 1; C[(w, 'stuck rounds')] += ep[1] - ep[0] + 1; C[(w, 'episode gems')] += ep[2]; C[(w, 'fate open at end')] += 1
+        if w == 'us': mine.append((ep[0], ep[1], ep[2], 'open at end'))
+    if LIST and mine:
+        sg = rows[-1]['sg']
+        print(f"{mp} {res} {sg[us]}-{sg[1 - us]} r{rows[-1]['r']}: " + '; '.join(f'r{a}-{b} bag {g} {f}' for a, b, g, f in sorted(mine)))
 print(f'{ng} games')
 for w in ('us', 'them'):
     e = max(1, C[(w, "episodes")])

@@ -2224,3 +2224,12 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   `start_doomed` fix, `kReviewFix` 1) 0.34 restarts a game, trB (`kKeepChannel`: keep a channel that the start rule
   would restart at once) 0.11. Deaths, gems lost on death and collected stay level; tributed to r1000 628 and 634
   against 633. The local pool makes small bags, so only the platform can show what the loops cost.
+- **On the platform the loops end too** (trB, upload 1485, 180 games on b38p and b40p paired with 1478's): restarts
+  2.41 to 0.09 a game, rounds stuck per game 8.3 to 0.7. Gems lost on death (+3.4 +- 6.8) and tributed to r1000
+  (-6.4 +- 13.7) are level; deaths to r1000 +0.31 +- 0.23, all of it outside channels (deaths while channelling 0.06 to
+  0.05 a game). Wins 68 of 180 against 72 (not judged).
+- **A rarely used branch leaves the pinned games unchanged.** On the 20 games of hy1_b38q, trB (hy1 plus the one
+  condition) replays hy1's games exactly to r1000 (deaths and both tributes in 20 of 20), while hy1 against 1478 (the
+  same bot built from other sources) differs in 15 of 20 results. A variant is therefore best paired with a run of its
+  own parent build on the same pinned panel: only the games where the change acts differ. Pairing with the team's
+  build (1478) adds the build's own spread (here +0.25 deaths a game on 20 games).

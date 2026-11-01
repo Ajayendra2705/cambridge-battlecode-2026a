@@ -14,14 +14,20 @@
   2. **Tribute restart loops** (`results/analysis/rule_tr.md`, `tools/replay/loops.py`): the channel watch cancels
      a big tribute and the start rule restarts it at once, for 20-30 rounds at the altar. 1478 restarts 2.4 times a
      game on b38 and b40 (rivals 0.2-0.4). trA (`kReviewFix` 1) and trB (`kKeepChannel`) both pass locally (restarts
-     5.72 to 0.34 and 0.11 a game, deaths and collected level); **trB on the platform now**: `data/run_tr.sh trB`
-     (b38p and b40p, 180 games paired with `l1478_b38@b38` and `l1478_b40@b40`; judge output `data/judge_trB.txt`).
-     A pass is a proposal: 1478 is the teammate's build, so either the one condition goes into their build or trB
-     (our hy1 build) is selected, with the user's agreement.
-- **Incidents and fixes:** 20:22-20:51 the selection was not pinned, so upload 1482 (hy3v) went live and played
-  ranked sets until 1478 was selected again. `gateq_live.sh`: `ver()` strips the CR of Windows python (the gate had
-  waited for ever on "1482\r"), and an upload now waits for the ranked window after it compiles, not before the
-  upload (hy3b's games ran into the 21:20 set).
+     5.72 to 0.34 and 0.11 a game, deaths and collected level). **trB on the platform** (1485, b38p and b40p, 180
+     games against 1478's, `data/judge_trB.txt`): restarts 2.41 to 0.09 a game; lost on death and tributed level;
+     deaths to r1000 +0.306 +- 0.234, just over the 0.3 bar, all outside channels. On hy1_b38q's 20 games trB
+     replays hy1 exactly, and hy1 itself has the extra deaths against 1478, so **`data/run_hy1base.sh` (started
+     23:37) plays hy1 (v1484, no upload) on b38p and b40p** to pair trB with its own build
+     (`data/judge_trB_hy1.txt`). A pass is a proposal: 1478 is the teammate's build, so either the one condition
+     goes into their build or trB (our hy1 build) is selected, with the user's agreement.
+- **Incidents and fixes:** an upload takes the live selection and goes live by itself once it compiles (`pinned`
+  turns false; `docs/WORKFLOW.md`), and a selection becomes active only 2.5-10 minutes after `activate`. So 1482
+  (hy3v) played ranked sets 20:22-20:51, and trB (1485) probably played the 22:20, 22:30, 22:50 and 23:00 sets
+  (ranked results then 1-4, 3-2, 2-3, 2-3). Selecting 1478 while upload 1486 compiled cancelled 1486 and stalled
+  the chain (stopped 22:34). `gateq_live.sh`: `ver()` strips the CR of Windows python (the gate had waited for ever
+  on "1482\r"); uploads wait for the ranked window; a refused selection is logged. A second gate of the same code
+  selects the version (`vN`) instead of uploading it again.
 
 ## Note at 20:06 IST 11-01 (session 92, local branch `night-1101`)
 
