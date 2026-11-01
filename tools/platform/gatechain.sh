@@ -9,7 +9,7 @@
 cd "$(dirname "$0")/../.."
 plan="$1"; cutoff="${2:-2400}"
 [ -f "$plan" ] || { echo "usage: gatechain.sh PLAN [CUTOFF]"; exit 1; }
-others=$(bash tools/platform/procs.sh | grep -E "gateq\.sh|gate\.sh|gate_full\.sh")
+others=$(bash tools/platform/procs.sh | grep -E "gateq\.sh|gateq_live\.sh|gate\.sh|gate_full\.sh")
 [ -n "$others" ] && { echo "another gate is running:"; echo "$others"; exit 1; }
 # The plan is read on fd 3: powershell (the uploads) reads stdin and would eat the remaining lines.
 while read -r bot run panel <&3; do
@@ -22,6 +22,7 @@ while read -r bot run panel <&3; do
   [ -f "$specs" ] || specs="data/specs_$panel.txt"
   [ -f "$specs" ] || { echo "no specs for panel $panel, skipping $run"; continue; }
   echo "$bot $run" > data/gate_queue.txt
-  GATE_SPECS="$(cat "$specs")" GATE_PANEL="$panel" bash tools/platform/gateq.sh
+  # GATE_Q=gateq_live.sh (with GATE_RESTORE=VERSION) keeps the team's live bot by selection instead of uploading main.
+  GATE_SPECS="$(cat "$specs")" GATE_PANEL="$panel" bash "tools/platform/${GATE_Q:-gateq.sh}"
 done 3< "$plan"
 echo "chain done $(date +%H:%M)"
