@@ -1,4 +1,27 @@
-# Status (updated Sun, Nov  1, 2026  8:06 PM IST)
+# Status (updated Sun, Nov  1, 2026 10:15 PM IST)
+
+## Note at 22:15 IST 11-01 (session 92, branch `night-1101`)
+
+- **Live bot: 1478**, selected and pinned (restored 21:58 after the last test gate). Rank 41 at 22:09 (quota reply).
+- **Three a side, done:** the Bamboo bot stays. hy3v (vx1, upload 1482) 22 of 90 and hy3b (bot_10, 1483) 16 of 90
+  on b40p against 1478's 29 (rows R); hy3s and hy3t (solo farming, short opening) local only, rows N. Findings:
+  "Three a side against ranks 18-38: the Bamboo bot farms as a pack".
+- **hy1 identity check** (`hy1_b38q`, upload 1484): 7 of 20 against 1478's 8 on the same games, same winner in 15.
+  Close, not byte-identical; hy1 is the base of the small-factor variants.
+- **Working directive (user, 21:07): one very small factor at a time, and improve only that.**
+  1. Gold clusters by r300 three a side (hg3a-c, `kGoldEarly3`): R locally; a heavier gold weight only moves picks
+     from gem clusters to gold clusters (`results/analysis/rule_hg3.md`, `tools/replay/goldpair.py`).
+  2. **Tribute restart loops** (`results/analysis/rule_tr.md`, `tools/replay/loops.py`): the channel watch cancels
+     a big tribute and the start rule restarts it at once, for 20-30 rounds at the altar. 1478 restarts 2.4 times a
+     game on b38 and b40 (rivals 0.2-0.4). trA (`kReviewFix` 1) and trB (`kKeepChannel`) both pass locally (restarts
+     5.72 to 0.34 and 0.11 a game, deaths and collected level); **trB on the platform now**: `data/run_tr.sh trB`
+     (b38p and b40p, 180 games paired with `l1478_b38@b38` and `l1478_b40@b40`; judge output `data/judge_trB.txt`).
+     A pass is a proposal: 1478 is the teammate's build, so either the one condition goes into their build or trB
+     (our hy1 build) is selected, with the user's agreement.
+- **Incidents and fixes:** 20:22-20:51 the selection was not pinned, so upload 1482 (hy3v) went live and played
+  ranked sets until 1478 was selected again. `gateq_live.sh`: `ver()` strips the CR of Windows python (the gate had
+  waited for ever on "1482\r"), and an upload now waits for the ranked window after it compiles, not before the
+  upload (hy3b's games ran into the 21:20 set).
 
 ## Note at 20:06 IST 11-01 (session 92, local branch `night-1101`)
 

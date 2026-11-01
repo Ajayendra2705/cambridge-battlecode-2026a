@@ -2200,3 +2200,27 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
 - **The other two bots draft like the teams above:** vx1 and bot_10 pick Heart of Ruin, Vendetta and Vesper three a
   side (locally hy3v 66 of 72 games, hy3b 72 of 72), the Bamboo bot Marcella, Ryth and Vesper. Locally against the
   pool, vx1 three a side makes 15.8 more captures a game than the Bamboo bot and bot_10 5.7 more (rows hy3v, hy3b).
+
+## Two small factors: early gold clusters and tribute restart loops (session 92, 11-01 21:10-22:15 IST)
+
+- **A heavier early gold weight moves picks, not totals.** Three a side, raising the Bamboo part's round-0 gold
+  weight from 0.3 to 0.45, 0.6 or 0.9 (rows hg3a-hg3c, 72 local games each, paired with hy1) adds 1.6, 2.0 or 3.1
+  gold clusters by r300 and removes 0.8, 1.8 or 2.9 gem clusters. Team gold at r300 stays level, collected to r1000
+  too. The rivals' 24.9 gold clusters by r300 against our 13.2 (b40) does not come from how we weigh gold against
+  gems.
+- **Tribute restart loops.** The channel watch (`kChannelWatch`, `tribute_doomed`) cancels a tribute when the
+  forecast says enemies within (turns left + 4) tiles kill us before it completes; the start rule (`channel_unsafe`)
+  refuses only an enemy within 6 (`kChannelSafe`). A 200-gem bag (20 turns) is doomed by any enemy within 24, so the
+  champion cancels and starts again in the same turn, round after round, and banks nothing. `tools/replay/loops.py`
+  counts it (a restart is a tribute issued again with the same bag before the earlier channel could have completed):
+  - 1478 on b40 (90 three-a-side games): 2.36 restarts a game against the rivals' 0.43; 0.36 episodes, 19.8 rounds
+    each, mean bag 204. On adgato_gemcombat1 a 626-gem bag looped 110 rounds (r1194-1304) with 798 banked; that game
+    was lost 798-850.
+  - 1478 on b38 (90 games, all sizes): 2.47 restarts a game against 0.17; 0.32 episodes, 29.3 rounds each, bag 211.
+    Of the 29 episodes 7 banked within 150 rounds, 6 ended in a death and 8 were still open at the game's end.
+  - 180 ranked games of 1472: 0.48 episodes a game; 11 of 86 ended in a death. Locally hy1 restarts 5.72 times a
+    game against the pool (0.58 episodes, 26.9 rounds each).
+- **Both fixes end the loops locally** (90 games against cand1, cp3 and dh3): trA (the Bamboo team's own
+  `start_doomed` fix, `kReviewFix` 1) 0.34 restarts a game, trB (`kKeepChannel`: keep a channel that the start rule
+  would restart at once) 0.11. Deaths, gems lost on death and collected stay level; tributed to r1000 628 and 634
+  against 633. The local pool makes small bags, so only the platform can show what the loops cost.
