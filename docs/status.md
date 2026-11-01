@@ -1,4 +1,21 @@
-# Status (updated 2026-11-01 13:10 IST)
+# Status (updated Sun, Nov  1, 2026  3:35:25 PM IST)
+
+## Note at 15:35 IST 11-01 (session 91, local branch `night-1101`, not pushed)
+
+- **Live bot:** 1472 (Bamboo v458 + Spell), selected by a teammate after 14:46 and pinned (`pinned: true`). Bamboo
+  uploaded 1477 and 1478 ("Bamboo v1472 + bot_10 on far maps (hybrid 61)"); 1478 was live 14:24-14:46+. Ladder at
+  15:34: rank 50, 2030.4 (48, 2050.6 at 13:35). Teammates keep the shared unranked quota full (50 of 50).
+- **Platform (the user allowed it at 14:2x):** panel b38 (nine teams ranked 21-45, 90 games); base `l1478_b38@b38` =
+  1478 without an upload, 43 of 90; b38p pins it. The cmb7 gate waited for quota and was stopped before any upload
+  at 15:34, when the live bot had changed to 1472. `tools/platform/gateq_live.sh` restores by selection, not upload
+  (`GATE_RESTORE=auto`: the version live before each gate).
+- **Gap against teams above us** (95 decoded ranked games of 1472, `data/fights/rk1472_above`): gems collected to
+  r1000 473 / 763 / 795 three / four / five a side against 701 / 889 / 859; 33 captures a game against 50; 2.15 own
+  hitters per capture against 1.54 (3+ hitters 35% against 15%). Drafts explain little after rating (findings).
+- **Local economy variants of 1472** (rows e_elk, e_mw, e_tw, e_lk): kElkBonus 1.0, kTravelWeight 1.4 and kLookahead
+  0.5 each raise collected (+18 to +40 a game) with wins level or up; e_c3 combines them (screen stopped when the
+  laptop ran short of memory; rerun at 2-3 jobs). Next on the platform: v1472 and e_c3 on b38p.
+
 
 ## Note at 13:10 IST 11-01 (read only)
 

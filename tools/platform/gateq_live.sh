@@ -11,7 +11,7 @@
 # selected: the run is then void). With QWAIT=N it first waits for N free unranked groups, so an upload is not left on
 # the ladder while gate.sh waits for quota. Run it through gatechain.sh with GATE_Q=gateq_live.sh.
 cd "$(dirname "$0")/../.."
-[ -n "$GATE_RESTORE" ] || { echo "set GATE_RESTORE=VERSION (the team's live bot)"; exit 1; }
+[ -n "$GATE_RESTORE" ] || { echo "set GATE_RESTORE=VERSION (the team's live bot) or auto (the version live before each gate)"; exit 1; }
 C="$LOCALAPPDATA/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/cambc.exe"
 # "ACTIVE NEWEST": the active version and the newest submitted version.
 ver() {
@@ -35,6 +35,8 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
     until s=$(( 10#$(date +%M) % 10 * 60 + 10#$(date +%S) )); [ "$s" -ge 60 ] && [ "$s" -lt 180 ]; do sleep 5; done
   fi
   read -r act0 new0 < <(ver)
+  # GATE_RESTORE=auto: restore the version that was live just before this gate (a teammate may have changed it).
+  restore=$GATE_RESTORE; [ "$restore" = auto ] && restore=$act0
   if [ "$bot" = live ]; then
     want=$act0
   elif [[ "$bot" =~ ^v[0-9]+$ ]]; then
@@ -53,6 +55,6 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   read -r act1 new1 < <(ver)
   log "$run done active=$act1 newest=$new1"
   [ "$act1" = "$want" ] || log "WARNING: active version changed during $run ($want -> $act1): run void"
-  select_wait "$GATE_RESTORE"
-  log "restored $GATE_RESTORE"
+  select_wait "$restore"
+  log "restored $restore"
 done
