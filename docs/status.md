@@ -1,4 +1,51 @@
-# Status (updated 2026-11-01 04:28 IST)
+# Status (updated 2026-11-01 07:53 IST)
+
+## Update at 07:53 IST 11-01 (session 91, local branch `night-1101`, not pushed): best of all worlds, locally
+
+Platform tests stay off until the user says so (04:36). Everything below is local and nothing was submitted. At 06:50
+`cambc submissions list --json` showed 1472 (`bots/bamboo458sf`, the Sprint 3 bot) still active, no newer upload and no
+upcoming tournament.
+
+**Bots compared** (all on all 70 maps against cand1, cp3, dh3 and each other; facts in `docs/findings.md`, "Three teams'
+bots in one program, locally"): vx1 (`bots/main`), b10n (bot_10 with its log off, `bots/exp/b10n`), bamboo8 (v1469)
+and Bamboo's #458 line, pushed to branch `Bamboo8` at 10:25 AEDT and merged here: `bots/bamboo458` (v1471),
+`bots/bamboo458sf` (v1472) and `bots/bamboo479`. Team size follows the map: 42 of the 70 maps are five a side, 16 four,
+12 three.
+
+**Best bot per size** (rule written at 06:22, row bamboo458; paired wins against the same six opponents):
+
+| Size (share of maps) | Pick | Evidence |
+|---|---|---|
+| Three a side (17%) | vx1 | no bot passes: the Sprint 3 bot +0.056 +- 0.052 over all six opponents but -0.069 +- 0.067 against the pool |
+| Four a side (23%) | the Sprint 3 bot (bamboo458sf) | +0.052 +- 0.040 against vx1, pool level; beats vx1 21 of 32 and bamboo8 21 of 32 |
+| Five a side (60%) | bot_10 (b10n) | +0.087 +- 0.027 against the Sprint 3 bot (pool 210 of 252 against 183); beats vx1 59 of 84 |
+
+**cmb7** (`bots/pool/cmb7`; vx1, the Sprint 3 bot and bot_10 by size in one program, `tools/variant/nsbot.py`) plays
+each size as its part (within one standard error per size), with no fault in 980 games. Against the Sprint 3 bot alone
+it gains +0.091 +- 0.027 a game five a side and gives back -0.069 +- 0.053 three a side (head to head 66 of 140). It is
+the candidate for the platform when the user allows; it would replace the team's 1472 only with the team's agreement.
+
+**cmb8** (`bots/exp/cmb8`) is cmb7 with bb458c four a side (below): on the 16 four-a-side maps it halves the fuel
+exhaustions of cmb7 (27.1 to 13.7 a game) with wins level (-0.018 +- 0.035), no fault in 224 games. To make it from
+`bots/pool/cmb7`, set `kSightCache`, `kPairWalkCache` and `kScoutWindow` to true in `src/bb/bot.cpp`. The platform
+would choose between cmb7 and cmb8.
+
+**Other measured parts** (rows in `docs/experiments.md`):
+- Bamboo's #458 bots run out of fuel 117-121 times a game five a side (bamboo8, with three exact fuel caches, 84;
+  bot_10 4). **bb458c** (the Sprint 3 bot with bamboo8's three caches `kSightCache`, `kPairWalkCache`, `kScoutWindow`)
+  passes its fuel rule: 82.0 to 48.7 exhaustions a game, wins -0.015 +- 0.018, collected 98.8%, no fault. It is the
+  one change here the team can put into its own Sprint bot without the platform's judgement. A fourth cache
+  (`kCampCache`, bb458cc) adds exhaustions instead. Even with the caches, Bamboo's bot stays behind bot_10 five a side
+  (pool 185 against 210 of 252).
+- Bamboo's allocator in vx1 (vx1fa) cuts its exhaustions from 1.16 to 0.47 a game, wins level; in bot_10 it fails.
+- Bamboo's spell finish in vx1 (vx1sf) and in bot_10 (b10sf) is level locally (a fight change: platform only).
+- bot_10 fix variants b10hor and b10cap passed their screens (fight and item changes: platform only).
+- Older combinations: cmb2 (vx1 three and four a side, bot_10 five; pushed for the teammate at 04:22), cmb5 (cmb2 with
+  the allocator), cmb6 (bamboo8 four a side). All dispatch correctly with no fault.
+
+**When the user allows platform tests:** gate cmb7 against the team's live bot in the same session on panels of teams
+above us (`tools/platform/gatechain.sh`; batch panels of 40-90 games), with the rule written first: target the
+five-a-side win share, guard three a side. Then the platform-only parts (vx1sf, b10sf, b10hor, b10cap) one at a time.
 
 ## Update at 04:28 IST 11-01 (session 91, local branch `night-1101`, not pushed)
 
@@ -6,6 +53,10 @@
   another team member's account at 04:19 IST) is active since 04:25 and is the Sprint 3 entry (`cambc submissions list
   --json` at 04:28). Its size is about bot_10's (cmb1 minus vx1). It is not overridden: no gate runs after 04:08, and
   the watcher `data/watch_subs.sh` only reads.
+- **Sprint 3 lock (05:29 IST):** at 05:30 `cambc submissions list --json` shows active 1472 (321,687 bytes, note "Bamboo
+  v458 + Spell"), `frozen` true and no upcoming tournament, so 1472 is the Sprint 3 bot, chosen by the merged team.
+  Before it the team tried 1468 (v428 baseline, bot_10's size), 1469 (Bamboo G3, = `bots/bamboo8`), 1470 ("v484 bundle
+  (ranked best)", 68,498 bytes) and 1471 (Bamboo v458); 1473 ("Bamboo v479 fixed") came after and is inactive.
 - Local only from here: the bot_10 variant screen (rows b10n to b10d4, `tools/local/lscreen.py`).
 - **User (recorded 04:36 IST):** "Now a team is merged ... Keep all test on local till i give out the next information for this.
   let them iterate on platform for some time. You dont do it until I say so." So no gates, uploads or platform tests

@@ -2042,3 +2042,60 @@ were 74), local runs `data/runs/multi-025140` (bot_10 against vx1), `multi-03091
   flips 10 to 9, while the margin went up 91 +- 88 and both sides died 2-3 more times a game. Five a side is where
   bot_10 helps (b37 + b36p: margin +75 +- 62, flips 27 to 17). Over all four panels (190 games): margin +64.6 +- 40.3,
   win share 0.49 to 0.56.
+
+## Three teams' bots in one program, locally (session 91, 11-01 04:40-07:30 IST, branch night-1101)
+
+Source: local runs only (the user stopped platform tests at 04:36 while the merged team iterates there). Bots: vx1
+(`bots/main`), b10n (bot_10 with its log off, `bots/exp/b10n`), bamboo8 (Bamboo Teahouse G3, v1469) and Bamboo's #458
+line (`bots/bamboo458` = v1471, `bots/bamboo458sf` = v1472, the Sprint 3 bot, `bots/bamboo479`). Runs:
+`data/runs/multi-044220` (bamboo8), `multi-050246` (allocator), `multi-053221` (cmb2, cmb5, cmb6), `multi-061148`
+(spell finish), `multi-062416` (the #458 line), `multi-070127` (cmb7); every bot against cand1, cp3, dh3 and the
+others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head deduplicated in `data/h2h_1101.txt`.
+
+- **Team size follows the map, and five a side carries most games.** Of the 70 maps 42 are five a side, 16 four and
+  12 three (`data/map_sizes.json`): 60%, 23% and 17% of games when maps are drawn evenly. Our 150 ranked games under
+  vx1 split 63%, 22% and 15%.
+- **Each bot is best at one size.** Wins against the same six opponents (the three pool bots plus the other bots),
+  paired by opponent, map and side:
+  - Five a side bot_10 leads clearly: against the Sprint 3 bot +0.087 +- 0.027 a game (pool 210 of 252 against 183),
+    against bamboo458 +0.067 +- 0.028. Head to head it is level with the Bamboo bots (43 to 49 of 84) and beats vx1
+    59 of 84.
+  - Four a side Bamboo's #458 line leads: the Sprint 3 bot against vx1 +0.052 +- 0.040 (head to head 21 of 32), with
+    pool wins level (84 against 87 of 96). bamboo8 beats vx1 head to head too (80 of 128 over four pairings) but
+    loses more to the pool (82); the Sprint 3 bot beats bamboo8 21 of 32.
+  - Three a side no bot leads: the Sprint 3 bot against vx1 +0.056 +- 0.052 over the six opponents but -0.069 +- 0.067
+    against the pool alone.
+- **The maps decide head to head, not chance.** Four a side bamboo8 against vx1 is 8 of 8 on 00interlock, 00oasis,
+  01hooks and 02guardians and 0 of 8 on 00rushbait-v2, 00swirl and adgato-gemcombat2. A head-to-head count is less
+  noisy than its size suggests, but it measures one rival only.
+- **Bamboo's bots run out of fuel often, most of all five a side.** Fuel exhaustions a game (fuelExhausted events in
+  the game JSON, rounds 3 on; rounds 1-2 are world init): the #458 line 29-31 three a side, 24-26 four and 117-121
+  five; bamboo8, with three fuel caches on, 18, 13 and 84; five a side bot_10 3.9 and vx1 2.4. Each exhaustion
+  suspends a champion until its next turn. Five a side bamboo8 beats the Sprint 3 bot 49 of 84 head to head, while
+  three and four a side the Sprint 3 bot beats bamboo8 (17 of 24, 21 of 32).
+- **Bamboo's free-list allocator** (`fastalloc.h`, global operator new and delete; a heap allocation costs about 400
+  fuel through wasi-libc malloc) cut vx1's exhaustions from 1.16 to 0.47 a game and its median turn from 28.9k to 24.0k
+  fuel, with wins level overall (-0.01 +- 0.02; three and four a side 140 against 147 of 168). In bot_10 it cut
+  exhaustions by 0.43 a game, but collected fell to 97.8% and deaths rose 0.54 +- 0.27.
+- **Several bots in one program work, but not game for game.** `tools/variant/nsbot.py` wraps a bot's sources in a
+  namespace (its `main` becomes `run`, its includes move to the top, calls `::NAME` of its own functions become
+  `::NS::NAME`). The global allocator must stay outside every namespace: `src/fastalloc_switch.h` holds it behind a
+  switch (off: malloc plus the same 16-byte header, so blocks made before `main` free correctly either way), and
+  `main` turns it on only for the bots tested with it. Each size then plays its bot, but the games are not identical
+  to the standalone bot's: the other bots' static initialisers and the header move heap addresses and fuel timing.
+  The differences stayed within one standard error per size (cmb7: -0.014 +- 0.022, +0.026 +- 0.030, +0.004 +-
+  0.013), and no program faulted in 4,340 games (cmb2, cmb4, cmb5, cmb6, cmb7).
+- **Bamboo's spell finish** (`kSpellFinish 1`, from Intercontinental Fish's Marcella: a ready single-target damage
+  spell at the weakest visible enemy under 30% health or within 0.9 of the spell's damage) is level locally in both
+  our bots: vx1 327 to 332 of 420 wins, kills +0.11 +- 0.13, deaths +0.08 +- 0.11; bot_10 -3 of 348, kills +0.04 +-
+  0.10. The economy held (collected 100.7% and 100.5%). It is a fight change, so only the platform can judge it.
+- **cmb7** (vx1 three a side, the Sprint 3 bot four, bot_10 five; `bots/exp/cmb7`) against the Sprint 3 bot alone:
+  +0.091 +- 0.027 a game five a side and -0.069 +- 0.053 three a side over the same six opponents; head to head 66 of
+  140 (five a side 43 of 84).
+- **bamboo8's three fuel caches in the Sprint 3 bot** (bb458c: `kSightCache`, `kPairWalkCache`, `kScoutWindow`, which
+  Bamboo marks as leaving every decision unchanged) cut its exhaustions from 82.0 to 48.7 a game (five a side 117.9 to
+  71.2) with wins level (-0.015 +- 0.018) and collected 98.8%. Yet only 6 of 840 games stayed identical: when a turn
+  completes instead of suspending, the game moves on a different path, so even a decision-neutral fuel change acts
+  like a small random perturbation of each game. A fourth cache, `kCampCache`, added 2.2 +- 0.9 exhaustions a game.
+  Five a side the cached bot still trails bot_10 (pool 185 against 210 of 252), so fuel is not the main cause of the
+  Bamboo bots' five-a-side gap.

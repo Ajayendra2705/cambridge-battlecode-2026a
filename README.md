@@ -70,3 +70,5 @@ bash tools/platform/adopt.sh try1 old_main_name                                #
 | Old bot source | `bots/pool/NAME`, or `git checkout archive/pre-cleanup -- bots/NAME` |
 | The Sprint 3 candidates (vx1, cmb1, cmb2, bot_10) and how to submit one | `docs/status.md`, top section |
 | The teammate's bot bot_10: how it works, its review findings, its fix variants | `docs/bot_10.md`, `tools/variant/b10_ideas.py` |
+| Bamboo Teahouse's bots (bamboo8 = v1469, bamboo458 = v1471, bamboo458sf = v1472, the Sprint 3 bot, bamboo479) | `bots/bamboo*/README.md`; their switches are the `constexpr` values near the top of `src/bot.cpp` |
+| Several bots in one program, picked by team size, and how they compare per size | `tools/variant/nsbot.py`, `bots/pool/cmb*`, `docs/findings.md` "Three bots in one program, locally" |
