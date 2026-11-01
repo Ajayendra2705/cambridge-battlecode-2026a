@@ -1,4 +1,18 @@
-# Status (updated Sun, Nov  1, 2026  5:20:50 PM IST)
+# Status (updated Sun, Nov  1, 2026  8:06 PM IST)
+
+## Note at 20:06 IST 11-01 (session 92, local branch `night-1101`)
+
+- **Live bot: 1478** (pinned selection, unchanged). Ladder at 19:55: rank 43, 2077.5 (`data/ladder_1101_1955.json`).
+  Final tournament: season end 18 Nov.
+- **Factor: three a side**, our widest gap against teams above us (1472 ranked: 5 of 17, collected 473 against 701 to
+  r1000; since 1478 went live 2 of 7). 1478 plays the Bamboo bot on every three-a-side map.
+- **Chain `data/run_b40.sh` running** (started 20:04): 1478 as live on b40 (nine teams ranked 18-38, 90
+  three-a-side games, `results/panels/specs_b40.txt`), pin to b40p, then hy3v (vx1 three a side) and hy3b (bot_10
+  three a side) selected for their games, then hy1 on b38q (identity check of our copy of 1478). The live version is
+  selected again after each gate. Judges: `data/judge_b40.sh` (outputs `data/judge_hy3v.txt`, `data/judge_hy3b.txt`).
+  Rule: `results/analysis/rule_hy3_b40.md` (collected to r1000 +40 and 1.5 se; deaths and flips as guards).
+- The cambc login had expired; `cambc login` in a tool call opened the browser, which approved it at once.
+
 
 ## Note at 17:12 IST 11-01 (session 91, local branch `night-1101`, not pushed; paused at the user's request)
 

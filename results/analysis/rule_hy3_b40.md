@@ -1,6 +1,6 @@
 # Three a side: vx1 or bot_10 in place of the Bamboo bot (hy3v, hy3b against 1478 on b40)
 
-Written Sun, Nov  1, 2026, 20:25 IST, before any game of panel b40.
+Written Sun, Nov  1, 2026, 19:59 IST (last edit 20:03), before any game of panel b40 (the first gate started 20:04:57).
 
 ## Why
 
@@ -35,3 +35,15 @@ replaces it, and that needs hy1's games on b38q to match 1478's (identity check 
 Locally the four- and five-a-side games of hy3v and hy3b are not byte-identical to hy1's (8 and 3 of 18 differ in
 length; the extra code changes fuel use or memory layout), but all 18 have the same winner (run `multi-195654`).
 A run during which the active version changed by someone else's hand is void.
+
+## Addendum: hy3s (written 20:53 IST, before any hy3s game)
+
+hy3s (`bots/exp/hy3s`) is hy1 with one change in the Bamboo part (`kSolo3`): three a side, control maps too, the
+champions farm solo after the opening (`quiet()` true; squad size 1 instead of `kControlSquad` 2). Why: on b40 our
+three share 60% of camp-hit rounds against the rivals' 31% and capture 38.4 groups a game against 59.4 (findings,
+"Three a side against ranks 18-38"); ten of the twelve three-a-side maps are control maps (spawn walk 45 or less),
+where the Bamboo bot farms in pairs whenever an enemy is in sight.
+
+Same rule as above (collected to r1000 +40 a game and more than 1.5 standard errors; deaths not up by more than 0.5;
+L->W at least W->L), plus a mechanism check that must hold for the change to count as working: the shared camp-hit
+share (`cohesion.py`, r0-1000) falls from 0.60 to 0.45 or less. Four and five a side are not affected.
