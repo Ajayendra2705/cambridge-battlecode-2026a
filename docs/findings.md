@@ -2099,3 +2099,11 @@ others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head dedupli
   like a small random perturbation of each game. A fourth cache, `kCampCache`, added 2.2 +- 0.9 exhaustions a game.
   Five a side the cached bot still trails bot_10 (pool 185 against 210 of 252), so fuel is not the main cause of the
   Bamboo bots' five-a-side gap.
+- **The platform rates the Sprint 3 bot higher five a side than our local pool does** (read only: our newest 200 ranked
+  games, `tools/platform/ourmaps.py 2 data/ourmaps_1101_0757.json`, split by creation time; size from the draft length).
+  Under 1472 (85 games, 05:00-07:50 IST 11-01, while the team rose to rank 44, 2057.3 at 07:55) we won three a side 4
+  of 6, four a side 19 of 27 (70%) and five a side 30 of 52 (58%). Under vx1 and fin1 (95 games, 01:10-04:10 IST, rank
+  about 65) we won 9 of 16, 15 of 20 (75%) and 21 of 59 (36%). Locally the Sprint 3 bot and vx1 are level five a side
+  (pool 183 and 180 of 252, head to head 46 of 84 for the Sprint 3 bot), so our pool (vx1's ancestors cand1, cp3 and
+  dh3) understates the Bamboo bots five a side. bot_10's local five-a-side lead over the Sprint 3 bot comes mostly from
+  that pool (head to head they are level, 44 of 84), so only the platform can confirm it.
