@@ -24,9 +24,11 @@ and Bamboo's #458 line, pushed to branch `Bamboo8` at 10:25 AEDT and merged here
 each size as its part (within one standard error per size), with no fault in 980 games. Against the Sprint 3 bot alone
 it gains +0.091 +- 0.027 a game five a side and gives back -0.069 +- 0.053 three a side (head to head 66 of 140). It is
 the candidate for the platform when the user allows; it would replace the team's 1472 only with the team's agreement.
-Caution: the five-a-side gain rests on our local pool, which understates the Bamboo bots five a side. On the ladder
-1472 won 30 of 52 five-a-side games (58%) while the team rose to rank 44 (2057.3 at 07:55), where vx1 had won 21 of
-59 (36%); head to head bot_10 and 1472 are level five a side (44 of 84). Only the platform can settle it.
+Caution: the five-a-side gain rests mostly on our local pool, which understates the Bamboo bots five a side. On the
+ladder 1472 won 30 of 52 five-a-side games (58%) while the team rose to rank 44 (2057.3 at 07:55), where vx1 had won
+21 of 59 (36%). Head to head over five fuel values (`multi.py --fuel`, 420 games a pairing) bot_10 beats 1472 0.560 +-
+0.041 five a side and is level with bamboo8 (0.524 +- 0.041); three a side vx1 and 1472 are level (0.467 +- 0.077, 120
+games). So the local evidence keeps cmb7 as built; only the platform can settle the size of the gain.
 
 **cmb8** (`bots/exp/cmb8`) is cmb7 with bb458c four a side (below): on the 16 four-a-side maps it halves the fuel
 exhaustions of cmb7 (27.1 to 13.7 a game) with wins level (-0.018 +- 0.035), no fault in 224 games. To make it from

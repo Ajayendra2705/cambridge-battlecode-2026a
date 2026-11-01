@@ -2106,4 +2106,17 @@ others on all 70 maps, both sides. Rows bamboo8 to bb458cc; head to head dedupli
   about 65) we won 9 of 16, 15 of 20 (75%) and 21 of 59 (36%). Locally the Sprint 3 bot and vx1 are level five a side
   (pool 183 and 180 of 252, head to head 46 of 84 for the Sprint 3 bot), so our pool (vx1's ancestors cand1, cp3 and
   dh3) understates the Bamboo bots five a side. bot_10's local five-a-side lead over the Sprint 3 bot comes mostly from
-  that pool (head to head they are level, 44 of 84), so only the platform can confirm it.
+  that pool (head to head 44 of 84 at the default fuel; 0.560 +- 0.041 over five fuel values, below), so only the
+  platform can confirm its size.
+- **Fuel per turn as a seed.** Local games are deterministic, so a pairing on one map and side gives one game. A fuel
+  quantum 0.5-1% off the default (`multi.py --fuel 99000`, 99500, 100500, 101000) replays it on another path: bot_10
+  against the Sprint 3 bot changed result in 28 and 19 of 84 five-a-side games at 99000 and 99500. Map advantages repeat
+  across fuel values, so the standard error is taken over (map, side) clusters.
+- **Five a side head to head over five fuel values** (420 games a pairing, runs `data/runs/multi-080001`, `-080156`, `-080355`, `-080556`
+  plus the default-fuel games; rule written at 07:59 before the games):
+  bot_10 against the Sprint 3 bot 235 of 420, a share of 0.560 +- 0.041 (1.5 standard errors above
+  even: the head to head supports bot_10 five a side); against bamboo8 220 of 420, 0.524 +- 0.041 (level). So
+  five a side bot_10 is at least level with both Bamboo bots head to head and well ahead against our pool, and
+  bamboo8 is the stronger Bamboo bot there (it beat the Sprint 3 bot 49 of 84).
+- **Three a side head to head over five fuel values** (120 games, `multi-080809` to `-080908`; rule written at
+  08:02): vx1 against the Sprint 3 bot 56 of 120, 0.467 +- 0.077, level. So cmb7 keeps vx1 three a side.
