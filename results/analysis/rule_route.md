@@ -73,3 +73,27 @@ hy1 (1484, selected) on m42; the panel is then pinned to that run (m42p) and hym
 - Guard: on the 72 other games, at most 2 differ in winner between the two runs; more makes the run void (the build
   would differ outside 00monolith).
 - Wins elsewhere are not judged. A pass is a proposal to the user: 1478's source gets the same routing line.
+
+## The other four- and five-a-side maps (written 02:50 IST, before the run)
+
+The same screen on the 48 remaining four- and five-a-side maps (`data/maps_route2.txt`), the same eight pool bots, 16
+games per map and bot. With 48 maps the first bar alone would pass one or two maps by chance, so it has two stages:
+1. as above: the other part wins at least 5 more of 16 and has the higher margin;
+2. a map that clears stage 1 is played again against eight other pool bots (pool/hb4, pool/dr3, pool/fe1, pool/mi8,
+   pool/ts1, pool/sq2, pool/cmb7, pool/k5), both sides, and the other part must again win at least 3 more of 16 with
+   the higher margin.
+Maps that clear both join hym's routing in a new variant, which then needs its own local check (no fault, other
+maps unchanged) before the platform.
+
+Stopped at 03:05 IST when the session closed: 1195 of 1536 games (`data/runs/multi-024657`). Bamboo's 16 games are
+complete on the first 40 maps, bot_10's only 8-10 per map, so no map is judged (`routemaps.py` flags made on unequal
+game counts are not passes). The partial games repeat the 11-01 pattern: on near maps the Bamboo bot wins far more
+(00contest 16 of 16 against 8 of 10, 00crater 16 against 6 of 10, 00gemfight 16 against 4 of 10, 02crossing 16
+against 5 of 8).
+
+## hym on the platform: not run (03:00 IST)
+
+The chain waited for quota (50 of 50 used, reset 03:08) and was stopped before any game: a teammate made 1488 live
+at 02:26 IST ("v540 = v484 with shorter waits"), which drafts bot_10's picks on every map, so it plays bot_10 on near
+maps and three a side too; the runner's `GATE_RESTORE=1478` would have put 1478 back over it. hym's question (which
+part plays 00monolith inside the 1478 hybrid) is moot while 1488 is live: 1488 already plays bot_10 there.

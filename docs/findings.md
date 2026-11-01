@@ -2271,3 +2271,10 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   to 14 of 16, every game on the other 50 x 50 maps unchanged.
 - **A platform group must hold five different maps** (HTTP 400 "Choose exactly five different maps"), so a one-map
   panel gives one game of that map per group.
+- **Ranked API champion ids are not the engine's order.** `draftPicks` in the match list uses its own ids: our
+  five-a-side drafts in the 1478 era were (11, 1, 0, 6, 7) on near maps (Heart of Ruin, Vesper, Ryth and Marcella /
+  Willow in decoded replays) and (11, 6, 2, 1, 7) on far maps (bot_10: with Vendetta = 2). `decoded.py`'s `NAMES`
+  (engine order) must not be used on API ids: 0 Ryth and 2 Vendetta agree, but 6, 7 and 11 are Heart of Ruin,
+  Marcella and Willow in some order (Prism, Marcella and Tavi in the engine).
+- **New maps and a new live bot (11-02 02:20-02:30 IST).** 15 maps named `03...` joined the ranked pool (85 in all);
+  1488 (a teammate's bot_10 build) went live at 02:26 and drafts (11, 6, 2, 1, 7) on near maps too.

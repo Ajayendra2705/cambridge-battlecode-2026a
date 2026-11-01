@@ -1,8 +1,27 @@
-# Status (updated Mon, Nov  2, 2026 02:45 AM IST)
+# Status (updated Mon, Nov  2, 2026 03:05 AM IST)
+
+## Note at 03:05 IST 11-02 (session 92 closed by the user)
+
+- **Live bot: 1488, made live by a teammate at 02:26 IST** ("v540 = v484 with shorter waits"; active, selected,
+  pinned). Its ranked drafts are bot_10's on every map (near maps and three a side too), so it is a bot_10 build,
+  not the 1478 hybrid; its source is not in this repo (no branch has v540). First 15 ranked games 21:00-21:20 UTC:
+  10 won. Platform evidence that bears on it: three a side, bot_10 (hy3b) won 16 of 90 on b40p against the Bamboo
+  bot's 29 (1478); five a side, the local per-map screens show the Bamboo bot ahead on most near maps.
+- **15 new maps in the ranked pool since about 02:20 IST** (`03ambush_field`, `03colosseum`, `03contours`, `03fan`,
+  `03homonoliths`, `03honeycomb`, `03membrane`, `03one_gem`, `03reef`, `03riverbed`, `03showdown`, `03shrines`,
+  `03the_front`, `03twisty`, `03ultrastarvation`): 85 maps, none removed. Pulled into `maps/` with
+  `cambc maps pull` (existing maps unchanged). Not yet in `data/map_features.json`, `data/map_sizes.json` or
+  `tools/local/allmaps.txt`.
+- No chain or local run is running. hym (00monolith to bot_10 inside the hybrid) passed locally but was not gated
+  (moot while 1488 is live); its folder `bots/exp/hym` and panel m42 are kept. The 48-map screen
+  (`rule_route.md`) stopped at 1195 of 1536 games, no verdict.
+- Next: agree with the teammate which line is live (1488's bot_10 or the 1478 hybrid) before any gate, since a gate
+  takes the live slot; then screen both parts on the 15 new maps (18% of ranked games) and finish the per-map
+  screen; the trB proposal (tribute restart loops) still waits for the user.
 
 ## Note at 02:45 IST 11-02 (session 92, branch `night-1101`)
 
-- **Live bot: 1478**, selected and pinned (restored 02:24 IST after dv5's upload 1487 was cancelled). Ladder at 02:45:
+- **Live bot: 1478** (until 02:26; see above), selected and pinned (restored 02:24 IST after dv5's upload 1487 was cancelled). Ladder at 02:45:
   rank 44, 2077.5 (`data/ladder_1102_0245.json`).
 - **New rule (user, 02:25): a variant goes to the platform only after it passes its local screen** (CLAUDE.md,
   `docs/WORKFLOW.md`).
