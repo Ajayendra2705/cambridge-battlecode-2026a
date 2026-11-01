@@ -1,0 +1,22 @@
+# trB (kKeepChannel) for the Bamboo source of 1478 (bots/bamboo458sf/src/bot.cpp; hy1's src/bb/bot.cpp has the same lines).
+# Apply from the bot folder: git apply --directory=bots/bamboo458sf results/analysis/trB_bamboo458sf.patch (or by hand: two lines).
+# Measured: results/analysis/rule_tr.md, docs/experiments.md row trB.
+--- a/src/bot.cpp
++++ b/src/bot.cpp
+@@ -1208,6 +1208,8 @@
+                                                // ties by kDirs order ((0,1) first), so every tied step drifted +y (lanes: champions slid into
+                                                // the walled-off lane); evaluation builds shuffled ties by seed and never showed it
+                                                // (paired vs v38: +28 +-11; seed-0 lanes vs starter: walled lane 37% -> 23% of rounds, 348 -> 325 to 1000)
++constexpr bool kKeepChannel = true;            // trB (11-01): kChannelWatch keeps a channel the start rule (channel_unsafe) would restart at once:
++                                               // cancelling it only looped (cancel, restart, ~20 rounds at the altar; b40: 0.36 loops a game, bag 204)
+ constexpr bool kChannelWatch = true;           // while tributing, cancel when enemies in reach would kill us before it completes (damage does
+                                                // not cancel a tribute; death hands them the bag)
+                                                // (paired: alone +7 +-4; with kPerChampionPick +14 +-9 on fresh seeds)
+@@ -3682,6 +3684,7 @@
+         } else if (me_.is_submitting_gems() || me_.is_recalling() || me_.is_teleporting()) {
+             note("channel");
+             if (!(kChannelWatch && me_.is_submitting_gems() && tribute_doomed() && !(kBushTribute && hidden_tribute()) &&
++                  !(kKeepChannel && !channel_unsafe()) &&  // kKeepChannel: the start rule would restart it at once
+                   attempt([&] { me_.cancel_submit_gems(); return true; }))) {
+                 last_hp_ = me_.health();
+                 prev_recalling_ = attempt([&] { return me_.is_recalling(); });  // kHomeReset (edit_packfix2.py): the recall is seen here

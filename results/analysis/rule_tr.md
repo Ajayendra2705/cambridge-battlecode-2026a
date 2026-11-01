@@ -52,3 +52,11 @@ Same target (restarts down at least 75%) and the same guards (deaths to r1000 no
 lost on death not up by more than 10, tributed to r1000 not down by more than one standard error); also reported: the
 number of games that differ and their flips. The verdict on 1478's games above stands as recorded; this run decides
 whether the change itself costs deaths.
+
+## Result of the addendum (00:50 IST 11-02)
+
+hy1 (1484 selected) on b38p 40 of 90 and b40p 28 of 90. trB against hy1, 180 pinned games: restarts 2.07 to 0.09 a
+game (-96%, target met); to r1000 deaths +0.011 +- 0.035, gems lost on death +2.3 +- 3.0, tributed +1.4 +- 2.5 (all
+guards hold). 23 of 180 games differ: 13 better, 10 worse, one flip each way, margin +13 a game (rcmp; b38p 5 better
+2 worse, b40p 8 and 8). trB passes. hy1 against 1478 on the same games: 68 against 72 wins, flips 17 and 21, deaths
++0.29 +- 0.24: the build spread that made trB miss the deaths bar against 1478.

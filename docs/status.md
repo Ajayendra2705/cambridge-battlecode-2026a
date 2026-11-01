@@ -1,8 +1,9 @@
-# Status (updated Sun, Nov  1, 2026 10:15 PM IST)
+# Status (updated Mon, Nov  2, 2026 12:55 AM IST)
 
-## Note at 22:15 IST 11-01 (session 92, branch `night-1101`)
+## Note at 00:55 IST 11-02 (session 92, branch `night-1101`)
 
-- **Live bot: 1478**, selected and pinned (restored 21:58 after the last test gate). Rank 41 at 22:09 (quota reply).
+- **Live bot: 1478**, selected and pinned (restored 00:16 IST 11-02 after the last test gate; hy1, 1484, was active
+  about 23:50-23:57 and 00:06-00:16 for its gates). Ladder at 00:57: rank 43, 2071.0 (19:55: 43, 2077.5).
 - **Three a side, done:** the Bamboo bot stays. hy3v (vx1, upload 1482) 22 of 90 and hy3b (bot_10, 1483) 16 of 90
   on b40p against 1478's 29 (rows R); hy3s and hy3t (solo farming, short opening) local only, rows N. Findings:
   "Three a side against ranks 18-38: the Bamboo bot farms as a pack".
@@ -14,13 +15,13 @@
   2. **Tribute restart loops** (`results/analysis/rule_tr.md`, `tools/replay/loops.py`): the channel watch cancels
      a big tribute and the start rule restarts it at once, for 20-30 rounds at the altar. 1478 restarts 2.4 times a
      game on b38 and b40 (rivals 0.2-0.4). trA (`kReviewFix` 1) and trB (`kKeepChannel`) both pass locally (restarts
-     5.72 to 0.34 and 0.11 a game, deaths and collected level). **trB on the platform** (1485, b38p and b40p, 180
-     games against 1478's, `data/judge_trB.txt`): restarts 2.41 to 0.09 a game; lost on death and tributed level;
-     deaths to r1000 +0.306 +- 0.234, just over the 0.3 bar, all outside channels. On hy1_b38q's 20 games trB
-     replays hy1 exactly, and hy1 itself has the extra deaths against 1478, so **`data/run_hy1base.sh` (started
-     23:37) plays hy1 (v1484, no upload) on b38p and b40p** to pair trB with its own build
-     (`data/judge_trB_hy1.txt`). A pass is a proposal: 1478 is the teammate's build, so either the one condition
-     goes into their build or trB (our hy1 build) is selected, with the user's agreement.
+     5.72 to 0.34 and 0.11 a game, deaths and collected level). **trB passes on the platform** against its own
+     build: hy1 (1484 selected) and trB (1485) on b38p and b40p, 180 pinned games; restarts 2.07 to 0.09 a game,
+     23 games differ (13 better, 10 worse, flips 1 and 1, margin +13 a game), deaths and gems level
+     (`data/judge_trB_hy1.txt`). Against 1478's games it missed the deaths bar by 0.006 (+0.306), which is the
+     spread between hy1 and 1478 (hy1 itself +0.29). **Proposal, for the user to decide:** put the two lines
+     (`results/analysis/trB_bamboo458sf.patch`) into the team's 1478 source and upload that; or select 1485 (trB
+     on hy1), level with 1478 on these games (68 against 72 wins, margin +4 a game). Nothing was made live.
 - **Incidents and fixes:** an upload takes the live selection and goes live by itself once it compiles (`pinned`
   turns false; `docs/WORKFLOW.md`), and a selection becomes active only 2.5-10 minutes after `activate`. So 1482
   (hy3v) played ranked sets 20:22-20:51, and trB (1485) probably played the 22:20, 22:30, 22:50 and 23:00 sets

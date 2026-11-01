@@ -2233,3 +2233,8 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   same bot built from other sources) differs in 15 of 20 results. A variant is therefore best paired with a run of its
   own parent build on the same pinned panel: only the games where the change acts differ. Pairing with the team's
   build (1478) adds the build's own spread (here +0.25 deaths a game on 20 games).
+- **Against its own build the fix is clean** (trB against hy1, both on b38p and b40p, 180 pinned games, 11-02
+  00:50): 23 games differ, 13 better and 10 worse, one flip each way, margin +13 a game; to r1000 deaths +0.01 +-
+  0.04, tributed +1.4 +- 2.5. Most of the gain is on 00anvil (five of six changed games better, 200-gem monolith
+  bags banked instead of looped). The loops cost little on average: about one game in eight changes, and the result
+  of about one in ninety.
