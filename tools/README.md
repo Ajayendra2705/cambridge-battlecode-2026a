@@ -21,6 +21,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `allmaps.txt` | All 70 platform map names (default `--maps` of `multi.py` and `rr.py`; 40 until 10-26). `maps40.txt` is the first 40 (quick-pool numbers before 10-26), `newmaps.txt` the 30 added later. |
 | `lpair.py BASEDIR BASECAND NEWDIR NEWCAND` | Pairs two `multi.py` runs game by game (local games replay exactly): flips (L->W, W->L), wins, collected and deaths by team size (`data/map_sizes.json`), and the maps that flipped. CAND as in the file names (`exp.bb2`, `pool.cw1`, `main`). |
 | `lscreen.py RUNDIR BASECAND [ROUND]` | Paired screen of every candidate of one `multi.py` run against a base candidate of the same run (same pool bot, map and side): mean difference and standard error of wins, final margin, collected and tributed by ROUND (default 1000), the rivals' tributed, deaths, kills, gems lost on death and camp clears, plus our bot faults. Made for the bot_10 variant screen (11-01). |
+| `lgold2.py RUNDIR BASECAND [TYPE]` | Earned gold at r150, r300, r600 (team and one champion type) of a `multi.py` run, paired game by game with a base candidate. |
 | `lbar.py LSCREEN_OUTPUT [CAND ...]` | PASS or FAIL per candidate of an `lscreen.py` output for the fight bar of 11-02: deaths down by one standard error or more, collected not down by more than two, wins not down by more than 0.03, no fault (exit status 0 when all pass). Used by `data/autoq.sh` to queue local passes for the platform. |
 | `pairall.py DIR_A CAND_A DIR_B CAND_B` | Paired wins of two `multi.py` candidates per team size over every common opponent (not only the pool bots), then over the pool bots alone: games, wins, paired difference B - A with its standard error. Used for the per-size picks of 11-01 (rows bamboo458 to cmb7). |
 | `fuelj.py RUNDIR CAND [CAND...]` | Fuel exhaustions a game per team size from the game JSONs of a `multi.py` run (fuelExhausted events, rounds 3 on; no replays needed): ours and the rivals'. |
@@ -94,6 +95,8 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `grp.py DIR...` | Kill participation and grouping. |
 | `vana.py DIR` | Needs `V` lines: stats by 500 rounds, 1v1 damage per turn, actions. |
 | `dpre2.py DIR` | Needs `V` lines: anatomy of each fatal engagement. |
+| `soloshare.py TYPE DIR... [--round R]` | Capture events of one champion type by sharers and helpers, first capture round, us vs the rivals. |
+| `packmove.py DIR... [--round R] [--foes K]` | After sighting an enemy pack: went home, away, toward or held, and how often it died, us vs the rivals. |
 | `lgold.py MULTIDIR` | Per-champion gold and damage for a local `multi.py --keep` run. |
 | `agg.py RUN` / `compare_teams.py RUN...` / `killers.py RUN` / `deaths.py RUN` | Whole-run tables: per-champion averages, every metric us vs them, who kills whom, death contexts. |
 | `fuel_events.py RUN...` | The platform side of the code audit: `botFault` events and `fuelExhausted` events per game for us and the opponents, ours split by round (1-3 is the setup spilling over), map size and champion, from the match summaries. Group listings are retried; summaries that fail to download are skipped, so check the game count. |

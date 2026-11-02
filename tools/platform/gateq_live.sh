@@ -52,7 +52,9 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
     want=${bot#v}; window; select_wait "$want"
   else
     window  # the upload goes live by itself once it compiles (about 1.5 minutes)
-    out=$(powershell -File tools/cambc.ps1 submit "$bot" -n "test $run" 2>&1 | tail -1); echo "$out"
+    # Upload name for teammates: bots/<bot>/NOTE.txt says what the bot improves (website limit: 80 characters).
+    note="test $run"; [ -f "bots/$bot/NOTE.txt" ] && note="$(head -1 "bots/$bot/NOTE.txt" | tr -d '') [$run]"
+    out=$(powershell -File tools/cambc.ps1 submit "$bot" -n "${note:0:80}" 2>&1 | tail -1); echo "$out"
     if ! echo "$out" | grep -q Submitted; then
       { echo "$bot $run"; cat data/gate_queue.txt; } > data/gate_queue.tmp && mv data/gate_queue.tmp data/gate_queue.txt
       log "$run upload failed: $out"; sleep 90; continue

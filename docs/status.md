@@ -1,4 +1,21 @@
-# Status (updated Mon, Nov  2, 2026 09:05 PM IST)
+# Status (updated Mon, Nov  2, 2026 10:30 PM IST)
+
+## Note at 22:30 IST 11-02 (session 94, branch `night-1101`)
+
+- **Ladder: rank 33** (2151; rank 1 Mite 2574). Live: 1504 (the teammate's v607); our gates restore it.
+- **h1503 rejected on the platform** (t03p, 170 games pinned to the teammate's 1503 games): our deaths -0.6 +- 0.4
+  but the rivals' -0.9 +- 0.4, collected -31 +- 16, margin -70 +- 29, 28 wins against 37. More caution in fights
+  costs kills and farming; wre1 and whc2 (the same kind of change) were taken off the chain unplayed.
+- **wos1, wdg1, wdh1 failed their local screens** (`docs/experiments.md`).
+- **New factor: early team gold** (findings, "Early massacres, pack fights and Vesper's gold"). A third of the games
+  against ranks 1-20 are decided by r300 (we win 1 of 64 massacres); after sighting a pack we choose as the top
+  teams do but lose the fight (items, health). Team gold is 0.71 of theirs at r100; the gap sits with Vesper (camp
+  gold by r150 97 against 263, first capture r83 against r44) and Marcella. Their Vesper captures the groups the
+  team kills. Variant `exp/vj1` (Vesper joins the team's gold-rich kills before r250) is in its local screen
+  (`data/screen_vj1.log`; bar in `results/analysis/rule_1498.md`, "Vesper joins the team's kills on 1503").
+- **Chain** (`data/run_h1503.sh`): pool/v1491 on t03p (bridges everywhere against 1503's games); part a 10 of 60
+  against the base's 13. Then nothing queued.
+- New tools: `tools/replay/packmove.py`, `tools/replay/soloshare.py`, `tools/local/lgold2.py`.
 
 ## Note at 21:05 IST 11-02 (session 94, branch `night-1101`)
 

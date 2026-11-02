@@ -2352,3 +2352,31 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   at r436-r763. At r600 (`decoded.py items`) their Vesper has 2621 max health (3.4 Bruiser-strength and 1.4
   Bruiser-health emblems) against our 1309 (Prospector, Jungle), their Marcella 2479 against 1797, their Heart of
   Ruin 1724 against 1333.
+
+## Early massacres, pack fights and Vesper's gold (session 94, 11-02 22:20 IST)
+
+All on `t1503_tm@t03` (1503 against ranks 1-20, 170 games, 37 won).
+
+- **A third of the games are decided by r300.** 64 games are massacres (our deaths minus theirs by r1000 is 6 or
+  more) and we win 1 of them; by r300 we have died 4.83 times in them against their 1.50, with team gold 625
+  against 1607 (`deathfactors.py`, `UPTO=300`). In the 82 even games we win 34. By our deaths minus theirs to
+  r300, we win 32 of 83 games at 0 or less and 5 of 87 at +1 or more (`early2.py`). The massacre deaths come in our
+  own half (44%) or the middle (39%), to 3 or more killers (46%) with 4 or more enemies within 6 in the contact
+  (49%), at full health when it starts (79%), and the killers were in sight 11-30 rounds before the death (82%).
+- **After sighting a pack we choose as they do, but lose the fight.** A champion with at most one ally within 6
+  that sights 3 or more enemies within 8 (`tools/replay/packmove.py`): over the next 5 rounds we go home 18% of the
+  time (they 17%), away 13% (13%), toward the pack 29% (33%) and hold 39% (38%); when holding or going toward it we
+  die within 15 rounds 19% of the time against their 7-9%. We meet such packs 3.0 times a game against their 1.7.
+  The gap is fight strength (items, health) and isolation, not the retreat decision.
+- **The gold gap starts at r100 and sits with Vesper and Marcella.** Team gold at r100 is 265 against 372 (0.71),
+  at r150 437 against 621 (`decoded.py gold --round 100 150`). Camp gold by r150 (`decoded.py champs`): their Vesper
+  263 against our 97, their Marcella 195 against 117, while our Heart of Ruin (91 against 71) and Vendetta (127
+  against 85) earn more than theirs. Their Vesper's first capture is at r44 (median) against our r83, and by r150
+  she takes 1.32 captures a game of groups that two or more teammates hit (102 base gold each) against our 0.43
+  (59 gold; `tools/replay/soloshare.py`). Her first emblem comes at r175 against our r314, the fourth at r369
+  against r540 (`emblemorder.py vesper`). In the early traces our Vesper walks up to 53 tiles alone to a gold group
+  or chips wolves alone and leaves without the capture; theirs moves with 3-5 teammates, the team kills an elk or
+  wolf group, and she captures it.
+- **More caution in fights costs kills and farming on the platform.** h1503 (whc's thresholds on 1503) on t03p,
+  pinned to `t1503_tm@t03`: our deaths -0.6 +- 0.4 a game but the rivals' -0.9 +- 0.4, collected -31 +- 16,
+  margin -70 +- 29, 28 wins against 37. Locally it had passed with deaths -0.52 +- 0.21 and collected +5.4.
