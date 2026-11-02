@@ -2278,3 +2278,26 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   Marcella and Willow in some order (Prism, Marcella and Tavi in the engine).
 - **New maps and a new live bot (11-02 02:20-02:30 IST).** 15 maps named `03...` joined the ranked pool (85 in all);
   1488 (a teammate's bot_10 build) went live at 02:26 and drafts (11, 6, 2, 1, 7) on near maps too.
+
+## The teammate's 1497 and 1498 against ranks 1-20 (session 93, 11-02 15:00 IST)
+
+- **Data.** The teammate tested each upload on one panel of 33-35 groups against teams ranked 1-20 (Mite, Intercontinental
+  Fish, Univardisty, newer team, Ad Astra, NEETCoders, test4, print dont int, German Empire, policy wonk, prism best
+  girl, Supaswag). Groups found by creation time in `cambc matches list` (1497: 08:16-08:22 UTC, 1498: from 08:51 UTC,
+  other teams' challenges left out), logged in `results/gate.log` as `t1497_tm@tm` and `t1498_tm@tm`, decoded into
+  `data/fights/`. Source of both bots is not in this repo (v548 line, bot_10 build).
+- **Wins (decoded summaries):** 1497 26 of 175 (3 / 4 / 5 a side: 4/33, 6/40, 16/102); 1498 19 of 165 (2/33, 2/38,
+  15/94). The match list's `result` field gave 34 for 1497; not reconciled.
+- **The gap is gold, then items, then fights.** 1497: team gold 0.66 of the rivals' at r300, 0.57 at r600, 0.51 at
+  r1000 (four a side 0.40); deaths 9.3 against 4.1 a game to r1000 (2.8 against 1.3 by r300); collected 568 against
+  907. With our deaths to r300 at or below theirs we won 21 of 74 games; with one or more extra, 5 of 101.
+- **Even fights.** P(death within 10 rounds) at high health with one enemy within 6 is 0.045-0.054 for us against
+  0.011-0.015 for them, whatever the allies near (both bots). Fights the rivals start: the starter loses 0.19, kills
+  0.66 per start; they cause 5.3 of our 9.3 deaths a game.
+- **Farming by champion (to r600, camp gold).** 1497: Vesper 495 against 1489, Marcella 593 against 1042. 1498
+  ("Vesper captures the gold groups she helped kill") lifts Vesper to 977 (rivals 1388) and her max health at r600
+  from 1372 to 2234 (rivals 2608; she now builds Bruiser like them), but deaths (9.0), collected (566), team gold
+  (0.64 at r600) and the even-fight death risk do not move. Marcella stays at 520 against 1064 and 1624 health against
+  2602 (theirs bruiser_focus first, ours prospector_focus).
+- **Willow** (drafted in 142 of 175 games; rivals 52) dies 2.4 a game, 19 gems and 1185 champion damage; attacked at
+  half health or more she dies within 10 rounds 45% of the time.
