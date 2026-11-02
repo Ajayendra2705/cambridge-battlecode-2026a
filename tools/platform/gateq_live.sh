@@ -45,7 +45,8 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   [ -n "$QWAIT" ] && bash tools/platform/qwait.sh "$QWAIT"
   # QUIET=N: wait until no unranked match of the team started in the last N seconds (a teammate's panel may be playing).
   [ -n "$QUIET" ] && python -I tools/platform/quiet.py "$QUIET"
-  read -r act0 new0 < <(ver)
+  # A failed read (rate limit, network) left new0 empty and the wait after the upload never ended (11-03 03:22, vpk3b).
+  until read -r act0 new0 < <(ver) && [ -n "$new0" ]; do sleep 10; done
   # GATE_RESTORE=auto: restore the version that was live just before this gate (a teammate may have changed it).
   restore=$GATE_RESTORE; [ "$restore" = auto ] && restore=$act0
   if [ "$bot" = live ]; then
@@ -66,7 +67,7 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   fi
   log "$run start bot=$bot version=$want (was active $act0, newest $new0)"
   bash tools/platform/gate.sh "$bot" nosubmit "$run" 2>&1 | tail -3
-  read -r act1 new1 < <(ver)
+  until read -r act1 new1 < <(ver) && [ -n "$new1" ]; do sleep 10; done
   log "$run done active=$act1 newest=$new1"
   # Restore only what this gate changed: if someone else selected a version during the games, theirs stays live
   # (on 11-01 a teammate made 1479 live during a "live" gate, and the restore would have put 1472 back over it).
