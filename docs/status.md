@@ -1,4 +1,26 @@
-# Status (updated Mon, Nov  2, 2026 03:05 AM IST)
+# Status (updated Mon, Nov  2, 2026 09:05 PM IST)
+
+## Note at 21:05 IST 11-02 (session 94, branch `night-1101`)
+
+- **Working line: the teammate's (chejibt001, team "cheji bt") v548 line.** Every upload is "v548 + one flagged
+  change", tested at once in 135-345 unranked games against ranks 1-20 (findings, "How the teammate chejibt001
+  works"). Their sources are on the website (Submissions, "Code"; `docs/WORKFLOW.md`): `pool/v548` is the exact 1490,
+  `pool/v1491` and `pool/v1503` were downloaded (hashes checked), `pool/v1502r` rebuilds 1502.
+- **Live: 1504** (the teammate's v607) between our gates; our gates select their own uploads (1506 = h1503).
+- **Factor: our deaths against ranks 1-20.** Our champions are dead 14.2% of champion-rounds against 6.2%, and every
+  champion type dies 2-2.7 times as often as the same type of theirs (`decoded.py types` on `t1503_tm@t03`). Their
+  Marcellas (1700-4000 health) one-shot our 1000-health Vesper and Vendetta from 4 tiles.
+- **Local passes** (85 maps, 680 paired games each, `tools/local/lbar.py`): whc (on 1502), h1503 and h1491 (whc on
+  1503 / 1491), wre1 (enemy damage x1.3 in the fight sim), whc2 (stronger whc). wmp and wc failed. Screens running:
+  wdg1 (danger weight), wos1 (one-shot guard).
+- **Platform chain running** (`data/run_h1503.sh`, plan `data/plan_h1503.txt`; the user, 20:38: "queue all"; the
+  user, 20:15: no need to wait for the teammate): each variant on t03p in three parts (12 + 11 + 11 groups) pinned to
+  the teammate's own 1503 games (`t1503_tm@t03`, 170 games, 37 won). Order: h1503, h1491, wre1, whc2, then whatever
+  `data/autoq.sh` adds. h1503 part a: 12 of 60 against the base's 13, flips 2 and 3, our deaths 669 to 622, theirs
+  342 to 246. Rule: `results/analysis/rule_whc_t03.md`.
+- Next: judge each variant on decoded deaths (`paired.py` against `t1503_tm@t03`), stack the passes, make the best
+  live.
+
 
 ## Note at 03:05 IST 11-02 (session 92 closed by the user)
 

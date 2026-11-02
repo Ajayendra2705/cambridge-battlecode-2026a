@@ -2306,3 +2306,40 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   with `--release`. They differ only in `bot.h`, `farm.cpp`, `fight.cpp` and `params.h` (1497: `P_FIRE_FIRST`; 1498:
   `P_VES_HANDOFF`). Builds are `P_BUILD 4` with `P_PROSP_FIRST 1`: Marcella buys Prospector focus, then jungle focus,
   durability health and monster focus before any Bruiser emblem, which matches her low health at r600.
+
+## How the teammate chejibt001 works, and what their uploads 1488-1502 show (session 94, 11-02 19:30 IST)
+
+- **Method.** One frozen base, v548 (upload 1490: v546 + Willow heals by missing health + proactive self shield),
+  and each upload is "v548 + one change", every change behind a `P_` flag in `params.h` and each with its own
+  replay-analysis script named in the flag's comment (`shortcuts.py`, `firefirst.py`, `vhandoff.py`). Every upload
+  is played at once in 135-345 unranked games (35-70 groups) against the same 15-22 teams, many of them ranks 1-20;
+  a change that touches one team size (the drafts of 1501 and 1502) is tested mostly on that size. The shared quota
+  (50 groups an hour) is almost all theirs: 3350 unranked games from 11-01 22:00 to 11-02 13:20 UTC, 48 of 50 used
+  at 13:20 UTC. Uploads and notes: `cambc submissions list --json`; source of the v548 line is not in the repo
+  except `pool/v1497` and `pool/v1498` (bot (1).zip is 1498, same size).
+- **Their results, paired with 1490 on the same (opponent, map, side)** (`tools/platform/teamvers.py
+  2026-11-01T20:00 1490`; version given by upload time, not proved): only 1491 (v559, dash bridges over holes and a
+  spawn flash) is clearly ahead, 45 against 34 of 119, 23 losses turned to wins and 12 back. Its narrower copy 1492
+  (central-altar maps only) is level (14 against 15 of 47). Level: 1489, 1498 (handoff, 40 against 43), 1499 (recall
+  home, 51 and 51), 1500 (earlier bank, 48 against 49). Behind: 1493 (Vesper task values, 40 against 47), 1496
+  (mstrike, hold, lock intercept, 34 against 44), 1497 (Marcella nukes, shoot then dash, 34 against 40). Draft
+  changes: 1501 (three picks, Marcella for Vendetta) 0 against 5 of 14 and dropped; 1502 (four picks, Heart of
+  Ruin, Marcella, Vesper, Willow) 10 against 6 of 17, live since 12:58 UTC.
+- **Which files each upload changes** (hashes of the website's code viewer against 1490): 1500 only `params.h`;
+  1501 and 1502 only `draft.cpp`; 1493 `farm.cpp` and `params.h`; 1497 `fight.cpp` and `params.h`; 1498 `bot.h`,
+  `farm.cpp`, `params.h`; 1489, 1496 and 1499 `bot.cpp`, `bot.h`, `fight.cpp`, `params.h`; the dash-bridge line 1491,
+  1492 and 1503 seven files (`bot.cpp`, `bot.h`, `farm.cpp`, `nav.h`, `params.h`, `world.cpp`, `world.h`).
+  `pool/v548` is the exact 1490 source (all 13 files match the website's hashes): `bot.cpp` and `fight.cpp` of 1498,
+  `bot.h` and `farm.cpp` of 1497, and 1498's `params.h` without its handoff block.
+- **What we copy and what we add.** We take their base and their one-flag-per-change rule (`pool/v1502r` rebuilds
+  1502 from the 1498 source: `P_VES_HANDOFF 0`, which turns every handoff line off, and the four-pick draft, which
+  matches the website's `draft.cpp` of 1502 apart from a comment). Their tests are not pinned, so the opponents
+  may change bots between a version and its base; ours pin the panel to the base's own games (`pin.py`), so every
+  game is paired exactly, and a variant goes to the platform only after a local pass. Open lead: v559's dash bridges
+  are the one change of theirs with a clear paired gain and are not live; its source is needed from the teammate.
+- **The gap against ranks 1-20 is dead time** (1497 and 1498 on the teammate's panels, 340 games to r1000,
+  `budget.py 1000`, `clears.py`): our champions are dead in 14.2% of champion-rounds against 6.2%, hit camps in
+  14.7% against 18.7%; they capture 50.4 groups a game against our 31.5 with the same hitters per capture (1.74
+  against 1.61) and about the same clear times. Deaths per game are about double theirs in every round band
+  (`early2.py`: r0-100 0.75 against 0.39, r500-1000 4.22 against 1.89); outnumbered deaths 3.53 against 1.21
+  (`packs.py`), and after a pack sighting we die within 15 rounds 0.129 of the time against 0.054.
