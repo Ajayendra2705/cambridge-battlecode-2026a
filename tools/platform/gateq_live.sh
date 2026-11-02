@@ -43,6 +43,8 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   set -- $line; bot=$1; run=$2
   echo "== $bot $run $(date +%H:%M)"
   [ -n "$QWAIT" ] && bash tools/platform/qwait.sh "$QWAIT"
+  # QUIET=N: wait until no unranked match of the team started in the last N seconds (a teammate's panel may be playing).
+  [ -n "$QUIET" ] && python -I tools/platform/quiet.py "$QUIET"
   read -r act0 new0 < <(ver)
   # GATE_RESTORE=auto: restore the version that was live just before this gate (a teammate may have changed it).
   restore=$GATE_RESTORE; [ "$restore" = auto ] && restore=$act0

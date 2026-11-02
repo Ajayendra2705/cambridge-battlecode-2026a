@@ -1,6 +1,6 @@
 """Per-map head to head of two whole bots on the same local games, for choosing which part of a hybrid plays a map.
 
-usage: python -I tools/local/routemaps.py RUNDIR CAND_A CAND_B [--now A|B per map: MAP=A,MAP=B ...] [--bar N]
+usage: python -I tools/local/routemaps.py RUNDIR[,RUNDIR2] CAND_A CAND_B [--now A|B per map: MAP=A,MAP=B ...] [--bar N]
 
 RUNDIR is a multi.py run folder (files CAND~POOL~MAP~SIDE.json, CAND with '/' as '.'). For every map: each candidate's
 wins, games, gem margin per game and deaths per game against the same pool bots and sides; then whether the other
@@ -18,7 +18,7 @@ if '--now' in args:
     j = args.index('--now'); now = dict(x.split('=') for x in args[j + 1].split(',')); args = args[:j] + args[j + 2:]
 run, A, B = args[0], args[1].replace('/', '.'), args[2].replace('/', '.')
 S = collections.defaultdict(collections.Counter)
-for f in glob.glob(os.path.join(run, '*.json')):
+for f in [x for r in run.split(',') for x in glob.glob(os.path.join(r, '*.json'))]:
     cand, pool, mp, side = os.path.basename(f)[:-5].split('~')
     if cand not in (A, B): continue
     j = json.load(open(f, encoding='utf-8'))

@@ -2380,3 +2380,57 @@ All on `t1503_tm@t03` (1503 against ranks 1-20, 170 games, 37 won).
 - **More caution in fights costs kills and farming on the platform.** h1503 (whc's thresholds on 1503) on t03p,
   pinned to `t1503_tm@t03`: our deaths -0.6 +- 0.4 a game but the rivals' -0.9 +- 0.4, collected -31 +- 16,
   margin -70 +- 29, 28 wins against 37. Locally it had passed with deaths -0.52 +- 0.21 and collected +5.4.
+
+## The economy gap is an early-contact gap (session 94, 11-02 23:50 IST)
+
+On `t1503_tm@t03` (`tools/replay/firstcontact.py`), by the round of first contact (a champion of ours within 4 of an enemy):
+
+| contact by | games | wins | deaths to r100 us/them | to r300 | team gold r150 us/them | r300 | within 8 at contact us/them |
+|---|---|---|---|---|---|---|---|
+| r20 | 35 | 2 | 1.40/0.80 | 4.29/2.37 | 342/668 | 743/1534 | 3.6/3.9 |
+| r40 | 44 | 4 | 1.00/0.61 | 3.52/2.09 | 342/542 | 703/1295 | 2.8/2.7 |
+| r60 | 25 | 7 | 0.96/0.04 | 2.84/1.60 | 367/615 | 852/1263 | 2.4/2.4 |
+| r90 | 18 | 5 | 0.61/0.22 | 2.17/1.28 | 481/631 | 1044/1367 | 2.1/2.3 |
+| r150 | 21 | 9 | 0.05/0.00 | 0.81/0.81 | 651/639 | 1397/1551 | 2.1/1.5 |
+| later | 23 | 10 | 0.04/0.00 | 0.35/0.57 | 581/663 | 1321/1477 | 1.9/1.4 |
+
+- Without early contact our economy matches theirs. Numbers at the contact are even; what follows is not. Our champion dies first by r100
+  in 68 games (7 won), theirs in 21 (4 won).
+- Before r150 (`tools/replay/nearact.py`), away from enemies both sides farm alike (27-28% of rounds hitting camps, 79 and 86 gold per 100
+  rounds). The rivals spend 23328 champion-rounds outnumbering us locally, we 13106; we are outnumbered in 7585 rounds at 1.57 deaths per
+  100, they in 3494 at 1.03. Within 3 tiles of an enemy they hit a champion 51% of the rounds against our 45% and step away 19% against 25%,
+  and die 0.96 per 100 rounds against 2.13.
+- By r100 in massacre games our deaths are 66% outnumbered, 57% to three or more killers, 58% after walking out or across, Vendetta first
+  (`deathfactors.py`, `UPTO=100`). Local screens cannot show this: the pool does not rush.
+
+## Per-map differences between our bot lines, and Cassi and Issac (session 94, 11-03 01:20 IST)
+
+**The two lines differ a lot per map, and local agrees on many of them.** `tools/platform/mapstrat.py` (since 10-31 23:00 UTC, ranked and unranked, Bamboo line minus bot_10 line within the same opponent, 9250 games):
+
+| Bamboo ahead | points (z) | | bot_10 ahead | points (z) |
+|---|---|---|---|---|
+| 00interlock | +53 (4.6) | | 00expanse | -59 (-4.0) |
+| 00fragment | +39 (3.8) | | 01islands | -36 |
+| adgato_gemcombat1 | +32 (3.7) | | 00ambush | -31 |
+| 02crossing | +29 (2.9) | | 02the_pack | -26 |
+| 00corners | +31 (2.8) | | 02famine | -36 |
+| 00anvil | +22 (2.7) | | 00lanes | -52 |
+| 00dunes | +32 (2.5) | | 00monolith | -34 |
+| 02stalactites, 00quadrants, 00collision | +25, +23, +18 (1.9) | | 02tangle, 02cuts | -33, -36 |
+
+Near maps sum to +2.5 +- 1.6, far maps (spawn walk 61 or more) to -16.1 +- 2.8. Maps both lines lose (8-30%): 00packs, 00elkring, 01boss_battle, adgato_gemcombat5, 00swirl, 00gem_fields, 01elk_arena.
+
+Locally (`routemaps.py`, 4 pool bots, 8 games a map) Bamboo #458 is 0.17 wins a game below v1503 overall, but it is ahead on the same near maps: 00crater 8/8 against 4/8 (margin +800 against +138), 02stalactites 7 against 4, 01corridors 8 against 5, 02crossing 7 against 4, 03one_gem 7 against 0, 00corners 8 against 6. v1503's wins on 03one_gem are 0 of 8, with a margin of -31: it barely scores there.
+
+**The router `exp/rt1` passes locally.** One program, two bots, picked once from a map signature read before the draft (16 maps to Bamboo, the rest and unseen maps to v1503). 680 paired games against v1503: wins +0.05 +- 0.01, deaths -0.39 +- 0.16, collected +9.3 +- 7.1, no fault (`data/judge_screen_rt1.txt`). The bar and the table rule are in `results/analysis/rule_route2.md`.
+
+**Early contact decides most games against ranks 1-20, and it is not an item gap at first.** On `t1503_tm@t03`, 79 of the 170 games have a contact by r40, and we win 6 of them. Nobody has an emblem by then, so the fight is draft and numbers. Examples of the list (`firstcontact.py`): 00stampede r24 one of ours against four, 00contest r17 three against five, 00road_of_riches r36 one against three.
+
+**We do worst against a rival Cassi and Issac (one pick, two bodies).** Same games, five a side: against the pair we win 3 of 34, deaths to r300 3.35 against 1.18 (their count includes both bodies); against other drafts 22 of 65, 2.09 against 1.46. Four a side 3 of 19 against 4 of 20; three a side 2 of 11 against 3 of 21. Teams differ, so this is a lead. Against the pair our hit rounds fall on Issac 19.6 a game and on Cassi 7.8, of 118 (Cassi 600 + 65 health against Issac 900 + 80, and either death kills both), and the pair dies 1.55 times a game. Our target rule and fight simulation do not know the link.
+
+**The two top teams field the pair now.** Ranked games of the top 50 teams, 11-02 05:50-19:30 UTC, 10780 games (`ladgames.py`, `mapdrafts.py --top 12`): Fish plays Heart, Marcella, Vendetta, C&I, Willow on five (90 of 133) and Mite Heart, Marcella, Vendetta, C&I, Vesper (176 of 271 with NEETCoders); on four picks both play Heart, Marcella, Vendetta, C&I. On three picks Heart, Marcella, Ryth stands out (42 of 63, +17.0 +- 5.9 against Elo; Univardisty and T1), against Heart, Vendetta, Vesper, our set (54 of 96, +0.1 +- 4.9). Residuals against Elo are small for most drafts: a draft carries the rest of its team's bot, and a team that climbed lately looks worse than it is.
+
+**Emblem timing.** Vesper's first emblem at r314 against r175 (`emblemorder.py`); Marcella's r258 against r195; Vendetta and Heart level (r251 against r256, r282 against r284).
+
+**How the teammate's team worked on maps (`docs/bamboo/knowledge/fish-builds-1031.md`, read 11-03).** Fish's jump in late October (52% to 79%, mostly against the top 10) came with a first emblem chosen per map: Capture first on 46 of 64 maps, main-stat Prospector first on 9 cluster-farm maps, Prospector of health or focus on 9 others, and one draft per map. Bamboo's copy of the emblem lines alone lost (45 against 54 of 250), so the gain seems to need the whole system. v1503 opens Prospector on every map and never buys Capture.
+

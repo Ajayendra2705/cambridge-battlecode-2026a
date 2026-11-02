@@ -11,7 +11,9 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 src, size, name = sys.argv[1], sys.argv[2], sys.argv[3]
 per = int(sys.argv[4]) if len(sys.argv) > 4 else 1
 specs = open(os.path.join(ROOT, 'results', 'panels', f'specs_{src}.txt'), encoding='utf-8').read().split()
-maps = open(os.path.join(ROOT, 'data', f'maps_size{size}.txt'), encoding='utf-8').read().strip().split(',')
+# The list holds local file names; the platform's map names use underscores for their hyphens (a hyphen makes
+# `match-groups create` fail, and gate.sh retries that group for ever: 11-02 base1503_s3p).
+maps = open(os.path.join(ROOT, 'data', f'maps_size{size}.txt'), encoding='utf-8').read().strip().replace('-', '_').split(',')
 first = {}
 for s in specs:
     t, _, _, g = s.split(':')

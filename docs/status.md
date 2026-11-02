@@ -1,4 +1,13 @@
-# Status (updated Mon, Nov  2, 2026 10:30 PM IST)
+# Status (updated Tue, Nov  3, 2026 01:20 AM IST)
+
+## Note at 01:20 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
+
+- **Ladder: rank 33** (2142; rank 1 Fish 2577, rank 2 Mite 2568). Live: **1513**, Eric's upload (v1503 + every-turn recall + bush wards), the best paired gain so far (42 against 36 of 160); its source is not in the repo. Our gates restore it.
+- **Factor now: map choice and draft.** `exp/rt1`, a per-map router (16 maps to Bamboo, the rest to v1503), passed its local screen (`results/analysis/rule_route2.md`). Pinned panel `b1p` (v1472 against v1503 on 15 candidate maps) is queued; the table is decided from that.
+- **New lead: Cassi and Issac** (findings, "Per-map differences between our bot lines, and Cassi and Issac"). We win 3 of 34 five-a-side games against them, and ranks 1 and 2 play them. `exp/dci5m`, `exp/dci5f`, `exp/dci4` are in their local screen (`data/screen_ci1.log`, rule `results/analysis/rule_ci.md`).
+- **Chain** (`data/run_tg2.sh`, plan `data/plan_tg.txt`): vtg70 on t03p (parts a, b done, c running), then base1503 and v1472 on b1p, then base1503 and d3m on s3p. It waits for the teammate's quiet periods (`QUIET=240`).
+- Rejected locally: vfc1, vsg1, vsg2, vop1, vtr1 (`docs/experiments.md`).
+- Next: judge vtg70 and b1p, set the router table, make the best bot live; if a C&I draft passes locally, panels `s4p`, `s5p`.
 
 ## Note at 22:30 IST 11-02 (session 94, branch `night-1101`)
 

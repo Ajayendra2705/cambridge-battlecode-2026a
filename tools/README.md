@@ -33,6 +33,8 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `lcurve.py FILE.json...` | One local game's curves: collected and tributed gems per side at rounds 100-2000. |
 | `mapopen.py RUNDIR CAND [N]` | Per map: wins and both sides' gems collected by r100, r300, r600 (means), the N maps with the largest r600 gap first: where a candidate's opening or farming trails the local pool. |
 | `compact_old.py DIR...` | Disk space without deleting: transparent NTFS compression (WOF, LZX) of the files older than an hour under each DIR (`data/runs`, `data/summaries`, scratch folders); readers see the same bytes, game JSON shrinks about 15 to 1 (10-31: C: from 2.7 to 11 GB free). Skips `.gz`, `.zip`, `.wasm`, `.tmp*`. |
+| `screen.sh NAME BASE_RUN_DIR BASE_CAND "exp/a,exp/b" JOBS [POOL] [BAR]` | Fast local screen: plays only the candidates (default pool `pool/cmb7,pool/bot_10`, 340 games each on the 85 maps), copies the base's games of the same pairings into the run, writes `lscreen.py`, `lgold2.py` and `lbar.py` output to `data/judge_screen_NAME.txt`. |
+| `mapsig.py [OUT.json]` | Map signatures for a per-map router (width, height, walls, holes, altars, bushes), read with the probe `bots/exp/sigp` on every map in `maps/`; warns when two maps share one. Default output `data/map_sigs.json`. |
 
 ## platform/ (unranked games on the website; quota 50 match groups an hour, see `docs/WORKFLOW.md`, "Platform quirks")
 
@@ -62,6 +64,12 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `draftelo.py LADGAMES.json LADDER.json [SINCE]` | Which picks beat their Elo expectation, per team size: for each game side with both teams on the ladder file, result minus the Elo expectation from current ratings; mean residual of the side that drafted a champion the other did not, and of each full draft with 20+ sides. Rising teams (ratings lag) inflate their drafts, so read it as a screen. |
 | `eligible.py LADDER_JSONL RANKS` | Teams that can be scheduled (bot on the current engine). Retries listings that come back empty (HTTP 429). |
 | `mkpanel.py [--size N] [--maxsd N] SEED TEAM_ID...` | Panel specs for a list of teams: blocks of 4 teams, each block covering all 40 maps (two seeded 5-map windows per team), our side alternating a/b. Output goes to `results/panels/specs_NAME.txt`. `--size N` deals only maps of N champions a side (`data/map_sizes.json`), e.g. the five-a-side panel b26; a pool under 40 maps (three a side: 12, four: 16) is shuffled again per team, so every team still gets two windows (three-a-side panel b40). `--maxsd N` keeps maps whose spawn walk (`data/map_features.json` sd) is under N, e.g. 61 for 1478's Bamboo maps (five-a-side near panel b41, 11-02). |
+| `sizepanel.py PINNED_PANEL SIZE NAME [GROUPS_PER_TEAM]` | Pinned panel on the maps of one team size (`data/maps_size<SIZE>.txt`), keeping each team's first source group: a draft change for one size tested with no wasted games. Writes `results/panels/specs_NAME.txt`. |
+| `draftline.py SINCE_ISO [--refresh]` | Our results per map by bot line, read from our own draft (pick 0 Ryth = Bamboo, pick 11 Heart without Ryth = bot_10), ranked and unranked; cache `data/draftline.json`. |
+| `mapstrat.py [--min-w W]` | From that cache, per map: Bamboo line minus bot_10 line within the same opponent, with its standard error, and the sums over near and far maps. The table behind the router `exp/rt1`. |
+| `mapline.py SINCE [--refresh] [--base LINE] [--min N]` | Per-map win rates by version line of our uploads. |
+| `mapdrafts.py LADGAMES.json LADDER.json [SINCE_ISO] [--top N] [--size K] [--min N] [--map NAME]` | Which drafts win on which map on the ladder: wins and mean residual against Elo per draft, per team size and per map, from `ladgames.py` output. |
+| `quiet.py SECONDS` | Waits until no unranked match of the team started in the last SECONDS (the teammate's tests read our upload as live); `gateq_live.sh` calls it when `QUIET` is set. |
 
 ## variant/ (make bot copies)
 
@@ -255,6 +263,10 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `fight_geo.py FIGHTDIR INDEX...` | Team geometry from those datasets, us vs them by phase: distance to nearest teammate, teammates within 5, time on the enemy half, local numbers at deaths. |
 | `fetch_ranked.py RANKS [--per-team N]` | Download recent ranked replays of a ladder rank range into `data/replays/ranked/`. |
 | `vis_assets.py REPLAY` | Fetch the installed cambc's visualiser engine WASM and decoder JS into `data/vis/<newest engine>/` (starts and stops `cambc view`). `vis_decode.mjs` reads each replay with the folder of its engine, else the flat `data/vis/` (cambc 3.0.5, engines up to 1.0.3). |
+| `firstcontact.py DIR...` | First contact of a game (a champion within 4 of an enemy) by round band: games, wins, deaths to r100 and r300, team gold, numbers within 8, place on the way between spawns, and the list of games with contact by r40. |
+| `nearact.py DIR...` | Before r150: actions by local numbers (outnumbering or outnumbered), hits and steps within 3 tiles of an enemy, deaths per 100 rounds, us against them. |
+| `packindex.py DIR...` | Allies within 6 per living champion by round band, us against them. The split per team size in its output is wrong (`meta['drafts']` always holds 5). |
+| `prey.py DIR...` | Hurt prey (under 50% health) with a healthy hunter within 6: kill rate, hunters lost and share of chases, us against them. |
 
 ## helper/ and helper3/ (the helper agents h2 and h3, from 10-28; notes in `docs/helper/NOTES.md` and `docs/helper3/NOTES.md`)
 
