@@ -1,4 +1,14 @@
-# Status (updated Tue, Nov  3, 2026 01:20 AM IST)
+# Status (updated Tue, Nov  3, 2026 02:45 AM IST)
+
+## Note at 02:45 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
+
+- **Ladder: rank 33** at the last check (2142; rank 1 Fish 2577). Live: **1513**, the teammate's upload. Our gates restore it. The teammate is active too: at 01:37 they selected 1513 during `v1472_b1p`, so its last 25 games are 1513's, not 1472's.
+- **Factor now: first contact** (`results/analysis/rule_pack.md`). Our team splits in the first rounds. vtg70 did not change that and is rejected on the platform. `exp/vpk3` walks as one pack before r60 on maps with spawns at most 61 steps apart; local deaths r300 -0.20 +- 0.09, on near maps -0.40 +- 0.15, gold and wins level. Queued on t03p parts a-c.
+- **New: every champion skips round 1 on every map** (`if (fuel() < 120000) return;`, `results/analysis/rule_firstturn.md`, `tools/local/firstturn.py`). `exp/vfi1` (50k) and `exp/vfi2` (25k) are in their local screen (`data/screen_fi1.log`).
+- **Map choice:** the router `exp/rt1` waits for `v1472_b1pb` (the 25 games still missing); the first 35 games of `v1472_b1p` were 7 wins against 4 for v1503, margin +153 +- 96.
+- **Draft:** d3m on s3p is running; dci5f on s5p follows the pack test.
+- **Chain** `data/run_tg2.sh`, plan `data/plan_tg.txt`, one run only; it waits for the teammate's quiet periods (`QUIET=240`).
+- Rejected: vtg70 and vtg40 (platform), vpk1 (wins guard), wag1, dci5m, dci4, d3c, d3r, vci1 (local). All in `docs/experiments.md`.
 
 ## Note at 01:20 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
 
