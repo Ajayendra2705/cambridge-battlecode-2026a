@@ -2434,7 +2434,7 @@ Locally (`routemaps.py`, 4 pool bots, 8 games a map) Bamboo #458 is 0.17 wins a 
 
 **How the teammate's team worked on maps (`docs/bamboo/knowledge/fish-builds-1031.md`, read 11-03).** Fish's jump in late October (52% to 79%, mostly against the top 10) came with a first emblem chosen per map: Capture first on 46 of 64 maps, main-stat Prospector first on 9 cluster-farm maps, Prospector of health or focus on 9 others, and one draft per map. Bamboo's copy of the emblem lines alone lost (45 against 54 of 250), so the gain seems to need the whole system. v1503 opens Prospector on every map and never buys Capture.
 
-## The pack opening helps where contact comes early (session 94, 11-03 02:20 IST)
+## The pack opening helps where contact comes early (session 94, 11-03 02:05 IST)
 
 Local, 680 games paired against v1503 (`results/analysis/rule_pack.md`, `tools/local/lnear.py`). `exp/vpk1` walks as one team before r60 on every map: one group, no travel dash, front-runners wait. It takes our spread at r16 on 00contest from 13 to 5 tiles and allies within 6 from 2.0 to 4.0.
 
@@ -2453,3 +2453,30 @@ On a far map the pack only costs gold, since no contact comes that early. `exp/v
 
 **A gate can be voided half way.** On 11-03 01:37 the first 35 games of `v1472_b1p` were 1472 and the last 25 were 1513: a teammate selected 1513 at 20:07 UTC. The draft tells them apart (`matches list`, `draftPicks`: Ryth is the Bamboo line). Those 35 games: 7 wins against 4 for v1503, margin +153 +- 96. The other five groups are `results/panels/specs_b1pb.txt`.
 
+## The exact Bamboo bot beats v1503 on the routed maps, pinned (session 94, 11-03 03:05 IST)
+
+`v1472` against `v1512` (v1503) on panel `b1p`, 12 teams above us on 15 candidate maps, 60 games pinned to the same opponents' bots (`v1472_b1px@b1p`: the first 35 games of `v1472_b1p`, then `v1472_b1pb`, since a teammate selected 1513 during the last 25): 21 wins against 13, margin +186 +- 84 a game.
+
+| Map | z (`mapstrat.py`) | wins base to v1472, 4 games each | margin a game |
+|---|---|---|---|
+| 00dunes | 2.5 | 1 to 3 | +797 |
+| 00corners | 2.8 | 0 to 2 | +603 |
+| 02crossing | 2.9 | 0 to 2 | +590 |
+| 00anvil | 2.7 | 0 to 1 | +405 |
+| adgato_gemcombat1 | 3.7 | 0 to 2 | +392 |
+| 00fragment | 3.8 | 0 to 1 | +378 |
+| 00interlock | 4.6 | 1 to 2 | +367 |
+| 00gemfight | 1.5 | 1 to 2 | +638 |
+| 01corridors | 1.5 | 1 to 1 | +148 |
+| 00quadrants | 1.9 | 1 to 0 | +41 |
+| 00collision | 1.9 | 1 to 1 | -30 |
+| 00crater | 1.3 | 1 to 1 | -282 |
+| 02treasure_box | 1.4 | 1 to 0 | -294 |
+| 00rows | 1.7 | 3 to 2 | -450 |
+| 02stalactites | 1.9 | 2 to 1 | -508 |
+
+The rule written beforehand (`results/analysis/rule_route2.md`) keeps the seven maps with z of 2 or more, none of which fell behind, and adds none with z under 2 (00gemfight is ahead by one game, the rule asked for two). On those seven: 2 wins against 15 of 28. `exp/rt2` holds that table; the pinned panel `r7p` (those seven maps, the same 12 teams) tests the router itself against `v1512`.
+
+**Capture-first lines lose gold in our bot.** `exp/vbd1` and `exp/vbd2` (`results/analysis/rule_build.md`): team gold r300 -26 and -34, wins -0.04 and -0.05 over 680 paired games. Bamboo's copy of the same lines also lost on the platform (45 against 54 of 250). The lines need the team's whole farming system; our bot does not capture more for owning the item.
+
+**The pre-started recall.** Bamboo's notes (`docs/bamboo/knowledge/recall-cycle-1031.md`, `bot-status.md`) measure it as about one round per trip home; it lost in every ladder test, and the safe form is neutral locally. It is not a gap worth a port.

@@ -4,7 +4,7 @@ usage: python -I tools/replay/nearact.py DIR [DIR ...] [--round R] [--upto D]   
 
 Per alive champion-round with its nearest enemy champion within D, by that distance (1-3, 4-5, 6-8): share hitting a
 champion, hitting a camp, stepping closer to the nearest enemy, stepping away, other move, standing; and gold earned and
-deaths per 100 such rounds. By numbers within 8 too (we outnumber, even, outnumbered).
+deaths per 100 such rounds. By numbers within 8 too (we outnumber, even, outnumbered), and per champion type in the 1-3 band.
 """
 import collections, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -42,11 +42,13 @@ for us, res, mp, meta, rows in D.games(args):
             q = (nc['x'], nc['y']) if nc['a'] and 'x' in nc else p
             jc = a['c'][j]; dd = D.dist(q, (jc['x'], jc['y'])) - d
             kind = 'hitc' if D.enemy_hits(a, i, n) else 'camp' if D.camp_hits(a, i) else 'closer' if dd < 0 else 'away' if dd > 0 else 'moved' if q != p else 'still'
-            for key in (band, num):
+            keys = (band, num) + (('1-3 ' + D.NAMES[c['ty']][:8],) if band == '1-3' else ())
+            for key in keys:
                 C[(w, key, 'n')] += 1; C[(w, key, kind)] += 1
                 if not nc['a']: C[(w, key, 'dead')] += 1
                 else: C[(w, key, 'gold')] += max(0, D.gold_held(meta, nc) - D.gold_held(meta, c))
-for key in ('1-3', '4-5', '6-8', 'outnumber', 'even', 'outnumbered', 'far'):
+types = sorted({k[1] for k in C if k[1].startswith('1-3 ')})
+for key in ['1-3', '4-5', '6-8', 'outnumber', 'even', 'outnumbered', 'far'] + types:
     for w in ('us', 'them'):
         m = max(1, C[(w, key, 'n')])
         print(f'{key:12}{w:5} rounds {C[(w, key, "n")]:6} | ' + ' '.join(f'{k} {C[(w, key, k)] / m:.2f}' for k in ('hitc', 'camp', 'closer', 'away', 'moved', 'still')) +

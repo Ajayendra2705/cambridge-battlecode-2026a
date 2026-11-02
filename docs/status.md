@@ -1,6 +1,6 @@
-# Status (updated Tue, Nov  3, 2026 02:45 AM IST)
+# Status (updated Tue, Nov  3, 2026 02:30 AM IST)
 
-## Note at 02:45 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
+## Note at 02:30 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
 
 - **Ladder: rank 33** at the last check (2142; rank 1 Fish 2577). Live: **1513**, the teammate's upload. Our gates restore it. The teammate is active too: at 01:37 they selected 1513 during `v1472_b1p`, so its last 25 games are 1513's, not 1472's.
 - **Factor now: first contact** (`results/analysis/rule_pack.md`). Our team splits in the first rounds. vtg70 did not change that and is rejected on the platform. `exp/vpk3` walks as one pack before r60 on maps with spawns at most 61 steps apart; local deaths r300 -0.20 +- 0.09, on near maps -0.40 +- 0.15, gold and wins level. Queued on t03p parts a-c.
