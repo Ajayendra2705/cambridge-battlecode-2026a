@@ -33,6 +33,9 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `lcurve.py FILE.json...` | One local game's curves: collected and tributed gems per side at rounds 100-2000. |
 | `mapopen.py RUNDIR CAND [N]` | Per map: wins and both sides' gems collected by r100, r300, r600 (means), the N maps with the largest r600 gap first: where a candidate's opening or farming trails the local pool. |
 | `compact_old.py DIR...` | Disk space without deleting: transparent NTFS compression (WOF, LZX) of the files older than an hour under each DIR (`data/runs`, `data/summaries`, scratch folders); readers see the same bytes, game JSON shrinks about 15 to 1 (10-31: C: from 2.7 to 11 GB free). Skips `.gz`, `.zip`, `.wasm`, `.tmp*`. |
+| `lsize.py RUNDIR BASE [CAND ...]` | Paired local result per team size (wins, gem margin, deaths). A draft change for one size should show there and nothing on the others. |
+| `ldeaths.py RUNDIR BASE CAND [ROUND ...]` | Paired deaths to a round, ours minus theirs; a pair of Cassi and Issac counts one death. |
+| `lnear.py RUNDIR BASE CAND [CUT]` | Paired wins, margin, deaths to r100 and r300 and team gold at r150 and r300 on near and far maps (spawn walk under CUT, default 61, from `data/map_features.json`; it has no 03* maps). |
 | `screen.sh NAME BASE_RUN_DIR BASE_CAND "exp/a,exp/b" JOBS [POOL] [BAR]` | Fast local screen: plays only the candidates (default pool `pool/cmb7,pool/bot_10`, 340 games each on the 85 maps), copies the base's games of the same pairings into the run, writes `lscreen.py`, `lgold2.py` and `lbar.py` output to `data/judge_screen_NAME.txt`. |
 | `mapsig.py [OUT.json]` | Map signatures for a per-map router (width, height, walls, holes, altars, bushes), read with the probe `bots/exp/sigp` on every map in `maps/`; warns when two maps share one. Default output `data/map_sigs.json`. |
 

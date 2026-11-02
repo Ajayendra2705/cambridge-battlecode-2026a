@@ -2434,3 +2434,22 @@ Locally (`routemaps.py`, 4 pool bots, 8 games a map) Bamboo #458 is 0.17 wins a 
 
 **How the teammate's team worked on maps (`docs/bamboo/knowledge/fish-builds-1031.md`, read 11-03).** Fish's jump in late October (52% to 79%, mostly against the top 10) came with a first emblem chosen per map: Capture first on 46 of 64 maps, main-stat Prospector first on 9 cluster-farm maps, Prospector of health or focus on 9 others, and one draft per map. Bamboo's copy of the emblem lines alone lost (45 against 54 of 250), so the gain seems to need the whole system. v1503 opens Prospector on every map and never buys Capture.
 
+## The pack opening helps where contact comes early (session 94, 11-03 02:20 IST)
+
+Local, 680 games paired against v1503 (`results/analysis/rule_pack.md`, `tools/local/lnear.py`). `exp/vpk1` walks as one team before r60 on every map: one group, no travel dash, front-runners wait. It takes our spread at r16 on 00contest from 13 to 5 tiles and allies within 6 from 2.0 to 4.0.
+
+| | wins | deaths ours minus theirs r100 | r300 | team gold r150 |
+|---|---|---|---|---|
+| near maps (spawn walk under 61), 384 games | -0.010 +- 0.026 | -0.26 +- 0.08 | -0.38 +- 0.15 | -17 +- 14 |
+| far maps, 176 games | -0.051 +- 0.040 | -0.01 +- 0.06 | +0.05 +- 0.14 | -86 +- 17 |
+
+On a far map the pack only costs gold, since no contact comes that early. `exp/vpk2` gates every part on near maps: deaths r300 -0.21 +- 0.09 over all games, collected -3.5 +- 9.6, wins -0.007 +- 0.016; by team size, deaths r300 three a side -0.28 +- 0.17, four a side -0.72 +- 0.31, five a side -0.02 +- 0.10. Games on far maps still changed on some maps (02tangle, 00lanes, 00expanse, 02harvest, 01starvation: all 8), with gold r150 -10 +- 5, though every behaviour change is off there. The added distance field in `World::init` is the likely cause: it shifts where the fuel runs out in the first turns.
+
+**The bot's own spawn distance** (`P_CENTRAL_MIN_STEPS` style, walls and camp tiles blocked) matches `data/map_features.json` on the maps both hold. On 01boss_battle and 03fan the spawns are not connected on foot (65535); 00reverse_spiral and 00rushbait_v2 read 1, and 02treasure_box 4, which are not real walks: their spawn regions touch through the field's source tiles or the enemy spawn overlaps.
+
+**vtg70 did not move the target on the platform.** Scoring each group as if alone until r70 leaves the first 16 rounds as they were, so the team still splits: 170 games pinned to `t1503_tm@t03`, deaths r0-100 0.74 against 0.74, deaths -0.1 +- 0.3, margin -21 +- 30, 34 wins against 37.
+
+**Fights held longer lose more bodies locally.** `exp/wag1` (`P_HOLD_C` -0.8, `P_AVOID` -1.0, the other direction from h1503): deaths +1.01 +- 0.23, wins -0.02. Caution lost margin on the platform and boldness loses bodies locally, so v1503's thresholds stay.
+
+**A gate can be voided half way.** On 11-03 01:37 the first 35 games of `v1472_b1p` were 1472 and the last 25 were 1513: a teammate selected 1513 at 20:07 UTC. The draft tells them apart (`matches list`, `draftPicks`: Ryth is the Bamboo line). Those 35 games: 7 wins against 4 for v1503, margin +153 +- 96. The other five groups are `results/panels/specs_b1pb.txt`.
+
