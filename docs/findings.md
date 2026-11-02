@@ -2301,3 +2301,8 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   2602 (theirs bruiser_focus first, ours prospector_focus).
 - **Willow** (drafted in 142 of 175 games; rivals 52) dies 2.4 a game, 19 gems and 1185 champion damage; attacked at
   half health or more she dies within 10 rounds 45% of the time.
+- **Source (11-02 15:35 IST).** The platform's submissions page shows each version's code (`/api/v1/submissions/<id>/files`
+  and `/file?path=...`, browser session). 1497 and 1498 are now in `bots/pool/v1497` and `bots/pool/v1498`; both build
+  with `--release`. They differ only in `bot.h`, `farm.cpp`, `fight.cpp` and `params.h` (1497: `P_FIRE_FIRST`; 1498:
+  `P_VES_HANDOFF`). Builds are `P_BUILD 4` with `P_PROSP_FIRST 1`: Marcella buys Prospector focus, then jungle focus,
+  durability health and monster focus before any Bruiser emblem, which matches her low health at r600.
