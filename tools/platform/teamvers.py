@@ -13,6 +13,7 @@ import datetime as dt
 import json
 import os
 import subprocess
+import time
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -30,8 +31,16 @@ def cambc():
 
 
 def run(exe, args):
-    out = subprocess.run([exe] + args, capture_output=True, text=True, encoding="utf-8").stdout
-    return json.loads(out.lstrip("﻿"))
+    # The API rate-limits (HTTP 429, "retry after N seconds"): retry a few times before giving up.
+    for k in range(8):
+        r = subprocess.run([exe] + args, capture_output=True, text=True, encoding="utf-8")
+        out = r.stdout.lstrip("﻿")
+        try:
+            return json.loads(out)
+        except json.JSONDecodeError:
+            if k == 7:
+                raise SystemExit(f"cambc {' '.join(args[:2])} failed: {(r.stderr or out).strip()[:300]}")
+            time.sleep(20)
 
 
 def fetch(since):

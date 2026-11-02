@@ -2343,3 +2343,12 @@ Source: 1478 as live on panel b40 (`l1478_b40@b40`: nine teams ranked 18-38 at 1
   against 1.61) and about the same clear times. Deaths per game are about double theirs in every round band
   (`early2.py`: r0-100 0.75 against 0.39, r500-1000 4.22 against 1.89); outnumbered deaths 3.53 against 1.21
   (`packs.py`), and after a pack sighting we die within 15 rounds 0.129 of the time against 0.054.
+- **One cast kills our carries** (1503 against ranks 1-20, `t1503_tm@t03`, 170 games to r1000). Every type of ours
+  dies 2-2.7 times as often as the same type of theirs (`decoded.py types`: Heart of Ruin 2.02 against 0.76,
+  Marcella 1.79 against 0.68, Vendetta 2.39 against 0.95, Vesper 1.82 against 0.89, Willow 2.36 against 1.00). With
+  one enemy within 6 and none of ours, at half health or more, we die within 10 rounds 4.9% of the time against
+  1.5% (`decoded.py risk`). The traces (`deftrace.py vesper`, `vendetta`) show the rivals' Marcellas (1700-4000
+  max health) killing our 1000-health Vesper and Vendetta with one cast from 4 tiles while ours walk at 4-6 tiles,
+  at r436-r763. At r600 (`decoded.py items`) their Vesper has 2621 max health (3.4 Bruiser-strength and 1.4
+  Bruiser-health emblems) against our 1309 (Prospector, Jungle), their Marcella 2479 against 1797, their Heart of
+  Ruin 1724 against 1333.

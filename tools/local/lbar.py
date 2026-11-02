@@ -26,12 +26,16 @@ def rows(path):
     return out
 
 
-def verdict(r):
+def verdict(r, bar="fight"):
     why = []
-    if r["deaths"][0] > -r["deaths"][1]:
+    if bar == "fight" and r["deaths"][0] > -r["deaths"][1]:
         why.append(f"deaths {r['deaths'][0]:+.2f} +- {r['deaths'][1]:.2f}")
+    if bar == "item" and r["deaths"][0] > r["deaths"][1]:
+        why.append(f"deaths up {r['deaths'][0]:+.2f} +- {r['deaths'][1]:.2f}")
     if r["coll"][0] < -2 * r["coll"][1]:
         why.append(f"collected {r['coll'][0]:+.1f} +- {r['coll'][1]:.1f}")
+    if bar == "item" and r["coll"][0] < -26.0:
+        why.append(f"collected {r['coll'][0]:+.1f} (more than 3% down)")
     if r["win"][0] < -0.03:
         why.append(f"wins {r['win'][0]:+.2f}")
     if r["faults"]:
@@ -40,6 +44,14 @@ def verdict(r):
 
 
 def main():
+    # --bar item (for item changes, whose gain shows only against strong teams): deaths not up by more than one
+    # standard error, collected not down by more than two standard errors nor by more than 26 a game (3%), wins
+    # not down by more than 0.03.
+    bar = "fight"
+    if "--bar" in sys.argv:
+        i = sys.argv.index("--bar")
+        bar = sys.argv[i + 1]
+        del sys.argv[i:i + 2]
     table = rows(sys.argv[1])
     names = sys.argv[2:] or list(table)
     ok = True
@@ -48,7 +60,7 @@ def main():
             print(n, "MISSING")
             ok = False
             continue
-        good, why = verdict(table[n])
+        good, why = verdict(table[n], bar)
         ok &= good
         r = table[n]
         print(n, "PASS" if good else "FAIL", f"deaths {r['deaths'][0]:+.2f} +- {r['deaths'][1]:.2f}",
