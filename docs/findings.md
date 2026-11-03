@@ -2706,3 +2706,27 @@ Every five-pick test of the pair before v1535 played with this bug (`dci5f`, `dc
 **Why the default arm is poor on 01corridors (local).** Heart 174 gold and 19 gems with 10729 monster damage, Vesper 152 gold and 6 gems with 10228, Marcella 1398, Vendetta 1626, total 3385. Bamboo: Heart 1125, Marcella 2620, Vesper 1494, Ryth 444, total 5708. Walking and acting shares are about equal; captures are 14.2 against 18.8 a game, and the default arm's captures go to Vendetta and Marcella, so Heart and Vesper work without earning.
 
 **Fuel on routed maps is low value:** deaths within 5 rounds of the champion's own exhaustion 0.07 a game.
+
+## Platform timing, and what separates v1536 from the top teams (11-04 01:45 IST)
+
+**Selections cannot be timed.** A selection stays `queued` for 2 to 9 minutes: 1:42, 1:45, 2:18, 2:51, about 4:35, 4:38, 5:00, about 8, 9:14. A match finishing does not trigger it (selected 00:56:49 with the panel's last game at 00:56:53, active only between 01:03:57 and 01:04:52). A 50-game panel, once created, finishes within seconds when the platform is not busy (10 groups created in about 23 s, last game 4 s later). Groups bind to the version active at creation: `nr4`'s drafts show v1537's arm in every game checked. So test time is decided by the selection's wait, not the games.
+
+**Ranked sets.** Our set lasts about 40 s. It usually starts at :x0:05 (18:20:06, 18:30:06, 18:40:05, 18:50:06, 19:00:05, 19:10:11, 19:20:09 UTC) but a round can start late: the next was 19:36:08, and the global round of 19:20 lasted until 19:25:25. Detect a set by the newest `createdAt`. Polling `cambc` every 2 to 3 s with other calls gives HTTP 429; 10 to 15 s is safe.
+
+**The quota counts identical bursts from anyone on the team.** 50 groups a rolling hour. Single-group challenges from other teams do not count. 38 of 120 groups since 22:30 IST are not in `results/gate.log`, including 5 on Let's LARP and 6 on Olympus at 01:03 IST; `cambc` shows no creator.
+
+**Top teams, panel `tt1` (`rf1_tt1_tt1`, 40 games, v1536 against ranks 1 to 12, to r1000 per game).** Deaths 8.43 against 5.33, outnumbered deaths (enemies minus allies within 6 at least 2) 3.25 against 1.50. By band: r0-100 0.90/0.42, r100-200 0.65/0.53, r200-300 0.95/0.55, r300-500 2.12/1.45, r500-1000 3.80/2.38. Our deaths minus theirs to r300 decide the game: at -1 or fewer 5 wins of 12, at 0 1 of 7, at +1 2 of 9, at +2 or more 0 of 12.
+
+| type | deaths us / them | champion damage us / them | gems us / them | max health r300 us / them |
+|---|---|---|---|---|
+| Vendetta | 2.61 / 0.80 | 3618 / 4499 | 202 / 245 | 941 / 1370 |
+| Heart of Ruin | 2.00 / 1.00 | 1656 / 3146 | 114 / 151 | 917 / 1123 |
+| Vesper | 1.61 / 0.96 | 3843 / 6968 | 87 / 271 | 1100 / 1215 |
+| Marcella | 1.49 / 0.83 | 6128 / 6392 | 257 / 296 | 1294 / 1312 |
+| Willow | 2.12 / 1.58 | 979 / 939 | 11 / 50 | 614 / 673 |
+
+Rewards to r300: gold 763 against 1029, captures 9.3 against 12.5; Vesper's share 210 against 518. To r600: 1578 against 2427, captures 17.2 against 27.5, kill gold 279 against 600. Dead share of rounds to r600: 13% against 7%, and Vendetta 19% against 5%. Against neighbours the dead share is level (9% against 8%). Vendetta's first emblem: ours Prospector of strength 64% at r258; theirs a mix at r225 (Prospector 25%, Jungle 20%, Treasure 20%, Capture of health 15%, Hunter of health 10%). This is the reason for `rule_venhp.md`.
+
+**More Bamboo maps look exhausted.** After batch 3 the remaining default-arm maps show local Bamboo gold gains under +700 with falling local margin (`data/lmapgold.txt`: 03riverbed +691, margin -496; 00split +663, -159), or losses. The filter's bar was +400 and 2 SE plus a poor ranked record; only 03riverbed and 00split are near it and neither has a poor reward ratio.
+
+**03fan shows what local wins miss.** In `q_all` (4 games, 0 wins) we lead gems to r600 (848 against 702) but capture 12.2 rewards against 42.2 (914 gold against 3226), and the rivals then out-item us; recent ranked 0 of 6. Local default-arm wins are 7 of 8 in games that end by about r850 before items matter, so the local pool does not punish a gem-only game.

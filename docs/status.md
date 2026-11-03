@@ -1,4 +1,15 @@
-# Status (updated Wed, Nov 4, 2026 12:12 AM IST)
+# Status (updated Wed, Nov 4, 2026 1:46 AM IST)
+
+## Note at 01:46 IST 11-04 (session 94, branch `night-1101`)
+
+- **Live and selected: v1536.** `upcomingTournament.submission` in `cambc submissions list --json` reads 1536. The user (01:31 IST): keep working until the lock at 05:29 IST with full permissions; a bot goes live only when it is clearly better than the best so far. Start no gate after about 04:30 IST and check the selected bot before the lock.
+- **Running locally:** `data/run_vh.sh`, `vh1`, `vh2`, `vh3` on the 68 default-arm maps (`results/analysis/rule_venhp.md`): Vendetta dies 2.61 times a game against the top teams' 0.80 and holds 941 health at r300 against 1370.
+- **`fa1` (`vf5`) passes locally with no gain** (`rule_nuke.md`). Not played yet; `vh` comes first for quota.
+- **Quota plan:** `e1536_nr6` played at 01:32 IST. v1538 at about 02:00:45, right after a ranked set: `nr5`, `nr6`, `nr3a` (26 groups), free from 02:05. Then 24 groups until 03:06.
+- **v1537 (`exp/vf3`) on `nr4`:** 22 to 15 of 50, flips 12/5, gold r1000 +645 +- 250, margin +8 +- 84: misses the bar on margin (`rule_route2.md`). 02gift_wrapping and 00eight look good and need fresh rivals; 00vault, 01broken_curve, 02uncharted_lands stay on the default arm.
+- **Next, approved by the user at 01:10 IST:** upload `exp/rh3` as v1538, a test table, not the final one: v1536 without 00gemfight, 00reverse_spiral, 00gem_fields, plus all five `nr4` maps (so `nr6` can read them) and the batch 3 maps 03fan, 02the_pond, 01the_farm, 00packs, 02fields; `kMarcGems = 1`. It goes after quota frees at about 01:32 IST. Base `e1536_nr6` first, then in one active period `nr5` (base `e1536_nr5` 26 of 50), `nr6` and the flag's `nr3a` as quota allows. The final table is then built from the written rules and checked on `nb1` + `nb2`.
+- **Timing of tests:** `tools/platform/gate_slot.sh`: selections take 2 to 9 minutes to switch and cannot be triggered; panels finish in seconds; ranked sets should stay on the live bot.
+- **Repeated groups:** 38 of 120 groups since 22:30 IST are not in `results/gate.log`, among them identical bursts (5 on Let's LARP and 6 on Olympus at 01:03 IST) that count against our quota. The user was told. `cambc` does not show who creates a group.
 
 ## Note at 00:12 IST 11-04 (session 94, branch `night-1101`)
 

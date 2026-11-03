@@ -1,0 +1,8 @@
+8c003077-dc27-4ef0-a7f9-9505942b3bd5:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:b,a,b,a,b:55e8ef34-8b4f-487d-aac4-429033a8ca04
+d2ef7d2c-be90-44e8-be4e-807bc580cc7c:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:a,b,a,b,a:a97b356e-b118-453f-b1cc-2824f41a9c00
+f3a877ff-d808-4141-ac02-c370b662ed81:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:b,a,b,a,b:3bb524c1-4994-4b8c-ada7-9a24c01993f1
+6bbc4925-89d1-4523-beac-b651d41bf945:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:a,b,a,b,a:cfd3b3d8-1eb1-4989-a9e1-3fead9d4412a
+8055ffc9-d28b-461f-8a41-bfefa35893b8:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:b,a,b,a,b:bfde9538-9edf-4a03-a68f-85c492573977
+93fd07ff-2f73-4ed4-9911-356cc1034ba5:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:a,b,a,b,a:5c366047-8ab1-400a-a50c-cc2fc0d454dd
+c0a5d0a5-eb8f-4aa7-8d6a-8e74ed78874c:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:b,a,b,a,b:25e76f9c-21e0-4993-9297-d3129184a86b
+c2892f58-a3ad-4ff7-a256-120445ad6ee7:01corridors,00breadcrumbs,03shrines,00contest,00quadrants:a,b,a,b,a:bb6a3988-0d41-4c98-a17a-345fa348a564

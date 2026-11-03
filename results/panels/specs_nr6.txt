@@ -1,0 +1,8 @@
+0dec71fb-eeb0-4cad-b626-15ddd484c3b1:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:a,b,a,b,a:763d6fc4-9038-40b7-862d-5ec5a7b435d4
+4851bec0-9af2-4413-a07b-c70bbb4cde21:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:b,a,b,a,b:2f617345-2b8e-483d-b239-e685bdecca76
+38e6d8c4-1608-44f5-956b-08390f564336:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:a,b,a,b,a:1560be4d-a59a-4abc-bc60-8bac100d42e6
+48bd83bb-8cb5-488a-9d1a-7d4bfb5ab10b:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:b,a,b,a,b:1fb89034-de4b-4888-bf78-53c2ef70c4b7
+6f7fd199-4115-4fe0-8752-525bd8ccad8d:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:a,b,a,b,a:3c720b72-6216-4fdb-8256-4102e9522d4f
+d4086267-bcda-495e-b632-4b7ab155fbf4:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:b,a,b,a,b:e2b0f3d4-3700-4741-8264-eaaf26d0d0bf
+bbe481a7-4575-4826-9a3e-f81c28205de8:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:a,b,a,b,a:198b6c64-fd6c-4f1f-b7da-d9cc068b0fb0
+ad5474c2-784c-4f91-b8da-5fec554e4de4:01broken_curve,00eight,00vault,02gift_wrapping,02uncharted_lands:b,a,b,a,b:4adb2b72-a2eb-4dd9-beb0-ffe52d1100bf
