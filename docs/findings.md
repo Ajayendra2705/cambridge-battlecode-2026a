@@ -2562,3 +2562,64 @@ Local screen (680 paired against `exp.vnl1`): acting earlier does not raise gold
 ## Per-map gold and gem weights (11-03 10:49 IST)
 
 Doubling the weight of gold in a champion's pick before r300 (`G2`) on chosen maps gives far more than it gives on all maps. In fresh samples of 16 games a map against eight other pool bots, it raised team gold at r300 and did not lose wins on 15 of 26 maps: 02arena +562 (wins 8 to 15), 00split +477, 01elk_arena +420 (11 to 15), 01shortcut +355, 02the_pack +330, 03membrane +321, 00rows +317, 01hooks +196, 00quarry +182, 00the_line +174, 02the_pond +159, 00swirl +149, 00galaxy +126, 01fracture +113, 03shrines +105. On 03colosseum (+828, wins 15 to 8), 03fan, 02tangle, 03reef, 03riverbed, 02uncharted_lands gold rises and wins fall, because gems are the score. Light camps plus gold first (`LG`) gave +766 on 01elk_arena (wins 11 to 16). A first sample of 8 games predicted the fresh one in most cases. All of this is local; `rt7` tests it on the platform (`results/analysis/rule_arms.md`).
+
+## rt5, rt7 and 1523 side by side (11-03 12:50 IST, pinned panels against ranks 1-20)
+
+Over 175 pinned games (`t03pa`, `t03pb`, `a7p`) rt5 won 43 with mean margin -382, and 1523 won 46 with -378. On the same panels v1503 won 22 of 115 (-459), where rt5 has 26 and 1523 has 32. Against v1503 in pairs, rt5 gains +12 +- 57 and +52 +- 75 on parts a and b, 1523 gains +94 +- 50 and +83 +- 77. `paired` for v1503 to 1523 on part a: our deaths +0.1 +- 0.5, their deaths +0.8 +- 0.5, tributed +30 +- 23, margin to r1000 +22 +- 48.
+
+The two win on different maps. rt5 against 1523: 01hooks 3 against 0 of 7 (margin -119 against -989), 01shortcut 5 against 1 of 8 (+106 against -418), 02the_pack 6 against 4 of 8 (+366 against +202), 00split 2 against 6 of 8 (-149 against +71); the other maps have one or two games between them.
+
+`a7p` (6 games a map; wins and mean margin for 1523, rt5, rt7), totals 14, 17, 16 of 60:
+
+| map | 1523 | rt5 | rt7 |
+|---|---|---|---|
+| 00rows | 2, -234 | 1, -326 | 3, -70 |
+| 00split | 4, -5 | 1, -207 | 2, -268 |
+| 00the_line | 3, -18 | 3, -69 | 1, -574 |
+| 01big_world | 0, -281 | 0, -332 | 2, -104 |
+| 01elk_arena | 1, -668 | 1, -674 | 0, -955 |
+| 01hooks | 0, -988 | 3, +19 | 3, -3 |
+| 01shortcut | 0, -530 | 4, +226 | 2, -146 |
+| 02arena | 0, -762 | 0, -842 | 1, -649 |
+| 02stalactites | 1, -690 | 0, -976 | 0, -876 |
+| 02the_pack | 3, +261 | 4, +255 | 2, -242 |
+
+**rt7's gold did not turn into tribute.** Against rt5: team gold r300 1109 to 1302, r600 2629 to 2917, gold against the rivals' r300 0.69 to 0.83, but to r1000 tributed -51 +- 30, collected -29 +- 33, margin -89 +- 54, final margin -96 +- 74, deaths -0.5 +- 0.4. Gold weights trade gems for gold. Camp kills to r300 in those games (us / them): gem clusters 11.8 / 20.1, gold clusters 25.8 / 23.8, elks 1.8 / 3.0, wolves 7.1 / 7.9, gems 140 / 222: after the weights we take as many gold clusters as the rivals and only 60% of their gem clusters.
+
+## What a champion does with an enemy in reach (11-03 12:00 IST, `tools/replay/inreach.py`, `stillwhy.py`, `t1503_tm_t03`, us / them)
+
+- r1-300: rounds in reach 80.5 / 86.0, hit 0.56 / 0.61, away 0.18 / 0.15, still 0.11 / 0.07; Vesper hits 0.42 / 0.55.
+- Numbers in reach, r1-100: ahead 8.1 / 16.6 rounds, even 9.4 / 8.7, behind 9.0 / 4.4. r300-1000: equal (52.9 / 52.4, 41.4 / 41.0, 30.0 / 31.2), but when behind we hit 0.50 and they hit 0.63.
+- `vpk3` moved the opening numbers (ahead 8.9 / 12.9, behind 6.9 / 4.8) and still lost on the platform.
+- No-action rounds in reach 22.44 / 14.72 a game, of which stunned 16.22 / 8.32; the rest is level. Stuns landed 9.0 / 21.4 a game (Heart 6.1 / 8.2, Marcella 3.5 / 5.2; rivals' third stunner: Cassi 9.9, Ryth 9.9, Tavi 9.2). Our own pair draft `dci5f` doubled our stuns to 14.9, and the margin moved only +15 +- 50 with deaths +4.0 +- 0.8.
+- Exchange at even numbers, r300-600: 45.1 rounds, health lost 67 / 48, hits 0.38 / 0.44, casts 0.011 / 0.030, deaths per 100 rounds 2.8 / 1.1.
+
+## Neighbours decide the rating (11-03 13:30 IST, `data/rk8.json`, 800 ranked games 11-02 04:30 to 11-03 07:20 UTC)
+
+Ranked sets run every 10 minutes against teams within about 15 ranks of us (recently ranks 27-52), never the top 20, so the pinned panels against ranks 1-20 do not measure what moves the rating. Last 800 ranked games: 407 wins; before 11-02 19:00 UTC 223 of 425, then 75 of 145, since 1523 went live 109 of 230.
+
+- **By size:** three a side 62 of 151 (0.41), four 88 of 159 (0.55), five 257 of 490 (0.52). Three a side with our usual draft (Heart, Vendetta, Vesper) 50 of 115; the Bamboo arm's draft (Ryth, Vesper, Marcella) 9 of 32.
+- **By family:** 00 0.53, 01 0.49, 02 0.55, 03 0.42, adgato 0.51. **By altars on the map:** one 0.48, two 0.50, three 0.60, four 0.50, five or more 0.52.
+- **By rival:** a few teams near our rank beat us far more than their rating says: Sheeesh--- (rank 32) 12 of 45, Jupiter (rank 40) 11 of 35, jazz (rank 24) 15 of 40, MFF1 (rank 36) 14 of 35. Others above us lose to us: EE (rank 31) 20 of 30, SquidProxyLovers (rank 34) 20 of 30, QS2isLaw (rank 28) 28 of 55. The same draft can go either way: Ryth, Vesper, Vendetta, Marcella, Heart gives us 14 of 17 against EE and 15 of 20 against HBH but 6 of 20 against Jupiter, so the draft is not what separates them.
+- **By rival's draft, five a side** (draft numbers in `draftPicks`: 0 Ryth, 1 Vesper, 2 Vendetta, 3 Cassi and Issac, 4 Stellar, 5 Prism, 6 Marcella, 7 Willow, 8 Ren, 9 Varg, 10 Tavi, 11 Heart; this is not the order of `decoded.NAMES`): Ryth, Vesper, Vendetta, Marcella, Heart 108 of 184; our own five 32 of 62; Vesper, Marcella, Willow, Tavi, Heart 6 of 25; Vesper, Vendetta, Cassi and Issac, Marcella, Willow 4 of 19; Vesper, Vendetta, Cassi and Issac, Willow, Heart 8 of 21.
+- **Worst maps:** adgato_gemcombat5 0 of 5, 03fan 0 of 4, 03one_gem 1 of 10, 03honeycomb 1 of 9, 03shrines 1 of 8, 00anvil 2 of 13 (0 of 7 since 11-02 20:00 UTC), 01boss_battle 2 of 12, 03contours 1 of 6, adgato_gemcombat1 2 of 9, 00lanes 3 of 12, 01elk_arena 2 of 8, 02the_pond 3 of 12, 00fragment 3 of 11, 03showdown 2 of 7, 01big_world 3 of 10, 02arena 6 of 19. Local runs call several of them easy (03honeycomb 8 of 8), so the local pool misses what beats us there.
+
+Decoded worst maps (`data/fights/q_worst`, `tools/replay/mapgold.py`; us / them):
+
+| map | games, wins | gold r300 | deaths r300 | collected r1000 | deaths r1000 | first camp hit |
+|---|---|---|---|---|---|---|
+| adgato_gemcombat5 | 4, 0 | 172 / 840 | 4.8 / 1.2 | 830 / 1084 | 13.8 / 7.5 | r54 / r32 |
+| 03fan | 4, 0 | 874 / 1748 | 1.5 / 1.2 | 1010 / 1132 | 6.8 / 3.2 | r5 / r4 |
+| 00anvil | 7, 0 | 732 / 1193 | 1.6 / 0.9 | 353 / 631 | 8.4 / 5.0 | r5 / r5 |
+| 03one_gem | 3, 0 | 2104 / 3052 | 1.7 / 0.3 | 11 / 44 | 5.3 / 2.0 | r3 / r5 |
+| 03contours | 3, 0 | 1931 / 2352 | 0 / 0 | 758 / 1031 | 0.7 / 0.7 | r15 / r8 |
+| 03shrines | 5, 0 | 863 / 1018 | 1.4 / 0.8 | 677 / 858 | 8.8 / 8.2 | r8 / r6 |
+| 03showdown | 3, 0 | 993 / 992 | 2.7 / 2.7 | 715 / 1056 | 10.3 / 6.7 | r5 / r2 |
+| 03honeycomb | 5, 1 | 1105 / 1350 | 1.0 / 1.0 | 574 / 846 | 9.0 / 4.4 | r7 / r6 |
+| adgato_gemcombat1 | 9, 2 | 122 / 254 | 1.1 / 1.0 | 733 / 922 | 5.6 / 4.0 | r4 / r3 |
+| 01boss_battle | 9, 2 | 2628 / 3398 | 0 / 0.2 | 2368 / 2248 | 3.6 / 6.0 | r14 / r11 |
+| 00lanes | 9, 2 | 1595 / 1445 | 1.1 / 1.6 | 847 / 920 | 5.8 / 7.0 | r27 / r26 |
+| 02the_pond | 5, 2 | 770 / 1026 | 1.0 / 1.2 | 641 / 544 | 5.2 / 3.4 | r15 / r12 |
+| 00fragment | 7, 3 | 901 / 956 | 2.1 / 2.0 | 325 / 359 | 8.9 / 8.3 | r9 / r5 |
+
+**01boss_battle is lost with the gems in hand.** Of 11 decoded games we held 1000 gems in hand (tributed plus bags) in 9, and lost 7 of those, 3 of them after reaching 1000 first; on no other worst map did we lose that way more than once. The only altar is (25,20); the guards are monoliths at (24,20) and (23,20), and 133 of 175 tribute starts came from (24,20): one channel at a time, at 10 gems a round, behind a one-tile corridor. We broke the guards in 9 of the 11 games (hits on the guards 146-534 against 3-72, in the other two 10 against 280 and 60 against 127). When they fell before r520 we stood there poorer: gold 3821-4654 against 6963-9710, 0 wins of 4. The two wins: rival broke them, r653 (hits 10 against 280); we broke them late, r843, gold 14982 against 11621, health 32100 against 19800. Guards come back about 150 rounds after the capture unless a champion stands on a spawn tile; a champion on (24,20) both channels and blocks their return. A rival Vesper reached 11011 health at r680 where ours had 4600. A bag of 1564 gems is a 157-round channel: our Vesper started one at r766 and lost it.
