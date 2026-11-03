@@ -292,4 +292,15 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `helper/h2_*.py` | h2's stale-state audit: `h2_localpair.py` and `h2_digest.py` pair local runs game by game, `h2_probe_sum.py` sums probe counters; usage in each docstring. |
 | `helper3/h3_cover.py MAPDUMP...` | Replays `pick_group`'s `covered` rule on map dumps (`data/maps_txt`): the groups our bot can never pick while their covering elk groups live, with their gems (7 of 70 maps locked before cov1). |
 | `helper3/h3_lockgems.py [--quiet] DIR...` | Captures and gems from those locked groups per game to r1000, us against them, from decoded runs (side-b games mirrored). |
+| `replay/nukeuse.py TYPE SLOT RANGE DIR...` | With a spell ready and an enemy champion in its range, what the champion does: spell on a champion or camp, basic hit, walk, nothing; by side and round band. |
+| `replay/inrange.py RMAX DIR...` | With an enemy within 6 at the start of the round, the action taken, by side, band and distance, and by type within 3. |
+| `replay/opener.py RMAX DIR...` | Which action and type opens a fight (first hit on a champion after 15 quiet rounds), and casts a game by type. |
+| `replay/react.py RMAX DIR...` | After a first hit: distance, allies and foes near, hits by each side in the next 6 rounds, hit-back share, who dies; focus fire. |
+| `replay/afterhit.py RMAX DIR...` | The action in the round after a hit, by side, type and the hitter's range. |
+| `replay/fleeok.py RMAX DIR...` | After a hit: hit back or step away, then health lost in 4 rounds, deaths in 12, hits dealt, by side, health band and hitter's range. |
+| `replay/capwho.py R MINGOLD DIR...` | Which types take the big captures by round R. |
+| `replay/vesfirst.py TYPE DIR...` | A type's first four captures: round, base gold, gems, walk, helpers. |
+| `replay/tribshare.py DIR...` | Gems tributed and gold earned by type, by side. |
+| `replay/typeuse.py RMAX DIR...` | Rounds of each type spent dead, on camps, on champions, moving, still, with gold events. |
+| `replay/mapscript.py MAP RMAX N DIR...` | The opening of each champion in N games of one map: camp hits, rewards, fights, deaths, positions. |
 | `helper3/h3_*.py` (others) | h3's map research readers: layout, groups, lives lost to the rival, camp damage, gem gap by source and time, tribute bags; usage in each docstring. |

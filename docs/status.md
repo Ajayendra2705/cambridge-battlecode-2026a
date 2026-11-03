@@ -1,4 +1,12 @@
-# Status (updated Tue, Nov  3, 2026 06:15 AM IST)
+# Status (updated Tue, Nov 3, 2026 07:34 AM IST)
+
+## Note at 07:35 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
+
+- **Router tables closed.** `b2p` (8 against 9 of 60) and `b3p` (Bamboo 7 against v1503 21 of 60 on the `03*` maps) add no map to `exp/rt3`; v1503 wins 35% of the `03*` games against the top 12 and only 15% on the `b2p` maps.
+- **New measured gap: captures go to the wrong champions** (`docs/findings.md`, 07:00 section). Rewards of at least 60 gold by r150: ours Vendetta 0.89, Heart 0.79, Marcella 0.64, Vesper 0.36; theirs Marcella 1.13, Vesper 1.11, Heart 0.45, Vendetta 0.41. Vesper's first capture r69 with 0.7 helpers against r43 with 1.8. Spent gold at r100 110 against 229 with equal unspent gold, so it is earning, not shopping.
+- **Rejected locally tonight:** wolf-first (`vwf1`-`vwf3`), route detours (`vdt1`, `vdt2`), shorter tank waits (`vpw1`, `vpw2`), Vesper's capture weight alone (`vcv1`), the opening book (`vbk1`, `vbk2`). Copying the rivals' targets without their fight strength loses gold locally.
+- **Queued local screens, in order:** `vj` (Vesper follows the team and captures; `rule_vesper.md`), then `ce` (captures go to carriers) with `d5` (Tavi or Ryth for Willow; `rule_ci.md`), then `nt` (joiner's share), then `ch` (no solo chipping; `rule_share.md`).
+- **Chain** `data/run_tg6.sh`: `rt3_l5p` done, then `vlm1_l5p`, `s5p` base and `dci5f` moved ahead of the `t03p` lines, then `vvg1`, then rt3 against 1523 on `t03p`. The bot under test stays live: select the team's best bot by hand when the plan ends.
 
 ## Note at 06:15 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
 
@@ -1294,3 +1302,5 @@ hb4 11/40 against AlphaSlop on all 40 maps, exactly repeatable. Best variant pk4
 - `fl3`: also count as losing when hit for > 40% health last round. Its small-gate groups may still hold results (`rcmp.py hb4l@p8s fl3l@p8s`).
 - Altar locks: rivals buy 4-6 per game. Our tries (lk1-lk3, lke, lkh, pl1) gave no gain; lk3 (lock only to cancel an enemy tribute) never fired.
 - cp1's passive-aware capture rule and cp2/cp3's fight rules are in cp3; their separate platform effect is unknown.
+
+**11-03 08:57 IST, night session.** `vlm1` passed on the platform on four of its five maps (16 against 9 of 60, gold r300 997 to 1118), so per-map arms are the current line of work (`results/analysis/rule_arms.md`): a fresh local sample of the arms on 23 maps is running (`data/run_arm2.sh`). `rt5` (router, light camps on 4 maps, Vesper's gold rules) is playing against `v1523` on the `t03p` parts. `dci5f` is decoded for its deaths rule. New gap measured: against strong teams our fight sim reads low and our Marcella holds her nuke (0.18 of chances against the rivals' 0.34, 0.41 locally); `vfx1` is on its local screen (`results/analysis/rule_nuke.md`). Rejected locally this morning: vce1-3, dta5, dry5, vnt1-3, vch1-2.
