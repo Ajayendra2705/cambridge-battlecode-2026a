@@ -38,3 +38,15 @@ Local bar (base `exp.vnl1`, `multi-031107`, 680 paired): team gold r300 up by 1 
 Gold gained to r300 per Vesper: us 232 in 2.8 captures, rivals 629 in 5.5 captures (`t1503_tm@t03`). Our Vesper's turns to r300: walking to a task 16%, hitting camps 27%, waiting (`wait_respawn`, `wait_tank`, `gather`) 18%, capturing 7%, fighting 20%. She earns a third more gold from her share, and on a harmless group she needs no tank and no gathering. Variants on `exp/vnl1`: `exp/vvg1` (harmless groups with gold count twice in her pick before r200), `exp/vvg2` (all harmless groups twice before r300).
 
 Local bar (base `exp.vnl1`, `multi-031107`, 680 paired): Vesper's gold r300 and team gold r300 up by 1 standard error or more. Guards: deaths not up by more than 0.3 a game, wins not down by more than 0.03, collected not down by more than 2 standard errors, no fault.
+
+## Results of the gem and gold weights and of Vesper's opening (11-03 06:10 IST)
+
+`data/judge_screen_vgw.txt` (`multi-051518`) and `data/judge_screen_vvg.txt` (`multi-051923`), 680 paired games each against `exp.vnl1`:
+
+- `exp/vgw2`: gold r300 +38.6 +- 14.7, margin -33.7 +- 16.3, collected -12.9 +- 8.1. Passes the bar by the letter; the margin falls by 2 standard errors. Held.
+- `exp/vge15`: gold r300 +37.6 +- 14.7, margin -31.5 +- 15.9, collected -16.6 +- 8.4. The same. Held.
+- `exp/vge2`: gold r300 +66.8 +- 16.5, deaths -0.35 +- 0.17, collected -33.6 +- 9.1. Fails the collected guard. A higher weight on gold trades gems for gold about one for one.
+- `exp/vvg1`: team gold r300 +16.7 +- 8.2, Vesper's gold r300 +37.1 +- 9.5, wins +0.01, margin +6.8 +- 10.2, collected -3.8 +- 6.3, deaths +0.04 +- 0.10. **Passes.**
+- `exp/vvg2`: team gold r300 -18.7 +- 8.6, Vesper's gold r300 -22.8 +- 9.1. Fails.
+
+Platform rule for `exp/vvg1` (written now, before any game): `t03p` parts pinned to `t1503_tm@t03`. Target: Vesper's gold at r300 up by 1 standard error or more (`decoded.py types` or `gold`). Guards: margin and collected not down by more than 1 standard error. Wins recorded, not judged.
