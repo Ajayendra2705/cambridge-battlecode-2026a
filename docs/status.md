@@ -2,7 +2,7 @@
 
 ## Note at 01:46 IST 11-04 (session 94, branch `night-1101`)
 
-- **Live and selected: v1536.** `upcomingTournament.submission` in `cambc submissions list --json` reads 1536. The user (01:31 IST): keep working until the lock at 05:29 IST with full permissions; a bot goes live only when it is clearly better than the best so far. Start no gate after about 04:30 IST and check the selected bot before the lock.
+- **Live and selected: v1536.** `upcomingTournament.submission` in `cambc submissions list --json` reads 1536. The user (01:31 IST): full permissions; a bot goes live only when it is clearly better than the best so far. (01:48 IST): work ends at 05:00 IST. Start no gate after about 04:15 IST, and the final selection must read back active by 05:00. The lock is 05:29 IST.
 - **Running locally:** `data/run_vh.sh`, `vh1`, `vh2`, `vh3` on the 68 default-arm maps (`results/analysis/rule_venhp.md`): Vendetta dies 2.61 times a game against the top teams' 0.80 and holds 941 health at r300 against 1370.
 - **`fa1` (`vf5`) passes locally with no gain** (`rule_nuke.md`). Not played yet; `vh` comes first for quota.
 - **Quota plan:** `e1536_nr6` played at 01:32 IST. v1538 at about 02:00:45, right after a ranked set: `nr5`, `nr6`, `nr3a` (26 groups), free from 02:05. Then 24 groups until 03:06.
