@@ -53,6 +53,12 @@ while line=$(head -1 data/gate_queue.txt 2>/dev/null) && [ -n "$line" ]; do
   # GATE_RESTORE=auto: restore the version that was live just before this gate (a teammate may have changed it).
   restore=$GATE_RESTORE; [ "$restore" = auto ] && restore=$act0
   if [ "$bot" = live ]; then
+    # LIVE_EXPECT=N: this live gate means to test version N. On 11-03 a teammate selected 1531 during a chain of live gates named
+    # e1535: 18 groups replayed 1531 under that name. Never play a live gate on another version.
+    if [ -n "$LIVE_EXPECT" ] && [ "$act0" != "$LIVE_EXPECT" ]; then
+      log "$run not played: active is $act0, LIVE_EXPECT is $LIVE_EXPECT"
+      continue
+    fi
     want=$act0
   elif [[ "$bot" =~ ^v[0-9]+$ ]]; then
     want=${bot#v}; window; select_wait "$want"
