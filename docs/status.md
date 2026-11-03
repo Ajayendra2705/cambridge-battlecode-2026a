@@ -1,6 +1,13 @@
-# Status (updated Wed, Nov 4, 2026 2:45 AM IST)
+# Status (updated Wed, Nov 4, 2026 4:45 AM IST)
 
-## Note at 02:45 IST 11-04 (session 94, branch `night-1101`)
+## Final note at 04:45 IST 11-04 (session 94, branch `night-1101`)
+
+- **Live, selected and entered in International Qualifiers: v1545, which is v1536 with no changes.** Source: `bots/bamboo1536`. Note on the platform: "v1536 only: no changes in it. Best possible from Ajay side". Uploaded 04:33:43, active 04:36:04, `upcomingTournament.submission` reads 1545. Lock 05:29 IST. The user at 04:30 IST: nothing new, finalise, name it for what it is.
+- **Nothing tested tonight clearly beats v1536.** On `tt1`, the top-team panel, v1536 has 8 wins of 40. `rh6` (dash rule) 7, margin -58 +- 72. `rh8` (`fa1`, `kMarcGems`) 6, margin -132 +- 91; on the Bamboo-arm games of `tt1` and `nr3` flat at 28 to 28 of 58. The teammate's RT34 (v1540) 7, margin -150 +- 98, and RT36 (v1544) 7, margin -70 +- 73. Table test `nr5` lost heavily (26 to 12 of 50). `vf3` (v1537) 41 against 37 of 90 with margin about 0.
+- **The one small proven gain that was not shipped:** 00eight on the Bamboo arm, 5 to 11 of 18, margin +277 +- 160, played with `kMarcGems` 1. v1536 plus 00eight alone was never played. Row to add if work resumes: `{41, 30, 36, 22, 1, 24}` in `kBambooMaps`.
+- **The largest gaps left against the top teams (`docs/findings.md`):** Vendetta's dead rounds to r600 are 110 against 30, Vesper's reward gold 436 against 1138, stuns on us 13.95 against 8.72. Local gains on deaths did not transfer to the platform (`vd1`), and item changes keep losing locally.
+
+## Note at 02:45 IST 11-04, kept for its history
 
 - **Live and selected: v1536.** The user at 02:33 and 02:36 IST: all ranked games on the best bot; queue the tests, then put the best bot live again.
 - **v1538 was cancelled on the website at 02:13 IST,** before it was ever active; no game played. v1539 (`bots/bamboo1539`, test table plus dash rule) replaced it: active 02:27 to 02:35 IST, one ranked set on it (02:30 IST, 2 of 5).

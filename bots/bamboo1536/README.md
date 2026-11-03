@@ -1,6 +1,6 @@
 # bamboo1536 (router on 15 maps with the Vesper gold fix and Marcella's stun first; platform version 1536)
 
-The exact source of **v1536**, uploaded to Velvet Tributers on 3 Nov at 22:31 IST and selected by the user at 23:30 IST. Build it with `cambc build bamboo1536`. Its test copy was `bots/exp/rf1`.
+The exact source of **v1536**, uploaded to Velvet Tributers on 3 Nov at 22:31 IST and selected by the user at 23:30 IST. Build it with `cambc build bamboo1536`. Its test copy was `bots/exp/rf1`. This same source was uploaded again, unchanged, as **v1545** at 04:33 IST on 4 Nov, because `cambc` cannot rename a version and the user asked for a note saying it is v1536 with no changes.
 
 It is the design of the teammate's v1531: one program with two bots, picked once per game from a map signature read before the draft (`src/main.cpp`).
 

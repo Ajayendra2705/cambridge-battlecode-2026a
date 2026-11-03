@@ -2742,3 +2742,19 @@ Rewards to r300: gold 763 against 1029, captures 9.3 against 12.5; Vesper's shar
 **Single groups in our unranked list look like rivals' tests against us, and they do not count against our quota.** `matches list --team me --kind unranked` lists groups we did not start, such as 02:15:52 and 02:26:28. The `used` figure at 02:30 IST (50) matches the list only without seven such single groups. `cambc` does not show who creates a group, so this is an inference.
 
 **Local gold gain does not pick Bamboo maps beyond the first batches.** `nr5`'s maps had large local gains (03fan +2724, 00packs +1799) and lost on the platform: 26 to 12 of 50. On `nr4` and `nr6` together only 00eight held. The Bamboo table looks finished.
+
+## The night's end: selections, the teammate's bots and what did not transfer (11-04 04:45 IST)
+
+**A ranked set seems to play the selected bot, even while `active` reads the old one.** The 03:10:07 and 03:40:06 sets had v1536's drafts while `active` read v1540, with v1536 already selected (v1540's five-pick draft is [11,6,2,1,3], v1536's [11,6,2,1,7]). The 03:30:07 set cannot be told apart by draft. Groups, however, bind at creation to the version that is really active.
+
+**Selection delays stay unexplained.** Queued to active, seen tonight: 1:08 or less, 1:22, about 1:20, 1:30, 2:21 (v1545), 2:26, 5:02, 5:26, 8:14, and over 12 minutes for v1538. Waiting for our games to end before a switch was a guess; the 2:26 case had no games running.
+
+**An upload clears the pin and `cambc` has no rename.** `submissions list` turns from "pinned version" to "follow newest ready version" on an upload, which is how an upload takes the live selection. A version's note is set only at upload, so a new name means a new version number.
+
+**The teammate's RT34 and RT36 on `tt1`, on their own groups, against v1536's 8 of 40.** RT34 (v1540): 7, flips 3 up and 4 down, margin -150 +- 98, better 12, worse 24 (p = 0.046). RT36 (v1544): 7, flips 2 up and 3 down, margin -70 +- 73, better 18, worse 16 (p = 0.73). RT36 against RT34 on the same games: 7 and 7, margin +81 +- 71, better 23, worse 11 (p = 0.04). Their other panels were not read here, and 40 games is a small sample.
+
+**A local fall in deaths did not transfer.** `vd1` lowered deaths locally (-0.49 +- 0.18, four picks -1.42 +- 0.54; wins 478 to 484), but on `tt1` Vendetta's deaths moved +0.1 +- 0.3. Her dashes with an enemy within 4 stay at 10.6 a game in both runs, so `dash_strike` is not how she enters these fights: "dies within 8 rounds of a cast" only meant she was fighting.
+
+**Item and nuke changes kept failing.** Item changes lost locally on `wdh1`, `vbd1`, `vh1`, `vh2`, `pf1` and `pf3`. `fa1` left Marcella's slot 0 casts at about 23.5 a game on `tt1` (the rivals' Marcella 27.5) while team deaths rose by 1.2 +- 0.6, so the fight-sim gate is not what holds her casts down there.
+
+**Gaps of v1536 against the top teams on `tt1` (8 of 40; us / them, per game).** Dead rounds to r600: Vendetta 110 / 30, Heart of Ruin 74 / 36, Vesper 58 / 44, Marcella 58 / 33, Willow 78 / 54. Camp kills to r1000 27 / 43; reward rises by r600 17.2 / 27.5; kill gold 279 / 600. Vesper's captures 3.4 / 8.0, reward gold 436 / 1138, hand-offs taken 0.53 / 2.90. Stuns on us 13.95 / 8.72. Deaths with an empty bag 6.15 / 3.40. Draft size 4: deaths 10.25 / 5.67, collected 555 / 979, and the top teams' 4-pick drafts use Cassi and Issac for a fifth body. Fuel is no problem (0.00). Marcella's casts slot 0 23.4 / 27.5, slot 1 34.4 / 40.0.
