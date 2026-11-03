@@ -1,4 +1,12 @@
-# Status (updated Tue, Nov 3, 2026 10:30 PM IST)
+# Status (updated Tue, Nov 3, 2026 11:40 PM IST)
+
+## Note at 23:40 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live and selected: v1536** (`bots/bamboo1536`, test copy `bots/exp/rf1`), the user's choice at 23:30 IST: v1533 + 8 more Bamboo maps + `fa4`. On the added maps against v1531: 63 to 51 of 125 pinned, margin +133 +- 58, team gold r1000 +541 +- 142, deaths -1.6 +- 0.5. Most of the gain is 00breadcrumbs and 01corridors; the written bar on `nr3` missed on wins by a hair (`rule_route2.md`).
+- **Running:** `data/run_rfnb.sh`: `live rf1_nb1 nb1`, `live rf1_nb2 nb2`, 125 games against `e1531_nb*` and `ra2_nb*` (whole-bot check and `fa4`; bars in `rule_route2.md`, `rule_nuke.md`).
+- **New tool:** local gold per map predicts the Bamboo arm's platform gold per map (`tools/local/lmapgold.py`, `tools/replay/pgoldmap.py`): 01corridors +2323 local, +2187 on the platform; the default arm has blind spots there.
+- **Next:** `exp/rh1` = v1536 without 00gemfight, 00reverse_spiral, 00gem_fields and with 01broken_curve, 00eight, 00vault, 02gift_wrapping, 02uncharted_lands. Panel `nr4`, base `live e1536_nr4 nr4` (no flip), then `rh1` (an upload: ask the user first). Bar in `rule_route2.md`.
+- **Lock:** 05:29 IST 11-04. Combine at 00:29 IST. Start no gate after about 04:30 IST. Check the selected bot before the lock.
 
 ## Note at 22:30 IST 11-03 (session 94, branch `night-1101`)
 

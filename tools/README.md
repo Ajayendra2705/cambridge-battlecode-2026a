@@ -49,6 +49,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `wbcmp.py BASE_DIR BASE NEW_DIR NEW` | Pairs those games: wins, flips both ways, losses that held 1000 in hand, rounds from the first winning bag to the end, deaths, margin, bot faults, and each flipped game. |
 | `wbrun.sh NAME [JOBS] [BASE_RUN] [BASE] [MIN_RIVAL]` | Builds `exp/NAME`, plays what `wbsel.py` picks and writes `wbcmp.py` to `data/judge_NAME.txt`. About 3 minutes at 4 jobs. |
 | `lgold3.py RUN_DIR BASE_CAND TYPE ROUND [ROUND ...]` | Earned gold of the team and of one champion type at any rounds of a local run, paired with a base (`lgold2.py` stops at r600 for the team and r300 for a type). |
+| `lmapgold.py RUN_DIR BASE_CAND NEW_CAND [--round 1000]` | Per map, largest gain first: team gold at the round, new minus base paired with its SE, wins of both, margin and their gold differences. Chooses maps for a per-map router: local gold tracks the platform's (`results/analysis/rule_route2.md`) |
 | `divround.py BASE_DIR BASE NEW_DIR NEW` | Where paired local games part: identical games, games that part before or after the hand reached 600 with their flips, and the parting rounds. A flip before the hand reached 600 is a fuel re-roll, not the change itself. |
 | `fullrest.py BASE_DIR BASE NEW_BOT NEW_DIR` | `run-batch` lines for the games of a selected run that are not played yet, to finish a `wbrun.sh` run into all the base's games. |
 
@@ -351,6 +352,7 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `replay/leads.py DIR...` | Lead conversion at r300, r600, r1000, r1500: who leads in gems in hand and gold, how often the leader wins, and how games end. |
 | `replay/goldsrc.py RMAX DIR...` | Gold by source, us against them, to a round: rewards (count and gold a reward), kills, tribute, also by champion type. |
 | `replay/pgold.py BASE_RUN NEW_RUN...` | Paired earned gold, Vesper gold, collected, tributed and deaths by r150, r300, r600, r1000 from platform summaries, no replay decoding, so a gate can be judged at low CPU. |
+| `replay/pgoldmap.py BASE_RUN NEW_RUN [BASE_RUN NEW_RUN ...]` | `pgold.py` split by map over pinned panels: wins, paired team gold at r300, r600, r1000, their gold and both sides' deaths at r1000. Maps come from `results/panels/specs_PANEL.txt` |
 | `replay/capkinds.py RMAX [--maps M,M] DIR...` | Captures by kind of group and half, us against them, with gold, gems and the gold each type earns from each kind. |
 | `replay/packness.py RMAX DIR...` | Share of allies within 4 tiles in the opening against gold, wins and deaths, by side and team size. |
 | `replay/mapscript.py MAP RMAX N DIR...` | The opening of each champion in N games of one map: camp hits, rewards, fights, deaths, positions. |
