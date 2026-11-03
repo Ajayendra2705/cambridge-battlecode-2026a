@@ -1,4 +1,14 @@
-# Status (updated Tue, Nov 3, 2026 10:53 AM IST)
+# Status (updated Tue, Nov 3, 2026 12:51 PM IST)
+
+## Note at 12:51 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live: 1523, by the user's rule** (12:20 IST: "keep live as v1523 until you find any better things"). The gate chain is stopped and its remaining lines are skipped. A match group plays the active version and `cambc` has no version option, so any gate makes the tested bot live, and it plays one ranked set (5 games) first. An upload takes the selection too. Ask the user before any gate or upload.
+- **rt5 and 1523 are level over 175 pinned games against ranks 1-20:** 43 against 46 wins, mean margin -382 against -378 (`t03pa`, `t03pb`, `a7p`). They win on different maps: 01hooks 3 against 0 of 7, 01shortcut 5 against 1 of 8, 02the_pack 6 against 4 of 8, 00split 2 against 6 of 8.
+- **Next candidate needs 1523's source.** 1523 drafts as v1503 does, so it is on the v1503 code line (notes of 1513: v1503 + every-turn recall + bush wards): rt5's arms and the Bamboo map routes can go on top of it. The user approved downloading the zip (11-03 12:15), but the Chrome extension is offline and the CLI has no download command. The user can reconnect it or click "Download .zip" on the Submissions page; it lands in Downloads.
+- **rt7 rejected on the platform:** team gold r300 1109 to 1302 and r600 2629 to 2917, but tributed to r1000 -51 +- 30, final margin -96 +- 74, wins 16 against 17 (`rule_arms.md`). Gold weights trade gems for gold.
+- **`exp/rt8`** (light arms on 5 maps, four arms that held on the platform and locally, GN on 03one_gem, Vesper's vvk1 rules, `vpa1`) is on its local screen; rule in `rule_arms.md`.
+- **Rejected or closed locally:** `vfg1`, `vfg2` (fuel gates x0.1, x0.5: gold falls), four-pick and five-pick draft arms (first sample did not repeat), gem weight outside 03one_gem. `vpa1` (fights know Cassi and Issac die together) passes against pair opponents.
+- **Cleanup:** 114 run folders from 10-30 to 11-02 deleted with the user's OK. Deleting older decoded games, replays and summaries was refused by the auto mode classifier; summaries are compressed instead. Disk has 13 GB free.
 
 ## Note at 10:53 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
 

@@ -53,3 +53,19 @@ Test on the other gem-scarce maps without an arm: 03ultrastarvation, 00ribs, 00o
 ## First sample of combined arms, written 11-03 11:34 IST before any game
 
 LG (light and gold), WG (wolves count as light, and gold), HG (heavy 0.6, and gold), each on all 78 maps not routed to Bamboo, 8 games a map against cmb7, bot_10, cp3, dh3, paired with `exp.vnl1`. A map with gain at least +100 and wins not below the base's goes to a fresh sample under the table rule. Rt7's entries stay unless the fresh gain is 100 above theirs.
+
+## Gem weight 12 on gem-scarce maps (`exp/ragp`, `data/arm8_*.log`, 16 games a map against `exp.rt3`), judged under the gem-scarce rule
+
+00crater wins 10/11, margin +162, deaths recorded by the table only as gold -95; 00contest level; 00stampede 11/11, -113; 03ultrastarvation 12/9, -63; 00oasis 8/7, -99; 00ribs 11/10, -57; 00packs 9/9, -48; 01gold_rush 12/1, -909. Only 00crater reaches +100 and it stands alone among eight, so it goes to one more sample before any table entry. The arm stays on 03one_gem only (wins 5/15, margin +235).
+
+## rt7 on the platform and the table of rt8, written 11-03 12:45 IST before rt8's screen
+
+`rt7_a7p` against `rt5_a7p` (60 pinned games): team gold r300 1109 to 1302, r600 2629 to 2917, us/them at r300 0.69 to 0.83; deaths to r1000 -0.5 +- 0.4; collected to r1000 -29 +- 33, tributed -51 +- 30, margin to r1000 -89 +- 54, final margin -96 +- 74, wins 16 against 17. The gold target moved; the margin guard is breached, so rt7 is rejected. Gold weights trade gems for gold: camp kills to r300 show the rivals ahead on gem clusters, not on gold clusters. 1523 on the same panel: 14 wins; rt5 against it margin +99 +- 90.
+
+By map, rt7 against rt5 (6 games a map; wins, margin): 00rows 3/1 +256, 01big_world 2/0 +228, 02arena 1/0 +193, 02stalactites 0/0 +100, 01hooks 3/3 -22, 00split 2/1 -61, 01elk_arena 0/1 -281, 01shortcut 2/4 -372, 02the_pack 2/4 -497, 00the_line 1/3 -505.
+
+**Table of rt8.** An arm of rt7 stays only where the platform margin is at least +100 and wins are not below rt5's, and the fresh local sample agreed: 00rows G2, 02arena G2, 01big_world book, 02stalactites book. Also rt5's L on 01elk_arena, 01hooks, 00quarry, 00pilgrimage (vlm1's platform gain), L on 01fracture (fresh +170, wins 11/13, margin +136) and GN on 03one_gem (wins 5/15, margin +235). Vesper's rules as rt5 (vvk1). Plus vpa1 (`rule_pair.md`).
+
+**Local bar of rt8 (680 paired against `exp.vnl1`).** Wins not down by more than 0.02, margin not down by more than 1 SE, deaths not up by more than 0.2, collected not down by more than 2 SE, no fault.
+
+**Platform, only with the user's OK for a gate.** rt8 against rt5 on a panel of the changed maps, the base in the same session: margin not down by more than 1 SE and tributed to r1000 up by at least 1 SE.

@@ -14,7 +14,7 @@ if '--note' in args:
     k = args.index('--note'); note = args[k + 1]; del args[k:k + 2]
 name, spec = args[0], json.load(open(args[1], encoding='utf-8'))
 ARMS = {'L': (1.5, 1, 1, 1.6, 150), 'L3': (1.5, 1, 1, 1, 150), 'W1': (1.5, 1.5, 1, 1.6, 120), 'W2': (1, 1, 0.6, 1.2, 120),
-        'G2': (1, 1, 1, 1, 0, 2, 3), 'GW': (1, 1, 1, 1, 0, 1, 2), 'LG': (1.5, 1, 1, 1.6, 150, 2, 3), 'LW': (1.5, 1, 1, 1.6, 150, 1, 2)}  # last two: gold weight before r300, gem weight
+        'G2': (1, 1, 1, 1, 0, 2, 3), 'GW': (1, 1, 1, 1, 0, 1, 2), 'LG': (1.5, 1, 1, 1.6, 150, 2, 3), 'LW': (1.5, 1, 1, 1.6, 150, 1, 2), 'G3': (1, 1, 1, 1, 0, 3, 3), 'LG3': (1.5, 1, 1, 1.6, 150, 3, 3), 'GM': (1, 1, 1, 1, 0, 1, 30), 'GN': (1, 1, 1, 1, 0, 1, 12), 'WG': (1.5, 1.5, 1, 1.6, 120, 2, 3), 'HG': (1, 1, 0.6, 1.2, 120, 2, 3)}  # last two: gold weight before r300, gem weight
 dst = 'bots/exp/' + name
 if os.path.exists(dst):
     shutil.rmtree(dst)

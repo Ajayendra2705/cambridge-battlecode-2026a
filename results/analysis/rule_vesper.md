@@ -31,3 +31,7 @@ Same bars: the gold of Vesper plus Marcella at r150 and r300 up by at least 1 SE
 ## Vesper's gold value by map, written 11-03 11:22 IST before any game
 
 vgv2's first sample lost team gold r300 on 02gift_wrapping (-410), 01yellow_brick_road (-370), 03contours (-208), 02treasure_box (-163), 02cuts (-127), 00expanse (-116), 01concentrated_wealth (-106). Fresh sample: 16 games a map, `exp/rt7` (no arm on these maps, so rt3 plus vgv2) against `exp/rt3`. The rule goes off on a map where the fresh gain is at most -100 and wins are not above the base's.
+
+## Fresh sample by map (arm7, 16 games a map, rt7 against rt3; the opening arms do not touch these maps)
+
+03contours gain +176, wins 8/16, margin +211: stays on. 01concentrated_wealth -36, 10/10: stays on. 02treasure_box -106, 13/15: stays on (wins above base). 01yellow_brick_road -732, 6/8, margin +210: stays on by the rule (wins above base), the gold change is the largest of the table and is the chaotic swing seen in earlier variants there. 00expanse -214, 14/12, 02cuts -259, 15/10, 02gift_wrapping -282, 10/10: the rule goes off on these three in the next router.
