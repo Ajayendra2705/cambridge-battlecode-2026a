@@ -1,8 +1,8 @@
 # Per champion type on our side of a multi.py run: deaths, kills, champion damage done and taken, collected gems; bot faults.
 import json, glob, sys, os, collections
-d = sys.argv[1]
+d = sys.argv[1]; cand = sys.argv[2] if len(sys.argv) > 2 else ''  # optional: one candidate of the run, as in its file names (exp.vd2)
 A = collections.defaultdict(collections.Counter); faults = 0; n = 0
-for f in glob.glob(os.path.join(d, '*.json')):
+for f in glob.glob(os.path.join(d, (cand + '~' if cand else '') + '*.json')):
     us = 'teamA' if f.endswith('~A.json') else 'teamB'
     j = json.load(open(f))
     faults += j['diagnostics']['botFaults'][us]; n += 1
