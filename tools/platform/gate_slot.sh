@@ -50,6 +50,16 @@ for p in ${panel//,/ }; do
     sleep 1
   done
 done
+# A switch back selected while our games run has waited 7 to 8 minutes (11-04 00:56, 03:22), and about 1:20 with none running
+# (02:33, 03:08, 03:20): wait for the panel's games, at most 150 seconds, and only then select RESTORE.
+running() { "$C" matches list --team me --kind unranked --limit 100 --json 2>/dev/null | python -I -c "
+import json, sys
+s = sys.stdin.read()
+d = json.loads(s[s.index('{'):])
+print(sum(m['status'] != 'finished' for m in d['matches']))" 2>/dev/null | tr -d ''; }
+w=0
+until [ "$w" -ge 150 ] || [ "$(running)" = 0 ]; do sleep 8; w=$((w + 8)); done
+log "games ended after about $w seconds"
 read -r a s < <(state)
 if [ "$s" = "$ver" ]; then
   pick "$restore"

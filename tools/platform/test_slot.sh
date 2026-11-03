@@ -3,7 +3,7 @@
 #   bash tools/platform/test_slot.sh exp/BOT RUN PANEL[,PANEL...] RESTORE
 # Run names are RUN_PANEL@PANEL. Upload first, so nothing waits while the test bot is live:
 # 1. Wait until the quota holds every group of the panels.
-# 2. If our ranked set is near (clock :x6:00 to :x0:50), wait for it to pass, so it plays the live bot.
+# 2. Start only in the three minutes after our ranked set (clock :x0:50 to :x3:00), so the next set plays the live bot: upload to active takes about a minute, the games up to two, and the switch back about 1:20 with no game running.
 # 3. Upload the bot (an upload takes the selection), then tools/platform/gate_slot.sh creates the groups and selects RESTORE once.
 # Stops without uploading if the live or selected version is not RESTORE: someone else may be using the slot.
 # Read tools/platform/procs.sh before starting and after stopping this: killing it can leave gate_slot.sh running (11-04 02:26 IST).
@@ -31,7 +31,7 @@ until f=$(free) && [ -n "$f" ] && [ "$f" -ge "$need" ]; do sleep 15; done
 log "quota free: $f"
 while :; do
   m=$(( 10#$(date +%M) % 10 * 60 + 10#$(date +%S) ))
-  if [ "$m" -ge 50 ] && [ "$m" -lt 360 ]; then break; fi
+  if [ "$m" -ge 50 ] && [ "$m" -lt 180 ]; then break; fi
   sleep 5
 done
 until read -r a s n0 < <(ver) && [ -n "$n0" ]; do sleep 10; done
