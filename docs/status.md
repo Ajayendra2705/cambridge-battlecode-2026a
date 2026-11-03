@@ -1,10 +1,25 @@
-# Status (updated Tue, Nov 3, 2026 2:36 PM IST)
+# Status (updated Tue, Nov 3, 2026 4:15 PM IST)
 
 ## Note at 16:15 IST 11-03 (session 94, branch `night-1101`)
 
-- **Live rule: v1531** (user, 15:50 IST: "keep 1531 live after your test"). The chain `data/run_q1.sh` (plan `data/plan_q1.txt`) plays our queue one gate at a time (user: "queue all ours"): `ra1` and v1531 on `nb1`, then `vfx2`, `vfx1`, `vfx3`, `vmr2`, `vgv2`, `vfu2` on `t03pa`. **Select v1531 again when it ends.**
+- **Live rule: v1531** (user, 15:50 IST: "keep 1531 live after your test"). It is live and selected (checked 16:13 IST), and nothing of ours runs.
+- **The queue stopped before any gate played.** The user asked for it ("queue all ours"), then closed the chat at 16:12 IST. A chain needs a running session to select v1531 after its last gate, or a test bot stays live on the ladder, so I killed `data/run_q1.sh` at 16:13 IST while it still waited for quota. None of its 8 gates ran, so `ra1`'s map arms have not been played on the platform.
+- **To resume:** read `tools/platform/procs.sh` and `cambc submissions list`, check that no teammate is testing (`tools/platform/recentgroups.py`), then start `bash data/run_q1.sh` once with the tool's background option. **Select v1531 again when it ends.** `data/` and `bots/exp/` are gitignored and exist only on this laptop. The script runs `GATE_Q=gateq_fast.sh GATE_RESTORE=none QUIET=30 QWAIT=6 bash tools/platform/gatechain.sh data/plan_q1.txt`, and the plan is:
+
+  ```
+  v1532 ra1_nb1 nb1
+  v1531 e1531_nb1 nb1
+  exp/vfx2 vfx2_t03pa t03pa
+  exp/vfx1 vfx1_t03pa t03pa
+  exp/vfx3 vfx3_t03pa t03pa
+  exp/vmr2 vmr2_t03pa t03pa
+  exp/vgv2 vgv2_t03pa t03pa
+  exp/vfu2 vfu2_t03pa t03pa
+  ```
+
+  Judge with `tools/platform/rcmp.py` and `tools/replay/pgold.py`: `ra1_nb1` and `e1531_nb1` against `e1530_nb1@nb1` (bar in `results/analysis/rule_arms.md`), the others against `b1512_t03pa@t03pa` (bars in `rule_nuke.md`, `rule_vesper.md`, `rule_setup.md`).
 - **`ra1` (v1532) on the teammate's panel `tm1`:** passes its bar: Vesper gold r300 +72 +- 25, team gold r300 +35 +- 23; wins 12 against 12, margin +14 +- 33. v1531 on the same panel: 26 wins, margin +216 +- 68 (`docs/findings.md`, "On near maps v1531 wins without early gold").
-- **`exp/ra2`** = the 7-map Bamboo router with `ra1` elsewhere; builds, needs a local screen. `esw75`, `esw100`, `pk5` also wait for one. The user was asked when local screens are fine for the laptop.
+- **`exp/ra2`** = the 7-map Bamboo router with `ra1` elsewhere; builds, needs a local screen. `esw75`, `esw100`, `pk5` also wait for one. The user asked for a break from local runs because the laptop was hot, and has not said when they may start again. `ra1` and `ra2` use the map arms in `results/analysis/a8.json`.
 
 ## Note at 14:40 IST 11-03 (session 94, branch `night-1101`)
 
