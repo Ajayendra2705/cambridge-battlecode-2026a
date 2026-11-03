@@ -11,3 +11,27 @@ Maps already routed to Bamboo or already in `rt5`, and 00oasis (it lost on the p
 **Table rule.** An arm goes in the table for a map when its gold r300 gain in the fresh sample is at least +100 and at least 8% of the base's gold there, and its wins on that map in the fresh sample are not below the base's. With several arms passing, the largest mean of the two samples wins.
 
 **Platform rule.** The new table (`rt6`) against `rt5` on a panel of the table's maps (`mappanel.py`, 12 teams, 60 games, pinned, same session): team gold at r300 up by at least 1 SE, margin not down by more than 1 SE, deaths to r300 not up by more than 1 SE, no fault. Wins recorded, not judged.
+
+**Fresh sample, 11-03 09:33 IST (`data/arm2_table.txt`, base `exp.rt3`, 16 games a map).** Passing: 02stalactites B2 (+566 on 701, wins 13/15, margin +116; first table +520), 01big_world B2 (+410 on 914, wins 11/11, margin +91; first table +393), 01broken_curve W1 (+191 on 1117, wins 9/13, margin +288), 01fracture L (+170 on 1196, wins 11/13, margin +136), 01big_world B1 (+167, wins 11/14), 03twisty W1 (+145 on 505, wins 13/13, margin +82), 00lost_world B1 (+128 on 730, wins 13/13, margin +21). Failing, most of them regressing toward zero as expected: L on 00collision (+84), 02famine (+63, wins 11/9), 03contours (+58), 01yellow_brick_road (-97, though wins 6/12 and margin +364); L3 on 01big_world, 00collision, 03contours, 00the_line, 00crater (-258); W1 on 02tangle (wins 14/8), 03riverbed (-300); W2 on all (00ambush +155 with wins 10/9, 02treasure_box -364); B1 on 02stalactites (+384, wins 13/10), adgato_gemcombat5, 00vault, 02guardians, 00crater, 01yellow_brick_road, 00quadrants; B2 on 00rows (+107, wins 12/10), 02guardians (+87), 00crater.
+
+**Table of `rt6`.** `rt5`'s four L maps plus 01fracture L, 01broken_curve W1, 03twisty W1, 01big_world B2, 02stalactites B2. 00lost_world B1 is left out: the book arm in the router has one setting, B2's.
+
+**Gold-weight arms, written 11-03 09:44 before their fresh sample.** The screens of `vge2` (`P_GOLD_W_EARLY` 2) and `vgw2` (`P_GEM_W` 2) failed on all maps, but per map (`tools/local/armscan.py`, `data/armscan1.json`) many maps show large gains in gold with more wins and a better margin: 00the_line, 01fracture, 01elk_arena, 00crater, 00rows, 02the_pack, 00galaxy, 02arena, 01starfish. Arms `G2` and `GW` in `mk_rt.py` set those weights per map. Fresh sample and table rule as above (16 games a map, same eight pool bots, against `exp.rt3`).
+
+## Third fresh sample: gold weight on more maps, written 11-03 10:08 IST before any game
+
+G2 passed the table rule on 10 of the 12 maps of the second sample (02arena +562, 00split +477, 01elk_arena +420, 02the_pack +330, 00rows +317, 01hooks +196, 00quarry +182, 00the_line +174, 00galaxy +126, 01fracture +113); GW on 00the_line +191, 01fracture +149, 00quadrants +111. The first sample gain predicted the fresh one well enough to test the rest of the list.
+
+**Sample.** The same eight pool bots, 16 games a map, paired with `exp/rt3`. G2 on the maps with a first sample gain of at least +100 that are not yet tested and not routed to Bamboo: 03colosseum, 03riverbed, 03fan, 03reef, 00collision, 03membrane, 02uncharted_lands, 00ambush, 02tangle, 01shortcut, 03shrines, 00swirl, 01islands, 02the_pond. LG (L and G2 together) on the maps where both passed or L is proven on the platform: 01elk_arena, 01hooks, 00quarry, 01fracture, 00pilgrimage.
+
+**Rule.** The table rule above, unchanged: gain at least +100 and at least 8% of the base, wins not below the base. L stays on 01elk_arena, 01hooks, 00quarry and 00pilgrimage unless LG or G2 has a gain at least 100 above L's in the same fresh base; those maps have L proven on the platform.
+
+## Results of the third sample and rt7, written 11-03 10:34 IST before rt7's screen
+
+G2 passed on 01shortcut +355, 03membrane +321, 02the_pond +159, 00swirl +149, 03shrines +105. It raised gold but lost wins on 03colosseum (+828, wins 15 to 8), 03fan, 02tangle, 03reef, 03riverbed, 02uncharted_lands and 01islands, so they stay out. LG passed on 01elk_arena +766 (wins 11 to 16), 01hooks +250, 01fracture +237, 00quarry +140.
+
+**rt7's table.** LG: 01elk_arena, 01hooks. L: 00quarry, 00pilgrimage (L is proven on the platform; no other arm is 100 above it). GW: 01fracture, 00the_line, 00quadrants. G2: 02arena, 00split, 02the_pack, 00rows, 00galaxy, 01shortcut, 03membrane, 02the_pond, 00swirl, 03shrines. W1: 01broken_curve, 03twisty. Book B2: 01big_world, 02stalactites. Vesper's gold value (vgv2: gems 1, gold 2 before r300) replaces vvk1's rules on every map of the v1503 arm.
+
+**Local bar for rt7** (680 paired games against `exp.vnl1`): team gold r300 up by at least 2 SE, wins not down by more than 0.03, deaths not up by more than 0.3, no fault.
+
+**Platform bar.** rt7 against rt5 on `a7p` (02arena, 00split, 01elk_arena, 02the_pack, 00rows, 01shortcut, 02stalactites, 01big_world, 00the_line, 01hooks): team gold r300 up by at least 1 SE, margin not down by more than 1 SE, deaths r300 not up by more than 1 SE, no fault. 1523 plays the same panel so we see whether rt7 passes it on those maps; that comparison is recorded and decides the live bot only together with the t03 parts.

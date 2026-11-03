@@ -10,6 +10,9 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 |---|---|
 | `multi.py CANDS [--pool a,b] [--maps m1,m2] [--jobs 6] [--keep] [--from RUNDIR] [--fuel N]` | Every candidate vs every pool bot on every map, both sides. Default: 7 pool bots x 40 maps = 560 games per candidate. Prints wins, kills, deaths, flee deaths, margin, gold, captures, gems collected/lost/carried, and per-champion damage. `--from` only summarises a finished run folder (same CANDS, `--pool`, `--maps`), for when the summary step failed. It keeps the folder's replays (before 10-28 17:40 a `--from` summary without `--keep` deleted them). Map names use hyphens (`01boss-battle`). `--fuel N` sets the fuel per turn (run-batch `--fuel-quantum`): a value near the default, such as 99500, replays every pairing on another path, a stand-in for a new seed (11-01). |
 | `lgoldmap.py RUN_DIR BASE CAND [ROUND] [TYPE]` | Earned team gold per map, paired against the base at ROUND (default 150), optionally one champion type, with the near and far split. |
+| `armtable2.py BASE_LOG BASE_CAND ARM:CAND:LOG ... [--first FILE --names L=vlc1,...]` | Per-map table of a fresh sample of opening arms against the base, with the table rule of `results/analysis/rule_arms.md` and a final JSON spec for the router. |
+| `armscan.py OUT.json BASE CAND@RUN_DIR ...` | Per-map gains of screened variants in one JSON: the first sample that names the maps to test fresh. |
+| `lfuel.py RUN_DIR CAND [TOP]` | Fuel exhaustions in local games per map by round band and by champion type. |
 | `maptable.py [--base B] [--min-margin N] [--min-wins N] [--out FILE.json] RUN_DIR ...` | Per-map table over many local runs: each candidate's wins, margin and deaths against the base, the correlation of its per-map margin between pool halves, and each map's best candidates over the bars. Caches per run in `data/cache/maptable_<run>.json`. |
 | `local_decode.sh RUNDIR CAND [JOBS]` | Decode one candidate's kept replays of a `multi.py --keep` run (CAND as in the file names: `main`, `exp.gw2`) into `data/fights/local_<run>_<cand>/` with an `index.txt`, so `tools/replay/decoded.py` reads local games too (about 25 s and 140 MB per 2000-round game). Local opponents are our own pool bots: use it for economy and opening metrics (`gold`, `gems`, `captures`), not fights. |
 | `audit_errors.py RUNDIR` | Totals for a `multi.py --keep` run of a check build (`exp/au*`, see `docs/experiments.md`, "Code audit"): caught engine errors per call site, end-of-turn detector counts (`miss_attack_champ`, `miss_attack_camp`, `miss_cast_*`, `stuck_*`, by activity), turns that aborted (`bot error`) and turns that used their whole 100k fuel. From au14 on, check builds print each caught error once when it happens ("E" lines); those are counted per site and split by whether the turn had run out of fuel since its snapshot ("split") or had just placed a ward ("ward"), with the stage. |
@@ -90,6 +93,13 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `mklock.py BOT [--keep N] [--enemy-only] [--cancel] [--debug]` | Add altar-lock buying and placing. |
 | `b10_ideas.py [NAME...]` | Make the bot_10 idea variants in `bots/exp/` from `bots/pool/bot_10` (all of them without names): `b10n` (log off, the base), then the fixes `b10cd`, `b10shot`, `b10hor`, `b10keep` and the ideas `b10cc`, `b10sq`, `b10d4`, `b10lki`, `b10cap`, `b10home`, `b10bag`, `b10lock`, `b10notp`, `b10noend`, one factor each. Rationale in `docs/bot_10.md`. |
 | `addrow.py AFTER ROW` / `setcells.py NAME PLATFORM VERDICT` | Edit `docs/experiments.md` keeping its CRLF endings: insert a row after the row whose first cell is AFTER; set the platform and verdict cells of the row whose first cell is NAME (empty string keeps a cell, a verdict starting with `+` is appended). The name must be unique in the file. |
+| `mk_rt.py NAME SPEC.json [--base bots/exp/rt3] [--note TEXT]` | Router with per-map opening arms in `src/cj`: L, L3, W1, W2 (light and wolf weights), G2, GW, LG, LW (gold and gem weights). SPEC maps map names to arms; map signatures come from `data/map_sigs.json`. |
+| `mk_vbk2.py NAME BOOK R A WMIN WMAX BASE [--maps m1,m2]` | Opening book weights in a group's value on chosen maps; `SRC=src/cj` for a router (after `mk_rt.py` add the `book_w` line in `farm.cpp` by hand). |
+| `mk_ves.py bots/exp/NAME NOTE` | vvk1's Vesper capture rules on a router. |
+| `mk_vgv.py NAME R GEM_W GOLD_W [BASE]` | Vesper values gold over gems before round R. |
+| `mk_vfu2.py NAME GATE [--base B] [--src src/cj] [--check]` | Cheaper setup with the same decisions: draft plan in draft memory, lazy group bitboards, raw camp layout words, setup gate GATE. `--check` builds a probe that prints mismatches and the fuel left. |
+| `mk_vlm.py NAME LIGHT_W ENABLE_EARLY R MAPS` | Light camps first on chosen maps. |
+| `mkp.py NAME NOTE P_X=V ... [--base B]` | Copy a bot with changed parameters. |
 
 ## replay/ (analyse platform games)
 
@@ -294,6 +304,8 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `helper3/h3_lockgems.py [--quiet] DIR...` | Captures and gems from those locked groups per game to r1000, us against them, from decoded runs (side-b games mirrored). |
 | `replay/nukeuse.py TYPE SLOT RANGE DIR...` | With a spell ready and an enemy champion in its range, what the champion does: spell on a champion or camp, basic hit, walk, nothing; by side and round band. |
 | `replay/inrange.py RMAX DIR...` | With an enemy within 6 at the start of the round, the action taken, by side, band and distance, and by type within 3. |
+| `replay/exchange.py RMIN RMAX DIR...` | Health lost a round, hits per body-round and deaths while in contact, by numbers of bodies on each side. |
+| `replay/freehit.py RMAX DIR...` | Melee champions: rounds with a walk and a hit, and free hits left unused. |
 | `replay/opener.py RMAX DIR...` | Which action and type opens a fight (first hit on a champion after 15 quiet rounds), and casts a game by type. |
 | `replay/react.py RMAX DIR...` | After a first hit: distance, allies and foes near, hits by each side in the next 6 rounds, hit-back share, who dies; focus fire. |
 | `replay/afterhit.py RMAX DIR...` | The action in the round after a hit, by side, type and the hitter's range. |
