@@ -71,3 +71,9 @@ By map, rt7 against rt5 (6 games a map; wins, margin): 00rows 3/1 +256, 01big_wo
 **Platform, only with the user's OK for a gate.** rt8 against rt5 on a panel of the changed maps, the base in the same session: margin not down by more than 1 SE and tributed to r1000 up by at least 1 SE.
 
 **Result of rt8's local screen (680 paired against `exp.vnl1`, `data/judge_screen_rt8.txt`).** Wins +0.02 +- 0.01, margin +21 +- 15, collected +2.2 +- 7.5, tributed +3.9 +- 7.4, their tributed -2.4 +- 7.6, deaths -0.29 +- 0.16, kills +0.15 +- 0.17, team gold r150 +19.7 +- 6.4, r300 +23.9 +- 13.7, r600 +24.9 +- 30.8, no fault. Passes the local bar. Platform waits for the user's OK (1523 stays live until then).
+
+## ra1: the arms on the new base (11-03 14:45 IST)
+
+v1530 (teammate's `bots/bamboo1530`, live since 08:28 UTC on 11-03) is the base now. `exp/ra1` is v1530 with rt8's table (the same arms, book, Vesper rules and vpa1), built with `SRC=src tools/variant/mk_rt.py`, `mk_vbk2.py` and `mk_rt8.py`. It has no router: every map plays 1530's program.
+
+**Local bar (680 paired against `exp.b30`, before the screen).** The factor is team gold by r300 on the arm maps and overall. Team gold r300 not below 0 overall, deaths not up by more than 0.2, margin not down by more than 1 SE, collected not down by more than 2 SE, no fault. Wins are recorded and not judged. A pass allows a request for a gate, nothing more.

@@ -1,4 +1,11 @@
-# Status (updated Tue, Nov 3, 2026 2:03 PM IST)
+# Status (updated Tue, Nov 3, 2026 2:36 PM IST)
+
+## Note at 14:40 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live: v1530.** A teammate pushed `bots/bamboo1523` and `bots/bamboo1530` to `origin/Bamboo8` (exact sources) and made v1530 live at 08:28 UTC. The user's rule named 1523, and the choice is theirs to change; I did not flip it. Both folders are now in this branch, and `exp/b30`, `exp/b23` are their test copies.
+- **New base for local screens: `exp.b30`.** Run `b30base` screens both bots against `multi-031107`.
+- **`exp/ra1`** is v1530 with rt8's table (arms on 8 maps, book on 2, Vesper's rules, `vpa1`), `tools/variant/mk_rt.py`, `mk_vbk2.py`, `mk_rt8.py` with `SRC=src`. Bar in `rule_arms.md`.
+- **Gold gap against hard neighbours is capture count:** rewards to r600 23.2 against 28.7 a game at the same gold a reward; rival Vesper 10.7 rewards at 137 gold, ours 6.1 at 99 (`tools/replay/goldsrc.py`).
 
 ## Note at 14:03 IST 11-03 (session 94, branch `night-1101`)
 

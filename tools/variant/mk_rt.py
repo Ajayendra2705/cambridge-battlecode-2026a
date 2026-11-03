@@ -35,12 +35,12 @@ for m, arm in spec.items():
     assert s, m
     a = ARMS[arm] + ((1, 3) if len(ARMS[arm]) == 5 else ())
     rows.append('    {%d, %d, %d, %d, %d, %d, %.2ff, %.2ff, %.2ff, %.2ff, %d, %.2ff, %.2ff},  // %s (%s)' % (s[0], s[1], s[2], s[3], s[4], s[5], a[0], a[1], a[2], a[3], a[4], a[5], a[6], m, arm))
-src = dst + '/src/cj/'
+src = dst + '/' + os.environ.get('SRC', 'src/cj') + '/'  # SRC=src for a bot without the router's folders
 sub(src + 'world.h', '    bool central_altars = false;', '    // Per-map opening arm (kMapArms): before arm_r the pick weighs groups by these (rule_light.md, rule_arms.md).\n    int arm_r = 0;\n    float arm_light = 1.f, arm_wolf = 1.f, arm_heavy = 1.f, arm_enable = 1.f;\n    bool central_altars = false;')
 sub(src + 'world.h', '    bool big = false;       // golem or monolith inside', '    bool big = false;       // golem or monolith inside\n    bool heavy = false;     // elk, golem or monolith inside')
 sub(src + 'world.cpp', '            if (cp.type == camp_type::golem || cp.type == camp_type::monolith) g.big = true;', '            if (cp.type == camp_type::golem || cp.type == camp_type::monolith) g.big = true;\n            if (cp.type == camp_type::golem || cp.type == camp_type::monolith || cp.type == camp_type::elk) g.heavy = true;')
 sub(src + 'world.cpp', """    camp_tiles->clear();
-    auto api_groups = map::camp_groups();""", """    camp_tiles->clear();
+""", """    camp_tiles->clear();
     {
         struct MapArm { short w, h, walls, holes, altars, bushes; float light, wolf, heavy, enable; short r; float gold, gem; };
         static constexpr MapArm kMapArms[] = {
@@ -54,7 +54,7 @@ sub(src + 'world.cpp', """    camp_tiles->clear();
                 arm_r = m.r; arm_light = m.light; arm_wolf = m.wolf; arm_heavy = m.heavy; arm_enable = m.enable; arm_gold = m.gold; arm_gem = m.gem;
             }
     }
-    auto api_groups = map::camp_groups();""")
+""")
 f = src + 'farm.cpp'
 sub(f, """    const float my_hp = me.health(), my_mhp = me.max_health();
     const float my_spare = std::max(0.f, my_hp - P_TANK_FLOOR * my_mhp);
@@ -71,7 +71,7 @@ sub(f, """        if (value * P_ENABLE / (static_cast<float>(d) + 1.5f * wait + 
 sub(f, """        const float s = value * (enabler ? P_ENABLE : 1.f) / n_team / std::max(1.f, Ttot);""", """        const float s = value * (enabler ? enable_w : 1.f) / n_team / std::max(1.f, Ttot);""")
 sub(src + 'world.h', '    int arm_r = 0;', '    int arm_r = 0;\n    float arm_gold = P_GOLD_W_EARLY, arm_gem = P_GEM_W;  // value weights of gold before r300 and of gems on this map')
 fs = open(f, encoding='utf-8', newline='').read()
-assert fs.count('P_GEM_W') == 4 and fs.count('P_GOLD_W_EARLY') == 4
+assert fs.count('P_GEM_W') >= 4 and fs.count('P_GOLD_W_EARLY') >= 4
 fs = fs.replace('P_GEM_W', 'world().arm_gem').replace('P_GOLD_W_EARLY', 'world().arm_gold')
 open(f, 'w', encoding='utf-8', newline='').write(fs)
 open(dst + '/NOTE.txt', 'w').write((note or f'Map router: per-map opening arms on {len(spec)} maps') + '\n')

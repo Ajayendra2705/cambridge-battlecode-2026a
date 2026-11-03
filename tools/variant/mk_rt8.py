@@ -1,7 +1,7 @@
 """rt8: rt5's light arms, the arms that held on platform and local samples, Vesper's vvk1 rules and the pair-aware fight. Run after mk_rt.py and mk_vbk2.py on NAME."""
-import sys
+import os, sys
 name = sys.argv[1]
-d = 'bots/exp/' + name + '/src/cj/'
+d = 'bots/exp/' + name + '/' + os.environ.get('SRC', 'src/cj') + '/'
 
 
 def sub(path, a, b, cnt=1):
@@ -44,9 +44,9 @@ open(p, 'w', encoding='utf-8', newline='').write(s)
 f = d + 'fight.cpp'
 sub(f, '    int bdelay = -1;  // rounds before its ability burst can land (-1: with the first attack)\n};', '    int bdelay = -1;  // rounds before its ability burst can land (-1: with the first attack)\n    bool linked = false;  // Cassi or Issac: either death kills both\n};')
 s = open(f, encoding='utf-8', newline='').read()
-a = '        if (v[i].hp <= 0) ++i;'
-assert s.count(a) == 1
-s = s.replace(a, '        if (v[i].hp <= 0) {\n            // Cassi and Issac die together.\n            if (v[i].linked) for (auto& o : v) if (o.linked) o.hp = 0;\n            ++i;\n        }')
+a = 'if (v[i].hp <= 0) ++i;'
+assert s.count(a) >= 1  # one copy in v1503's apply_damage; 1523 adds a second in the simulation's fast path
+s = s.replace(a, 'if (v[i].hp <= 0) {\n            // Cassi and Issac die together.\n            if (v[i].linked) for (auto& o : v) if (o.linked) o.hp = 0;\n            ++i;\n        }')
 a = '        u.burst = champ_burst(e->type, e->str, e->foc);\n        int d = cheb(e->pos, p);'
 assert s.count(a) == 1
 s = s.replace(a, '        u.burst = champ_burst(e->type, e->str, e->foc);\n        u.linked = e->type == champion_type::cassi || e->type == champion_type::issac;\n        int d = cheb(e->pos, p);')

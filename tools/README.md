@@ -330,5 +330,6 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `replay/typeuse.py RMAX DIR...` | Rounds of each type spent dead, on camps, on champions, moving, still, with gold events. |
 | `replay/typecmp.py RMAX DIR...` | Each type, us against them, to a round: alive rounds, casts per slot, hits on champions and camps, gems, deaths, kills, gold and health at the end. |
 | `replay/leads.py DIR...` | Lead conversion at r300, r600, r1000, r1500: who leads in gems in hand and gold, how often the leader wins, and how games end. |
+| `replay/goldsrc.py RMAX DIR...` | Gold by source, us against them, to a round: rewards (count and gold a reward), kills, tribute, also by champion type. |
 | `replay/mapscript.py MAP RMAX N DIR...` | The opening of each champion in N games of one map: camp hits, rewards, fights, deaths, positions. |
 | `helper3/h3_*.py` (others) | h3's map research readers: layout, groups, lives lost to the rival, camp damage, gem gap by source and time, tribute bags; usage in each docstring. |
