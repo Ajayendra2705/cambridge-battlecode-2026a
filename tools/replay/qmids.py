@@ -32,5 +32,6 @@ for p in (out, fights):
         for g in games:
             f.write(f"{g['mid']} {g['map']} {g['side']} {g['result']} {g['opp']}\n")
 print(len(games), 'games,', len(files), 'replays')
-subprocess.run([sys.executable, '-I', 'tools/replay/pextract.py', fights, str(jobs)] + files, stdout=subprocess.DEVNULL)
+for i in range(0, len(files), 150):  # a command line of 800 paths is too long on Windows (WinError 206)
+    subprocess.run([sys.executable, '-I', 'tools/replay/pextract.py', fights, str(jobs)] + files[i:i + 150], stdout=subprocess.DEVNULL)
 print('decoded', sum(x.endswith('.jsonl.gz') for x in os.listdir(fights)))
