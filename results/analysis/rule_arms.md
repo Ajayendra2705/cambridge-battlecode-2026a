@@ -69,3 +69,5 @@ By map, rt7 against rt5 (6 games a map; wins, margin): 00rows 3/1 +256, 01big_wo
 **Local bar of rt8 (680 paired against `exp.vnl1`).** Wins not down by more than 0.02, margin not down by more than 1 SE, deaths not up by more than 0.2, collected not down by more than 2 SE, no fault.
 
 **Platform, only with the user's OK for a gate.** rt8 against rt5 on a panel of the changed maps, the base in the same session: margin not down by more than 1 SE and tributed to r1000 up by at least 1 SE.
+
+**Result of rt8's local screen (680 paired against `exp.vnl1`, `data/judge_screen_rt8.txt`).** Wins +0.02 +- 0.01, margin +21 +- 15, collected +2.2 +- 7.5, tributed +3.9 +- 7.4, their tributed -2.4 +- 7.6, deaths -0.29 +- 0.16, kills +0.15 +- 0.17, team gold r150 +19.7 +- 6.4, r300 +23.9 +- 13.7, r600 +24.9 +- 30.8, no fault. Passes the local bar. Platform waits for the user's OK (1523 stays live until then).

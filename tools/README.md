@@ -70,6 +70,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `waitrun.sh RUN` | Block until every group of a run has finished. |
 | `ranked.py [limit]` | Our recent ranked matches. |
 | `ourmaps.py PAGES OUT.json` | Our ranked games on engine 2.0.0, 100 a page, newest first, into OUT.json (map, side, result, opponent, time, drafts); prints wins per map, worst first. The maps of `docs/findings.md`, "Why we lose: maps, fights and items" (`data/tmp_ourranked.json`, 10-28 04:58). |
+| `platform/rkmaps.py OURMAPS.json [--since ISO]` | Our ranked games by map family, team size, and the maps at 40% or worse. |
 | `ladgames.py LADDER.json OUT.json [PAGES]` | Ranked games of every team on a ladder file (`cambc ladder --page N --limit 25 --json`, pages joined into one list), PAGES pages of 100 per team, deduplicated: map, time and per team name, side, result and draft picks. 11-01: 5,325 games of the top 100 teams in about 5 minutes. |
 | `draftelo.py LADGAMES.json LADDER.json [SINCE]` | Which picks beat their Elo expectation, per team size: for each game side with both teams on the ladder file, result minus the Elo expectation from current ratings; mean residual of the side that drafted a champion the other did not, and of each full draft with 20+ sides. Rising teams (ratings lag) inflate their drafts, so read it as a screen. |
 | `eligible.py LADDER_JSONL RANKS` | Teams that can be scheduled (bot on the current engine). Retries listings that come back empty (HTTP 429). |
@@ -97,6 +98,13 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `mk_vbk2.py NAME BOOK R A WMIN WMAX BASE [--maps m1,m2]` | Opening book weights in a group's value on chosen maps; `SRC=src/cj` for a router (after `mk_rt.py` add the `book_w` line in `farm.cpp` by hand). |
 | `mk_ves.py bots/exp/NAME NOTE` | vvk1's Vesper capture rules on a router. |
 | `mk_vgv.py NAME R GEM_W GOLD_W [BASE]` | Vesper values gold over gems before round R. |
+| `mk_dr.py NAME SPEC.json [--base B] [--src S] [--note T]` | Per-map draft table in a router's v1503 part (`kDraftArms`, `draft.cpp`): SPEC maps a map to a list of picks. |
+| `mk_dz.py NAME SIZE c1,c2,...` | Other picks at one team size on `exp/vnl1`; also makes local opponents with a given draft (`opcm`, `opcf`). |
+| `mk_vfg.py NAME SCALE [BASE] [SRC]` | Scales the fuel limits of decisions (`fuel() < N`, `fuel() > N`, `W.precompute`, `P_CT_FUEL`, `P_WARD_MIN_FUEL`, `P_ESC_MIN_FUEL`). |
+| `mk_vmr.py NAME [BASE]` | Marcella holds the nuke when adjacent, with a hit free and the reset ready. |
+| `mk_vfu1.py NAME GATE [BASE]` | Setup that stops at a fuel gate and resumes next turn. |
+| `mk_vpa.py NAME [BASE]` | Target rule and fight simulation know Cassi and Issac die together (add the `bool linked` field to `SimUnit` by hand, or use `mk_rt8.py`). |
+| `mk_rt8.py NAME` | Finishes a router made by `mk_rt.py` and `mk_vbk2.py`: book weight, Vesper's vvk1 rules, the pair-aware fight. |
 | `mk_vfu2.py NAME GATE [--base B] [--src src/cj] [--check]` | Cheaper setup with the same decisions: draft plan in draft memory, lazy group bitboards, raw camp layout words, setup gate GATE. `--check` builds a probe that prints mismatches and the fuel left. |
 | `mk_vlm.py NAME LIGHT_W ENABLE_EARLY R MAPS` | Light camps first on chosen maps. |
 | `mkp.py NAME NOTE P_X=V ... [--base B]` | Copy a bot with changed parameters. |
@@ -304,6 +312,9 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `helper3/h3_lockgems.py [--quiet] DIR...` | Captures and gems from those locked groups per game to r1000, us against them, from decoded runs (side-b games mirrored). |
 | `replay/nukeuse.py TYPE SLOT RANGE DIR...` | With a spell ready and an enemy champion in its range, what the champion does: spell on a champion or camp, basic hit, walk, nothing; by side and round band. |
 | `replay/inrange.py RMAX DIR...` | With an enemy within 6 at the start of the round, the action taken, by side, band and distance, and by type within 3. |
+| `replay/inreach.py RMIN RMAX DIR...` | What a champion does with an enemy champion in reach (hit, camp, cast, toward, away, still), us against them, by health, numbers and type. |
+| `replay/stillwhy.py RMIN RMAX DIR...` | No-action rounds with an enemy in reach, by cause: stun, recall channel, tribute channel, fuel, other. |
+| `replay/rkdl.py NAME OURMAPS.json MAX_PER_MAP MAP...` | Downloads our ranked games of chosen maps (from `platform/ourmaps.py`) with an `index.txt`, for `replay/pextract.py`. |
 | `replay/exchange.py RMIN RMAX DIR...` | Health lost a round, hits per body-round and deaths while in contact, by numbers of bodies on each side. |
 | `replay/freehit.py RMAX DIR...` | Melee champions: rounds with a walk and a hit, and free hits left unused. |
 | `replay/opener.py RMAX DIR...` | Which action and type opens a fight (first hit on a champion after 15 quiet rounds), and casts a game by type. |
