@@ -23,7 +23,7 @@ for m in ms:
     side = next((x for x in m['teams'] if x['teamId'] == OUR), None)
     if not side or side.get('engineVersion') != '2.0.0': continue
     opp = next((x for x in m['teams'] if x['teamId'] != OUR), {})
-    out.append({'mid': m['matchId'], 'map': m['map'], 'side': side['side'], 'result': side['result'], 'opp': opp.get('teamName') or opp.get('name'), 'created': m.get('createdAt'), 'ours': side.get('draftPicks'), 'theirs': opp.get('draftPicks')})
+    out.append({'mid': m['matchId'], 'group': m.get('groupId'), 'oppId': opp.get('teamId'), 'ver': side.get('submissionVersion') or side.get('version'), 'map': m['map'], 'side': side['side'], 'result': side['result'], 'opp': opp.get('teamName') or opp.get('name'), 'created': m.get('createdAt'), 'ours': side.get('draftPicks'), 'theirs': opp.get('draftPicks')})
 json.dump(out, open(sys.argv[2], 'w', encoding='utf-8'))
 W = collections.Counter(); N = collections.Counter()
 for o in out: N[o['map']] += 1; W[o['map']] += o['result'] == 'win'

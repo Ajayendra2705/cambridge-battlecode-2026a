@@ -1,4 +1,13 @@
-# Status (updated Tue, Nov 3, 2026 12:51 PM IST)
+# Status (updated Tue, Nov 3, 2026 2:03 PM IST)
+
+## Note at 14:03 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live: 1523**, by the user's rule. No gate runs. Asked the user at 13:02 for one gate of `rt8` on `a7p`; no answer yet.
+- **New view: ranked neighbours decide the rating** (`docs/findings.md`, "Neighbours decide the rating"). Win rates by size, map, rival and draft come from `data/rk8.json` and `data/rk9.json`; `data/fights/q_all` holds the decoded games. Hard rivals near our rank: Sheeesh---, jazz, Jupiter, MFF1. `tools/platform/rkpanel.py` makes a pinned panel of the newest ranked groups: with `--since` set after 1523 went live, the source groups are 1523's own games, so they serve as the base with no rerun.
+- **`exp/rt8` passes its local screen** (`rule_arms.md`). **`exp/rt9`** = rt8 plus the siege from spawn tiles on 03homonoliths (`mk_vhm.py`, base 5 of 12, vhm120 12 of 12 locally; 1523 has this already by its note). Only that map changes between rt8 and rt9.
+- **Rejected locally:** later guard siege on gated altars (`vsb7` +0.07 wins over four seeds, bar +0.15; `rule_gate.md`).
+- **`data/map_info.json`** holds every map's altars, spawn tiles and camp groups (from a temporary probe). Gated altars: 01boss_battle, 02guardians. Heavy maps: 00contest, 00great_wall, 00stampede, 01starvation, 02fields, 03homonoliths. Single-altar maps: 19 of 85.
+- **1523's source is still missing:** the Chrome extension is offline and the newest zip in Downloads is older. With the source a 1523-based router can be built (`tools/variant/nsbot.py`).
 
 ## Note at 12:51 IST 11-03 (session 94, branch `night-1101`)
 

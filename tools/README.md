@@ -71,6 +71,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `ranked.py [limit]` | Our recent ranked matches. |
 | `ourmaps.py PAGES OUT.json` | Our ranked games on engine 2.0.0, 100 a page, newest first, into OUT.json (map, side, result, opponent, time, drafts); prints wins per map, worst first. The maps of `docs/findings.md`, "Why we lose: maps, fights and items" (`data/tmp_ourranked.json`, 10-28 04:58). |
 | `platform/rkmaps.py OURMAPS.json [--since ISO]` | Our ranked games by map family, team size, and the maps at 40% or worse. |
+| `platform/rkpanel.py OURMAPS.json NAME NGROUPS [--since ISO] [--per-team N]` | Pinned panel of our newest ranked groups, one per rival: the teams near our rank on the maps ranked play gave us. |
 | `ladgames.py LADDER.json OUT.json [PAGES]` | Ranked games of every team on a ladder file (`cambc ladder --page N --limit 25 --json`, pages joined into one list), PAGES pages of 100 per team, deduplicated: map, time and per team name, side, result and draft picks. 11-01: 5,325 games of the top 100 teams in about 5 minutes. |
 | `draftelo.py LADGAMES.json LADDER.json [SINCE]` | Which picks beat their Elo expectation, per team size: for each game side with both teams on the ladder file, result minus the Elo expectation from current ratings; mean residual of the side that drafted a champion the other did not, and of each full draft with 20+ sides. Rising teams (ratings lag) inflate their drafts, so read it as a screen. |
 | `eligible.py LADDER_JSONL RANKS` | Teams that can be scheduled (bot on the current engine). Retries listings that come back empty (HTTP 429). |
@@ -104,6 +105,8 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `mk_vmr.py NAME [BASE]` | Marcella holds the nuke when adjacent, with a hit free and the reset ready. |
 | `mk_vfu1.py NAME GATE [BASE]` | Setup that stops at a fuel gate and resumes next turn. |
 | `mk_vpa.py NAME [BASE]` | Target rule and fight simulation know Cassi and Issac die together (add the `bool linked` field to `SimUnit` by hand, or use `mk_rt8.py`). |
+| `mk_vsg.py NAME FROM BELIEF [BASE] [SRC]` | Gated altars: guard siege from round FROM; for BELIEF rounds after the enemy tributed total rises, carriers treat the gate as open. |
+| `mk_vhm.py NAME [FROM] [BASE] [SRC]` | A monolith within 3 tiles of our spawn: siege from round FROM with no health gate, time limit or stall check (a spawn tile heals fully each round; 03homonoliths). |
 | `mk_rt8.py NAME` | Finishes a router made by `mk_rt.py` and `mk_vbk2.py`: book weight, Vesper's vvk1 rules, the pair-aware fight. |
 | `mk_vfu2.py NAME GATE [--base B] [--src src/cj] [--check]` | Cheaper setup with the same decisions: draft plan in draft memory, lazy group bitboards, raw camp layout words, setup gate GATE. `--check` builds a probe that prints mismatches and the fuel left. |
 | `mk_vlm.py NAME LIGHT_W ENABLE_EARLY R MAPS` | Light camps first on chosen maps. |
@@ -314,6 +317,7 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `replay/inrange.py RMAX DIR...` | With an enemy within 6 at the start of the round, the action taken, by side, band and distance, and by type within 3. |
 | `replay/inreach.py RMIN RMAX DIR...` | What a champion does with an enemy champion in reach (hit, camp, cast, toward, away, still), us against them, by health, numbers and type. |
 | `replay/stillwhy.py RMIN RMAX DIR...` | No-action rounds with an enemy in reach, by cause: stun, recall channel, tribute channel, fuel, other. |
+| `replay/monohits.py DIR...` | Monolith sieges per map, us against them: hits, first hit, brought down, champion-rounds on them, deaths near a hit. |
 | `replay/exchange.py RMIN RMAX DIR...` | Health lost a round, hits per body-round and deaths while in contact, by numbers of bodies on each side. |
 | `replay/freehit.py RMAX DIR...` | Melee champions: rounds with a walk and a hit, and free hits left unused. |
 | `replay/opener.py RMAX DIR...` | Which action and type opens a fight (first hit on a champion after 15 quiet rounds), and casts a game by type. |
