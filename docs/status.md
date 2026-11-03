@@ -1,4 +1,11 @@
-# Status (updated Tue, Nov 3, 2026 11:40 PM IST)
+# Status (updated Wed, Nov 4, 2026 12:12 AM IST)
+
+## Note at 00:12 IST 11-04 (session 94, branch `night-1101`)
+
+- **Live and selected: v1536.** It passes its whole-bot check against v1531 (`nb1` + `nb2`: 71 to 62 of 125, margin +56 +- 53) and does no harm on the top-team panel `tt1` (8 to 7 of 40, margin +69 +- 84). All 250 pinned games: 134 to 113.
+- **Running:** `data/run_top.sh`: `live e1536_nr4 nr4`, the base for `exp/rh1`, waiting for 10 groups of quota (about 00:31-00:36 IST). `rh1` itself needs an upload, so ask the user first, then select v1536 again.
+- **Running locally:** `data/run_vfb.sh`: `vf1` (`kVesperFeed = 5`), `vf2` (`kVesperSolo = 1`), `vf3` (`kMarcGems = 1`) on the 17 Bamboo maps against `exp.rh1`; bar in `results/analysis/rule_vesper_bb.md`.
+- **Lock:** 05:29 IST 11-04. Combine at 00:29 IST. Start no gate after about 04:30 IST. Check the selected bot before the lock.
 
 ## Note at 23:40 IST 11-03 (session 94, branch `night-1101`)
 
