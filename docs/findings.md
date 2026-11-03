@@ -2637,3 +2637,20 @@ Decoded worst maps (`data/fights/q_worst`, `tools/replay/mapgold.py`; us / them)
 **Staying together alone does not earn gold.** `tools/replay/packness.py` (213 games, 10 to r150): share of living allies within 4 tiles 0.36 / 0.39. Across all sides, more packed teams hold more gold at r300 but so do their rivals on those maps (five a side, top quarter 1693 / 1717, bottom quarter 1245 / 1291), and win rate does not follow the difference.
 
 **v1523 and v1530 removed the fuel fault** seen on big maps in v1503: local exhaustions 6.79 to 0.31 a game (01big-world 36.9 to 0.6, adgato-gemcombat5 26.4 to under 0.1), left over on 02the-pack (10.8), 01boss-battle (6.0) and 00vault (4.2). The worst-map table above comes mostly from the v1503 line, so its fuel lines need a recheck when 1530 has played those maps.
+
+## On near maps v1531 wins without early gold (11-03 16:15 IST, panel `tm1`, ranks 1-12, 7 near maps, 80 games each, pinned to the same rivals' bots; new minus 1530 per game, `tools/replay/pgold.py`)
+
+| metric | `ra1` (Vesper's rules) | v1531 (Bamboo v1472 on these maps) |
+|---|---|---|
+| wins of 80 (1530: 12) | 12 | 26 |
+| margin | +14 +- 33 | +216 +- 68 |
+| team gold r150 | +9 +- 10 | -83 +- 23 |
+| team gold r300 | +35 +- 23 | -81 +- 43 |
+| team gold r1000 | +48 +- 88 | +378 +- 183 |
+| Vesper gold r300 | +72 +- 25 | -114 +- 28 |
+| their gold r1000 | -67 +- 82 | -460 +- 208 |
+| their tributed r1000 | -20 +- 21 | -109 +- 31 |
+| our deaths r1000 | 0.0 +- 0.3 | -0.9 +- 0.6 |
+| their deaths r1000 | +0.6 +- 0.4 | +1.7 +- 0.7 |
+
+Early gold moved in `ra1` and wins did not. v1531 starts poorer and wins twice as many: its gain shows from r600 on, in the rival's gold and tribute and in deaths on both sides, so on these maps the fights decide. The gold-at-r300 correlation in "Gold against the neighbours" does not show a cause. These 7 maps were picked because Bamboo did well on them, though the panel's games are new.

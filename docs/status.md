@@ -1,5 +1,11 @@
 # Status (updated Tue, Nov 3, 2026 2:36 PM IST)
 
+## Note at 16:15 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live rule: v1531** (user, 15:50 IST: "keep 1531 live after your test"). The chain `data/run_q1.sh` (plan `data/plan_q1.txt`) plays our queue one gate at a time (user: "queue all ours"): `ra1` and v1531 on `nb1`, then `vfx2`, `vfx1`, `vfx3`, `vmr2`, `vgv2`, `vfu2` on `t03pa`. **Select v1531 again when it ends.**
+- **`ra1` (v1532) on the teammate's panel `tm1`:** passes its bar: Vesper gold r300 +72 +- 25, team gold r300 +35 +- 23; wins 12 against 12, margin +14 +- 33. v1531 on the same panel: 26 wins, margin +216 +- 68 (`docs/findings.md`, "On near maps v1531 wins without early gold").
+- **`exp/ra2`** = the 7-map Bamboo router with `ra1` elsewhere; builds, needs a local screen. `esw75`, `esw100`, `pk5` also wait for one. The user was asked when local screens are fine for the laptop.
+
 ## Note at 14:40 IST 11-03 (session 94, branch `night-1101`)
 
 - **Live: v1530.** A teammate pushed `bots/bamboo1523` and `bots/bamboo1530` to `origin/Bamboo8` (exact sources) and made v1530 live at 08:28 UTC. The user's rule named 1523, and the choice is theirs to change; I did not flip it. Both folders are now in this branch, and `exp/b30`, `exp/b23` are their test copies.

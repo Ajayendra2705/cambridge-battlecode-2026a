@@ -335,6 +335,7 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `replay/typecmp.py RMAX DIR...` | Each type, us against them, to a round: alive rounds, casts per slot, hits on champions and camps, gems, deaths, kills, gold and health at the end. |
 | `replay/leads.py DIR...` | Lead conversion at r300, r600, r1000, r1500: who leads in gems in hand and gold, how often the leader wins, and how games end. |
 | `replay/goldsrc.py RMAX DIR...` | Gold by source, us against them, to a round: rewards (count and gold a reward), kills, tribute, also by champion type. |
+| `replay/pgold.py BASE_RUN NEW_RUN...` | Paired earned gold, Vesper gold, collected, tributed and deaths by r150, r300, r600, r1000 from platform summaries, no replay decoding, so a gate can be judged at low CPU. |
 | `replay/capkinds.py RMAX [--maps M,M] DIR...` | Captures by kind of group and half, us against them, with gold, gems and the gold each type earns from each kind. |
 | `replay/packness.py RMAX DIR...` | Share of allies within 4 tiles in the opening against gold, wins and deaths, by side and team size. |
 | `replay/mapscript.py MAP RMAX N DIR...` | The opening of each champion in N games of one map: camp hits, rewards, fights, deaths, positions. |
