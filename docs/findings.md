@@ -2730,3 +2730,15 @@ Rewards to r300: gold 763 against 1029, captures 9.3 against 12.5; Vesper's shar
 **More Bamboo maps look exhausted.** After batch 3 the remaining default-arm maps show local Bamboo gold gains under +700 with falling local margin (`data/lmapgold.txt`: 03riverbed +691, margin -496; 00split +663, -159), or losses. The filter's bar was +400 and 2 SE plus a poor ranked record; only 03riverbed and 00split are near it and neither has a poor reward ratio.
 
 **03fan shows what local wins miss.** In `q_all` (4 games, 0 wins) we lead gems to r600 (848 against 702) but capture 12.2 rewards against 42.2 (914 gold against 3226), and the rivals then out-item us; recent ranked 0 of 6. Local default-arm wins are 7 of 8 in games that end by about r850 before items matter, so the local pool does not punish a gem-only game.
+
+## Selections, replays and the Bamboo map filter (11-04 02:45 IST)
+
+**A selection can switch within a minute or two.** v1539: uploaded 02:26:22, active by 02:27:30. v1536 selected 02:33:57, v1539 `inactive` at 02:35:19, v1536 `active` at 02:35:40. v1538, uploaded 02:00:57, was still `queued` at 02:13:24, when it was cancelled. So the wait runs from about one minute to more than twelve, with no trigger seen.
+
+**The active version's `statusAt` moves when our ranked set ends:** 02:04:44 (set ended 02:04:44), 02:22:54 (set ended 02:22:54), 02:15:41 (set ended 02:15:55). It does not mean a switch.
+
+**Reading `active` a few seconds before creating a group does not guarantee the group plays that version.** Three groups created from 02:35:15, with `active` reading 1539 at 02:35:13, played v1536: every margin equals the pinned base (`rh5_tt1a@tt1a` against `rf1_tt1@tt1`). That also confirms again that a pinned panel replays exactly.
+
+**Single groups in our unranked list look like rivals' tests against us, and they do not count against our quota.** `matches list --team me --kind unranked` lists groups we did not start, such as 02:15:52 and 02:26:28. The `used` figure at 02:30 IST (50) matches the list only without seven such single groups. `cambc` does not show who creates a group, so this is an inference.
+
+**Local gold gain does not pick Bamboo maps beyond the first batches.** `nr5`'s maps had large local gains (03fan +2724, 00packs +1799) and lost on the platform: 26 to 12 of 50. On `nr4` and `nr6` together only 00eight held. The Bamboo table looks finished.

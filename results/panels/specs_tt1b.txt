@@ -1,0 +1,5 @@
+882106d4-9deb-40cc-9d5c-8522c1d32129:adgato_gemcombat2,00anvil,00quadrants,02guardians,01fracture:b,a,b,a,b:94a4ac44-ab56-4ec0-94bd-68aa1537db6c
+3ec4a701-a9b5-498f-9361-eea4a6dd1cde:00pilgrimage,00road_of_riches,01starfish,02cuts,01shortcut:b,a,b,a,b:3e295244-9ca5-4382-9351-8ef5fc799eeb
+c00b682e-e45a-476b-96ca-470205e9dd44:00vault,02geodes,00rows,00packs,01broken_curve:b,a,b,a,b:9054ea00-8897-4af4-ada7-aaefaa7f28d3
+38e6d8c4-1608-44f5-956b-08390f564336:adgato_gemcombat2,00anvil,00quadrants,02guardians,01fracture:b,a,b,a,b:865ddca5-7af9-403c-8841-70b15b0045a0
+547efb5b-57e5-4355-8501-3b331f506d62:00pilgrimage,00road_of_riches,01starfish,02cuts,01shortcut:b,a,b,a,b:db38e191-c664-4cbb-8d46-65bf74f14a09

@@ -10,7 +10,7 @@ for p in /proc/[0-9]*; do
   c=$(tr '\0' ' ' < "$p/cmdline" 2>/dev/null) || continue
   case "$c" in
     *procs.sh*) ;;
-    *gatechain.sh*|*gateq.sh*|*gateq_live.sh*|*gate.sh*|*gate_full.sh*|*multi.py*|*rr.py*|*decode_run.sh*|*decode_chain*|*after_run*|*gdl.py*|*/run_*.sh*|*/judge_*.sh*)
+    *gatechain.sh*|*gateq.sh*|*gateq_live.sh*|*gate.sh*|*gate_slot.sh*|*gate_full.sh*|*multi.py*|*rr.py*|*decode_run.sh*|*decode_chain*|*after_run*|*gdl.py*|*/run_*.sh*|*/judge_*.sh*)
       echo "${p#/proc/} ppid=$(awk '{print $4}' "$p/stat" 2>/dev/null) :: ${c:0:100}"
       [ "$1" = kill ] && kill "${p#/proc/}" 2>/dev/null ;;
   esac

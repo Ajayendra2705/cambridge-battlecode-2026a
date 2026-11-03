@@ -1,4 +1,14 @@
-# Status (updated Wed, Nov 4, 2026 1:46 AM IST)
+# Status (updated Wed, Nov 4, 2026 2:45 AM IST)
+
+## Note at 02:45 IST 11-04 (session 94, branch `night-1101`)
+
+- **Live and selected: v1536.** The user at 02:33 and 02:36 IST: all ranked games on the best bot; queue the tests, then put the best bot live again.
+- **v1538 was cancelled on the website at 02:13 IST,** before it was ever active; no game played. v1539 (`bots/bamboo1539`, test table plus dash rule) replaced it: active 02:27 to 02:35 IST, one ranked set on it (02:30 IST, 2 of 5).
+- **Table result:** `nr5` 12 against 26 of 50, margin -235 +- 65: 03fan, 02the_pond, 01the_farm, 00packs and 02fields stay on the default arm. `nr6` 19 against 22 of 40: only 00eight enters (`rule_route2.md`). `kMarcGems` stays out, no read of its own passed.
+- **Next, `exp/rh6` = v1536 + 00eight + `vd1`:** `data/run_v1540.sh` uploads it right after the ranked set of about 02:50 IST, plays `tt1`, and selects v1536 once. Rule in `results/analysis/rule_venhp.md`. If it holds: `vd4` or `nb1` + `nb2` as quota allows.
+- **Quota:** my slip spent 11 groups on duplicates at 02:28 IST. Releases: 10 at 02:48 IST, 8 at 03:14 IST, 24 or more from 03:27 IST.
+- **Last gate about 04:00 IST; the final bot reads back active by 04:45 IST; work ends 05:00 IST; lock 05:29 IST.**
+- **One read at about 02:25 IST answered "Your team is banned" (HTTP 403).** The same read worked 40 seconds later, and `team.banned` in `submissions list --json` reads false. Cause unknown; if it comes back, stop and tell the user.
 
 ## Note at 01:46 IST 11-04 (session 94, branch `night-1101`)
 

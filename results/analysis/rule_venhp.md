@@ -28,3 +28,16 @@ Vendetta has the largest gap in both. Ours opens Prospector of strength in 64% o
 **`vh2` and `vh3` stopped (02:09 IST).** `vh2` on 478 pairs: wins 418 to 401, flips 26 up and 43 down, collected on five picks 1130 to 1083. It fails like `vh1`; `vh3` adds to `vh1`, which failed. Item changes keep losing here, so the CPU goes to the dash rule.
 
 **Dash variants (written 02:11 IST, before their games).** `vd1`'s partial read at 02:08 IST, 410 pairs: wins 356 to 363, flips 20 up and 13 down, deaths on four picks 8.17 to 6.26, on five 4.89 to 4.43. Traces on `tt1` show Vendetta dying at r25 to r40 from full health with 4 or 5 enemies around (15 deaths by r120 in 40 games). `vd2`: `P_VDASH` 3, also Heart of Ruin's landing dash. `vd3`: Vendetta only, needs one more ally than enemies (`P_VDASH_M` -1). `vd4`: `P_VDASH` 5, also Vesper's dash. Same local bar and same platform rule; for `vd2` Heart's champion damage must also stay at least 90% of the base, the point where `hd1` failed.
+
+**Dash variants, local result (02:40 IST, all 544 pairs against `exp.vf3` of `multi-011232`, no fault).** All three sizes together, wins of 544, then per game deaths, collected, wins:
+
+| variant | wins | deaths | collected | wins per game |
+|---|---|---|---|---|
+| `vd1` Vendetta | 478 to 484 | -0.49 +- 0.18 | -2.79 +- 9.35 | +0.01 +- 0.01 |
+| `vd2` + Heart | 478 to 475 | -0.55 +- 0.21 | -0.41 +- 9.75 | -0.01 +- 0.01 |
+| `vd3` needs one more ally | 478 to 466 | -0.35 +- 0.23 | +0.28 +- 13.20 | -0.02 +- 0.01 |
+| `vd4` + Vesper | 478 to 479 | -0.60 +- 0.19 | -3.21 +- 9.29 | +0.00 +- 0.01 |
+
+All pass the local bar. On four picks `vd1` (the same as `vd4` there, no Vesper in that draft) has deaths -1.42 +- 0.54, captures +1.64 +- 0.84, wins +0.05 +- 0.03; on five picks deaths -0.39 +- 0.29, collected -15.53 +- 14.49, wins 0; on three picks deaths +0.09 +- 0.18, wins +0.02 +- 0.03. Vendetta's deaths per game 0.99 to 0.80 and her damage 9628 to 9054 (94%; the base figure mixes two candidates). `vd1` goes to the platform first: most wins, fewest changes. `vd4` is the next if `vd1` holds on `tt1`.
+
+**`vd1` missed its first slot (02:35 IST).** Quota ran out before `tt1` could start under v1539: a second copy of the slot script created `nr5` again and part of `nr6`, 11 groups wasted (a killed runner had left its `gate_slot.sh` child running, and `procs.sh` did not list that script; it does now). Three groups of `tt1` (`rh5_tt1a@tt1a`) were created at 02:35:15 while the switch back to v1536 was under way: every margin equals `rf1_tt1@tt1`, so they played v1536 and say nothing about the dash rule.
