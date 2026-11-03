@@ -10,3 +10,11 @@ Our first reward comes at r50 on average, the rivals' at r32; our third at r91, 
 Local bar (base `exp.vnl1`, `multi-031107`, 680 paired): team gold r150 and r300 up by 1 standard error or more. Guards: deaths not up by more than 0.3 a game, wins not down by more than 0.03, collected not down by more than 2 standard errors, no fault.
 
 Platform only after a pass: `t03p` parts pinned to `t1503_tm@t03`. Target: decoded team gold r100 and r300 up by 1 standard error or more, first reward earlier. Guards: margin and collected not down by more than 1 standard error. Wins recorded, not judged.
+
+## Waits and captures in the opening (written 11-03 06:29 IST, before the screen)
+
+Our Vesper spends 18% of her turns to r300 waiting (`wait_respawn`, `wait_tank`, `gather`). `P_PULL_WAIT` 15 makes a non-tank stand up to 15 rounds at a group it cannot tank alone until the tank pulls. Rivals land 135 hits on camps by r100 against our 103. `exp/vpw1` and `exp/vpw2` set `P_PULL_WAIT` to 6 and 2.
+
+The rivals' Vesper makes 5.5 captures by r300 and holds 629 gold, ours 2.8 and 232. Team gold is above the camps' nominal gold by 21% for them and 11% for us after kill gold. `exp/vcv1`: before r300 Vesper's capture weight is 2 (was 0.85) and she no longer leaves gold groups to Marcella on her way.
+
+Local bar for all three as above (base `exp.vnl1`, 680 paired): team gold r150 and r300 up by 1 standard error or more; deaths not up by more than 0.3, wins not down by more than 0.03, collected not down by more than 2 standard errors, no fault. For `exp/vcv1` the gold bar counts at r300 only.

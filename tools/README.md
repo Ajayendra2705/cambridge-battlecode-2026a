@@ -255,6 +255,7 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `firstgroups.py DIR...` | Each champion's first camp group: round, distance, rank by distance, kind; distinct first groups per team and the largest crowd. |
 | `castfate.py [--r R] DIR...` | What follows a cast with an enemy within 6: per side, type and slot, casts a game, self dies within 10 rounds, enemies die, allies and enemies near. |
 | `fightband.py DIR...` | Fights opened after 15 quiet rounds, by round band, numbers and max-health edge: each side's losses within 12 rounds. |
+| `openbook.py OUT.json R DIR... [--them-only DIR...]` | Opening book by map: which camp groups each side hit by round R, every game read in team 0's frame through the map's symmetry. |
 | `openpack.py DIR...` | Opening pack on 5-pick maps: teammates within 6 per alive champion-round in rounds 15-45, us vs them, per map. Top teams on 00crater 3.45, their opponents 2.53 (tg1, 10-28). |
 | `ribsbudget.py DIR...` | 00ribs champion-round budget per side, r60-1000 (dead, hill, walking down or up, home, other), heal trips per game and health when leaving the hill. Pass a dir of 00ribs games only. |
 | `meetings.py DIR...` | Meetings at camps, to r1000: a champion hits a camp with exactly one enemy within 6; per side of the farmer, what farmer and watcher do over the next 3 rounds and who dies within 20. |
