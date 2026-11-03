@@ -1,0 +1,40 @@
+// Per-map router: one program, two bots, picked once per game from a map signature read before the draft (six SDK counts, cheap, the
+// same for both sides on these symmetric maps). The maps in kBambooMaps play the Bamboo bot (src/bb, namespace bbt, platform 1472: Bamboo #458
+// + spell finisher, with its free-list allocator on, as it runs alone); every other map, unseen maps too, plays v1503 (src/cj, namespace cjb,
+// the teammate's v606). Table: tools/platform/mapstrat.py (the Bamboo line against the bot_10 line within the same opponent) and the pinned
+// panel b1p (results/analysis/rule_route2.md). Signatures: tools/local/mapsig.py (data/map_sigs.json).
+#include <cambc.h>
+#include "fastalloc_switch.h"
+
+namespace cjb { int run(); }
+namespace bbt { int run(); }
+
+namespace {
+struct MapSig { short w, h, walls, holes, altars, bushes; };
+
+// w, h, walls, holes, altars, bushes
+constexpr MapSig kBambooMaps[] = {
+    {40, 40, 76, 16, 4, 38},  // 00interlock
+    {30, 30, 24, 320, 2, 24},  // 00fragment
+    {31, 31, 18, 50, 1, 44},  // adgato_gemcombat1
+    {51, 51, 186, 10, 3, 210},  // 02crossing
+    {71, 71, 44, 84, 5, 60},  // 00corners
+    {37, 31, 134, 12, 1, 40},  // 00anvil
+    {79, 79, 1082, 10, 2, 252},  // 00dunes
+};
+
+bool bamboo_map() {
+    const int w = cambc::map::width(), h = cambc::map::height();
+    const int walls = static_cast<int>(cambc::map::walls().count()), holes = static_cast<int>(cambc::map::holes().count());
+    const int altars = static_cast<int>(cambc::map::altars().count()), bushes = static_cast<int>(cambc::map::bushes().count());
+    for (const MapSig& m : kBambooMaps)
+        if (m.w == w && m.h == h && m.walls == walls && m.holes == holes && m.altars == altars && m.bushes == bushes) return true;
+    return false;
+}
+}  // namespace
+
+int main() {
+    if (!bamboo_map()) return cjb::run();
+    fastalloc::on = true;
+    return bbt::run();
+}

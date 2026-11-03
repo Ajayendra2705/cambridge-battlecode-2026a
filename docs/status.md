@@ -1,4 +1,14 @@
-# Status (updated Tue, Nov 3, 2026 4:15 PM IST)
+# Status (updated Tue, Nov 3, 2026 7:55 PM IST)
+
+## Note at 19:55 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live: v1533** (`bots/bamboo1533`, test copy `bots/exp/ra2`): v1531's router with `ra1` in the default arm; user, 19:40 IST: "Yes, v1533 live". Against v1531 on `nb1` + `nb2`, 125 pinned games: team gold r300 +60 +- 38, margin +3 +- 48, tributed r1000 -6 +- 22, deaths r1000 +0.3 +- 0.3, wins 65 against 62. A modest gain. Ladder: rank 40 at 19:53 IST.
+- **Gates are allowed by the user** (one chain at a time). A new bot stays live only after the user says so. Select 1533 after every chain: `cambc submissions activate 1533`.
+- **Chain running or waiting:** `data/run_rd.sh`, plan `data/plan_rd.txt`: `live e1533_nr1 nr1`, `exp/rd0 rd0_nr1 nr1`, `exp/rc1 rc1_nb2 nb2`; after it, `vN rc1_nb1 nb1` (N = rc1's version) as a second chain. The plan does not end on the live bot. **If the session is closing, stop the chain by pid (`tools/platform/procs.sh`) and select 1533.**
+- **Candidates under test.** `exp/rd0`: the router with 8 more near maps on Bamboo (00crater, 00oasis, 02arena, 00stampede, 00contest, 01broken_curve, 02guardians, 01starfish); rule in `results/analysis/rule_route2.md`, judged per map on panel `nr1` against `e1533_nr1`, and joined maps must hold on a fresh panel. `exp/rc1`: v1533 plus `fa4`, Marcella next to a target uses hit + reset (a stun) before the nuke; rule in `results/analysis/rule_nuke.md`, judged against `ra2_nb1@nb1` and `ra2_nb2@nb2` with no base rerun, because a pinned panel replays exactly.
+- **Quota is shared.** At 19:33-19:35 IST a teammate played 15 groups against the top teams while my base rerun had v1531 selected, so those games may have played v1531 or v1533, not one bot. Quota was 50 of 50 at 19:53 IST.
+- **Local:** `esw` screen running (`data/judge_screen_esw.txt`, bar in `rule_gold.md`), then `pk5`. Disk had 1.9 GB free at 19:47 IST: delete each screen run after judging it.
+- **Next ideas:** Bamboo arm fuel on 00dunes and 00corners (54 and 14 exhausted turns with an enemy near, per game); the teammate's rivals on other maps (32 groups) if the user wants it.
 
 ## Note at 16:15 IST 11-03 (session 94, branch `night-1101`)
 

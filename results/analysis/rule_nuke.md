@@ -22,3 +22,13 @@ tributed by r1000 not down by more than 1 SE, no fault. Wins recorded, not judge
 ## vmr1: Marcella's reset before the nuke, written 11-03 10:43 IST before any game
 
 Factor: stuns in fights (ours 9.5 a game, theirs 21). When she is adjacent ours fires the nuke first, and one cast a turn leaves no reset; the rivals use the reset. `vmr1`: with a target adjacent, the basic hit free and the reset ready, the nuke waits. Local bar as above. Platform metric: stuns by Marcella on champions per game up by at least 1 SE in pairs; guards as above.
+
+## The fight fixes on the 1530 line, written 11-03 18:59 IST before their screen
+
+`vfx1`, `vfx2`, `vfx3` and `vmr2` passed on `vnl1` but were queued on the v1503 line and never played. On `exp.b30` they are `fa1` (nuke whatever the sim reads), `fa2` (ranged holds in range), `fa3` (free shots) and `fa4` (hit and reset before the nuke); `fa5` is `fa1` + `fa2` + `fa4`. The newest ranked games show why: of 60 games on v1531, 14 are massacres (we die 6 or more times more than they do).
+
+**Local bar, same as above.** 680 paired games against `exp.b30` (`multi-142332`, pools cmb7, bot_10, cp3, dh3): deaths not up by more than 0.3, wins not down by more than 0.03, collected not down by more than 2 SE, no fault.
+
+**Platform rule.** Each in the router's default arm, panel `nb1`, against v1531 in the same session. Metrics: `fa1`, nuke casts on a champion per game; `fa2` and `fa3`, Vesper's share of hits on a champion with an enemy within 3; `fa4`, Marcella's stuns on champions per game; each up by at least 1 SE in pairs. Guards: our deaths to r1000 not up by more than 1 SE, tributed to r1000 and margin not down by more than 1 SE, no fault. Wins recorded, not judged.
+
+**Result so far (11-03 19:21 IST, `data/judge_screen_fa.txt`).** The screen stopped early because the disk ran out. `fa1`, 680 paired: wins -0.01 +- 0.01, margin -9 +- 14, collected -3.2 +- 6.6, deaths +0.11 +- 0.16, no fault: passes. `fa2`, 558 paired: wins -0.03 +- 0.02, margin -22 +- 19, collected -14.8 +- 8.4, tributed -16.4 +- 8.4, deaths +0.19 +- 0.24, no fault. Neither goes on: the gaps they close were measured against ranks 1-20 and do not exist against the neighbours in v1531's ranked games (`data/fights/s31`, 60 games): Marcella's nuke on a champion per round with it ready and an enemy within 4 is 0.25 / 0.26 at r100-300 and 0.31 / 0.33 at r300-600 (us / them), and hits on a champion with an enemy at 3 tiles are 0.29 / 0.28 at r0-100. `fa3` and `fa5` were not played. `fa4` (stuns) plays alone next, same bar.

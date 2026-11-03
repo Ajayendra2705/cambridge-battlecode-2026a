@@ -35,3 +35,13 @@ vgv2's first sample lost team gold r300 on 02gift_wrapping (-410), 01yellow_bric
 ## Fresh sample by map (arm7, 16 games a map, rt7 against rt3; the opening arms do not touch these maps)
 
 03contours gain +176, wins 8/16, margin +211: stays on. 01concentrated_wealth -36, 10/10: stays on. 02treasure_box -106, 13/15: stays on (wins above base). 01yellow_brick_road -732, 6/8, margin +210: stays on by the rule (wins above base), the gold change is the largest of the table and is the chaotic swing seen in earlier variants there. 00expanse -214, 14/12, 02cuts -259, 15/10, 02gift_wrapping -282, 10/10: the rule goes off on these three in the next router.
+
+## Her capture rule for the whole game (`rv1`), written 11-03 19:25 IST before its screen
+
+In v1531's 80 ranked games to r1000 (`tools/replay/goldsrc.py 1000 data/fights/s31`), team rewards are 3327 / 3723 gold (us / them) and Vesper holds 1068 / 1939 of them, 32% against 52%. Her passive alone accounts for about 216 of the 396 gold gap in rewards, and most of her gap comes after r300 (at r300 about 283 / 629). `ra1`'s capture rule ends at r300 and on the platform its gain fades by r1000 (`tm1`: Vesper +72 at r300, +30 +- 47 at r1000; `nb1`: +54 at r300, -2 +- 76 at r1000). `rv1` is `ra1` with `P_VJ_R` 2000: the rule holds all game. `vce3`, which made others wait for her, failed locally; this rule only decides between champions already at the capture.
+
+**Local bar.** 680 paired games against `exp.ra1` (`data/runs/multi-145148`). Target: her gold at r600 and r1000 up by at least 1 SE. Team gold at r600 and r1000 not down by more than 1 SE. Guards: deaths not up by more than 0.3, wins not down by more than 0.03, collected not down by more than 2 SE, no fault.
+
+**Platform rule for a local pass.** In the router's default arm, panels `nb1` and `nb2` together against `ra2`'s games. Target: her gold at r1000 up by at least 1 SE. Guards: team gold at r1000, tributed to r1000 and margin not down by more than 1 SE, deaths to r1000 not up by more than 1 SE. Wins recorded, not judged.
+
+**Result of `rv1` (11-03 19:42 IST, 679 paired against `exp.ra1`, `tools/local/lgold3.py`).** Her gold r600 +13.0 +- 3.6, r1000 +32.7 +- 11.2 (target passes); team gold r600 -8.4 +- 5.3, r1000 -36.4 +- 18.8 (both down by more than 1 SE). Deaths -0.01, wins 0.00, collected -1.7 +- 2.0, no fault. **Rejected:** she earns more and the team earns less, like `vce3`.

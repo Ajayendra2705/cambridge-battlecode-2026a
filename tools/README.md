@@ -45,6 +45,12 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `firstturn.py BOT [OUT.json]` | Fuel left after setup on the first play turn, per champion and map, through a temporary probe that is never shipped. The bot acts on round 1 only with 120000 or more. |
 | `screen.sh NAME BASE_RUN_DIR BASE_CAND "exp/a,exp/b" JOBS [POOL] [BAR]` | Fast local screen: plays only the candidates (default pool `pool/cmb7,pool/bot_10`, 340 games each on the 85 maps), copies the base's games of the same pairings into the run, writes `lscreen.py`, `lgold2.py` and `lbar.py` output to `data/judge_screen_NAME.txt`. |
 | `mapsig.py [OUT.json]` | Map signatures for a per-map router (width, height, walls, holes, altars, bushes), read with the probe `bots/exp/sigp` on every map in `maps/`; warns when two maps share one. Default output `data/map_sigs.json`. |
+| `wbsel.py RUN_DIR BASE NEW_BOT OUT_MATCHES [MIN_RIVAL]` | Which local games a change at the end of the race can touch. From the base's statistics (timelines of tributed gems and bags) it writes a run-batch file with every loss that held 1000 in hand and every such win with the rivals at MIN_RIVAL or more (default 700): 160 of 680 games. Local games replay exactly, so the rest stay the same. |
+| `wbcmp.py BASE_DIR BASE NEW_DIR NEW` | Pairs those games: wins, flips both ways, losses that held 1000 in hand, rounds from the first winning bag to the end, deaths, margin, bot faults, and each flipped game. |
+| `wbrun.sh NAME [JOBS] [BASE_RUN] [BASE] [MIN_RIVAL]` | Builds `exp/NAME`, plays what `wbsel.py` picks and writes `wbcmp.py` to `data/judge_NAME.txt`. About 3 minutes at 4 jobs. |
+| `lgold3.py RUN_DIR BASE_CAND TYPE ROUND [ROUND ...]` | Earned gold of the team and of one champion type at any rounds of a local run, paired with a base (`lgold2.py` stops at r600 for the team and r300 for a type). |
+| `divround.py BASE_DIR BASE NEW_DIR NEW` | Where paired local games part: identical games, games that part before or after the hand reached 600 with their flips, and the parting rounds. A flip before the hand reached 600 is a fuel re-roll, not the change itself. |
+| `fullrest.py BASE_DIR BASE NEW_BOT NEW_DIR` | `run-batch` lines for the games of a selected run that are not played yet, to finish a `wbrun.sh` run into all the base's games. |
 
 ## platform/ (unranked games on the website; quota 50 match groups an hour, see `docs/WORKFLOW.md`, "Platform quirks")
 
@@ -309,6 +315,11 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `nearact.py DIR...` | Before r150: actions by local numbers (outnumbering or outnumbered), hits and steps within 3 tiles of an enemy, deaths per 100 rounds, us against them. |
 | `packindex.py DIR...` | Allies within 6 per living champion by round band, us against them. The split per team size in its output is wrong (`meta['drafts']` always holds 5). |
 | `prey.py DIR...` | Hurt prey (under 50% health) with a healthy hunter within 6: kill rate, hunters lost and share of chases, us against them. |
+| `replay/lastrace.py DIR...` | How losses end: by the final tributed gap, losses holding 1000 in hand, the rivals' last bag, our nearest champion when that channel started, the closest losses. Sizes a last-channel fix before any code. |
+| `replay/bagtrace.py DIR [MAXGAMES] [--skip MAP]` | Lost games that once held a bag lifting our tributed gems to 1000: one line a round for the carrier (position, health, bag, altar distance from `data/map_info.json`, nearest enemy, actions), and rounds by kind. |
+| `replay/bigsplit.py DIR...` | Are big captures split? Rewards of 40+ gems by size with sharers, biggest bags per game, gems lost on death from big bags, wins by biggest bag. |
+| `replay/idle.py DIR... [--upto R]` | Share of alive champion-rounds hitting, moving, starting something else or doing nothing (with an enemy within 6 or not), per side and type. On tm1: no gap to the rivals (still 0.118 against 0.132). |
+| `replay/index_local.py RUN_DIR CAND OUT` | After `pextract.py OUT JOBS RUN_DIR/CAND~...repl26a` on some games of a local run: removes the dots from the file names and writes the `index.txt` that `decoded.py` reads. |
 
 ## helper/ and helper3/ (the helper agents h2 and h3, from 10-28; notes in `docs/helper/NOTES.md` and `docs/helper3/NOTES.md`)
 

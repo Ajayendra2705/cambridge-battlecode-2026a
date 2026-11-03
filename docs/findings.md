@@ -2654,3 +2654,15 @@ Decoded worst maps (`data/fights/q_worst`, `tools/replay/mapgold.py`; us / them)
 | their deaths r1000 | +0.6 +- 0.4 | +1.7 +- 0.7 |
 
 Early gold moved in `ra1` and wins did not. v1531 starts poorer and wins twice as many: its gain shows from r600 on, in the rival's gold and tribute and in deaths on both sides, so on these maps the fights decide. The gold-at-r300 correlation in "Gold against the neighbours" does not show a cause. These 7 maps were picked because Bamboo did well on them, though the panel's games are new.
+
+## v1531 against the neighbours, 11-03 evening (`data/fights/s31`, 80 ranked games since it went live; us / them)
+
+**The gaps measured against ranks 1-20 are closed against the neighbours.** Marcella's nuke on a champion per round with it ready and an enemy within 4: 0.25 / 0.26 at r100-300, 0.31 / 0.33 at r300-600. Hits on a champion with an enemy at 3 tiles: 0.29 / 0.28. Hits by r800: 155 / 155, champion damage 13154 / 13066, deaths 4.9 / 4.9. Stunned rounds with an enemy in reach are 14.7 / 10.7 a game, against 16 / 8 on the top-20 panel. Read a gap against the neighbours before building on one found on a top-team panel. `fa1` and `fa2` passed or nearly passed locally and would have closed nothing.
+
+**Where the gold gap is.** To r1000 team gold 4186 / 4729 (rewards 3327 / 3723, kills 547 / 656, tribute 312 / 350). Group captures 38.9 / 47.9: 27.1 / 34.0 on the own half with nearly the same gems (358 / 369), so the extra ones are gold clusters (9.3 / 13.2) and wolves (12.0 / 16.0). The capture cycle is level (70.2 / 67.5 rounds), so the difference is who captures: Vesper 9.7 / 15.5 rises (her share of team rewards 32% / 52%), Marcella 7.2 / 9.3, and our Willow 0.8 against a rival fifth pick's 6 to 8 (a rival Willow 2.0). Her passive alone is about 216 of the 396 gold gap in rewards. Shifting captures to her has failed locally every time (`vce1` to `vce3`, `rv1`): she earns more and the team earns less.
+
+**Massacres.** Of the newest 60 ranked games, 25 are wins and 14 are massacres (we die 6 or more times more than they do, 16.8 deaths a game), 16 are economy losses and 5 bank losses. In massacres Willow takes 30% of the deaths, the first deaths come at r32-r185, and at r400 our team holds 40-90% of their max health. Only 3 of 39 games with the win in hand were lost, all with the rival at 953 or more, so the close-out leak is small (`closeout.py`).
+
+**A pinned panel replays exactly.** v1531 on `nb1` twice (18:33 and 19:34 IST): 31 of 50 both times, every margin equal. So a pinned base played once stays valid and saves quota, and two near-identical bots differ only through chaos from small changes.
+
+**Rivals move fast.** v1531 scores 31 of 50 (62%) on `nb1`, pinned to the rivals' bots of 08:30-10:00 UTC, but 41 of 90 (46%) in ranked games since 10:20 UTC. Panel `nb2` holds its own games of that window, 31 of 75.

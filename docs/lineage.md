@@ -83,3 +83,12 @@ Also in the pool: **fh2** (candidate, never main: dr3 + gold not doubled before 
 ## Lineage check
 
 `python -I tools/local/rr.py pool/c_g1,pool/b_log,pool/dv,pool/dm1,pool/pd1,pool/pw3,pool/tf3,pool/ea3,pool/mid4,pool/k5,pool/ts1,pool/gb2,pool/hb4` plays a local round robin (6240 games) and prints new-vs-previous win rates. The first attempt was killed before finishing. It is still open.
+
+## Router line (11-03)
+
+| Bot | Change over parent | Platform evidence |
+|---|---|---|
+| v1523 (`bots/bamboo1523`) | the v1503 code line, by its notes every-turn recall, bush wards and the siege from spawn tiles (source in `bots/bamboo1523`) | level with `rt5` over 175 pinned games against ranks 1-20; the user's named live bot on 11-03 (12:20 IST) |
+| v1530 (`bots/bamboo1530`) | v1523 + review fixes, capture hits, crystal threshold, Fish pack on 3-4 picks | teammate's upload, live at 08:28 UTC |
+| v1531 (teammate's router) | Bamboo v1472 on 7 near maps, v1530 elsewhere | 26 of 80 against v1530's 12 on `tm1`; 31 against 26 of 50 on `nb1`; kept live by the user at 15:48 IST |
+| **v1533** (`bots/bamboo1533`) | v1531 with `ra1` (map arms, Vesper gold first) in the default arm | 125 pinned games against v1531: team gold r300 +60 +- 38, margin +3 +- 48, wins 65 against 62; live 19:40 IST |
