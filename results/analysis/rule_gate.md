@@ -7,3 +7,5 @@
 **Local bar, 01boss-battle only.** Paired with `vnl1` over the same opponents and sides, against bots of the v1503 line and others that break the guards (the pool's older bots lose to the base 8 of 8 here, so they do not count alone). Metric: wins and margin of tributed gems. A candidate passes if wins are up by at least 0.15 and margin is not down. Guards: on other maps every game is identical to the base (the change reads `W.gated`).
 
 **Platform.** With the user's OK only. A local pass is needed, not enough.
+
+**Result (11-03 14:00 IST).** `vsg*` without the belief: no gain. `vsb7` with the belief, 24 paired games a seed on 01boss-battle over four seeds (`--fuel` default, 99500, 99000, 98500): wins -0.04, +0.21, 0.00, +0.12, mean +0.07; margin -102, +518, -198, +203, mean +105; our deaths fall by about 20%. It misses the bar of +0.15 and stays off the platform. The ranked correlation (an early fall leaves us poorer) is real, but delaying the siege alone does not turn it into wins against bots of our own line.
