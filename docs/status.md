@@ -1,13 +1,24 @@
-# Status (updated Tue, Nov 3, 2026 7:55 PM IST)
+# Status (updated Tue, Nov 3, 2026 9:30 PM IST)
 
-## Note at 19:55 IST 11-03 (session 94, branch `night-1101`)
+## Note at 21:30 IST 11-03 (session 94, branch `night-1101`)
+
+- **Deadline.** International Qualifiers lock at 05:29 IST 11-04. The selected bot enters. User: keep working until 5 hours are left (00:29 IST), then combine.
+- **Live and selected: v1535**, the teammate's "Bamboo RT33" (uploaded 20:46 IST): v1534 ("RT32": v1531 + nav fuel fix + Willow peel, no-trade, HP build, behind) + top-5 drafts (five picks Heart, Marcella, Vendetta, Vesper, Cassi and Issac). **Sources of v1534 and v1535 are not in the repo**; `origin/Bamboo8` stops at 1530, and `cambc` has no download. The combine needs them: the user was asked to ask the teammate to push.
+- **Parts for the combine** (`results/patches/README.md`): `ra1.patch`, `fa4.patch`, `six.patch`, and the router table lines of `rd1` (8 more maps on the Bamboo arm).
+- **Running:** `live e1535_nr2 nr2`, v1535's base on the 8 candidate maps; it selects nothing. Then `exp/rf1` needs the live slot on `nr2` (rule in `rule_route2.md`) and, for `fa4`, on `nb1` and `nb2` against `ra2_nb*`: ask the user first, wait for a quiet slot with `data/teamclear.sh`, select the live bot again after it.
+- **Running locally:** `data/run_c3x.sh`: `exp/c30` (v1530 with v1535's five-pick draft and `six.patch`) and `exp/c31` (`ra1` with the same) on the 51 five-pick maps. Bar in `results/analysis/rule_final.md`: does `ra1` still gain with the pair in the draft.
+- **Found tonight:** up to v1533 the sixth body with the pair on five picks has no abilities (`idx` stays -1 and `ainfo[idx]` overwrites them; Issac 0 casts locally). v1535's Issac casts normally, so it is fixed there or never applied. All earlier five-pick tests of the pair were flawed (`docs/findings.md`, "The sixth body").
+- **Quota is shared and scarce:** the teammate takes it within about 40 seconds of release. Keep about 50 groups after 00:29 IST for the final base and merged bot on `nb1` + `nb2`, and start no gate after about 04:30 IST.
+- **After the combine:** local fault check, the same 125 pinned games with its base, ask the user before it stays live, and check the selected bot before 05:29 IST.
+
+## Note at 20:13 IST 11-03 (session 94, branch `night-1101`)
 
 - **Live: v1533** (`bots/bamboo1533`, test copy `bots/exp/ra2`): v1531's router with `ra1` in the default arm; user, 19:40 IST: "Yes, v1533 live". Against v1531 on `nb1` + `nb2`, 125 pinned games: team gold r300 +60 +- 38, margin +3 +- 48, tributed r1000 -6 +- 22, deaths r1000 +0.3 +- 0.3, wins 65 against 62. A modest gain. Ladder: rank 40 at 19:53 IST.
 - **Gates are allowed by the user** (one chain at a time). A new bot stays live only after the user says so. Select 1533 after every chain: `cambc submissions activate 1533`.
-- **Chain running or waiting:** `data/run_rd.sh`, plan `data/plan_rd.txt`: `live e1533_nr1 nr1`, `exp/rd0 rd0_nr1 nr1`, `exp/rc1 rc1_nb2 nb2`; after it, `vN rc1_nb1 nb1` (N = rc1's version) as a second chain. The plan does not end on the live bot. **If the session is closing, stop the chain by pid (`tools/platform/procs.sh`) and select 1533.**
-- **Candidates under test.** `exp/rd0`: the router with 8 more near maps on Bamboo (00crater, 00oasis, 02arena, 00stampede, 00contest, 01broken_curve, 02guardians, 01starfish); rule in `results/analysis/rule_route2.md`, judged per map on panel `nr1` against `e1533_nr1`, and joined maps must hold on a fresh panel. `exp/rc1`: v1533 plus `fa4`, Marcella next to a target uses hit + reset (a stun) before the nuke; rule in `results/analysis/rule_nuke.md`, judged against `ra2_nb1@nb1` and `ra2_nb2@nb2` with no base rerun, because a pinned panel replays exactly.
+- **Chain running or waiting:** `data/run_rc.sh`, plan `data/plan_rc.txt`: `exp/rc1 rc1_nb2 nb2`, then `v1534 rc1_nb1 nb1` (check that 1534 is rc1). The plan does not end on the live bot. **If the session is closing, stop the chain by pid (`tools/platform/procs.sh`) and select 1533.**
+- **Candidates.** `exp/rc1`: v1533 plus `fa4`, Marcella next to a target uses hit + reset (a stun) before the nuke; rule in `results/analysis/rule_nuke.md`, judged against `ra2_nb1@nb1` and `ra2_nb2@nb2` with no base rerun, because a pinned panel replays exactly. `exp/rd0` (8 more maps on Bamboo) failed its local bar and did not play (`rule_route2.md`); the map filter for its successor `rd1` is written there, and `exp/rall` plays the Bamboo arm on all 85 maps locally to feed it.
 - **Quota is shared.** At 19:33-19:35 IST a teammate played 15 groups against the top teams while my base rerun had v1531 selected, so those games may have played v1531 or v1533, not one bot. Quota was 50 of 50 at 19:53 IST.
-- **Local:** `esw` screen running (`data/judge_screen_esw.txt`, bar in `rule_gold.md`), then `pk5`. Disk had 1.9 GB free at 19:47 IST: delete each screen run after judging it.
+- **Rejected locally tonight:** `esw75`, `esw100`, `pk5`, `rd0` (`docs/experiments.md`). Disk has under 2 GB free: delete each screen run after judging it.
 - **Next ideas:** Bamboo arm fuel on 00dunes and 00corners (54 and 14 exhausted turns with an enemy near, per game); the teammate's rivals on other maps (32 groups) if the user wants it.
 
 ## Note at 16:15 IST 11-03 (session 94, branch `night-1101`)

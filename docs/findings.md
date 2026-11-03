@@ -2666,3 +2666,19 @@ Early gold moved in `ra1` and wins did not. v1531 starts poorer and wins twice a
 **A pinned panel replays exactly.** v1531 on `nb1` twice (18:33 and 19:34 IST): 31 of 50 both times, every margin equal. So a pinned base played once stays valid and saves quota, and two near-identical bots differ only through chaos from small changes.
 
 **Rivals move fast.** v1531 scores 31 of 50 (62%) on `nb1`, pinned to the rivals' bots of 08:30-10:00 UTC, but 41 of 90 (46%) in ranked games since 10:20 UTC. Panel `nb2` holds its own games of that window, 31 of 75.
+
+## The sixth body before v1535, and v1534 on the neighbours (11-03 21:20 IST)
+
+**With Cassi and Issac on a five-pick map, the code up to v1533 leaves the sixth body without abilities.** `bot.cpp` sets `n_allies = min(5, all.size())` and looks for `idx` in that loop, so the sixth handle (Issac, in roster order) keeps `idx == -1`. Every turn `ainfo[idx]` writes before the array, over the body's own `akind`, `ahas`, `aexcl`, `arange` and `amod`, so `ability_slot` finds nothing. Measured locally on `exp/opcm` (v1503 line, 4 games, `tools/replay/casts.py`, to r1000): Issac 0 casts and 36 attacks a game; the other bodies 130 to 170 attacks, Cassi 26 nukes. In `data/runs/pa_join`, 416 six-body teams: Issac's monster damage by r300 is 1130, Cassi's 3040, Heart's 4426.
+
+Every five-pick test of the pair before v1535 played with this bug (`dci5f`, `dci5m`, `opcm`, `opcf`), so those verdicts say little about the pair itself. Four-pick tests (`dci4`) field five bodies and are not affected.
+
+**v1535 does not show it.** In 10 of its platform games, to r1000: Issac 24.1 resets, 65.3 dashes, 170.9 attacks a game, level with the other bodies; monster damage by r300 is 3152 against Cassi's 3346. Its source is not in the repo, so this is read from games. Anything built from v1533 or older with a six-body draft needs a fix: find `idx` over all handles and give `ainfo` six entries.
+
+**v1535's first 30 games:** no bot fault, and fuel exhaustions from round 4 of 0.1 a game on six bodies and 0.3 to 0.7 on three and four picks (`data/tmp_fuel35.py`). Six-body drafts won 9 of 16. Per body to r300 / r600 in 11 games: gold Heart 201 / 462, Marcella 256 / 626, Vendetta 376 / 834, Vesper 223 / 395, Cassi 67 / 182, Issac 100 / 220; the pair dies 2 times by r600 against 1 for each other body. Cassi's stun is cast 5.8 times a game by r1000, against 13 for rival Cassis (2 bodies only).
+
+**Fuel on routed maps.** Ranked games since 02:00 UTC, exhausted turns from round 4 a game: all maps 2.4 (rivals 9.3); 00dunes 77 (1 game), 02crossing 42 (1 game), 00corners 32.5 (4 games), all on the Bamboo arm. On the other routed maps it is under 2.
+
+**v1534 on `nb1`, pinned (`e1534_nb1`, 20:40 IST).** 29 of 50, the same as v1533 (29) and under v1531 (31). Against v1533: flips 6 up, 6 down, margin +3 +- 94, team gold r300 -20 +- 60, r1000 +123 +- 218, Vesper gold r300 -35 +- 27, their gold r1000 -386 +- 296, deaths r1000 -0.8 +- 0.7. Against v1531: flips 4 up, 6 down, margin -48 +- 82. Level on this panel. The teammate's top-team panel, read free with `tools/platform/teampanel.py`: the 15:03 UTC burst (v1534) 15 wins against 21 of 44 paired with the 08:18 UTC burst, and 13 against 13 of 35 with no flip against the 14:51 UTC burst, which was probably v1534 already.
+
+**Ranked by arm since 02:00 UTC, 370 games:** the Bamboo arm 17 of 35, the default arm 159 of 295. By team size 3 picks 52%, 4 picks 48%, 5 picks 52%. Against drafts with Cassi and Issac about 40%. Hard rivals: Jupiter 11 of 35, Sheeesh--- 7 of 20, MFF1 3 of 10, prism 2 of 10.

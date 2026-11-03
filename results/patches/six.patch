@@ -1,0 +1,66 @@
+--- a/bot.cpp
++++ b/bot.cpp
+@@ -138,7 +138,7 @@
+     if (!W.ready || fuel() < P_INIT_BOT_FUEL) return;  // edit_vtfuel2.py: the set-up goes on next turn (no suspension)
+     auto& all = ally_handles();
+     (void)enemy_handles();
+-    n_allies = std::min(5, static_cast<int>(all.size()));
++    n_allies = std::min(6, static_cast<int>(all.size()));  // with 5 the sixth body kept idx -1 and wrote over its own ability data
+     for (int i = 0; i < n_allies; ++i) {
+         if (all[i] == me) idx = i;
+         try {
+--- a/bot.h
++++ b/bot.h
+@@ -96,7 +96,7 @@
+     std::array<bool, 2> ahas{};
+     std::array<bool, 2> aexcl{};
+     std::array<float, 2> arange{}, amod{};
+-    std::array<AllyInfo, 5> ainfo{};
++    std::array<AllyInfo, 6> ainfo{};  // six bodies with Cassi and Issac on five picks
+ 
+     // farming state
+     int task = -1;
+--- a/comms.h
++++ b/comms.h
+@@ -73,7 +73,7 @@
+     }
+     // Rally squads by size: 3 = tank, bruiser and the strongest striker; 4 adds the second bruiser; 5 everyone.
+     static bool rally_member(int ally, int k, int n) {
+-        if (k >= n) return true;
++        if (k >= n || k >= 5) return true;  // the byte holds sizes 3 to 5: 5 means everyone, six bodies too
+         if (k == 4) return ally != n - 1;
+         return ally == 0 || ally == 1 || ally == n - 2;
+     }
+--- a/farm.cpp
++++ b/farm.cpp
+@@ -225,8 +225,8 @@
+ int Bot::choose_rally(int& kbest) {
+     World& W = world();
+     const float gold_w = round < 300 ? P_GOLD_W_EARLY : round < 700 ? 0.5f * (P_GOLD_W_EARLY + P_GOLD_W_LATE) : P_GOLD_W_LATE;
+-    std::array<vec2, 5> where{};
+-    std::array<bool, 5> home{}, alive{};
++    std::array<vec2, 6> where{};
++    std::array<bool, 6> home{}, alive{};
+     int n_alive = 0;
+     for (int a = 0; a < n_allies; ++a) {
+         const int code = comms.code_of(a);
+@@ -386,8 +386,8 @@
+     const float avg_dps = n_free ? free_dps / static_cast<float>(n_free) : 0.f;
+     const float avg_spare = n_free ? free_spare / static_cast<float>(n_free) : 0.f;
+     // Committed allies per group (one pass over the slots).
+-    std::array<int, 5> atask{};
+-    std::array<float, 5> adps{}, aspare{};
++    std::array<int, 6> atask{};
++    std::array<float, 6> adps{}, aspare{};
+     for (int a = 0; a < n_allies; ++a) {
+         atask[static_cast<std::size_t>(a)] = (a == idx || !alive_free(a)) ? -1 : comms.task_of(a);
+         if (P_SUP_FIX && P_SUPPORT && round >= P_SUPPORT_FROM && ainfo[static_cast<std::size_t>(a)].type == champion_type::willow) atask[static_cast<std::size_t>(a)] = -1;
+@@ -1226,7 +1226,7 @@
+     int nm = 0;
+     mem[static_cast<std::size_t>(nm++)] = Mem{ idx, me.health(), me.max_health(), p };
+     float team_dps = camp_dps_of(idx), team_spare = std::max(0.f, me.health() - P_TANK_FLOOR * me.max_health());
+-    std::array<bool, 5> counted{};
++    std::array<bool, 6> counted{};
+     int present = 1;  // me
+     for (const auto& a : allies) {
+         if (comms.task_of(a.index) != g.id || cheb(a.pos, g.center) > g.radius + 7) continue;

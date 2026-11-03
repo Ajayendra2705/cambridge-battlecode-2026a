@@ -1,0 +1,34 @@
+diff --git a/fight.cpp b/fight.cpp
+index 064490f..4795f57 100644
+--- a/fight.cpp
++++ b/fight.cpp
+@@ -16,6 +16,11 @@ bool Bot::try_cast_on_enemy(const Seen& e) {
+         const auto k = akind[s];
+         try {
+             if (abs[s].cooldown() > 0) continue;
++            if (k == ability_kind::damage && d <= 1 && me.can_attack()) {
++                // Next to the target with the basic hit still free: the hit and the reset come first (a second hit that stuns); the nuke waits.
++                const int rs = ability_slot(ability_kind::attack_reset);
++                if (rs >= 0 && abs[rs].cooldown() == 0) continue;
++            }
+             if ((k == ability_kind::damage || k == ability_kind::cc) && d <= static_cast<int>(arange[s])) {
+                 if (abs[s].use(e.c)) { cast_this_turn = true; return true; }
+             } else if (k == ability_kind::aoe_damage && d <= static_cast<int>(arange[s])) {
+@@ -1371,6 +1376,17 @@ void Bot::free_cast(const std::vector<const Seen*>& near, bool may_stand) {
+         try {
+             if (abs[s].cooldown() > 0) continue;
+         } catch (...) { continue; }
++        if (k == ability_kind::damage && !kill_only && me.can_attack()) {
++            // An enemy next to me, the basic hit free and the reset ready: hit and reset first (a second hit that stuns); the nuke waits a turn.
++            const int rs = ability_slot(ability_kind::attack_reset);
++            bool wait = false;
++            try {
++                if (rs >= 0 && abs[rs].cooldown() == 0)
++                    for (const auto* e : near)
++                        if (round == e->seen_round && cheb(e->pos, p) <= 1) wait = true;
++            } catch (...) {}
++            if (wait) continue;
++        }
+         const int r = static_cast<int>(arange[s]);
+         const Seen* best = nullptr;
+         float bs = -1e9f;

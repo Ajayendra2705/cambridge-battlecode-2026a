@@ -1,0 +1,310 @@
+diff --git a/farm.cpp b/farm.cpp
+index 661fabf..e2b975f 100644
+--- a/farm.cpp
++++ b/farm.cpp
+@@ -130,7 +130,7 @@ int Bot::vt_elk_first() {
+         const float T = g.total_max_hp / std::max(1.f, dps);
+         if ((P_SEQ_DMG ? g.fight_damage(dps, true) : g.dps * T) > spare * P_OPEN_SAFE + shield * T) continue;
+         if (elk) ++n_elk;
+-        vt_elk_list.push_back({ g.id, static_cast<float>(g.gems) * P_GEM_W + static_cast<float>(g.gold), T });
++        vt_elk_list.push_back({ g.id, static_cast<float>(g.gems) * world().arm_gem + static_cast<float>(g.gold), T });
+     }
+     if (n_elk < P_ELK_MAP) { vt_elk_list.clear(); return -1; }  // edit_vtelkfish.py: elk maps still counted by elk groups
+     vt_elk = true;
+@@ -186,7 +186,7 @@ int Bot::choose_opening() {
+         if (!g.reachable || g.dps <= 0 || g.spawn_dist > P_OPEN_MAX_DIST) continue;
+         const float T = g.total_max_hp / std::max(1.f, dps);
+         if ((P_SEQ_DMG ? g.fight_damage(dps, true) : g.dps * T) > spare * P_OPEN_SAFE + shield * T) continue;
+-        const float value = static_cast<float>(g.gems) * P_GEM_W + static_cast<float>(g.gold);
++        const float value = static_cast<float>(g.gems) * world().arm_gem + static_cast<float>(g.gold);
+         const float s = value / (static_cast<float>(g.spawn_dist) + T + 5.f);
+         if (s > best) { best = s; bi = g.id; }
+     }
+@@ -224,7 +224,7 @@ bool Bot::leader() const {
+ // waiting and fighting counted) beats normal farming. Returns the group id, sets k.
+ int Bot::choose_rally(int& kbest) {
+     World& W = world();
+-    const float gold_w = round < 300 ? P_GOLD_W_EARLY : round < 700 ? 0.5f * (P_GOLD_W_EARLY + P_GOLD_W_LATE) : P_GOLD_W_LATE;
++    const float gold_w = round < 300 ? world().arm_gold : round < 700 ? 0.5f * (world().arm_gold + P_GOLD_W_LATE) : P_GOLD_W_LATE;
+     std::array<vec2, 5> where{};
+     std::array<bool, 5> home{}, alive{};
+     int n_alive = 0;
+@@ -249,7 +249,7 @@ int Bot::choose_rally(int& kbest) {
+         if (blacklist[static_cast<std::size_t>(g.id)] > round) continue;
+         if (g.side < -P_SIDE_MARGIN) continue;  // deep in their half
+         if (g.state == GState::Reward) continue;
+-        const float value = static_cast<float>(g.gems) * P_GEM_W + static_cast<float>(g.gold) * gold_w;
++        const float value = static_cast<float>(g.gems) * world().arm_gem + static_cast<float>(g.gold) * gold_w;
+         const float hp = g.state == GState::Alive ? g.hp_left() : g.total_max_hp;
+         for (int k = 3; k <= n_allies; ++k) {
+             float dps = 0, spare = 0, shield = 0, travel = 0, wait = 0;
+@@ -366,7 +366,9 @@ int Bot::choose_task() {
+     World& W = world();
+     auto& me = self();
+     const vec2 p = me.position();
+-    const float gold_w = round < 300 ? P_GOLD_W_EARLY : round < 700 ? 0.5f * (P_GOLD_W_EARLY + P_GOLD_W_LATE) : P_GOLD_W_LATE;
++    const float gold_w = round < 300 ? world().arm_gold : round < 700 ? 0.5f * (world().arm_gold + P_GOLD_W_LATE) : P_GOLD_W_LATE;
++    const bool arm_on = round < W.arm_r;
++    const float enable_w = arm_on ? W.arm_enable : P_ENABLE;
+     const float my_hp = me.health(), my_mhp = me.max_health();
+     const float my_spare = std::max(0.f, my_hp - P_TANK_FLOOR * my_mhp);
+     const bool on_mainland = W.on_main(p);
+@@ -534,7 +536,7 @@ int Bot::choose_task() {
+             if (wait > P_MAX_WAIT) {
+                 // Nothing else to do: wait at the group that respawns soonest (worth most per round of waiting).
+                 if (P_PREWAIT && g.side >= -P_SIDE_MARGIN) {
+-                    float v = static_cast<float>(g.gems) * P_GEM_W + static_cast<float>(g.gold) * gold_w;
++                    float v = static_cast<float>(g.gems) * world().arm_gem + static_cast<float>(g.gold) * gold_w;
+                     int taken = 0;
+                     for (int a = 0; a < n_allies; ++a)
+                         if (atask[static_cast<std::size_t>(a)] == g.id) ++taken;
+@@ -549,10 +551,13 @@ int Bot::choose_task() {
+             D = g.dps;
+             fresh = true;
+         }  // edit_vtfuel3.py: a live group's health and damage sums after the upper bound below (unused by it)
+-        float value = static_cast<float>(g.gems) * P_GEM_W + static_cast<float>(g.gold) * gold_w;
++        float value = static_cast<float>(g.gems) * world().arm_gem + static_cast<float>(g.gold) * gold_w;
+         // Marcella earns 2 gold per gem she tributes: gem groups are worth more when she captures them.
+         if (ctype == champion_type::marcella) value += P_MAR_ROUTE * 2.f * static_cast<float>(g.gems) * gold_w;
+         if (value <= 0) continue;
++        if (round < P_BOOK_R) value *= g.book_w;
++        if (ctype == champion_type::vesper_vale && round < P_VES_LIGHT_R && g.dps <= 0 && g.gold > 0) value *= P_VES_LIGHT_W;
++        if (arm_on) value *= g.heavy ? W.arm_heavy : (g.dps > 0 ? W.arm_wolf : W.arm_light);
+         if (g.side < -P_SIDE_MARGIN) value *= P_ENEMY_SIDE_W;  // their half: farmed and guarded by them
+         if (P_DANGER_W < 1.f) {
+             // Enemy champions seen around it lately: they fight for it (and pick off whoever comes alone).
+@@ -564,7 +569,7 @@ int Bot::choose_task() {
+             if (seen > 0) value *= P_DANGER_W;
+         }
+         // Upper bound (alone, instant kill): skip groups that cannot beat the best so far.
+-        if (value * P_ENABLE / (static_cast<float>(d) + 1.5f * wait + 3.f) <= best) continue;
++        if (value * enable_w / (static_cast<float>(d) + 1.5f * wait + 3.f) <= best) continue;
+         if (g.state == GState::Alive) {  // edit_vtfuel3.py (moved here)
+             hp_left = g.hp_left();
+             D = g.live_dps();
+@@ -657,7 +662,7 @@ int Bot::choose_task() {
+         const float n_team = static_cast<float>(nc + 1 + extra);
+         const float gather = extra > 0 ? 6.f + 3.f * static_cast<float>(extra) : 0.f;
+         const float Ttot = static_cast<float>(d) + 1.5f * wait + T + gather + 5.f / n_team + P_HP_COST * dmg / n_team;
+-        const float s = value * (enabler ? P_ENABLE : 1.f) / n_team / std::max(1.f, Ttot);
++        const float s = value * (enabler ? enable_w : 1.f) / n_team / std::max(1.f, Ttot);
+ #if BOT_LOG
+         if (s > best * 0.5f) LOG("    cand g%d st=%d d=%d wait=%.0f nc=%d extra=%d T=%.0f dmg=%.0f val=%.0f s=%.2f\n", g.id, (int)g.state, d, wait, nc, extra, T, dmg, value, s);
+ #endif
+@@ -722,7 +727,9 @@ bool Bot::stage_at(Group& g) {
+ }
+ 
+ // Gold a champion's passive adds to this group's capture: Vesper +33% gold, Marcella +2 gold per gem tributed.
++static int cb_round = 0;
+ static float capture_bonus(champion_type t, const Group& g) {
++    if (t == champion_type::vesper_vale && cb_round < P_VJ_R && g.gold > 0) return 2000.f + static_cast<float>(g.gold);
+     if (P_CAPTURE_MODE == 0) {
+         if (t == champion_type::vesper_vale) return 0.33f * static_cast<float>(g.gold);
+         if (t == champion_type::marcella) return 2.f * static_cast<float>(g.gems);
+@@ -742,6 +749,7 @@ static float capture_bonus(champion_type t, const Group& g) {
+ }
+ 
+ bool Bot::capture(Group& g) {
++    cb_round = round;
+     World& W = world();
+     auto& me = self();
+     const vec2 p = me.position();
+@@ -790,7 +798,7 @@ bool Bot::capture(Group& g) {
+         for (const auto& a : allies) {
+             if (bb_test(*g.tiles, a.pos)) return leave();
+             // Marcella on her way to it takes gem captures (her tribute passive): leave it to her.
+-            if (P_MAR_ROUTE > 0.f && ctype != champion_type::marcella && g.gems >= 10 && ainfo[static_cast<std::size_t>(a.index)].type == champion_type::marcella &&
++            if (P_MAR_ROUTE > 0.f && ctype != champion_type::marcella && !(ctype == champion_type::vesper_vale && round < P_VJ_R && g.gold > 0) && g.gems >= 10 && ainfo[static_cast<std::size_t>(a.index)].type == champion_type::marcella &&
+                 comms.task_of(a.index) == g.id && cheb(a.pos, g.center) <= g.radius + 8 && !me_hurt) return leave();
+             if (cheb(a.pos, g.center) > g.radius + 3) continue;
+             // Only an ally that is going to take it: one walking home to heal or running from a fight is not
+diff --git a/fight.cpp b/fight.cpp
+index f4e7ca9..edb6029 100644
+--- a/fight.cpp
++++ b/fight.cpp
+@@ -451,6 +451,7 @@ struct SimUnit {
+     float burst = 0;  // damage on its first active round (abilities ready)
+     int delay = 0;    // rounds before it can hit (closing the distance)
+     int bdelay = -1;  // rounds before its ability burst can land (-1: with the first attack)
++    bool linked = false;  // Cassi or Issac: either death kills both
+ };
+ 
+ // Damage per round against champions: basic attacks plus focus abilities and attack resets, amortised.
+@@ -506,7 +507,11 @@ void apply_damage(std::vector<SimUnit>& v, float dmg) {
+         const float d = std::min(dmg, v[i].hp);
+         v[i].hp -= d;
+         dmg -= d;
+-        if (v[i].hp <= 0) ++i;
++        if (v[i].hp <= 0) {
++            // Cassi and Issac die together.
++            if (v[i].linked) for (auto& o : v) if (o.linked) o.hp = 0;
++            ++i;
++        }
+     }
+ }
+ 
+@@ -565,7 +570,11 @@ float simulate(std::vector<SimUnit> a, std::vector<SimUnit> b, float extra_b_dps
+             const float d = std::min(dmg, v[i].hp);
+             v[i].hp -= d;
+             dmg -= d;
+-            if (v[i].hp <= 0) ++i;
++            if (v[i].hp <= 0) {
++            // Cassi and Issac die together.
++            if (v[i].linked) for (auto& o : v) if (o.linked) o.hp = 0;
++            ++i;
++        }
+         }
+         while (k < v.size() && v[k].hp <= 0) ++k;
+     };
+@@ -699,6 +708,7 @@ bool Bot::combat() {
+     for (const auto* e : near) {
+         SimUnit u{ champ_ehp(e->type, e->hp, e->foc), champ_dps(e->type, e->str, e->foc) };
+         u.burst = champ_burst(e->type, e->str, e->foc);
++        u.linked = e->type == champion_type::cassi || e->type == champion_type::issac;
+         int d = cheb(e->pos, p);
+         if (P_SIM_SYM) {
+             for (vec2 q : fighters) d = std::min(d, cheb(e->pos, q));  // they reach the fight where our fighters stand
+@@ -739,6 +749,7 @@ bool Bot::combat() {
+             if (d > 10) continue;
+             SimUnit u{ champ_ehp(m.s->type, m.s->hp, m.s->foc), champ_dps(m.s->type, m.s->str, m.s->foc) };
+             u.burst = champ_burst(m.s->type, m.s->str, m.s->foc);
++            u.linked = m.s->type == champion_type::cassi || m.s->type == champion_type::issac;
+             u.delay = approach_delay(d, m.s->range) + 1;
+             if (P_BURST_REACH) u.bdelay = std::max(0, d - burst_reach(m.s->type, m.s->range)) + 1;
+             more.push_back(u);
+@@ -761,6 +772,8 @@ bool Bot::combat() {
+         if (e->channeling) sc -= 300.f;
+         sc -= static_cast<float>(e->gems) * 4.f;
+         if (d <= range) sc -= 150.f;
++        if (e->type == champion_type::cassi) sc -= 200.f;       // either death kills both: Cassi is the cheap way
++        else if (e->type == champion_type::issac) sc -= 100.f;
+         if (sc < bscore) { bscore = sc; tgt = e; }
+     }
+     // Kill shots: an enemy I can finish this turn within my strike reach is worth going for.
+diff --git a/params.h b/params.h
+index aebc01e..9333b71 100644
+--- a/params.h
++++ b/params.h
+@@ -722,3 +722,17 @@
+ #ifndef P_CENTRAL_MIN_STEPS
+ #define P_CENTRAL_MIN_STEPS 61   // v606: the central gate only when the spawns are more than this many walking steps apart
+ #endif
++
++#ifndef P_BOOK_R
++#define P_BOOK_R 120       // before this round the opening book weights a group's value (kBookRows, from the top teams' first targets per map)
++#endif
++
++#ifndef P_VES_LIGHT_W
++#define P_VES_LIGHT_W 2.0f     // Vesper before P_VES_LIGHT_R: a harmless group with gold counts this many times in her pick (vvg1)
++#endif
++#ifndef P_VES_LIGHT_R
++#define P_VES_LIGHT_R 200
++#endif
++#ifndef P_VJ_R
++#define P_VJ_R 300          // before this round her capture weight beats a hurt ally's on gold groups and she does not leave them to Marcella (vvj3)
++#endif
+diff --git a/world.cpp b/world.cpp
+index ff01380..2829f72 100644
+--- a/world.cpp
++++ b/world.cpp
+@@ -141,6 +141,26 @@ void World::init_a() {
+     tg_chunk.assign(static_cast<std::size_t>(tg_cw) * static_cast<std::size_t>((h + 7) >> 3), -1);
+     camp_tiles.emplace();
+     camp_tiles->clear();
++    {
++        struct MapArm { short w, h, walls, holes, altars, bushes; float light, wolf, heavy, enable; short r; float gold, gem; };
++        static constexpr MapArm kMapArms[] = {
++    {50, 50, 222, 0, 2, 186, 1.50f, 1.00f, 1.00f, 1.60f, 150, 1.00f, 3.00f},  // 01elk_arena (L)
++    {31, 31, 88, 0, 1, 60, 1.50f, 1.00f, 1.00f, 1.60f, 150, 1.00f, 3.00f},  // 01hooks (L)
++    {35, 29, 62, 109, 2, 54, 1.50f, 1.00f, 1.00f, 1.60f, 150, 1.00f, 3.00f},  // 00quarry (L)
++    {50, 65, 0, 654, 4, 152, 1.50f, 1.00f, 1.00f, 1.60f, 150, 1.00f, 3.00f},  // 00pilgrimage (L)
++    {61, 71, 374, 540, 3, 276, 1.50f, 1.00f, 1.00f, 1.60f, 150, 1.00f, 3.00f},  // 01fracture (L)
++    {50, 50, 214, 0, 2, 140, 1.00f, 1.00f, 1.00f, 1.00f, 0, 2.00f, 3.00f},  // 00rows (G2)
++    {30, 30, 96, 0, 2, 40, 1.00f, 1.00f, 1.00f, 1.00f, 0, 2.00f, 3.00f},  // 02arena (G2)
++    {51, 41, 222, 10, 2, 32, 1.00f, 1.00f, 1.00f, 1.00f, 0, 1.00f, 12.00f},  // 03one_gem (GN)
++        };
++        const int mw = map::width(), mh = map::height();
++        const int mwalls = static_cast<int>(map::walls().count()), mholes = static_cast<int>(map::holes().count());
++        const int maltars = static_cast<int>(map::altars().count()), mbushes = static_cast<int>(map::bushes().count());
++        for (const MapArm& m : kMapArms)
++            if (m.w == mw && m.h == mh && m.walls == mwalls && m.holes == mholes && m.altars == maltars && m.bushes == mbushes) {
++                arm_r = m.r; arm_light = m.light; arm_wolf = m.wolf; arm_heavy = m.heavy; arm_enable = m.enable; arm_gold = m.gold; arm_gem = m.gem;
++            }
++    }
+     std::uint32_t lcap = 4096, lcount = 0;
+     std::unique_ptr<std::uint32_t[]> words(new std::uint32_t[lcap]);
+     detail::check(detail::sdk_map_camp_layout(words.get(), lcap, &lcount));
+@@ -197,6 +217,7 @@ void World::init_a() {
+             g.dps += camp_str(cp.type);
+             g.max_range = std::max(g.max_range, camp_range(cp.type));
+             if (cp.type == camp_type::golem || cp.type == camp_type::monolith) g.big = true;
++            if (cp.type == camp_type::golem || cp.type == camp_type::monolith || cp.type == camp_type::elk) g.heavy = true;
+             if (cp.type == camp_type::monolith) g.monolith = true;
+             if (cp.type != camp_type::gem_cluster && cp.type != camp_type::gold_cluster) only_clusters = false;
+             sx += cp.pos.x;
+@@ -401,6 +422,41 @@ void World::init_e() {  // edit_vtfuel2.py: reachability, map halves, gates, hea
+         g.enemy_dist = mg >= 0 ? groups[static_cast<std::size_t>(mg)].spawn_dist : g.spawn_dist;
+         g.side = g.enemy_dist - g.spawn_dist;
+     }
++    {
++        // Opening book: the top teams' first targets on this map against ours (tools/replay/openbook.py).
++        struct BookMap { short w, h, walls, holes, altars, bushes, sx, sy, first, count; };
++        struct BookRow { unsigned char x0, y0, x1, y1, w10; };
++        static constexpr BookRow kBookRows[] = {
++    {61, 10, 38, 89, 25},
++    {73, 24, 26, 75, 6},
++    {52, 27, 47, 72, 15},
++    {15, 16, 14, 16, 6},
++    {8, 20, 21, 20, 16},
++    {20, 22, 9, 22, 5},
++    {8, 2, 21, 2, 40},
++    {2, 8, 27, 8, 24},
++    {2, 13, 27, 13, 35},
++    {2, 18, 27, 18, 31},
++    {4, 22, 25, 22, 23},
++    {1, 24, 28, 24, 14},
++        };
++        static constexpr BookMap kBookMaps[] = {
++    {100, 100, 636, 538, 6, 302, 78, 11, 0, 3},  // 01big_world
++    {30, 30, 162, 40, 2, 22, 1, 1, 3, 9},  // 02stalactites
++        };
++        const int mwalls = static_cast<int>(map::walls().count()), mholes = static_cast<int>(map::holes().count());
++        const int maltars = static_cast<int>(map::altars().count()), mbushes = static_cast<int>(map::bushes().count());
++        for (const BookMap& m : kBookMaps) {
++            if (m.w != w || m.h != h || m.walls != mwalls || m.holes != mholes || m.altars != maltars || m.bushes != mbushes) continue;
++            const bool team0 = bb_test(*my_spawn, vec2{ m.sx, m.sy });
++            for (int k = m.first; k < m.first + m.count; ++k) {
++                const BookRow& b = kBookRows[k];
++                const int gid = group_at(team0 ? vec2{ b.x0, b.y0 } : vec2{ b.x1, b.y1 });
++                if (gid >= 0) groups[static_cast<std::size_t>(gid)].book_w = static_cast<float>(b.w10) / 10.f;
++            }
++            break;
++        }
++    }
+     // Gated altars: no walkable tribute spot, but a camp tile within range whose neighbours are walkable.
+     int open_altars = 0;
+     for (std::size_t k = 0; k < altars.size(); ++k) {
+diff --git a/world.h b/world.h
+index 3b8153f..4c8329d 100644
+--- a/world.h
++++ b/world.h
+@@ -25,6 +25,8 @@ struct Group {
+     float total_max_hp = 0, dps = 0;
+     int max_range = 0, radius = 0;
+     bool big = false;       // golem or monolith inside
++    float book_w = 1.f;     // opening book weight of this group on this map
++    bool heavy = false;     // elk, golem or monolith inside
+     bool monolith = false;  // monolith inside (too heavy for normal play)
+     bool harmless = false;  // clusters only
+     std::optional<bitboard> danger;  // tiles within reach of the group's damaging camps (lazy)
+@@ -114,6 +116,10 @@ struct World {
+     std::optional<bitboard> bridges;      // 1-tile holes with walkable tiles on two opposite sides (dashers only)
+     std::optional<bitboard> bridge_zone;  // tiles near a bridge: the dash is kept for the crossing
+     bool dasher = false;
++    // Per-map opening arm (kMapArms): before arm_r the pick weighs groups by these (rule_light.md, rule_arms.md).
++    int arm_r = 0;
++    float arm_gold = P_GOLD_W_EARLY, arm_gem = P_GEM_W;  // value weights of gold before r300 and of gems on this map
++    float arm_light = 1.f, arm_wolf = 1.f, arm_heavy = 1.f, arm_enable = 1.f;
+     bool central_altars = false;          // every altar between the spawns (centralgate.py)
+     std::vector<vec2> tp_spawn_land;      // tiles one crystal flash (<= 3) away from the spawn zone
+     bool tp_useful = false;               // some group is much closer by a flash from spawn
