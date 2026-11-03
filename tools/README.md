@@ -50,6 +50,7 @@ Run everything from the repo root: `python -I tools/<dir>/<script>.py ...`, and 
 | `wbrun.sh NAME [JOBS] [BASE_RUN] [BASE] [MIN_RIVAL]` | Builds `exp/NAME`, plays what `wbsel.py` picks and writes `wbcmp.py` to `data/judge_NAME.txt`. About 3 minutes at 4 jobs. |
 | `lgold3.py RUN_DIR BASE_CAND TYPE ROUND [ROUND ...]` | Earned gold of the team and of one champion type at any rounds of a local run, paired with a base (`lgold2.py` stops at r600 for the team and r300 for a type). |
 | `lmapgold.py RUN_DIR BASE_CAND NEW_CAND [--round 1000]` | Per map, largest gain first: team gold at the round, new minus base paired with its SE, wins of both, margin and their gold differences. Chooses maps for a per-map router: local gold tracks the platform's (`results/analysis/rule_route2.md`) |
+| `lidle.py RUN_DIR CAND [--round 1000] [--top 40]` | Per map and champion type in a local run, lowest share first: gold, gems, monster and champion damage, deaths, and the type's share of the team's gold and gems. Finds bodies that work and earn nothing (default arm on 01corridors: Vesper 152 gold, 6 gems, with 10228 monster damage) |
 | `divround.py BASE_DIR BASE NEW_DIR NEW` | Where paired local games part: identical games, games that part before or after the hand reached 600 with their flips, and the parting rounds. A flip before the hand reached 600 is a fuel re-roll, not the change itself. |
 | `fullrest.py BASE_DIR BASE NEW_BOT NEW_DIR` | `run-batch` lines for the games of a selected run that are not played yet, to finish a `wbrun.sh` run into all the base's games. |
 
