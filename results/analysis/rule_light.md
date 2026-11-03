@@ -16,3 +16,25 @@
 **Local bar** (`pool/v1503`, same pool and 85 maps, 680 paired). Target: team gold at r300 up by 1 standard error or more (`lgold2.py`). Guards: deaths not up by more than 0.3 a game, wins not down by more than 0.03, collected not down by more than 2 standard errors, no fault.
 
 **Platform.** Only a pass goes on: `t03p` parts pinned to `t1503_tm@t03`. Target: team gold at r300 up by 1 standard error or more (`decoded.py gold`, paired where possible); margin and collected not down by more than 1 standard error. Wins recorded.
+
+## Result of the whole-map screen, and a per-map arm (written 11-03 05:14 IST, before the arm's screen)
+
+vlc1 to vlc4 failed their bar on all maps (`data/runs/multi-033046`, gold r300 -30, -62, -114, -174), but the effect differs strongly per map. vlc1 at r300: 01elk-arena +451, 00oasis +176, 01hooks +147, 00pilgrimage +88, 00quarry +87; 03colosseum -971, 01boss-battle -639. These five are gem-poor maps where the top teams send a pair to the centre and the rest to gold (01elk_arena, `t1503_tm@t03`: us 0 gold at r50 and five champions on the elks, them 106), so the rule has a cause and is not only a selection from noise; the selection still inflates the gain.
+
+`exp/vlm1` is `exp/vnl1` with vlc1's numbers (`P_LIGHT_W` 1.5, `P_ENABLE_EARLY` 1.6, `P_LIGHT_R` 150) on those five maps only (`kLightMaps` by map signature). Local bar on those five maps, 40 games against `exp.vnl1`: gold r300 up, margin not down, deaths r300 not up by more than 0.5 a game, wins not down by more than 2 of 40. Every other map must be byte for byte the same game (no check needed beyond the table: the flag stays false).
+
+Platform, only after that pass: pinned on the five maps, a panel with the 12 teams of `b1p`, base and variant in the same session. Target: team gold at r300 on these maps up by 1 standard error or more. Guards: margin not down by more than 1 standard error, deaths r300 not up by more than 1 standard error. Wins recorded.
+
+`exp/vlm1` local (`data/runs/multi-051136`, 40 games on the five maps against `exp.vnl1`; 11-03 05:13 IST): gold r150 +203 +- 46, r300 +269 +- 76, r600 +524 +- 188, wins +0.12 +- 0.06, margin +193 +- 108, collected +70 +- 40, deaths -3.27 +- 1.32, no fault. These are the games that chose the maps, so the numbers only show the table works; they are not new evidence. Bar passed. Platform: `rt3_l5p@l5p` (version 1522, whose arm on these maps is `exp/vnl1`) against `vlm1_l5p@l5p`.
+
+## Gem and gold weights in the camp choice (written 11-03 05:18 IST, before the screen)
+
+Team gold at r300 is 0.62 of the rivals' against ranks 1-20, and they capture more of every kind (gold groups 12.7 against 7.9 a game, wolf and gold 7.9 against 4.5). `choose_task` values a group at `gems * P_GEM_W + gold * gold_w`, with `P_GEM_W` 3 and `gold_w` 1 before r300. These numbers have not been tested on the bot_10 line. Variants on `exp/vnl1`: `exp/vgw2` (`P_GEM_W` 2), `exp/vge15` (`P_GOLD_W_EARLY` 1.5), `exp/vge2` (`P_GOLD_W_EARLY` 2).
+
+Local bar (base `exp.vnl1`, `multi-031107`, 680 paired): team gold r300 up by 1 standard error or more. Guards: deaths not up by more than 0.3 a game, wins not down by more than 0.03, collected not down by more than 2 standard errors, no fault. Platform only after a pass, on `t03p` parts: gold r300 up by 1 standard error or more; margin and collected not down by more than 1 standard error.
+
+## Vesper's opening (written 11-03 05:24 IST, before the screen)
+
+Gold gained to r300 per Vesper: us 232 in 2.8 captures, rivals 629 in 5.5 captures (`t1503_tm@t03`). Our Vesper's turns to r300: walking to a task 16%, hitting camps 27%, waiting (`wait_respawn`, `wait_tank`, `gather`) 18%, capturing 7%, fighting 20%. She earns a third more gold from her share, and on a harmless group she needs no tank and no gathering. Variants on `exp/vnl1`: `exp/vvg1` (harmless groups with gold count twice in her pick before r200), `exp/vvg2` (all harmless groups twice before r300).
+
+Local bar (base `exp.vnl1`, `multi-031107`, 680 paired): Vesper's gold r300 and team gold r300 up by 1 standard error or more. Guards: deaths not up by more than 0.3 a game, wins not down by more than 0.03, collected not down by more than 2 standard errors, no fault.

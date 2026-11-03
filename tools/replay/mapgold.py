@@ -1,4 +1,4 @@
-"""Per map: our games against the rivals' in the same decoded runs: python -I tools/replay/mapgap.py DIR [DIR ...] [--min N]
+"""Per map: our games against the rivals' in the same decoded runs: python -I tools/replay/mapgold.py DIR [DIR ...] [--min N]
 
 DIR are folders written by tools/replay/decode_run.sh. For each map: games, wins, then us / them at r300 for team gold held (unspent + 30 per shard), deaths to r300,
 gems collected to r1000, deaths to r1000, the share of living champion-rounds to r300 with no move and no hit (still), and the first round any champion of a team

@@ -2480,3 +2480,21 @@ The rule written beforehand (`results/analysis/rule_route2.md`) keeps the seven 
 **Capture-first lines lose gold in our bot.** `exp/vbd1` and `exp/vbd2` (`results/analysis/rule_build.md`): team gold r300 -26 and -34, wins -0.04 and -0.05 over 680 paired games. Bamboo's copy of the same lines also lost on the platform (45 against 54 of 250). The lines need the team's whole farming system; our bot does not capture more for owning the item.
 
 **The pre-started recall.** Bamboo's notes (`docs/bamboo/knowledge/recall-cycle-1031.md`, `bot-status.md`) measure it as about one round per trip home; it lost in every ladder test, and the safe form is neutral locally. It is not a gap worth a port.
+
+## Gem-poor maps, the 03 maps and what the router gained (session 94, 11-03 05:30 IST)
+
+**The router's table holds on the platform.** `rt2_r7p@r7p` against `base1503_r7p@r7p`, pinned, 60 games on the seven routed maps: 15 wins against 8, flips 9 against 2, margin +152 +- 63. Those maps are about 8% of ranked games, so the gain is about 3 to 4 points of win rate overall.
+
+**A log costs real fuel.** v1503's per-turn compact log is 5-10k fuel a turn. Without it (`exp/vnl1`, local, 680 paired) exhausted turns fall from 9.78 to 6.79 a game, gold r300 +31 +- 11, collected +15 +- 7. The Bamboo bot has no per-turn log, but it uses 44-53k fuel a turn against about 27k for v1503, and it has 27 exhausted turns a game on the routed maps (00corners 66, 00dunes 70, 02crossing 43) and 100 on the other maps.
+
+**The t03 base is lucky.** `t1503_tm@t03` has 37 wins and margin -398; the three variants on `t03p` have 28, 34 and 30 wins, mean margin -455. A comparison against that base runs about 6 wins and 57 margin too low; compare with the mean of the variants too.
+
+**Local per-map differences predict the platform across bot lines, not within a line.** Per map, Bamboo minus v1503 in local margin against Bamboo minus bot_10 in `mapstrat.py`: correlation 0.46 (wins 0.54) on 68 maps. The same correlation for vtg70 and vpk3 against their base on `t03p` is 0.0 to 0.17. So a map table over different lines is worth testing, and a table of small parameter changes needs its own platform check.
+
+**15% of ranked games are on 03 maps, which no panel held.** 90 of 600 games on 11-02: 41 wins (46%, against 53% overall). By map: 03one_gem 1 of 9, 03fan 0 of 3, 03honeycomb 1 of 6, 03shrines 1 of 5, 03twisty 2 of 6, 03showdown 2 of 5, 03contours 2 of 5; 03reef 5 of 6, 03membrane 4 of 6, 03riverbed 4 of 6, 03colosseum 8 of 13. Decoded in `data/fights/q03b`. Only 03one_gem is clearly bad; the others are small samples.
+
+**03one_gem is a special case.** The map holds one gem cluster group (7 gems, at the centre, 25,20) and 80 gold clusters; 2000 rounds play out and the score decides. v1503 gets 0 to 22 gems; its first capture comes near r700, since nearby gold clusters always score higher per step. Rivals get 104 to 197 (SquidProxyLovers from r123, every 70-80 rounds, 189-0). Locally v1503 wins 0 of 16, Bamboo 7 of 8 (130-8 against v1503, first capture r190).
+
+**Gem income per map explains where we lose worst.** `data/map_rates.json`: per map, the sum over camps of gems / (respawn + 8). Under 2.5 gems a round (01elk_arena, 00fragment, 01hooks, 00ribs, 00oasis, 02arena, 00galaxy, 00quarry, adgato_gemcombat1, 00anvil, 01gold_rush): against ranks 1-20 (`t03`) 9 wins of 112, collected 268 against 810, deaths to r1000 14.4 against 5.0. Above: 25 to 34% wins on most bands. In ranked games on 11-02: under 1.5 gems a round 11 of 39, 1.5-2.5 28 of 66, everywhere else 53-64%. This is about 18% of games.
+
+**How 01elk_arena goes (`t1503_tm@t03`, 63338fce).** The centre group (2 elks, 6 gem clusters, 72 gems, 19 steps from spawn) is the map's only gem income worth having; 54 gold clusters lie around it. At r30 we have five champions at the centre, 0 gold and hurt from the elks (Vendetta 350 of 1000); the rivals have sent two to the centre and three to gold (106 gold), and they win the fight, capture from r89 and hold it to the end, 973 to 0. Locally `exp/vlc1` (clusters count 1.5 times before r150) gives +451 gold r300 on this map.

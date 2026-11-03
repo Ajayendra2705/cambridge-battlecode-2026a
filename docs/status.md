@@ -1,4 +1,13 @@
-# Status (updated Tue, Nov  3, 2026 02:30 AM IST)
+# Status (updated Tue, Nov  3, 2026 05:12 AM IST)
+
+## Note at 05:12 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
+
+- **Live: 1522 = `exp/rt3`**, the per-map router: Bamboo v1472 on 7 near maps (00interlock, 00fragment, adgato_gemcombat1, 02crossing, 00corners, 00anvil, 00dunes), v1503 with logs off on the rest. On those maps pinned (`r7p`), the router against v1503: 15 wins against 8 of 60, flips 9 against 2, margin +152 +- 63. No-log arm locally: exhausted turns 10.19 to 7.73 a game on default maps, gold r300 +30, deaths -0.35 +- 0.17. It replaced 1519 (pack opening, level on the platform and rejected). Rule: `results/analysis/rule_route2.md`.
+- **New gap: the 15 `03*` maps** are 15% of our ranked games and were in no platform panel. We win 46% there; 03one_gem 1 of 9. That map has one gem cluster, and v1503 ignores it until about r700 (0 of 16 locally, Bamboo 7 of 8). Panel `b3p` (v1472 against v1512 on these maps) is queued.
+- **New measure: gem income per map** (`data/map_rates.json`). Against ranks 1-20 we win 7 of 112 on the 11 maps under 2.5 gems a round, collected 268 against 810, deaths 14.4 against 5.0; ranked 39 of 105 there against 55% elsewhere. On 01elk_arena the rivals send a pair to the centre and the rest to gold clusters; we walk five to the elks at once and lose the first fight with no gold.
+- **Chain** `data/run_tg4.sh`, plan `data/plan_tg4.txt`, `GATE_RESTORE=1522`: base1503 and v1472 on `b2p` (15 more candidate maps), then on `b3p`, then rt3 on `t03p` parts, then base1503 and dci5f on `s5p`.
+- **Closed:** early contact (vtg70, vpk3: local gain in deaths does not reach the platform). Within-line variants have no correlation between local and platform per-map differences (0.0-0.17), while the Bamboo line against the bot_10 line has 0.46-0.54, so a map table only makes sense across different lines.
+- **Next:** extend the router from `b2p` and `b3p`; per-map light-camps arm for elk maps; read how we lose on 03 maps.
 
 ## Note at 02:30 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
 
