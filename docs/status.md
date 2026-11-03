@@ -1,4 +1,13 @@
-# Status (updated Tue, Nov 3, 2026 9:30 PM IST)
+# Status (updated Tue, Nov 3, 2026 10:30 PM IST)
+
+## Note at 22:30 IST 11-03 (session 94, branch `night-1101`)
+
+- **Live and selected: v1531.** Someone on the team selected it at about 21:21 IST, after v1535 scored 12 of 60 on the teammate's top-team panel. So the note below is out of date on the live bot. v1531's source is in the repo.
+- **Candidate: `exp/rf1`** = v1531's router + `ra1` in the default arm + 8 more maps on the Bamboo arm (01corridors, 00quadrants, 00gemfight, 00breadcrumbs, 00reverse_spiral, 03shrines, 00contest, 00gem_fields) + `fa4`. Local regression on 85 maps against `exp.ra1`, 679 paired: wins +0.02 +- 0.01, margin +20 +- 16, deaths -0.20 +- 0.20, no fault.
+- **Running:** `data/run_rf.sh` (user approved at about 22:05 IST): when the team's tests are quiet it uploads `rf1`, plays `nr2` (75 games, base `e1531_nr2@nr2` 29 of 75), and selects the version live before it again. Rule in `rule_route2.md`. rf1 stays live only if the user says so.
+- **Next on the platform (ask first):** `fa4` and the whole of `rf1` on `nb1` + `nb2` against `ra2_nb*` and `e1531_nb*` (25 groups); a fresh panel for the maps that join.
+- **Running locally:** `exp/hm3`, Willow's heal threshold 0.6 to 0.3 (`rule_heal.md`).
+- **Combine at 00:29 IST:** if a teammate pushes a newer source, apply `ra1.patch`, `fa4.patch`, the router lines and check `std::min(5` (`six.patch`, only for six bodies). Otherwise the candidate is `rf1` or a variant of it. Keep about 50 groups for the final base and bot, start no gate after about 04:30 IST, and check the selected bot before 05:29 IST.
 
 ## Note at 21:30 IST 11-03 (session 94, branch `night-1101`)
 
