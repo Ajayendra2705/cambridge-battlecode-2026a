@@ -27,3 +27,7 @@ Same bars: the gold of Vesper plus Marcella at r150 and r300 up by at least 1 SE
 **Results of `vgv1`, `vgv2` (multi-085343, 680 paired, 09:17).** Both pass. `vgv1`: her gold r150 +29.4 +- 5.0, r300 +64.3 +- 11.3, team r150 +7.5, r300 +10.9, r600 -28.7, wins -0.03, margin -22.9 +- 12.8, collected -8.9 +- 6.5, deaths +0.08. `vgv2` (gems 1, gold 2, before r300): her gold r150 +30.3 +- 5.1, r300 +83.5 +- 11.8, team r150 +7.9, r300 +30.6 +- 11.6, r600 -1.5, wins -0.02, margin -22.2 +- 13.1, collected -10.6 +- 6.2, deaths +0.02. `vgv2` beats `vvk1` (her gold r300 +45.1, team +16.5).
 
 **Combinations (`vgk1`, `vgk2`), written 11-03 09:18 before their screen.** `vgk1`: `vgv2` plus `vvj3`'s capture rule. `vgk2`: `vgv2` plus `vvk1` (harmless gold first and the capture rule). Same bar as `vgv`, against `exp.vnl1`. The one with the larger team gold at r300 replaces `vvk1` in the router if it beats `vgv2` by at least 1 SE on her gold at r300; otherwise `vgv2` does.
+
+## Vesper's gold value by map, written 11-03 11:22 IST before any game
+
+vgv2's first sample lost team gold r300 on 02gift_wrapping (-410), 01yellow_brick_road (-370), 03contours (-208), 02treasure_box (-163), 02cuts (-127), 00expanse (-116), 01concentrated_wealth (-106). Fresh sample: 16 games a map, `exp/rt7` (no arm on these maps, so rt3 plus vgv2) against `exp/rt3`. The rule goes off on a map where the fresh gain is at most -100 and wins are not above the base's.

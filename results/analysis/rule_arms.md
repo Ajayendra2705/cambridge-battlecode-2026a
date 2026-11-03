@@ -35,3 +35,21 @@ G2 passed on 01shortcut +355, 03membrane +321, 02the_pond +159, 00swirl +149, 03
 **Local bar for rt7** (680 paired games against `exp.vnl1`): team gold r300 up by at least 2 SE, wins not down by more than 0.03, deaths not up by more than 0.3, no fault.
 
 **Platform bar.** rt7 against rt5 on `a7p` (02arena, 00split, 01elk_arena, 02the_pack, 00rows, 01shortcut, 02stalactites, 01big_world, 00the_line, 01hooks): team gold r300 up by at least 1 SE, margin not down by more than 1 SE, deaths r300 not up by more than 1 SE, no fault. 1523 plays the same panel so we see whether rt7 passes it on those maps; that comparison is recorded and decides the live bot only together with the t03 parts.
+
+## Fourth fresh sample: gold weight 3, written 11-03 11:02 IST before any game
+
+G3 (gold 3, gems 3) on the G2 maps and LG3 on 01elk_arena and 01hooks, the same eight pool bots, 16 games a map, paired with `exp/rt3`. An arm replaces the table's entry on a map when its fresh gain is at least 100 above the entry's fresh gain and its wins are not below the entry's.
+
+rt7's local screen (11:01, multi-104334, 680 paired against `exp.vnl1`): team gold r150 +37, r300 +75.5 +- 14.5, r600 +86 +- 32, deaths -0.50 +- 0.18, wins +0.01, margin +32 +- 16, collected -0.5, no fault. It passes.
+
+Results of the fourth sample (11-03 11:12): G3 replaces G2 only on 00split (+646 against +477, wins 11 and 11). On 02arena (+614 against +562), 02the_pack (+386 against +330), 01shortcut (+288 against +355), 00rows (+238 against +317), 00swirl (+191 against +149) and the rest the difference is under 100, and on 03membrane, 00quarry, 03shrines and 02the_pond G3 loses wins. LG3 on 01elk_arena (+567) is below LG (+766).
+
+## Gem weight on gem-scarce maps, written 11-03 11:25 IST
+
+03one_gem (one gem cluster, 0.12 gems a round): GN (gem weight 12) and GM (30) against rt3, fresh sample: wins 5 to 15 of 16 for both, margin +235 and +241, gold r300 -93 and -156. On this map gems decide and gold is plentiful, so the arm is judged on margin and wins, not gold: GN goes in the table.
+
+Test on the other gem-scarce maps without an arm: 03ultrastarvation, 00ribs, 00oasis, 01gold_rush, 00packs, 00stampede, 00contest, 00crater (under 2.6 gems a round). Same sample. Rule: margin gain at least +100, wins not below the base's, deaths not up by more than 1 a game.
+
+## First sample of combined arms, written 11-03 11:34 IST before any game
+
+LG (light and gold), WG (wolves count as light, and gold), HG (heavy 0.6, and gold), each on all 78 maps not routed to Bamboo, 8 games a map against cmb7, bot_10, cp3, dh3, paired with `exp.vnl1`. A map with gain at least +100 and wins not below the base's goes to a fresh sample under the table rule. Rt7's entries stay unless the fresh gain is 100 above theirs.

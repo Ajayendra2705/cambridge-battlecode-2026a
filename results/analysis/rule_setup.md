@@ -21,3 +21,7 @@ A probe over all 85 maps shows that the gate at 120k fires on every map: the fir
 `vfu2` and `vfu4` (setup from a draft plan, lazy group bitboards, no objects for the camp layout, gate 45k and 80k): a check build found 0 mismatches of the plan's numbers against computed numbers on all 85 maps, and the plan was read on all 85. Setup ends on r1 on 78 maps (r2 on 6, r3 on 1); first action on r1 on 74 maps at gate 45k.
 
 The screen of `vfu2` and `vfu4` uses the bar above.
+
+## Fuel limits on decisions, written 11-03 11:17 IST before any game
+
+Factor: decisions skipped for lack of fuel. `W.precompute` runs only when fuel is above 60000 and above its reserve 45000 plus one field (up to 48k on 100x100), so big maps rarely build group fields in advance; `ensure_field` needs 70k and `choose_task` stops at 35k. The teammate's 1523 lists "-90% fuel limits". `vfg1` scales every such limit by 0.1, `vfg2` by 0.5 (not the setup gate). Local bar: wins not down by more than 0.03, deaths not up by more than 0.3, collected not down by more than 2 SE, no fault, and team gold r300 up by at least 1 SE or margin up by at least 1 SE. Fuel exhaustions are recorded. Platform metric: team gold r300 up by at least 1 SE in pairs; guards as usual.

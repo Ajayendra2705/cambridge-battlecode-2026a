@@ -2528,3 +2528,37 @@ All on games against ranks 1-20 (`data/openmap_t03.txt`: 510 games; gold account
 ## Worst maps: one early fight decides them (11-03 09:00 IST, `data/mapgold_t03.txt`, `tools/replay/mapscript.py`)
 
 We take 0 of 12 on 00vault (gold r300 221 against 1626, gems r1000 122 against 1100, deaths r300 5.1 against 0.6). 65 gem clusters at the centre are worth about 460 gems when captured. Both sides reach them at r11-14 and fight there from r21; the side that survives captures at r42-65 for 85-115 gems a champion, so the fight at r21-35 decides the game. On some of these games they bring a Cassi and Issac pair, five bodies against four. Before leaving, their champions take the gold cluster beside the spawn at r2-3 (+40 to +53 gold by r10), and ours take it at r67 or later.
+
+## Exchanges by numbers, deaths by side, and walking hits (11-03 10:49 IST, `data/fights/t1503_tm_t03`, 170 games against ranks 1-20)
+
+`tools/replay/exchange.py` counts rounds in contact by the bodies on each side (us / them per round).
+
+| Numbers | r1-100: rounds a game, health lost, deaths per 100 rounds | r100-300 |
+|---|---|---|
+| them +2 | 1.8; 133/54; 15.6/1.3 | 2.4; 139/48; 13.1/2.0 |
+| them +1 | 4.1; 88/53; 4.6/0.9 | 8.3; 90/51; 6.4/1.3 |
+| even | 12.5; 51/39; 1.5/1.0 | 32.3; 48/42; 1.9/1.4 |
+| us +1 | 2.6; 74/82; 1.4/1.6 | 6.4; 63/87; 2.3/3.8 |
+| us +2 | 0.7; 87/121; 1.7/6.1 | 1.1; 94/131; 2.1/8.8 |
+
+At even numbers the rivals land more: basic hits per body-round 0.40/0.48 (r1-100) and 0.42/0.44 (r100-300), casts per body-round 0.015/0.033 and 0.015/0.032. Being two down is where most deaths come from per round, and a rival two down loses far less than we do (deaths per 100 rounds 13.1 against 8.8 at r100-300).
+
+Deaths by r150: us 1.26 a game (middle 0.77, own half 0.31, their half 0.18), rivals 0.74 (0.46, 0.20, 0.08). Allies within 6 at the death: 1.4 against 1.5, enemies within 6: 3.0 against 2.2. Allies within 6 at the first hit taken: 1.5 against 1.9.
+
+Melee walk and hit per champion-game (`tools/replay/freehit.py`, to r1000): Heart 20.3/31.5, Vendetta 19.5/24.0, Marcella 16.1/17.2. Free hits left unused are few (0.31/0.17 a game).
+
+Strike-first rules (`vms1`, `vms2`) cost deaths locally (+1.09, +2.24): the gap is not closed by engaging at a worse simulated outcome.
+
+## Setup fuel: every map loses the first turn, and acting earlier does not pay locally (11-03 10:49 IST)
+
+A probe of the setup (`exp/fp1`, `exp/fp2`, deleted; `tools/variant/mk_vfu2.py --check` rebuilds one) on all 85 maps. Mean fuel of the setup 202k: groups loop 50k (a bitboard for each group), reachability 47k, camp layout objects and tile table 25k, central gate 21k, Bot::init 18k, altars 14k, static fields 11k, altar sides 6k. Maximum 503k on 03the_front.
+
+`Bot::play_turn` returns after the setup when under 120k fuel is left. That fires on every map, because the first turn holds 200k and the setup costs at least 76k plus 22k before `World::init`. First action: r2 on 40 maps, r3 on 28, r4 on 15, r5 and r6 on one each (mean r2.76). The rivals have far fewer exhaustions on r1-3 and hit camps at r2-3.
+
+Draft memory can carry the numbers: the draft's first turn has 100 times the fuel and all map queries work there. `vfu2` writes steps from spawn per group, altar sides and the central flag there. With lazy group bitboards and raw camp layout words the setup ends on r1 on 78 maps of 85 (r2 on 6, r3 on 1), and a check build found 0 mismatches on all 85 maps.
+
+Local screen (680 paired against `exp.vnl1`): acting earlier does not raise gold. `vfu1` (gate only): team gold r300 -38 +- 17, r600 -123 +- 38, deaths +0.38. `vfu2` (gate 45k): r300 -20 +- 17, r600 -88 +- 37, wins -0.03, deaths +0.08. `vfu4` (gate 80k): r300 -27 +- 18, r600 -94 +- 37, wins -0.02, deaths +0.01. The cause is not known. The local pool starts as late as we do, so moving first there means meeting further from home; the platform's rivals start earlier, so only the platform can tell.
+
+## Per-map gold and gem weights (11-03 10:49 IST)
+
+Doubling the weight of gold in a champion's pick before r300 (`G2`) on chosen maps gives far more than it gives on all maps. In fresh samples of 16 games a map against eight other pool bots, it raised team gold at r300 and did not lose wins on 15 of 26 maps: 02arena +562 (wins 8 to 15), 00split +477, 01elk_arena +420 (11 to 15), 01shortcut +355, 02the_pack +330, 03membrane +321, 00rows +317, 01hooks +196, 00quarry +182, 00the_line +174, 02the_pond +159, 00swirl +149, 00galaxy +126, 01fracture +113, 03shrines +105. On 03colosseum (+828, wins 15 to 8), 03fan, 02tangle, 03reef, 03riverbed, 02uncharted_lands gold rises and wins fall, because gems are the score. Light camps plus gold first (`LG`) gave +766 on 01elk_arena (wins 11 to 16). A first sample of 8 games predicted the fresh one in most cases. All of this is local; `rt7` tests it on the platform (`results/analysis/rule_arms.md`).

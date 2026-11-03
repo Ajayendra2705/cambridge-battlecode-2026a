@@ -1,4 +1,13 @@
-# Status (updated Tue, Nov 3, 2026 07:34 AM IST)
+# Status (updated Tue, Nov 3, 2026 10:53 AM IST)
+
+## Note at 10:53 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
+
+- **1523 leads rt5** on the t03p parts: part a 16 against 13 of 60 (flips 5 against 2), margin 82 +- 46 for 1523; part b 16 against 13 of 55, margin 31 +- 55. Part c's 1523 gate is skipped. The source of 1523 is not in the repo.
+- **Arm tables grew** (`results/analysis/rule_arms.md`, findings 'Per-map gold and gem weights'): gold weight 2 passes the table rule on 15 of 26 maps in fresh samples. `exp/rt7` holds 21 maps of arms and Vesper's gold value (vgv2). Chain order after the fight variants: `rt5_a7p`, `rt7_a7p`, `e1523_a7p`, then `vfx2`, `vfx3`.
+- **Setup fuel** (`results/analysis/rule_setup.md`, findings 'Setup fuel'): every map loses the first turn. `exp/vfu2` reads a draft plan and ends its setup on r1 on 78 maps, 0 mismatches on 85. Locally, acting earlier does not raise gold (r600 -88 +- 37), the same as `vfi1` earlier tonight. Deaths no longer rise (+0.08). It passes the written bar, so it may go to the platform at low priority.
+- **Rejected locally:** `vms1`, `vms2` (strike first), `vfu1`, `vfu4`.
+- **Needs the user:** deleting old `data/runs` folders (compressed for now, refused by the auto mode rule), and downloading the 1523 source zip from the submissions page.
+- **The chain leaves the bot under test live.** Select the team's best bot by hand when the plan ends.
 
 ## Note at 07:35 IST 11-03 (session 94, branch `night-1101`; the user asked for work through the night)
 
