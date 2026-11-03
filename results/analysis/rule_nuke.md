@@ -32,3 +32,15 @@ Factor: stuns in fights (ours 9.5 a game, theirs 21). When she is adjacent ours 
 **Platform rule.** Each in the router's default arm, panel `nb1`, against v1531 in the same session. Metrics: `fa1`, nuke casts on a champion per game; `fa2` and `fa3`, Vesper's share of hits on a champion with an enemy within 3; `fa4`, Marcella's stuns on champions per game; each up by at least 1 SE in pairs. Guards: our deaths to r1000 not up by more than 1 SE, tributed to r1000 and margin not down by more than 1 SE, no fault. Wins recorded, not judged.
 
 **Result so far (11-03 19:21 IST, `data/judge_screen_fa.txt`).** The screen stopped early because the disk ran out. `fa1`, 680 paired: wins -0.01 +- 0.01, margin -9 +- 14, collected -3.2 +- 6.6, deaths +0.11 +- 0.16, no fault: passes. `fa2`, 558 paired: wins -0.03 +- 0.02, margin -22 +- 19, collected -14.8 +- 8.4, tributed -16.4 +- 8.4, deaths +0.19 +- 0.24, no fault. Neither goes on: the gaps they close were measured against ranks 1-20 and do not exist against the neighbours in v1531's ranked games (`data/fights/s31`, 60 games): Marcella's nuke on a champion per round with it ready and an enemy within 4 is 0.25 / 0.26 at r100-300 and 0.31 / 0.33 at r300-600 (us / them), and hits on a champion with an enemy at 3 tiles are 0.29 / 0.28 at r0-100. `fa3` and `fa5` were not played. `fa4` (stuns) plays alone next, same bar.
+
+## `fa4` on the platform, read 00:37 IST 11-04 (v1536 against v1533 on `nb2`, maps on the default arm in both)
+
+61 paired decoded games, margin +27.6 +- 17.7, tributed +15.1 +- 13.4, their tributed -12.5 +- 7.2, our deaths r1000 +0.0 +- 0.1, their deaths +0.0 +- 0.0. Marcella's casts to r1000: slot 0 from 22.3 to 23.3 a game, slot 1 from 33.9 to 35.0. Each is up by about 1.06; the standard errors, about 0.4 and 0.5, pair sorted games within each map, so they read somewhat low. The target metric moved up and the guards hold, so `fa4` stays. The decoded rows carry casts by slot, not stuns on champions by target, so this reads casts and not the exact stun count the rule named.
+
+## `fa1` again, on `vf3`, written 00:40 IST 11-04, before any game
+
+The earlier screen stopped `fa1` because its gap exists only against ranks 1-20, and the neighbour panels would not show it. The Qualifiers, though, are decided against strong teams too, and `tt1` now gives a pinned top-team base for v1536 (8 of 40, 8 groups). So `vf5` = `vf3` + `fa1` (`P_FREE_EXCL_MIN` -0.3 to -1.01; Marcella fires her nuke whatever the sim reads, unless hurt or loaded).
+
+**Local bar, same as `fa1`'s.** `vf5` against `vf3` on the 68 default-arm maps, 4 pool bots, both sides, 544 paired: deaths not up by more than 0.3, wins not down by more than 0.03, collected not down by more than 2 SE, no fault. This only checks for harm.
+
+**Platform rule, only with the user's approval.** `tt1` against `rf1_tt1@tt1`, then `nb1` against `rf1_nb1@nb1`, both pinned. Metric on `tt1`: Marcella's casts of slot 0 per game up by at least 1 SE. Guards on both: deaths r1000 not up by more than 1 SE, tributed r1000 and margin not down by more than 1 SE, no fault. Wins are recorded, not judged.
