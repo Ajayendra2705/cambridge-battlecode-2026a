@@ -314,7 +314,6 @@ Download a run first: `gdl.py RUN` writes `data/replays/platform/<run>/` (replay
 | `replay/inrange.py RMAX DIR...` | With an enemy within 6 at the start of the round, the action taken, by side, band and distance, and by type within 3. |
 | `replay/inreach.py RMIN RMAX DIR...` | What a champion does with an enemy champion in reach (hit, camp, cast, toward, away, still), us against them, by health, numbers and type. |
 | `replay/stillwhy.py RMIN RMAX DIR...` | No-action rounds with an enemy in reach, by cause: stun, recall channel, tribute channel, fuel, other. |
-| `replay/rkdl.py NAME OURMAPS.json MAX_PER_MAP MAP...` | Downloads our ranked games of chosen maps (from `platform/ourmaps.py`) with an `index.txt`, for `replay/pextract.py`. |
 | `replay/exchange.py RMIN RMAX DIR...` | Health lost a round, hits per body-round and deaths while in contact, by numbers of bodies on each side. |
 | `replay/freehit.py RMAX DIR...` | Melee champions: rounds with a walk and a hit, and free hits left unused. |
 | `replay/opener.py RMAX DIR...` | Which action and type opens a fight (first hit on a champion after 15 quiet rounds), and casts a game by type. |
