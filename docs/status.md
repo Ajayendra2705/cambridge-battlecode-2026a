@@ -1,10 +1,12 @@
-# Status (updated Wed, Nov 4, 2026 4:45 AM IST)
+# Status (updated Wed, Nov 4, 2026 5:02 AM IST)
 
-## Final note at 04:45 IST 11-04 (session 94, branch `night-1101`)
+## Final note at 05:02 IST 11-04 (session 94, branch `night-1101`)
+
+- **05:00 IST, for the teammates: RT37 (v1546), uploaded 04:55:18, took the selection and the tournament entry. On `tt1` at 04:58 it won 5 of 40 against v1536's 8, flips 1 up and 4 down, margin -126 +- 88.** v1545 was selected again once at 05:00:44 under the live-slot rule. To enter RT37 instead: `cambc submissions activate 1546`; the entry follows the selection at once. This session will not flip it again. Read `upcomingTournament.submission` before the 05:29 IST lock.
 
 - **Live, selected and entered in International Qualifiers: v1545, which is v1536 with no changes.** Source: `bots/bamboo1536`. Note on the platform: "v1536 only: no changes in it. Best possible from Ajay side". Uploaded 04:33:43, active 04:36:04, `upcomingTournament.submission` reads 1545. Lock 05:29 IST. The user at 04:30 IST: nothing new, finalise, name it for what it is.
-- **Nothing tested tonight clearly beats v1536.** On `tt1`, the top-team panel, v1536 has 8 wins of 40. `rh6` (dash rule) 7, margin -58 +- 72. `rh8` (`fa1`, `kMarcGems`) 6, margin -132 +- 91; on the Bamboo-arm games of `tt1` and `nr3` flat at 28 to 28 of 58. The teammate's RT34 (v1540) 7, margin -150 +- 98, and RT36 (v1544) 7, margin -70 +- 73. Table test `nr5` lost heavily (26 to 12 of 50). `vf3` (v1537) 41 against 37 of 90 with margin about 0.
-- **The one small proven gain that was not shipped:** 00eight on the Bamboo arm, 5 to 11 of 18, margin +277 +- 160, played with `kMarcGems` 1. v1536 plus 00eight alone was never played. Row to add if work resumes: `{41, 30, 36, 22, 1, 24}` in `kBambooMaps`.
+- **Nothing tested tonight clearly beats v1536.** On `tt1`, the top-team panel, v1536 has 8 wins of 40. `rh6` (dash rule) 7, margin -58 +- 72. `rh8` (`fa1`, `kMarcGems`) 6, margin -132 +- 91; on the Bamboo-arm games of `tt1` and `nr3` flat at 28 to 28 of 58. The teammate's RT34 (v1540) 7, margin -150 +- 98, RT36 (v1544) 7, margin -70 +- 73, and RT37 (v1546) 5, margin -126 +- 88. Table test `nr5` lost heavily (26 to 12 of 50). `vf3` (v1537) 41 against 37 of 90 with margin about 0.
+- **The one small proven gain that was not shipped:** 00eight on the Bamboo arm, 5 to 11 of 18, margin +277 +- 160, played with `kMarcGems` 1. v1536 plus 00eight alone was never played. Row to add if work resumes: `{41, 30, 36, 22, 1, 24}` in `kBambooMaps`. `kMarcGems` sits exactly on its gold bar on `nr3` (team gold r1000 +86 +- 86, their gold -132 +- 65) with wins flat, so the next candidate is `bots/bamboo1542` without `fa1`.
 - **The largest gaps left against the top teams (`docs/findings.md`):** Vendetta's dead rounds to r600 are 110 against 30, Vesper's reward gold 436 against 1138, stuns on us 13.95 against 8.72. Local gains on deaths did not transfer to the platform (`vd1`), and item changes keep losing locally.
 
 ## Note at 02:45 IST 11-04, kept for its history
