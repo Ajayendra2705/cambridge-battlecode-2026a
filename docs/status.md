@@ -1,5 +1,11 @@
 # Status (updated Wed, Nov 4, 2026 5:02 AM IST)
 
+## Repo and local clean-up (11-04, after the lock)
+
+- `master` and `night-1101` hold the same final state on GitHub. Bot sources, docs, tools and results are all there.
+- Gitignored files worth keeping are in the release `archive/local-final-1104`, asset `local-keep.tar.gz` (60 MB, sha256 `7fb88f8ccc783efdce3a1cbbe5aad4852b38ac2914810b118c432c56a4928a0a`). It holds `data/` without the folders below, the sources of `bots/exp` and `bots/ref_*`, and the `out/` files of the agent worktrees. Restore with `gh release download archive/local-final-1104` and `tar -xzf local-keep.tar.gz` from the repo root.
+- Not archived: `data/runs`, `data/summaries`, `data/fights`, `data/fuel_keep`, `data/vis`, `data/cache`, `data/replays/platform` (about 10.9 GB) and all build output. `data/README.md` gives the way to get each again; platform downloads need the platform to still serve them.
+
 ## Final note at 05:02 IST 11-04 (session 94, branch `night-1101`)
 
 - **05:00 IST, for the teammates: RT37 (v1546), uploaded 04:55:18, took the selection and the tournament entry. On `tt1` at 04:58 it won 5 of 40 against v1536's 8, flips 1 up and 4 down, margin -126 +- 88.** v1545 was selected again once at 05:00:44 under the live-slot rule. To enter RT37 instead: `cambc submissions activate 1546`; the entry follows the selection at once. This session will not flip it again. Read `upcomingTournament.submission` before the 05:29 IST lock.
