@@ -3,8 +3,9 @@
 ## Repo and local clean-up (11-04, after the lock)
 
 - `master` and `night-1101` hold the same final state on GitHub. Bot sources, docs, tools and results are all there.
-- Gitignored files worth keeping are in the release `archive/local-final-1104`, asset `local-keep.tar.gz` (60 MB, sha256 `7fb88f8ccc783efdce3a1cbbe5aad4852b38ac2914810b118c432c56a4928a0a`). It holds `data/` without the folders below, the sources of `bots/exp` and `bots/ref_*`, and the `out/` files of the agent worktrees. Restore with `gh release download archive/local-final-1104` and `tar -xzf local-keep.tar.gz` from the repo root.
-- Not archived: `data/runs`, `data/summaries`, `data/fights`, `data/fuel_keep`, `data/vis`, `data/cache`, `data/replays/platform` (about 10.9 GB) and all build output. `data/README.md` gives the way to get each again; platform downloads need the platform to still serve them.
+- At the user's request ("everything here to be pushed on github", and reduce the space on the laptop) every gitignored file went to the release `archive/local-final-1104` and was then deleted from the local machine: all of `data/` (runs, summaries, fights and the rest), `bots/exp`, `bots/ref_*`, build output, `.vscode` and the agent worktrees under `.claude/worktrees`.
+- Assets `local-all.tar.gz.part00` and `part01` (2.9 GB, 52,868 files) were downloaded again and checked against `local-all.sha256` before the delete. Restore from the repo root: `gh release download archive/local-final-1104 -p 'local-all*'`, then `cat local-all.tar.gz.part* | tar -xzf -`. The older asset `local-keep.tar.gz` is a smaller subset of the same files.
+- A later local run needs `data/` and the bot builds back: restore them or rebuild.
 
 ## Final note at 05:02 IST 11-04 (session 94, branch `night-1101`)
 
